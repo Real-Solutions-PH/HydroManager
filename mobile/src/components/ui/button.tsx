@@ -1,63 +1,126 @@
+import { colors } from "@/constants/theme";
 import { cn } from "@/lib/utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { forwardRef } from "react";
-import { Pressable, type PressableProps, Text } from "react-native";
+import {
+	ActivityIndicator,
+	Pressable,
+	type PressableProps,
+	Text,
+	View,
+} from "react-native";
 
-const buttonVariants = cva(
-	"flex-row items-center justify-center rounded-md active:opacity-80",
-	{
-		variants: {
-			variant: {
-				default: "bg-primary",
-				destructive: "bg-destructive",
-				outline: "border border-input bg-background",
-				secondary: "bg-secondary",
-				ghost: "bg-transparent",
-			},
-			size: {
-				default: "h-11 px-4",
-				sm: "h-9 px-3",
-				lg: "h-12 px-6",
-				icon: "h-10 w-10",
-			},
-		},
-		defaultVariants: { variant: "default", size: "default" },
-	},
-);
-
-const buttonTextVariants = cva("text-sm font-medium", {
+const buttonVariants = cva("flex-row items-center justify-center rounded-xl", {
 	variants: {
 		variant: {
-			default: "text-primary-foreground",
-			destructive: "text-destructive-foreground",
-			outline: "text-foreground",
-			secondary: "text-secondary-foreground",
-			ghost: "text-foreground",
+			solid: "",
+			outline: "border",
+			ghost: "",
+			danger: "",
+			destructive: "",
+		},
+		size: {
+			sm: "h-9 px-3",
+			md: "h-11 px-4",
+			lg: "h-12 px-5",
+			default: "h-11 px-4",
+			icon: "h-11 w-11",
 		},
 	},
-	defaultVariants: { variant: "default" },
+	defaultVariants: { variant: "solid", size: "md" },
 });
+
+const VARIANT_BG: Record<string, string> = {
+	solid: colors.buttonSolidBg,
+	outline: "transparent",
+	ghost: "transparent",
+	danger: "#DC2626",
+	destructive: "#DC2626",
+};
+
+const VARIANT_BORDER: Record<string, string | undefined> = {
+	outline: "rgba(255,255,255,0.3)",
+};
 
 export interface ButtonProps
 	extends PressableProps,
 		VariantProps<typeof buttonVariants> {
 	label?: string;
+	isLoading?: boolean;
+	isDisabled?: boolean;
+	leftIcon?: React.ReactNode;
+	rightIcon?: React.ReactNode;
 }
 
 export const Button = forwardRef<
 	React.ElementRef<typeof Pressable>,
 	ButtonProps
->(({ className, variant, size, label, children, ...props }, ref) => (
-	<Pressable
-		ref={ref}
-		className={cn(buttonVariants({ variant, size }), className)}
-		{...props}
-	>
-		{label ? (
-			<Text className={buttonTextVariants({ variant })}>{label}</Text>
-		) : (
-			children
-		)}
-	</Pressable>
-));
+>(
+	(
+		{
+			className,
+			variant = "solid",
+			size,
+			label,
+			children,
+			isLoading,
+			isDisabled,
+			leftIcon,
+			rightIcon,
+			disabled,
+			...props
+		},
+		ref,
+	) => {
+		const v = (variant ?? "solid") as string;
+		const blocked = isDisabled || disabled || isLoading;
+		return (
+			<Pressable
+				ref={ref}
+				disabled={blocked}
+				className={cn(buttonVariants({ variant, size }), className)}
+				style={({ pressed }) => ({
+					backgroundColor: pressed
+						? v === "solid"
+							? colors.buttonSolidActive
+							: v === "danger" || v === "destructive"
+								? "#B91C1C"
+								: "rgba(255,255,255,0.1)"
+						: (VARIANT_BG[v] ?? colors.buttonSolidBg),
+					borderColor: VARIANT_BORDER[v],
+					opacity: blocked ? 0.5 : 1,
+				})}
+				{...props}
+			>
+				{isLoading ? (
+					<ActivityIndicator color="#FFFFFF" />
+				) : (
+					<View
+						style={{
+							flexDirection: "row",
+							alignItems: "center",
+							gap: 8,
+						}}
+					>
+						{leftIcon}
+						{label ? (
+							<Text
+								style={{
+									color: "#FFFFFF",
+									fontWeight: "600",
+									fontSize: size === "sm" ? 13 : 15,
+								}}
+							>
+								{label}
+							</Text>
+						) : (
+							children
+						)}
+						{rightIcon}
+					</View>
+				)}
+			</Pressable>
+		);
+	},
+);
 Button.displayName = "Button";

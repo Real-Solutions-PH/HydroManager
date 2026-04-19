@@ -1,8 +1,15 @@
 import uuid
 from datetime import datetime
+from enum import Enum
 
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
+
+
+class UserTier(str, Enum):
+    free = "free"
+    grower = "grower"
+    pro = "pro"
 
 
 class UserBase(SQLModel):
@@ -10,6 +17,8 @@ class UserBase(SQLModel):
     is_active: bool = True
     is_superuser: bool = False
     full_name: str | None = Field(default=None, max_length=255)
+    tier: UserTier = Field(default=UserTier.free)
+    locale: str = Field(default="en", max_length=8)
 
 
 class UserCreate(UserBase):
@@ -30,6 +39,7 @@ class UserUpdate(UserBase):
 class UserUpdateMe(SQLModel):
     full_name: str | None = Field(default=None, max_length=255)
     email: EmailStr | None = Field(default=None, max_length=255)
+    locale: str | None = Field(default=None, max_length=8)
 
 
 class UpdatePassword(SQLModel):

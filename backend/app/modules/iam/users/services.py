@@ -5,6 +5,7 @@ from sqlmodel import Session
 
 from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
+from app.modules.iam.auth.utils import generate_new_account_email
 from app.modules.iam.users import repo as user_repo
 from app.modules.iam.users.models import User
 from app.modules.iam.users.schema import (
@@ -15,7 +16,6 @@ from app.modules.iam.users.schema import (
     UserUpdateMe,
 )
 from app.shared.utils.email import send_email
-from app.modules.iam.auth.utils import generate_new_account_email
 
 
 def list_users(

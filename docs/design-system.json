@@ -1,0 +1,577 @@
+{
+  "name": "HydroManager Design System",
+  "version": "2.0.0",
+  "description": "Comprehensive UI/UX spec for the HydroGuide Expo + React Native app. Dark forest-green glassmorphic theme with hydroponic system-specific color coding.",
+  "platform": {
+    "framework": "Expo + React Native",
+    "styling": "NativeWind (Tailwind) + StyleSheet",
+    "targets": ["ios", "android", "web"],
+    "darkMode": "fixed (light StatusBar on dark background — no toggle)",
+    "statusBarStyle": "light"
+  },
+
+  "designPrinciples": [
+    "Dark forest green base with glassmorphic translucent cards for depth without competing with plant imagery",
+    "White text at varying opacities replaces additional greyscale hues — opacity is the hierarchy tool",
+    "System-specific color coding (NFT/Dutch Bucket/etc.) appears consistently across badges, icons, and accent borders",
+    "Token-driven spacing, radii, and typography from constants/theme.ts",
+    "Safe-area aware — all screens use GradientBackground which applies dynamic insets"
+  ],
+
+  "colorTokens": {
+    "primary": {
+      "primary": "#4CAF50",
+      "primaryLight": "#66BB6A",
+      "primaryDark": "#388E3C",
+      "primaryDeep": "#2E7D32",
+      "accent": "#76FF03",
+      "buttonSolidBg": "#2D7D46",
+      "buttonSolidActive": "#256838",
+      "usage": "CTAs, active states, filled icons, solid button background, splash/adaptive icon background."
+    },
+    "background": {
+      "bg": "#0D2818",
+      "bgMid": "#1A3C28",
+      "bgLight": "#264D38",
+      "screenGradientStops": ["#071A10", "#0D2818", "#1A3C28", "#0F2E1C", "#071A10"],
+      "screenGradientLocations": [0, 0.25, 0.5, 0.75, 1],
+      "screenGradientDirection": { "start": { "x": 0.2, "y": 0 }, "end": { "x": 0.8, "y": 1 } },
+      "softGlowOverlay": ["rgba(38,77,56,0.5)", "rgba(26,60,40,0.2)", "transparent"],
+      "softGlowHeightPct": 0.55,
+      "grainTextureOpacity": 0.4,
+      "onboardingOverlay": "linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(13,40,24,0.85) 60%, rgba(13,40,24,0.95) 100%)"
+    },
+    "surface": {
+      "surface": "rgba(20, 60, 35, 0.85)",
+      "surfaceVariant": "rgba(255, 255, 255, 0.06)",
+      "glass": "rgba(255, 255, 255, 0.08)",
+      "glassHover": "rgba(255, 255, 255, 0.12)",
+      "cardGlassOverlay": "rgba(255, 255, 255, 0.04)"
+    },
+    "text": {
+      "text": "#FFFFFF",
+      "textSecondary": "rgba(255, 255, 255, 0.7)",
+      "textMuted": "rgba(255, 255, 255, 0.5)",
+      "textDisabled": "rgba(255, 255, 255, 0.3)",
+      "placeholder": "rgba(255, 255, 255, 0.4)"
+    },
+    "border": {
+      "border": "rgba(255, 255, 255, 0.12)",
+      "borderLight": "rgba(255, 255, 255, 0.08)",
+      "borderStrong": "rgba(255, 255, 255, 0.15)",
+      "borderInput": "rgba(255, 255, 255, 0.15)",
+      "borderError": "#F87171",
+      "tabBarTopBorder": "rgba(255, 255, 255, 0.06)"
+    },
+    "status": {
+      "success": "#66BB6A",
+      "successLight": "rgba(102, 187, 106, 0.15)",
+      "warning": "#FFB74D",
+      "warningLight": "rgba(255, 183, 77, 0.15)",
+      "error": "#EF5350",
+      "errorLight": "rgba(239, 83, 80, 0.15)",
+      "info": "#42A5F5",
+      "infoLight": "rgba(66, 165, 245, 0.15)"
+    },
+    "systemTypes": {
+      "NFT":          { "color": "#66BB6A", "bg": "rgba(102, 187, 106, 0.15)", "icon": "water" },
+      "DFT":          { "color": "#42A5F5", "bg": "rgba(66, 165, 245, 0.15)",  "icon": "layers" },
+      "DutchBucket":  { "color": "#FFB74D", "bg": "rgba(255, 183, 77, 0.15)",  "icon": "nutrition" },
+      "Kratky":       { "color": "#CE93D8", "bg": "rgba(206, 147, 216, 0.15)", "icon": "flask" },
+      "Aeroponics":   { "color": "#80DEEA", "bg": "rgba(128, 222, 234, 0.15)", "icon": "cloud" },
+      "Wick":         { "color": "#A5D6A7", "bg": "rgba(165, 214, 167, 0.15)", "icon": "git-merge" },
+      "Both":         { "color": "#42A5F5", "bg": "rgba(66, 165, 245, 0.15)",  "icon": "git-merge" }
+    },
+    "inventoryCategories": {
+      "seeds":     { "color": "#66BB6A", "icon": "ellipse" },
+      "media":     { "color": "#FFB74D", "icon": "layers" },
+      "nutrients": { "color": "#42A5F5", "icon": "flask" },
+      "equipment": { "color": "#CE93D8", "icon": "construct" },
+      "packaging": { "color": "#80DEEA", "icon": "cube" },
+      "other":     { "color": "rgba(255, 255, 255, 0.5)", "icon": "ellipsis-horizontal" }
+    }
+  },
+
+  "typography": {
+    "fontFamily": {
+      "primary": "SF Pro Display, Inter, -apple-system, sans-serif",
+      "secondary": "SF Pro Text, Inter, -apple-system, sans-serif",
+      "fallback": "system-ui, sans-serif"
+    },
+    "fontSize": {
+      "xs": 11,
+      "sm": 13,
+      "md": 15,
+      "lg": 17,
+      "xl": 20,
+      "xxl": 24,
+      "xxxl": 32
+    },
+    "fontWeight": {
+      "normal": "400",
+      "medium": "500",
+      "semibold": "600",
+      "bold": "700",
+      "heavy": "800"
+    },
+    "lineHeight": {
+      "display": 0.95,
+      "heading": 1.25,
+      "body": 1.5,
+      "tight": 1.2
+    },
+    "letterSpacing": {
+      "hero": -2,
+      "h1": -0.5,
+      "h2": -0.3,
+      "body": 0,
+      "uppercaseLabel": 0.5
+    },
+    "textStyles": {
+      "greeting":      { "size": "sm", "weight": "400", "tone": "muted" },
+      "screenTitle":   { "size": "xxl", "weight": "700", "tone": "default" },
+      "sectionHeader": { "size": "lg", "weight": "700", "tone": "default" },
+      "sectionSubtitle": { "size": "sm", "weight": "400", "tone": "muted", "marginTop": 4 },
+      "cardTitle":     { "size": "md", "weight": "600", "tone": "default" },
+      "cardBody":      { "size": "md", "weight": "400", "tone": "secondary" },
+      "statValue":     { "size": "xl", "weight": "700", "tone": "default" },
+      "statLabel":     { "size": "xs", "weight": "500", "tone": "muted", "transform": "uppercase", "letterSpacing": 0.5 },
+      "badge":         { "size": "sm", "weight": "600" },
+      "badgeSmall":    { "size": "xs", "weight": "600" },
+      "caption":       { "size": "xs", "weight": "400", "tone": "muted" },
+      "helper":        { "size": "xs", "weight": "400", "tone": "muted" },
+      "errorText":     { "size": "xs", "weight": "400", "tone": "error" },
+      "hero":          { "size": 44, "weight": "800", "letterSpacing": -2, "lineHeight": 0.95 }
+    }
+  },
+
+  "spacing": {
+    "scale": {
+      "xxs": 4,
+      "xs": 8,
+      "sm": 12,
+      "md": 16,
+      "lg": 20,
+      "xl": 24,
+      "xxl": 32,
+      "xxxl": 40,
+      "jumbo": 48
+    },
+    "patterns": {
+      "screenHorizontalPadding": 16,
+      "screenTopPadding": 20,
+      "screenBottomPadding": 24,
+      "cardPadding": 16,
+      "cardMarginBottom": 20,
+      "listRowVertical": 8,
+      "sectionGap": 20,
+      "formControlGap": 6
+    }
+  },
+
+  "borderRadius": {
+    "scale": {
+      "sm": 8,
+      "md": 12,
+      "lg": 16,
+      "xl": 20,
+      "xxl": 24,
+      "full": 999
+    },
+    "usage": {
+      "searchBar": "md",
+      "input": "md (rounded-xl = 12)",
+      "button": "md (rounded-xl = 12)",
+      "card": "lg",
+      "dialog": "xl",
+      "badge": "full",
+      "avatar": "full"
+    }
+  },
+
+  "borders": {
+    "widths": { "hairline": "StyleSheet.hairlineWidth", "default": 1, "thick": 2 },
+    "defaults": {
+      "card": { "width": 1, "color": "rgba(255, 255, 255, 0.12)" },
+      "input": { "width": 1, "color": "rgba(255, 255, 255, 0.15)" },
+      "inputInvalid": { "width": 1, "color": "#F87171" },
+      "searchBar": { "width": 1, "color": "rgba(255, 255, 255, 0.08)" },
+      "divider": { "width": "hairline", "color": "rgba(255, 255, 255, 0.08)" }
+    }
+  },
+
+  "elevation": {
+    "strategy": "glassmorphism + translucent border — no drop shadows by default",
+    "blur": {
+      "card": { "module": "expo-blur", "intensity": 25, "tint": "dark" },
+      "webFallback": { "backgroundColor": "rgba(255, 255, 255, 0.06)" }
+    },
+    "pressedState": { "opacity": 0.92, "scale": 0.99 }
+  },
+
+  "motion": {
+    "library": "React Native Animated API (no Reanimated/Moti in use)",
+    "toastFadeIn": { "property": "opacity", "to": 1, "durationMs": 180, "useNativeDriver": true },
+    "cardPress":   { "opacity": 0.92, "scale": 0.99, "style-based": true },
+    "notes": "Gradient background is static. No shared-element transitions."
+  },
+
+  "icons": {
+    "library": "@expo/vector-icons (Ionicons)",
+    "sizes": { "tab": 22, "default": 22, "small": 18, "xs": 14 },
+    "activeFillRule": "filled variant on active/selected, outline variant on inactive",
+    "commonNames": {
+      "nav": ["home", "grid", "leaf", "checkbox", "cube"],
+      "actions": ["add-circle-outline", "leaf-outline", "book-outline", "build-outline", "list-outline", "bar-chart-outline"],
+      "status": ["alert-circle", "warning", "information-circle", "checkmark-circle"],
+      "ui": ["search", "arrow-back", "chevron-forward", "notifications-outline", "person-circle-outline"],
+      "hydroponic": ["water", "layers", "nutrition", "flask", "cloud", "git-merge"]
+    }
+  },
+
+  "components": {
+    "Button": {
+      "file": "components/ui/Button.tsx",
+      "baseRadius": "rounded-xl (12)",
+      "textWeight": "font-semibold",
+      "variants": {
+        "solid":   { "bg": "#2D7D46", "active": "#256838", "text": "#FFFFFF" },
+        "outline": { "bg": "transparent", "border": "rgba(255,255,255,0.3)", "active": "rgba(255,255,255,0.1)", "text": "#FFFFFF" },
+        "ghost":   { "bg": "transparent", "active": "rgba(255,255,255,0.1)", "text": "#FFFFFF" },
+        "danger":  { "bg": "#DC2626", "active": "#B91C1C", "text": "#FFFFFF" }
+      },
+      "sizes": {
+        "sm": { "height": 36, "paddingX": 12, "text": "text-sm" },
+        "md": { "height": 44, "paddingX": 16, "text": "text-base" },
+        "lg": { "height": 48, "paddingX": 20, "text": "text-base" }
+      },
+      "props": ["isDisabled", "isLoading", "isFullWidth", "leftIcon", "rightIcon"],
+      "disabledOpacity": 0.5,
+      "loadingIndicator": "ActivityIndicator color #FFFFFF, disables onPress"
+    },
+    "Input": {
+      "file": "components/ui/Input.tsx",
+      "base": "rounded-xl border bg-white/5 px-4 text-base text-white",
+      "placeholderColor": "rgba(255,255,255,0.4)",
+      "sizes": { "sm": 36, "md": 44, "lg": 48 },
+      "states": {
+        "default": "border-white/15",
+        "invalid": "border-red-400",
+        "disabled": "opacity-50"
+      }
+    },
+    "Text": {
+      "file": "components/ui/Text.tsx",
+      "sizes": ["xs", "sm", "md", "lg", "xl", "2xl", "3xl"],
+      "weights": ["normal", "medium", "semibold", "bold"],
+      "tones": {
+        "default": "text-white",
+        "muted": "text-white/60",
+        "subtle": "text-white/80",
+        "error": "text-red-400",
+        "success": "text-green-400",
+        "primary": "text-[#2D7D46]"
+      }
+    },
+    "Stack": {
+      "file": "components/ui/Stack.tsx",
+      "VStack": { "base": "flex flex-col", "gapY": { "xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24, "2xl": 32 } },
+      "HStack": { "base": "flex flex-row", "gapX": { "xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24, "2xl": 32 } },
+      "reversedProp": true
+    },
+    "Card": {
+      "file": "components/Card.tsx",
+      "borderRadius": 16,
+      "padding": 16,
+      "marginBottom": 20,
+      "border": { "width": 1, "color": "rgba(255, 255, 255, 0.12)" },
+      "backgroundMobile": "BlurView(expo-blur, intensity=25, tint=dark)",
+      "backgroundWeb": "rgba(255, 255, 255, 0.06)",
+      "glassOverlay": "rgba(255, 255, 255, 0.04) absoluteFill",
+      "pressed": { "opacity": 0.92, "scale": 0.99 },
+      "variants": {
+        "default": "full glass + border",
+        "outlined": "transparent bg, border rgba(255,255,255,0.15)"
+      }
+    },
+    "Badge": {
+      "file": "components/Badge.tsx",
+      "borderRadius": 999,
+      "paddingX": 12,
+      "paddingY": 4,
+      "fontSize": 13,
+      "fontWeight": "600",
+      "bgRule": "color + '26' (≈15% alpha)",
+      "smallVariant": { "fontSize": 11 },
+      "systemVariants": {
+        "NFT": { "color": "#66BB6A" },
+        "DutchBucket": { "color": "#FFB74D" },
+        "Both": { "color": "#42A5F5" }
+      }
+    },
+    "FormControl": {
+      "file": "components/ui/FormControl.tsx",
+      "groupGapY": 6,
+      "Label": { "size": "sm", "weight": "medium", "tone": "subtle", "requiredAsterisk": "in error tone" },
+      "Error": { "size": "xs", "tone": "error", "renderWhen": "children present" },
+      "Helper": { "size": "xs", "tone": "muted", "renderWhen": "children present" }
+    },
+    "Spinner": {
+      "file": "components/ui/Spinner.tsx",
+      "color": "#FFFFFF",
+      "basedOn": "ActivityIndicator"
+    },
+    "Toast": {
+      "file": "components/ui/Toast.tsx",
+      "position": "fixed bottom, inset-x-0 bottom-12",
+      "animation": { "opacity": { "to": 1, "durationMs": 180 } },
+      "defaultDurationMs": 3000,
+      "variants": {
+        "info":    { "bg": "slate-800", "border": "white/10" },
+        "success": { "bg": "#2D7D46", "border": "#2D7D46" },
+        "error":   { "bg": "#DC2626", "border": "#B91C1C" },
+        "warning": { "bg": "#F59E0B", "border": "#D97706" }
+      }
+    },
+    "SectionHeader": {
+      "file": "components/SectionHeader.tsx",
+      "containerPadding": { "x": 16, "top": 20, "bottom": 8 },
+      "title": { "fontSize": 17, "fontWeight": "700", "color": "#FFFFFF" },
+      "subtitle": { "fontSize": 13, "color": "rgba(255,255,255,0.5)", "marginTop": 4 }
+    },
+    "SearchBar": {
+      "file": "components/SearchBar.tsx",
+      "bg": "rgba(255, 255, 255, 0.08)",
+      "border": { "width": 1, "color": "rgba(255, 255, 255, 0.08)" },
+      "borderRadius": 12,
+      "padding": { "x": 16, "y": 12 },
+      "icon": { "name": "search", "size": 18, "color": "rgba(255,255,255,0.5)", "marginRight": 8 },
+      "input": { "flex": 1, "fontSize": 15, "color": "#FFFFFF" }
+    },
+    "GradientBackground": {
+      "file": "components/GradientBackground.tsx",
+      "layers": [
+        { "kind": "LinearGradient", "colors": ["#071A10", "#0D2818", "#1A3C28", "#0F2E1C", "#071A10"], "locations": [0, 0.25, 0.5, 0.75, 1], "start": {"x":0.2,"y":0}, "end": {"x":0.8,"y":1} },
+        { "kind": "SoftGlow", "colors": ["rgba(38,77,56,0.5)", "rgba(26,60,40,0.2)", "transparent"], "heightPct": 0.55, "origin": "top-center" },
+        { "kind": "Texture", "asset": "assets/grain.png", "opacity": 0.4, "resizeMode": "repeat" }
+      ],
+      "safeArea": "useSafeAreaInsets(); top padding = insets.top + 12"
+    },
+    "InfoRow": {
+      "file": "components/InfoRow.tsx",
+      "paddingY": 8,
+      "borderBottom": { "width": "hairline", "color": "rgba(255,255,255,0.08)" },
+      "label": { "fontSize": 13, "color": "rgba(255,255,255,0.7)" },
+      "value": { "fontSize": 13, "fontWeight": "600", "color": "#FFFFFF", "align": "right" }
+    },
+    "InfoGrid": {
+      "columns": 2,
+      "item": { "paddingY": 8, "paddingX": 4, "width": "50%" },
+      "label": { "fontSize": 11, "color": "rgba(255,255,255,0.5)", "transform": "uppercase", "letterSpacing": 0.5 },
+      "value": { "fontSize": 15, "fontWeight": "600", "color": "#FFFFFF" }
+    },
+    "Box": { "file": "components/ui/Box.tsx", "role": "View wrapper with className support" },
+    "Pressable": { "file": "components/ui/Pressable.tsx", "role": "Pressable wrapper with className support" }
+  },
+
+  "navigation": {
+    "library": "Expo Router (file-based)",
+    "rootLayout": "app/_layout.tsx",
+    "authGate": "unauthenticated users redirected to /(auth)/login",
+    "stackPresentation": {
+      "contentStyle": "transparent",
+      "headerShown": false
+    },
+    "tabBar": {
+      "file": "app/(tabs)/_layout.tsx",
+      "backgroundColor": "rgba(20, 60, 35, 0.95)",
+      "height": 65,
+      "topBorder": { "width": 1, "color": "rgba(255, 255, 255, 0.06)" },
+      "activeTint": "#FFFFFF",
+      "inactiveTint": "rgba(255, 255, 255, 0.5)",
+      "label": { "fontSize": 11, "fontWeight": "600" },
+      "iconSize": 22,
+      "tabs": [
+        { "name": "index",     "label": "Home",      "icon": "home" },
+        { "name": "setups",    "label": "Setups",    "icon": "grid" },
+        { "name": "crops",     "label": "Crops",     "icon": "leaf" },
+        { "name": "checklist", "label": "Tasks",     "icon": "checkbox" },
+        { "name": "inventory", "label": "Inventory", "icon": "cube" }
+      ]
+    },
+    "modals": ["setup/new", "setup/edit", "setup/[id]", "crop/[id]", "sop/[id]", "procedures", "troubleshoot", "reference", "notifications", "profile"]
+  },
+
+  "screens": {
+    "Dashboard": {
+      "file": "app/(tabs)/index.tsx",
+      "layout": [
+        "Header: greeting + user name + notification bell (badge) + profile icon",
+        "Progress card: today's tasks with progress bar + completion %",
+        "Stats grid: 4 cards (setups, plant batches, near harvest, low stock)",
+        "Alerts section: color-coded left border (danger/warning/info)",
+        "Upcoming Harvests: countdown + plant quantity",
+        "Recent Activity: timeline rows (icon + timestamp)",
+        "Quick Actions: 3-column grid of icon+label buttons"
+      ],
+      "statCard": {
+        "bg": "rgba(255, 255, 255, 0.06)",
+        "border": "rgba(255, 255, 255, 0.12)",
+        "padding": 16,
+        "borderRadius": 16
+      }
+    },
+    "Setups": {
+      "file": "app/(tabs)/setups.tsx",
+      "filters": ["All", "Active", "Archived"],
+      "card": [
+        "Header: system icon (tinted bg = color + 26) + type badge + name + chevron-forward",
+        "Stats row: plant slots, location, water volume with inline icons",
+        "Utilization bar colored by system type",
+        "Pressed: opacity 0.92, scale 0.99"
+      ]
+    },
+    "Crops": {
+      "file": "app/(tabs)/crops.tsx",
+      "elements": [
+        "SearchBar",
+        "Custom sliders: temperature, pH, humidity (draggable thumbs)",
+        "Crop card: image or placeholder icon, system overlay badge, name, system type, growth time"
+      ]
+    },
+    "Checklist": {
+      "file": "app/(tabs)/checklist.tsx",
+      "modeToggle": ["Setup Tasks", "Maintenance"],
+      "progressBar": true,
+      "sections": ["Daily", "Every 2-3 Days", "Weekly", "Biweekly", "Monthly"],
+      "checkItem": "checkbox (filled when checked) + task + system badge + time; checked -> strikethrough/reduced opacity"
+    },
+    "Inventory": {
+      "file": "app/(tabs)/inventory.tsx",
+      "elements": [
+        "SearchBar",
+        "Category filter chips: All, Seeds, Media, Nutrients, Equipment, Packaging",
+        "Item card: category icon + name + category badge + (Low stock alert if applicable) + Current/Min/Last Restocked stats + stock bar"
+      ]
+    },
+    "Auth": {
+      "login": {
+        "file": "app/(auth)/login.tsx",
+        "layout": "centered VStack, max-width, greeting heading + muted subtitle, email + password + Sign in (full width) + sign-up link with primary color"
+      },
+      "signup": { "file": "app/(auth)/signup.tsx" }
+    },
+    "Profile": {
+      "file": "app/profile.tsx",
+      "layout": "back button + title header, profile card (avatar circle, name, farm, location), 3-col stat grid (setups, crops, member since), settings card with preference rows"
+    }
+  },
+
+  "states": {
+    "loading": "Spinner (ActivityIndicator, color #FFFFFF), centered. Buttons swap children for Spinner when isLoading.",
+    "empty":   "Placeholder icon + muted label inside list/screen.",
+    "error":   "Toast variant=error (bg #DC2626) OR inline FormControlError text size xs, tone error.",
+    "disabled":"opacity 0.5, onPress removed.",
+    "pressed": "opacity 0.92, scale 0.99 (cards, pressables).",
+    "lowStock":"Badge label 'Low' with error color icon + red current quantity."
+  },
+
+  "forms": {
+    "library": "react-hook-form + zod (schemas in schemas/)",
+    "pattern": "FormControl (gap-y-1.5) wrapping Label (size sm, tone subtle, optional asterisk in error tone for required) → Input → Helper (size xs, tone muted) / Error (size xs, tone error).",
+    "submit": "Button with isLoading swaps children for Spinner"
+  },
+
+  "assets": {
+    "dir": "assets/",
+    "brand": {
+      "icon": "assets/icon.png",
+      "splashIcon": "assets/splash-icon.png",
+      "adaptiveIcon": "assets/adaptive-icon.png",
+      "favicon": "assets/favicon.png",
+      "grainTexture": "assets/grain.png"
+    },
+    "splashBackground": "#2D7D46",
+    "androidAdaptiveIconBackground": "#2D7D46",
+    "crops": {
+      "dir": "assets/crops/",
+      "files": [
+        "kangkong_crop.png", "pechay_crop.png", "mustard_greens_crop.png",
+        "lettuce_crop.png", "sweet_potato_tops_crop.png", "basil_crop.png",
+        "pandan_crop.png", "tomatoes_crop.png", "eggplant_crop.png",
+        "hot_peppers_crop.png", "bell_peppers_crop.png", "cucumbers_crop.png",
+        "ampalaya_crop.png", "sitaw_crop.png"
+      ]
+    }
+  },
+
+  "accessibility": {
+    "textContrast": "White on deep forest green ≥ AA. Muted text (opacity 0.5) reserved for secondary captions only.",
+    "hitSlop": "Buttons/tappables minimum height 44 (md size).",
+    "statusBar": "light style for legible icons on dark bg.",
+    "focusStates": "Active tab icon + white tint; pressed feedback via opacity + scale."
+  },
+
+  "safeArea": {
+    "provider": "react-native-safe-area-context",
+    "usage": "GradientBackground applies top padding = insets.top + 12. Tab bar height 65 accommodates bottom safe area.",
+    "statusBar": "<StatusBar style=\"light\" /> in root layout"
+  },
+
+  "platformNotes": {
+    "web": "MMKV + SecureStore unsupported — storage/kv.ts and auth/tokens.ts branch on Platform.OS. expo-blur falls back to rgba background on web.",
+    "expoGo": "NOT supported — react-native-mmkv v3 is JSI-only. Use `npx expo prebuild --clean && npx expo run:ios|android`.",
+    "storageMode": "web = 'local-json' (bundled data/*.json reads, in-memory writes); native = SQLite local-first sync."
+  },
+
+  "designRelatedPackages": {
+    "@expo/vector-icons": "^15.0.3",
+    "expo-blur": "~15.0.8",
+    "expo-linear-gradient": "~15.0.8",
+    "nativewind": "^4.2.3",
+    "tailwind-variants": "^3.2.2",
+    "tailwindcss": "^3.3.2",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.5.0",
+    "react-hook-form": "^7.72.1",
+    "@hookform/resolvers": "^5.2.2",
+    "zod": "^4.3.6",
+    "react-native-safe-area-context": "*"
+  },
+
+  "tailwindExtensions": {
+    "file": "tailwind.config.js",
+    "contentPaths": ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
+    "colors.hydro": {
+      "primary": "#4CAF50",
+      "primary-light": "#66BB6A",
+      "primary-dark": "#388E3C",
+      "accent": "#76FF03",
+      "bg": "#0D2818",
+      "bg-mid": "#1A3C28",
+      "bg-light": "#264D38",
+      "surface": "rgba(20, 60, 35, 0.85)",
+      "surface-variant": "rgba(255, 255, 255, 0.06)",
+      "glass": "rgba(255, 255, 255, 0.08)",
+      "border": "rgba(255, 255, 255, 0.12)",
+      "border-light": "rgba(255, 255, 255, 0.08)",
+      "error": "#EF5350", "error-light": "rgba(239, 83, 80, 0.15)",
+      "warning": "#FFB74D", "warning-light": "rgba(255, 183, 77, 0.15)",
+      "success": "#66BB6A", "success-light": "rgba(102, 187, 106, 0.15)",
+      "info": "#42A5F5", "info-light": "rgba(66, 165, 245, 0.15)",
+      "nft": "#66BB6A", "nft-light": "rgba(102, 187, 106, 0.15)",
+      "dutch-bucket": "#FFB74D", "dutch-bucket-light": "rgba(255, 183, 77, 0.15)",
+      "both": "#42A5F5", "both-light": "rgba(66, 165, 245, 0.15)"
+    }
+  },
+
+  "referenceFiles": {
+    "theme": "constants/theme.ts",
+    "tailwind": "tailwind.config.js",
+    "globalCss": "global.css",
+    "uiDir": "components/ui/",
+    "screenDir": "app/",
+    "tabsLayout": "app/(tabs)/_layout.tsx",
+    "rootLayout": "app/_layout.tsx"
+  }
+}

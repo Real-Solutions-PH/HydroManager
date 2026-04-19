@@ -37,8 +37,9 @@ function createWebStore(): KVStore {
 }
 
 function createNativeStore(): KVStore {
-	const { createMMKV } =
-		require("react-native-mmkv") as typeof import("react-native-mmkv");
+	const { createMMKV } = require("react-native-mmkv") as typeof import(
+		"react-native-mmkv",
+	);
 	const instance = createMMKV();
 	return {
 		getString: (key) => instance.getString(key),

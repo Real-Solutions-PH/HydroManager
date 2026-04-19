@@ -9,34 +9,45 @@ import {
 interface Feature {
   title: string
   description: string
+  icon: string
 }
 
 const features: Feature[] = [
   {
-    title: "FastAPI Backend",
-    description: "Async, typed Python API with automatic OpenAPI docs.",
-  },
-  {
-    title: "Next.js Frontend",
-    description: "App Router, server components, and a typed API client.",
-  },
-  {
-    title: "Auth Built-in",
+    title: "Setup-aware task list",
+    icon: "🧭",
     description:
-      "Email/password auth, password recovery, and protected routes.",
+      "Daily checklist generated from your physical setup: DFT, NFT, Dutch Bucket, Kratky, SNAP. Every task knows your slots.",
   },
   {
-    title: "Type-Safe",
+    title: "User-approved milestones",
+    icon: "🌱",
     description:
-      "End-to-end types from Pydantic models to generated TS client.",
+      "Nothing auto-advances. You confirm each stage — partial counts, photos, notes. Perfect audit log per batch.",
   },
   {
-    title: "Dockerized",
-    description: "Compose-based dev and deploy with sane defaults.",
+    title: "Inventory + low-stock alerts",
+    icon: "📦",
+    description:
+      "Track seeds, nutrients, rockwool, pH up/down. Crop-aware reorder hints. Push notifications when you're running out.",
   },
   {
-    title: "Tested",
-    description: "Pytest on the backend, Playwright E2E on the frontend.",
+    title: "Top 20 PH crop guides",
+    icon: "📚",
+    description:
+      "Pechay, kangkong, lettuce, basil, tomato, ampalaya and more. Bilingual (EN/TL), calibrated on a real Batangas farm.",
+  },
+  {
+    title: "AI crop assistant (grounded)",
+    icon: "🤖",
+    description:
+      "Tanungin mo: 'Bakit nanginig ang pechay sa slot 3?' It answers using YOUR pH readings, batch history and inventory.",
+  },
+  {
+    title: "Sales + COGS (Pro)",
+    icon: "💰",
+    description:
+      "Log sales per batch. See net margin by crop, by setup, by month. CSV export for BIR/accounting.",
   },
 ]
 
@@ -46,17 +57,19 @@ export function Features() {
       <div className="container mx-auto px-4 py-20">
         <div className="mx-auto mb-12 max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Everything you need
+            Built for the way Filipino growers actually work
           </h2>
           <p className="mt-3 text-muted-foreground">
-            Opinionated defaults for the parts every app needs, so you can ship
-            the rest.
+            Setup-aware, offline-first, Tagalog-first. Unlike generic farm
+            apps, HydroManager understands your slot count, your batches, and
+            your hardware — not just your crops.
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => (
             <Card key={feature.title}>
               <CardHeader>
+                <div className="mb-2 text-3xl">{feature.icon}</div>
                 <CardTitle>{feature.title}</CardTitle>
                 <CardDescription>{feature.description}</CardDescription>
               </CardHeader>

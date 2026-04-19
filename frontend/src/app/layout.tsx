@@ -4,7 +4,9 @@ import { Providers } from "@/components/providers"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Full Stack FastAPI Project",
+  title: "HydroManager — Hydroponics farm app",
+  description:
+    "Setup-aware hydroponics management for PH growers. Milestone approvals, crop guides, grounded AI assistant.",
   icons: {
     icon: "/assets/images/favicon.png",
   },

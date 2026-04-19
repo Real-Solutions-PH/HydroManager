@@ -1,0 +1,217 @@
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
+import { colors } from "@/constants/theme";
+import { hydroAiApi } from "@/lib/hydro-api";
+import { Ionicons } from "@expo/vector-icons";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import {
+	KeyboardAvoidingView,
+	Modal,
+	Platform,
+	Pressable,
+	ScrollView,
+	View,
+} from "react-native";
+
+interface Msg {
+	role: "user" | "assistant";
+	content: string;
+	citations?: { type: string; id: string; label: string }[];
+}
+
+export function AIChatFab() {
+	const [open, setOpen] = useState(false);
+	const quota = useQuery({
+		queryKey: ["ai-quota"],
+		queryFn: () => hydroAiApi.quota(),
+		enabled: open,
+	});
+	const [input, setInput] = useState("");
+	const [msgs, setMsgs] = useState<Msg[]>([]);
+
+	const send = useMutation({
+		mutationFn: (m: string) => hydroAiApi.chat(m),
+		onSuccess: (r) => {
+			setMsgs((prev) => [
+				...prev,
+				{ role: "assistant", content: r.answer, citations: r.citations },
+			]);
+		},
+		onError: (e: Error) => {
+			setMsgs((prev) => [
+				...prev,
+				{ role: "assistant", content: `Error: ${e.message}` },
+			]);
+		},
+	});
+
+	function submit() {
+		if (!input.trim()) return;
+		const m = input.trim();
+		setMsgs((p) => [...p, { role: "user", content: m }]);
+		setInput("");
+		send.mutate(m);
+	}
+
+	return (
+		<>
+			<Pressable
+				onPress={() => setOpen(true)}
+				style={({ pressed }) => ({
+					position: "absolute",
+					right: 16,
+					bottom: 90,
+					width: 56,
+					height: 56,
+					borderRadius: 28,
+					backgroundColor: colors.buttonSolidBg,
+					alignItems: "center",
+					justifyContent: "center",
+					shadowColor: "#000",
+					shadowOpacity: 0.3,
+					shadowRadius: 6,
+					opacity: pressed ? 0.92 : 1,
+					transform: [{ scale: pressed ? 0.96 : 1 }],
+				})}
+			>
+				<Ionicons name="sparkles" size={24} color="#FFFFFF" />
+			</Pressable>
+
+			<Modal
+				visible={open}
+				animationType="slide"
+				onRequestClose={() => setOpen(false)}
+			>
+				<KeyboardAvoidingView
+					behavior={Platform.OS === "ios" ? "padding" : "height"}
+					style={{ flex: 1, backgroundColor: colors.bg }}
+				>
+					<View
+						style={{
+							flexDirection: "row",
+							alignItems: "center",
+							justifyContent: "space-between",
+							padding: 16,
+							paddingTop: 48,
+							borderBottomColor: colors.borderLight,
+							borderBottomWidth: 1,
+						}}
+					>
+						<View>
+							<Text size="lg" weight="bold">
+								Crop Assistant
+							</Text>
+							{quota.data ? (
+								<Text size="xs" tone="muted">
+									{quota.data.used}/{quota.data.limit} used · {quota.data.tier}
+								</Text>
+							) : null}
+						</View>
+						<Pressable onPress={() => setOpen(false)}>
+							<Ionicons name="close" size={24} color={colors.text} />
+						</Pressable>
+					</View>
+
+					<ScrollView
+						style={{ flex: 1 }}
+						contentContainerStyle={{ padding: 16, gap: 10 }}
+					>
+						{msgs.length === 0 ? (
+							<Text tone="muted" style={{ textAlign: "center", marginTop: 40 }}>
+								Tanungin mo — e.g. "Bakit may tip burn ang pechay ko?"
+							</Text>
+						) : null}
+						{msgs.map((m, i) => (
+							<View
+								key={`${i}-${m.role}`}
+								style={{
+									alignSelf: m.role === "user" ? "flex-end" : "flex-start",
+									maxWidth: "85%",
+								}}
+							>
+								<View
+									style={{
+										backgroundColor:
+											m.role === "user"
+												? colors.buttonSolidBg
+												: colors.surfaceVariant,
+										borderWidth: m.role === "assistant" ? 1 : 0,
+										borderColor: colors.border,
+										paddingHorizontal: 14,
+										paddingVertical: 10,
+										borderRadius: 16,
+									}}
+								>
+									<Text>{m.content}</Text>
+								</View>
+								{m.citations?.length ? (
+									<View
+										style={{
+											flexDirection: "row",
+											flexWrap: "wrap",
+											gap: 4,
+											marginTop: 6,
+										}}
+									>
+										{m.citations.slice(0, 4).map((c) => (
+											<View
+												key={`${c.type}-${c.id}`}
+												style={{
+													paddingHorizontal: 8,
+													paddingVertical: 2,
+													borderRadius: 999,
+													backgroundColor: colors.glass,
+												}}
+											>
+												<Text size="xs" tone="muted">
+													{c.type}: {c.label}
+												</Text>
+											</View>
+										))}
+									</View>
+								) : null}
+							</View>
+						))}
+						{send.isPending ? <Text tone="muted">Thinking...</Text> : null}
+					</ScrollView>
+
+					<View
+						style={{
+							flexDirection: "row",
+							padding: 12,
+							gap: 8,
+							borderTopColor: colors.borderLight,
+							borderTopWidth: 1,
+						}}
+					>
+						<View style={{ flex: 1 }}>
+							<Input
+								value={input}
+								onChangeText={setInput}
+								placeholder="Ask about your farm..."
+								onSubmitEditing={submit}
+							/>
+						</View>
+						<Pressable
+							onPress={submit}
+							disabled={send.isPending || !input.trim()}
+							style={{
+								width: 44,
+								height: 44,
+								borderRadius: 12,
+								backgroundColor: colors.buttonSolidBg,
+								alignItems: "center",
+								justifyContent: "center",
+								opacity: send.isPending || !input.trim() ? 0.5 : 1,
+							}}
+						>
+							<Ionicons name="send" size={18} color="#FFFFFF" />
+						</Pressable>
+					</View>
+				</KeyboardAvoidingView>
+			</Modal>
+		</>
+	);
+}

@@ -14,13 +14,11 @@ const webStorage = {
 		return globalThis.localStorage.getItem(key);
 	},
 	setItem(key: string, value: string): void {
-		if (globalThis.window === undefined || !globalThis.localStorage)
-			return;
+		if (globalThis.window === undefined || !globalThis.localStorage) return;
 		globalThis.localStorage.setItem(key, value);
 	},
 	removeItem(key: string): void {
-		if (globalThis.window === undefined || !globalThis.localStorage)
-			return;
+		if (globalThis.window === undefined || !globalThis.localStorage) return;
 		globalThis.localStorage.removeItem(key);
 	},
 };
