@@ -5,10 +5,13 @@ help: ## Show this help
 # ---------------------------------------------------------------------------
 # Docker
 # ---------------------------------------------------------------------------
-.PHONY: up down build logs ps
+.PHONY: up up-infra down build logs ps
 
 up: ## Start all services (dev mode with hot-reload)
 	docker compose up -d
+
+up-infra: ## Start only infra services (db, redis, minio)
+	docker compose up -d db redis minio
 
 down: ## Stop all services
 	docker compose down
