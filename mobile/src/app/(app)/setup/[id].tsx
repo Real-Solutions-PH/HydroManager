@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
-import { colors, systemTypes } from "@/constants/theme";
+import { colors, spacing, systemTypes } from "@/constants/theme";
 import { batchesApi, setupsApi } from "@/lib/hydro-api";
 
 export default function SetupDetailScreen() {
@@ -77,13 +77,18 @@ export default function SetupDetailScreen() {
 
 	return (
 		<GradientBackground>
-			<ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+			<ScrollView
+				contentContainerStyle={{
+					padding: spacing.md,
+					paddingBottom: spacing.xxxl,
+				}}
+			>
 				<View
 					style={{
 						flexDirection: "row",
 						alignItems: "center",
-						gap: 8,
-						marginBottom: 12,
+						gap: spacing.xs,
+						marginBottom: spacing.sm,
 					}}
 				>
 					<Pressable onPress={() => router.back()}>
@@ -114,7 +119,7 @@ export default function SetupDetailScreen() {
 							flexDirection: "row",
 							alignItems: "center",
 							justifyContent: "space-between",
-							marginTop: 8,
+							marginTop: spacing.xs,
 						}}
 					>
 						<Text size="xl" weight="bold">
@@ -124,7 +129,7 @@ export default function SetupDetailScreen() {
 					</View>
 					<View
 						style={{
-							marginTop: 8,
+							marginTop: spacing.xs,
 							height: 8,
 							backgroundColor: colors.glass,
 							borderRadius: 999,
@@ -142,14 +147,14 @@ export default function SetupDetailScreen() {
 					</View>
 				</Card>
 
-				<View style={{ marginTop: 20 }}>
+				<View style={{ marginTop: spacing.lg }}>
 					<View
 						style={{
 							flexDirection: "row",
 							justifyContent: "space-between",
 							alignItems: "center",
-							marginBottom: 8,
-							paddingHorizontal: 4,
+							marginBottom: spacing.xs,
+							paddingHorizontal: spacing.xxs,
 						}}
 					>
 						<Text size="lg" weight="bold">
@@ -160,7 +165,7 @@ export default function SetupDetailScreen() {
 								style={{
 									flexDirection: "row",
 									alignItems: "center",
-									gap: 4,
+									gap: spacing.xxs,
 									backgroundColor: colors.buttonSolidBg,
 									paddingHorizontal: 10,
 									paddingVertical: 6,
@@ -197,8 +202,8 @@ export default function SetupDetailScreen() {
 					)}
 				</View>
 
-				<View style={{ marginTop: 20, paddingHorizontal: 4 }}>
-					<Text size="lg" weight="bold" style={{ marginBottom: 8 }}>
+				<View style={{ marginTop: spacing.lg, paddingHorizontal: spacing.xxs }}>
+					<Text size="lg" weight="bold" style={{ marginBottom: spacing.xs }}>
 						Slots
 					</Text>
 					<View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
@@ -252,10 +257,10 @@ export default function SetupDetailScreen() {
 				<View
 					style={{
 						marginTop: 28,
-						gap: 8,
+						gap: spacing.xs,
 						borderTopWidth: 1,
 						borderTopColor: colors.borderLight,
-						paddingTop: 20,
+						paddingTop: spacing.lg,
 					}}
 				>
 					<Button

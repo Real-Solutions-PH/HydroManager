@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { TextInput, type TextInputProps } from "react-native";
-import { colors } from "@/constants/theme";
+import { colors, spacing } from "@/constants/theme";
 import { cn } from "@/lib/utils";
 
 interface Props extends TextInputProps {
@@ -14,15 +14,21 @@ export const Input = forwardRef<TextInput, Props>(
 			placeholderTextColor = colors.placeholder,
 			invalid,
 			style,
+			multiline,
+			textAlignVertical,
 			...props
 		},
 		ref,
 	) => (
 		<TextInput
 			ref={ref}
+			multiline={multiline}
 			placeholderTextColor={placeholderTextColor}
+			textAlignVertical={textAlignVertical ?? (multiline ? "top" : "center")}
 			className={cn(
-				"h-11 rounded-xl border px-4 text-base text-white",
+				multiline
+					? "rounded-xl border px-4 text-base text-white"
+					: "h-11 rounded-xl border px-4 text-base text-white",
 				className,
 			)}
 			style={[
@@ -31,6 +37,13 @@ export const Input = forwardRef<TextInput, Props>(
 					borderColor: invalid ? colors.borderError : colors.borderInput,
 					color: colors.text,
 				},
+				multiline
+					? {
+							minHeight: 96,
+							paddingTop: spacing.sm,
+							paddingBottom: spacing.sm,
+						}
+					: null,
 				style,
 			]}
 			{...props}

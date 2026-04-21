@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { colors } from "@/constants/theme";
+import { colors, spacing } from "@/constants/theme";
 
 interface Props {
 	title: string;
@@ -8,7 +8,13 @@ interface Props {
 
 export function SectionHeader({ title, subtitle }: Props) {
 	return (
-		<View style={{ paddingHorizontal: 16, paddingTop: 20, paddingBottom: 8 }}>
+		<View
+			style={{
+				paddingHorizontal: spacing.md,
+				paddingTop: spacing.lg,
+				paddingBottom: spacing.xs,
+			}}
+		>
 			<Text style={{ fontSize: 17, fontWeight: "700", color: colors.text }}>
 				{title}
 			</Text>
@@ -17,7 +23,7 @@ export function SectionHeader({ title, subtitle }: Props) {
 					style={{
 						fontSize: 13,
 						color: colors.textMuted,
-						marginTop: 4,
+						marginTop: spacing.xxs,
 					}}
 				>
 					{subtitle}

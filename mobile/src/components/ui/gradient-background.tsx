@@ -7,6 +7,7 @@ import {
 	gradientLocations,
 	gradientStart,
 	gradientStops,
+	spacing,
 } from "@/constants/theme";
 
 interface Props {
@@ -50,7 +51,7 @@ export function GradientBackground({ children, withInsets = true }: Props) {
 			<View
 				style={{
 					flex: 1,
-					paddingTop: withInsets ? insets.top + 12 : 0,
+					paddingTop: withInsets ? insets.top + spacing.sm : 0,
 				}}
 			>
 				{children}

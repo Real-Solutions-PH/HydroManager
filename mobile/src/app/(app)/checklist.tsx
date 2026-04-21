@@ -6,7 +6,7 @@ import { FlatList, Pressable, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
-import { colors } from "@/constants/theme";
+import { colors, spacing } from "@/constants/theme";
 import {
 	type Batch,
 	batchesApi,
@@ -147,7 +147,7 @@ export default function ChecklistScreen() {
 
 	return (
 		<GradientBackground>
-			<View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
+			<View style={{ paddingHorizontal: spacing.md, paddingTop: spacing.xs }}>
 				<Text size="xxl" weight="bold">
 					Tasks
 				</Text>
@@ -156,13 +156,13 @@ export default function ChecklistScreen() {
 				</Text>
 			</View>
 
-			<View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
+			<View style={{ paddingHorizontal: spacing.md, paddingTop: spacing.md }}>
 				<Card>
 					<View
 						style={{
 							flexDirection: "row",
 							justifyContent: "space-between",
-							marginBottom: 12,
+							marginBottom: spacing.sm,
 						}}
 					>
 						<Text weight="semibold">Today's progress</Text>
@@ -187,7 +187,13 @@ export default function ChecklistScreen() {
 							}}
 						/>
 					</View>
-					<View style={{ flexDirection: "row", gap: 8, marginTop: 12 }}>
+					<View
+						style={{
+							flexDirection: "row",
+							gap: spacing.xs,
+							marginTop: spacing.sm,
+						}}
+					>
 						<CountChip label={`${overdue} overdue`} color={colors.error} />
 						<CountChip label={`${today} today`} color={colors.primaryLight} />
 						<CountChip label={`${soon} soon`} color={colors.textMuted} />
@@ -201,7 +207,7 @@ export default function ChecklistScreen() {
 						flex: 1,
 						alignItems: "center",
 						justifyContent: "center",
-						padding: 32,
+						padding: spacing.xxl,
 					}}
 				>
 					<Ionicons
@@ -209,15 +215,18 @@ export default function ChecklistScreen() {
 						size={48}
 						color={colors.textMuted}
 					/>
-					<Text tone="muted" style={{ marginTop: 12, textAlign: "center" }}>
+					<Text
+						tone="muted"
+						style={{ marginTop: spacing.sm, textAlign: "center" }}
+					>
 						Start a batch to see setup-aware tasks.
 					</Text>
 					<Link href="/batch/new" asChild>
 						<Pressable
 							style={{
-								marginTop: 16,
+								marginTop: spacing.md,
 								backgroundColor: colors.buttonSolidBg,
-								paddingHorizontal: 16,
+								paddingHorizontal: spacing.md,
 								paddingVertical: 10,
 								borderRadius: 12,
 							}}
@@ -230,7 +239,7 @@ export default function ChecklistScreen() {
 				<FlatList
 					data={tasks}
 					keyExtractor={(t) => t.id}
-					contentContainerStyle={{ padding: 16, gap: 10 }}
+					contentContainerStyle={{ padding: spacing.md, gap: 10 }}
 					ListEmptyComponent={
 						<Text tone="muted">All caught up! Pahinga ka muna.</Text>
 					}
@@ -252,7 +261,7 @@ function CountChip({ label, color }: { label: string; color: string }) {
 		<View
 			style={{
 				paddingHorizontal: 10,
-				paddingVertical: 4,
+				paddingVertical: spacing.xxs,
 				borderRadius: 999,
 				backgroundColor: `${color}26`,
 			}}
@@ -290,7 +299,7 @@ function TaskRow({
 				style={{
 					flexDirection: "row",
 					alignItems: "flex-start",
-					gap: 12,
+					gap: spacing.sm,
 				}}
 			>
 				<Pressable onPress={onToggle} hitSlop={10}>
@@ -311,7 +320,7 @@ function TaskRow({
 						>
 							{task.title}
 						</Text>
-						<Text size="xs" tone="muted" style={{ marginTop: 4 }}>
+						<Text size="xs" tone="muted" style={{ marginTop: spacing.xxs }}>
 							{task.detail}
 						</Text>
 					</Pressable>

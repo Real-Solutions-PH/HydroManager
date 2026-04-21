@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
-import { colors, systemTypes } from "@/constants/theme";
+import { colors, spacing, systemTypes } from "@/constants/theme";
 import { setupsApi } from "@/lib/hydro-api";
 
 const FILTERS = ["All", "Active", "Archived"] as const;
@@ -34,8 +34,8 @@ export default function SetupsScreen() {
 					flexDirection: "row",
 					alignItems: "center",
 					justifyContent: "space-between",
-					paddingHorizontal: 16,
-					paddingTop: 8,
+					paddingHorizontal: spacing.md,
+					paddingTop: spacing.xs,
 				}}
 			>
 				<Text size="xxl" weight="bold">
@@ -46,10 +46,10 @@ export default function SetupsScreen() {
 						style={{
 							flexDirection: "row",
 							alignItems: "center",
-							gap: 4,
+							gap: spacing.xxs,
 							backgroundColor: colors.buttonSolidBg,
-							paddingHorizontal: 12,
-							paddingVertical: 8,
+							paddingHorizontal: spacing.sm,
+							paddingVertical: spacing.xs,
 							borderRadius: 12,
 						}}
 					>
@@ -62,10 +62,10 @@ export default function SetupsScreen() {
 			<View
 				style={{
 					flexDirection: "row",
-					gap: 8,
-					paddingHorizontal: 16,
-					paddingTop: 12,
-					paddingBottom: 4,
+					gap: spacing.xs,
+					paddingHorizontal: spacing.md,
+					paddingTop: spacing.sm,
+					paddingBottom: spacing.xxs,
 				}}
 			>
 				{FILTERS.map((f) => (
@@ -100,18 +100,20 @@ export default function SetupsScreen() {
 				keyExtractor={(s) => s.id}
 				refreshing={isRefetching}
 				onRefresh={refetch}
-				contentContainerStyle={{ padding: 16, gap: 12 }}
+				contentContainerStyle={{ padding: spacing.md, gap: spacing.sm }}
 				ListEmptyComponent={
 					isLoading ? (
 						<Text tone="muted">Loading setups...</Text>
 					) : (
-						<View style={{ alignItems: "center", paddingVertical: 48 }}>
+						<View
+							style={{ alignItems: "center", paddingVertical: spacing.jumbo }}
+						>
 							<Ionicons
 								name="grid-outline"
 								size={48}
 								color={colors.textMuted}
 							/>
-							<Text tone="muted" style={{ marginTop: 12 }}>
+							<Text tone="muted" style={{ marginTop: spacing.sm }}>
 								No setups yet. Tap "+ New".
 							</Text>
 						</View>
@@ -127,7 +129,7 @@ export default function SetupsScreen() {
 										style={{
 											flexDirection: "row",
 											alignItems: "center",
-											gap: 12,
+											gap: spacing.sm,
 										}}
 									>
 										<View
@@ -164,8 +166,8 @@ export default function SetupsScreen() {
 									<View
 										style={{
 											flexDirection: "row",
-											gap: 16,
-											marginTop: 12,
+											gap: spacing.md,
+											marginTop: spacing.sm,
 										}}
 									>
 										<InlineStat
@@ -197,7 +199,9 @@ function InlineStat({
 	label: string;
 }) {
 	return (
-		<View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+		<View
+			style={{ flexDirection: "row", alignItems: "center", gap: spacing.xxs }}
+		>
 			<Ionicons name={icon} size={14} color={colors.textMuted} />
 			<Text size="sm" tone="muted">
 				{label}
