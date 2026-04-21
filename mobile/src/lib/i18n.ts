@@ -15,6 +15,8 @@ const en = {
 		sales: "Sales",
 	},
 	home: {
+		greeting: "Hi,",
+		default_name: "Grower",
 		today: "Today",
 		today_subtitle: "At-a-glance farm status",
 		stats_setups: "Setups",
@@ -110,6 +112,8 @@ const tl: typeof en = {
 		sales: "Benta",
 	},
 	home: {
+		greeting: "Kumusta,",
+		default_name: "Magsasaka",
 		today: "Ngayon",
 		today_subtitle: "Mabilis na tanaw ng sakahan",
 		stats_setups: "Setup",

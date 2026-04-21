@@ -1,7 +1,7 @@
-import { colors } from "@/constants/theme";
-import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
 import { TextInput, type TextInputProps } from "react-native";
+import { colors } from "@/constants/theme";
+import { cn } from "@/lib/utils";
 
 interface Props extends TextInputProps {
 	invalid?: boolean;

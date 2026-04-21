@@ -1,5 +1,5 @@
-import { colors } from "@/constants/theme";
 import { Text, View } from "react-native";
+import { colors } from "@/constants/theme";
 
 interface Props {
 	title: string;

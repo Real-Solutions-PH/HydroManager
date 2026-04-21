@@ -1,3 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { router } from "expo-router";
+import { useState } from "react";
+import { Alert, Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -9,11 +14,6 @@ import {
 	type InventoryUnit,
 	inventoryApi,
 } from "@/lib/hydro-api";
-import { Ionicons } from "@expo/vector-icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { router } from "expo-router";
-import { useState } from "react";
-import { Alert, Pressable, ScrollView, View } from "react-native";
 
 const CATEGORIES: InventoryCategory[] = [
 	"seeds",
@@ -189,7 +189,10 @@ export default function NewInventoryItemScreen() {
 function Field({
 	label,
 	children,
-}: { label: string; children: React.ReactNode }) {
+}: {
+	label: string;
+	children: React.ReactNode;
+}) {
 	return (
 		<View style={{ gap: 6, marginBottom: 16 }}>
 			<Text
@@ -209,7 +212,11 @@ function Chip({
 	label,
 	active,
 	onPress,
-}: { label: string; active: boolean; onPress: () => void }) {
+}: {
+	label: string;
+	active: boolean;
+	onPress: () => void;
+}) {
 	return (
 		<Pressable
 			onPress={onPress}

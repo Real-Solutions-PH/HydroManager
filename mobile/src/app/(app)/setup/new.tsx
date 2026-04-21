@@ -1,3 +1,9 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
+import { useState } from "react";
+import { Alert, Image, Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -5,17 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { colors, systemTypes } from "@/constants/theme";
 import {
-	type SetupType,
 	hydroAiApi,
 	photosApi,
+	type SetupType,
 	setupsApi,
 } from "@/lib/hydro-api";
-import { Ionicons } from "@expo/vector-icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import * as ImagePicker from "expo-image-picker";
-import { router } from "expo-router";
-import { useState } from "react";
-import { Alert, Image, Pressable, ScrollView, View } from "react-native";
 
 const TYPES: SetupType[] = ["DFT", "NFT", "DutchBucket", "Kratky", "SNAP"];
 
@@ -261,7 +261,10 @@ export default function NewSetupScreen() {
 function Field({
 	label,
 	children,
-}: { label: string; children: React.ReactNode }) {
+}: {
+	label: string;
+	children: React.ReactNode;
+}) {
 	return (
 		<View style={{ gap: 6, marginBottom: 16 }}>
 			<Text

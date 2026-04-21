@@ -38,7 +38,29 @@ export const confirmPasswordRules = (
 };
 
 export function handleError(err: unknown): string {
+	if (err && typeof err === "object" && "response" in err) {
+		const resp = (err as { response?: { data?: { detail?: unknown } } })
+			.response;
+		const detail = resp?.data?.detail;
+		if (typeof detail === "string") return detail;
+		if (Array.isArray(detail) && detail[0]?.msg) return String(detail[0].msg);
+	}
 	if (err instanceof Error) return err.message;
 	if (typeof err === "string") return err;
 	return "An unexpected error occurred";
+}
+
+export function capitalize(s: string): string {
+	return s.length === 0 ? s : s[0].toUpperCase() + s.slice(1);
+}
+
+export function formatPHP(
+	n: number | null | undefined,
+	fractionDigits = 2,
+): string {
+	const v = typeof n === "number" && Number.isFinite(n) ? n : 0;
+	return `₱${v.toLocaleString("en-PH", {
+		minimumFractionDigits: fractionDigits,
+		maximumFractionDigits: fractionDigits,
+	})}`;
 }

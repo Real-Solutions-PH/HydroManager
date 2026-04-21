@@ -1,8 +1,8 @@
-import { colors } from "@/constants/theme";
-import { cn } from "@/lib/utils";
 import { BlurView } from "expo-blur";
 import type { ReactNode } from "react";
 import { Platform, Pressable, View, type ViewProps } from "react-native";
+import { colors } from "@/constants/theme";
+import { cn } from "@/lib/utils";
 
 interface CardProps extends ViewProps {
 	children: ReactNode;

@@ -1,15 +1,14 @@
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { GradientBackground } from "@/components/ui/gradient-background";
-import { SectionHeader } from "@/components/ui/section-header";
-import { Text } from "@/components/ui/text";
-import { colors, systemTypes } from "@/constants/theme";
-import { setupsApi } from "@/lib/hydro-api";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { useState } from "react";
 import { FlatList, Pressable, View } from "react-native";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { GradientBackground } from "@/components/ui/gradient-background";
+import { Text } from "@/components/ui/text";
+import { colors, systemTypes } from "@/constants/theme";
+import { setupsApi } from "@/lib/hydro-api";
 
 const FILTERS = ["All", "Active", "Archived"] as const;
 type Filter = (typeof FILTERS)[number];

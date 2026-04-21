@@ -1,3 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link, router, useLocalSearchParams } from "expo-router";
+import { Alert, Pressable, ScrollView, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -5,10 +9,6 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
 import { colors, systemTypes } from "@/constants/theme";
 import { batchesApi, setupsApi } from "@/lib/hydro-api";
-import { Ionicons } from "@expo/vector-icons";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, router, useLocalSearchParams } from "expo-router";
-import { Alert, Pressable, ScrollView, View } from "react-native";
 
 export default function SetupDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();

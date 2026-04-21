@@ -1,6 +1,4 @@
-import { colors } from "@/constants/theme";
-import { cn } from "@/lib/utils";
-import { type VariantProps, cva } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 import { forwardRef } from "react";
 import {
 	ActivityIndicator,
@@ -9,6 +7,8 @@ import {
 	Text,
 	View,
 } from "react-native";
+import { colors } from "@/constants/theme";
+import { cn } from "@/lib/utils";
 
 const buttonVariants = cva("flex-row items-center justify-center rounded-xl", {
 	variants: {
@@ -114,7 +114,7 @@ export const Button = forwardRef<
 								{label}
 							</Text>
 						) : (
-							children
+							(children as React.ReactNode)
 						)}
 						{rightIcon}
 					</View>

@@ -1,13 +1,13 @@
+import { LinearGradient } from "expo-linear-gradient";
+import type { ReactNode } from "react";
+import { View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
 	gradientEnd,
 	gradientLocations,
 	gradientStart,
 	gradientStops,
 } from "@/constants/theme";
-import { LinearGradient } from "expo-linear-gradient";
-import type { ReactNode } from "react";
-import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface Props {
 	children: ReactNode;
@@ -19,8 +19,12 @@ export function GradientBackground({ children, withInsets = true }: Props) {
 	return (
 		<View className="flex-1">
 			<LinearGradient
-				colors={gradientStops as unknown as string[]}
-				locations={gradientLocations}
+				colors={
+					gradientStops as unknown as readonly [string, string, ...string[]]
+				}
+				locations={
+					gradientLocations as unknown as readonly [number, number, ...number[]]
+				}
 				start={gradientStart}
 				end={gradientEnd}
 				style={{
@@ -32,7 +36,9 @@ export function GradientBackground({ children, withInsets = true }: Props) {
 				}}
 			/>
 			<LinearGradient
-				colors={["rgba(38,77,56,0.5)", "rgba(26,60,40,0.2)", "transparent"]}
+				colors={
+					["rgba(38,77,56,0.5)", "rgba(26,60,40,0.2)", "transparent"] as const
+				}
 				style={{
 					position: "absolute",
 					top: 0,
