@@ -1,20 +1,21 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "expo-router";
+import { Pressable, ScrollView, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { SectionHeader } from "@/components/ui/section-header";
 import { StatCard } from "@/components/ui/stat-card";
 import { Text } from "@/components/ui/text";
 import { colors, systemTypes } from "@/constants/theme";
-import * as usersDb from "@/lib/db/users";
-import { batchesApi, inventoryApi, setupsApi } from "@/lib/hydro-api";
-import { Ionicons } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "expo-router";
-import { Pressable, ScrollView, View } from "react-native";
+import { batchesApi, inventoryApi, setupsApi, usersApi } from "@/lib/hydro-api";
+import { useT } from "@/lib/i18n";
 
 export default function HomeScreen() {
+	const { t } = useT();
 	const { data: user } = useQuery({
-		queryKey: ["currentUser"],
-		queryFn: () => usersDb.getCachedUser(),
+		queryKey: ["me"],
+		queryFn: () => usersApi.me(),
 	});
 	const setups = useQuery({
 		queryKey: ["setups"],
@@ -53,10 +54,10 @@ export default function HomeScreen() {
 				>
 					<View>
 						<Text size="sm" tone="muted">
-							Kumusta,
+							{t("home.greeting")}
 						</Text>
 						<Text size="xxl" weight="bold">
-							{user?.full_name?.split(" ")[0] ?? "Grower"}
+							{user?.full_name?.split(" ")[0] ?? t("home.default_name")}
 						</Text>
 					</View>
 					<View style={{ flexDirection: "row", gap: 8 }}>

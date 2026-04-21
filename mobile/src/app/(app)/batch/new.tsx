@@ -1,3 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { router, useLocalSearchParams } from "expo-router";
+import { useState } from "react";
+import { Alert, Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -5,11 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { colors, systemTypes } from "@/constants/theme";
 import { batchesApi, cropsApi, setupsApi } from "@/lib/hydro-api";
-import { Ionicons } from "@expo/vector-icons";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
-import { Alert, Pressable, ScrollView, View } from "react-native";
 
 export default function NewBatchScreen() {
 	const { setup: setupParam } = useLocalSearchParams<{ setup?: string }>();
@@ -165,7 +165,9 @@ export default function NewBatchScreen() {
 					<Button
 						label="Start Batch"
 						isLoading={create.isPending}
-						isDisabled={!valid}
+						isDisabled={
+							!valid || create.isPending || setups.isLoading || crops.isLoading
+						}
 						onPress={() => create.mutate()}
 					/>
 					<Button
@@ -182,7 +184,10 @@ export default function NewBatchScreen() {
 function Field({
 	label,
 	children,
-}: { label: string; children: React.ReactNode }) {
+}: {
+	label: string;
+	children: React.ReactNode;
+}) {
 	return (
 		<View style={{ gap: 6, marginBottom: 16 }}>
 			<Text
@@ -202,7 +207,11 @@ function CropChip({
 	label,
 	active,
 	onPress,
-}: { label: string; active: boolean; onPress: () => void }) {
+}: {
+	label: string;
+	active: boolean;
+	onPress: () => void;
+}) {
 	return (
 		<Pressable
 			onPress={onPress}

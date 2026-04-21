@@ -1,3 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "expo-router";
+import { useState } from "react";
+import { FlatList, Pressable, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -5,11 +10,7 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
 import { colors, inventoryCategoryMeta } from "@/constants/theme";
 import { type InventoryCategory, inventoryApi } from "@/lib/hydro-api";
-import { Ionicons } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "expo-router";
-import { useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { capitalize } from "@/lib/utils";
 
 const CATEGORIES: InventoryCategory[] = [
 	"seeds",
@@ -77,7 +78,7 @@ export default function InventoryScreen() {
 						return (
 							<Chip
 								key={c}
-								label={c[0].toUpperCase() + c.slice(1)}
+								label={capitalize(c)}
 								active={category === c}
 								accent={meta.color}
 								onPress={() => setCategory(c)}

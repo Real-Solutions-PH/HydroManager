@@ -1,10 +1,5 @@
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Text } from "@/components/ui/text";
-import { colors } from "@/constants/theme";
-import { hydroAiApi } from "@/lib/hydro-api";
 import { Ionicons } from "@expo/vector-icons";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
 	KeyboardAvoidingView,
@@ -14,15 +9,28 @@ import {
 	ScrollView,
 	View,
 } from "react-native";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
+import { colors } from "@/constants/theme";
+import { hydroAiApi } from "@/lib/hydro-api";
+import { useT } from "@/lib/i18n";
+import { handleError } from "@/lib/utils";
 
 interface Msg {
+	id: string;
 	role: "user" | "assistant";
 	content: string;
 	citations?: { type: string; id: string; label: string }[];
 }
 
+function makeMsgId(): string {
+	return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export function AIChatFab() {
+	const { t } = useT();
 	const [open, setOpen] = useState(false);
+	const qc = useQueryClient();
 	const quota = useQuery({
 		queryKey: ["ai-quota"],
 		queryFn: () => hydroAiApi.quota(),
@@ -31,26 +39,39 @@ export function AIChatFab() {
 	const [input, setInput] = useState("");
 	const [msgs, setMsgs] = useState<Msg[]>([]);
 
+	const quotaReached = quota.data !== undefined && quota.data.remaining <= 0;
+
 	const send = useMutation({
 		mutationFn: (m: string) => hydroAiApi.chat(m),
 		onSuccess: (r) => {
 			setMsgs((prev) => [
 				...prev,
-				{ role: "assistant", content: r.answer, citations: r.citations },
+				{
+					id: makeMsgId(),
+					role: "assistant",
+					content: r.answer,
+					citations: r.citations,
+				},
 			]);
+			qc.invalidateQueries({ queryKey: ["ai-quota"] });
 		},
-		onError: (e: Error) => {
+		onError: (err) => {
 			setMsgs((prev) => [
 				...prev,
-				{ role: "assistant", content: `Error: ${e.message}` },
+				{
+					id: makeMsgId(),
+					role: "assistant",
+					content: `Error: ${handleError(err)}`,
+				},
 			]);
+			qc.invalidateQueries({ queryKey: ["ai-quota"] });
 		},
 	});
 
 	function submit() {
-		if (!input.trim()) return;
+		if (!input.trim() || quotaReached) return;
 		const m = input.trim();
-		setMsgs((p) => [...p, { role: "user", content: m }]);
+		setMsgs((p) => [...p, { id: makeMsgId(), role: "user", content: m }]);
 		setInput("");
 		send.mutate(m);
 	}
@@ -123,9 +144,9 @@ export function AIChatFab() {
 								Tanungin mo — e.g. "Bakit may tip burn ang pechay ko?"
 							</Text>
 						) : null}
-						{msgs.map((m, i) => (
+						{msgs.map((m) => (
 							<View
-								key={`${i}-${m.role}`}
+								key={m.id}
 								style={{
 									alignSelf: m.role === "user" ? "flex-end" : "flex-start",
 									maxWidth: "85%",
@@ -177,6 +198,26 @@ export function AIChatFab() {
 						{send.isPending ? <Text tone="muted">Thinking...</Text> : null}
 					</ScrollView>
 
+					{quotaReached ? (
+						<View
+							style={{
+								paddingHorizontal: 16,
+								paddingVertical: 10,
+								backgroundColor: `${colors.error}1F`,
+								borderTopColor: colors.error,
+								borderTopWidth: 1,
+							}}
+						>
+							<Text size="sm" weight="semibold" style={{ color: colors.error }}>
+								{t("ai.quota_reached")}
+							</Text>
+							<Text size="xs" tone="muted">
+								You've used {quota.data?.used ?? 0}/{quota.data?.limit ?? 0}{" "}
+								messages this period.
+							</Text>
+						</View>
+					) : null}
+
 					<View
 						style={{
 							flexDirection: "row",
@@ -190,13 +231,16 @@ export function AIChatFab() {
 							<Input
 								value={input}
 								onChangeText={setInput}
-								placeholder="Ask about your farm..."
+								placeholder={
+									quotaReached ? t("ai.quota_reached") : t("ai.placeholder")
+								}
 								onSubmitEditing={submit}
+								editable={!quotaReached && !send.isPending}
 							/>
 						</View>
 						<Pressable
 							onPress={submit}
-							disabled={send.isPending || !input.trim()}
+							disabled={send.isPending || !input.trim() || quotaReached}
 							style={{
 								width: 44,
 								height: 44,
@@ -204,7 +248,8 @@ export function AIChatFab() {
 								backgroundColor: colors.buttonSolidBg,
 								alignItems: "center",
 								justifyContent: "center",
-								opacity: send.isPending || !input.trim() ? 0.5 : 1,
+								opacity:
+									send.isPending || !input.trim() || quotaReached ? 0.5 : 1,
 							}}
 						>
 							<Ionicons name="send" size={18} color="#FFFFFF" />

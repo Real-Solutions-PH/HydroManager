@@ -460,6 +460,25 @@ export const paymongoApi = {
 	},
 };
 
+export const passwordApi = {
+	async recover(email: string): Promise<{ message: string }> {
+		const r = await api.post(
+			`${V1}/password-recovery/${encodeURIComponent(email)}`,
+		);
+		return r.data;
+	},
+	async reset(
+		token: string,
+		newPassword: string,
+	): Promise<{ message: string }> {
+		const r = await api.post(`${V1}/reset-password/`, {
+			token,
+			new_password: newPassword,
+		});
+		return r.data;
+	},
+};
+
 export const usersApi = {
 	async me(): Promise<{
 		id: string;

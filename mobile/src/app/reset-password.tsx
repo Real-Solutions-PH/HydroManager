@@ -1,14 +1,14 @@
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Controller, useForm } from "react-hook-form";
+import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { useCustomToast } from "@/hooks/useCustomToast";
-import { api } from "@/lib/auth";
+import { passwordApi } from "@/lib/hydro-api";
 import { confirmPasswordRules, handleError, passwordRules } from "@/lib/utils";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { Controller, useForm } from "react-hook-form";
-import { View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 interface ResetForm {
 	new_password: string;
@@ -34,7 +34,7 @@ export default function ResetPasswordScreen() {
 			return;
 		}
 		try {
-			await api.post("/api/v1/reset-password", { token, new_password });
+			await passwordApi.reset(token, new_password);
 			toast.success("Password reset. Please log in.");
 			router.replace("/login");
 		} catch (err) {

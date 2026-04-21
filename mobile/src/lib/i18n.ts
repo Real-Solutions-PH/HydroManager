@@ -15,6 +15,8 @@ const en = {
 		sales: "Sales",
 	},
 	home: {
+		greeting: "Hi,",
+		default_name: "Grower",
 		today: "Today",
 		today_subtitle: "At-a-glance farm status",
 		stats_setups: "Setups",
@@ -73,6 +75,13 @@ const en = {
 		pro_required:
 			"Sales & COGS tracking is a Pro feature. Upgrade to track revenue and margin.",
 		upgrade: "Upgrade to Pro",
+		delete_confirm_title: "Delete sale?",
+		delete_confirm_body: "Remove sale for {label}?",
+		unnamed_buyer: "unnamed buyer",
+		top_crops_90: "Top crops (90d)",
+		recent: "Recent sales",
+		save: "Save Sale",
+		add_item: "Add item",
 	},
 	ai: {
 		title: "Crop Assistant",
@@ -80,6 +89,7 @@ const en = {
 		send: "Send",
 		quota: "{used}/{limit} used this month",
 		over_quota: "Quota exhausted. Upgrade for more.",
+		quota_reached: "Quota reached",
 	},
 	settings: {
 		title: "Settings",
@@ -88,6 +98,9 @@ const en = {
 		tagalog: "Tagalog",
 		tier: "Tier",
 		upgrade: "Upgrade",
+		logout_title: "Logout?",
+		logout_body: "You'll need to sign in again.",
+		edit_profile: "Edit profile",
 	},
 	actions: {
 		create: "Create",
@@ -96,6 +109,7 @@ const en = {
 		delete: "Delete",
 		archive: "Archive",
 		new: "New",
+		logout: "Logout",
 	},
 };
 
@@ -110,6 +124,8 @@ const tl: typeof en = {
 		sales: "Benta",
 	},
 	home: {
+		greeting: "Kumusta,",
+		default_name: "Magsasaka",
 		today: "Ngayon",
 		today_subtitle: "Mabilis na tanaw ng sakahan",
 		stats_setups: "Setup",
@@ -168,6 +184,13 @@ const tl: typeof en = {
 		pro_required:
 			"Ang Sales & COGS ay Pro na pitsur. Mag-upgrade para masundan ang kita.",
 		upgrade: "Mag-upgrade sa Pro",
+		delete_confirm_title: "Burahin ang benta?",
+		delete_confirm_body: "Alisin ang benta para kay {label}?",
+		unnamed_buyer: "walang pangalan na mamimili",
+		top_crops_90: "Nangungunang pananim (90 araw)",
+		recent: "Mga kamakailang benta",
+		save: "I-save ang Benta",
+		add_item: "Magdagdag ng item",
 	},
 	ai: {
 		title: "Katulong sa Pananim",
@@ -175,6 +198,7 @@ const tl: typeof en = {
 		send: "Ipadala",
 		quota: "{used}/{limit} nagamit ngayong buwan",
 		over_quota: "Naubos na quota. Mag-upgrade.",
+		quota_reached: "Naubos na ang quota",
 	},
 	settings: {
 		title: "Mga Setting",
@@ -183,6 +207,9 @@ const tl: typeof en = {
 		tagalog: "Tagalog",
 		tier: "Antas",
 		upgrade: "Mag-upgrade",
+		logout_title: "Mag-logout?",
+		logout_body: "Kakailanganing mag-sign in muli.",
+		edit_profile: "I-edit ang profile",
 	},
 	actions: {
 		create: "Likhain",
@@ -191,6 +218,7 @@ const tl: typeof en = {
 		delete: "Burahin",
 		archive: "I-archive",
 		new: "Bago",
+		logout: "Mag-logout",
 	},
 };
 

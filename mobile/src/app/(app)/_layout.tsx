@@ -1,10 +1,10 @@
+import { Ionicons } from "@expo/vector-icons";
+import { Redirect, Tabs } from "expo-router";
+import { View } from "react-native";
 import { AIChatFab } from "@/components/ai-chat";
 import { OfflineBanner } from "@/components/offline-banner";
 import { colors } from "@/constants/theme";
 import { useAuthStore } from "@/stores/auth-store";
-import { Ionicons } from "@expo/vector-icons";
-import { Redirect, Tabs } from "expo-router";
-import { View } from "react-native";
 
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
@@ -78,7 +78,6 @@ export default function AppLayout() {
 				/>
 				<Tabs.Screen name="crops" options={{ href: null }} />
 				<Tabs.Screen name="settings" options={{ href: null }} />
-				<Tabs.Screen name="items" options={{ href: null }} />
 				<Tabs.Screen name="inventory-new" options={{ href: null }} />
 				<Tabs.Screen name="sale-new" options={{ href: null }} />
 				<Tabs.Screen name="setup" options={{ href: null }} />

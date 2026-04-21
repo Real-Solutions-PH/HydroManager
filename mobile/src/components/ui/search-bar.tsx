@@ -1,6 +1,6 @@
-import { colors } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { TextInput, View } from "react-native";
+import { colors } from "@/constants/theme";
 
 interface Props {
 	value: string;

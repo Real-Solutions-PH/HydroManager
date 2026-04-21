@@ -1,3 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { FlatList, Pressable, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -5,10 +9,7 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
 import { colors } from "@/constants/theme";
 import { type CropGuide, cropsApi } from "@/lib/hydro-api";
-import { Ionicons } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { capitalize } from "@/lib/utils";
 
 const CATEGORIES = ["leafy", "herb", "fruiting", "other"] as const;
 type Cat = (typeof CATEGORIES)[number];
@@ -48,7 +49,7 @@ export default function CropsScreen() {
 					{CATEGORIES.map((c) => (
 						<Chip
 							key={c}
-							label={c[0].toUpperCase() + c.slice(1)}
+							label={capitalize(c)}
 							active={category === c}
 							accent={CAT_COLOR[c]}
 							onPress={() => setCategory(c)}
