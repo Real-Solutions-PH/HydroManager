@@ -74,7 +74,7 @@ frontend-preview: ## Preview production build locally
 frontend-generate-client: ## Generate TypeScript API client from OpenAPI spec
 	bash scripts/generate-client.sh
 
-frontend-test: ## Run Playwright E2E tests
+fronrend-test: ## Run Playwright E2E tests
 	cd frontend && bunx playwright test
 
 frontend-test-ui: ## Run Playwright tests with UI
