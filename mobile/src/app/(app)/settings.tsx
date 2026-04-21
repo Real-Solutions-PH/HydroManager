@@ -65,9 +65,13 @@ export default function SettingsScreen() {
 	}
 
 	function confirmLogout() {
-		Alert.alert("Logout?", "You'll need to sign in again.", [
-			{ text: "Cancel", style: "cancel" },
-			{ text: "Logout", style: "destructive", onPress: () => logout() },
+		Alert.alert(t("settings.logout_title"), t("settings.logout_body"), [
+			{ text: t("actions.cancel"), style: "cancel" },
+			{
+				text: t("actions.logout"),
+				style: "destructive",
+				onPress: () => logout(),
+			},
 		]);
 	}
 
@@ -196,7 +200,11 @@ export default function SettingsScreen() {
 				</View>
 
 				<View style={{ marginTop: 20 }}>
-					<Button variant="danger" label="Logout" onPress={confirmLogout} />
+					<Button
+						variant="danger"
+						label={t("actions.logout")}
+						onPress={confirmLogout}
+					/>
 				</View>
 			</ScrollView>
 
@@ -216,7 +224,7 @@ export default function SettingsScreen() {
 				>
 					<Card>
 						<Text size="lg" weight="bold" style={{ marginBottom: 12 }}>
-							Edit profile
+							{t("settings.edit_profile")}
 						</Text>
 						<Text
 							size="xs"

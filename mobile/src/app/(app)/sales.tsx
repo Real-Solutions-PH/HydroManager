@@ -49,14 +49,18 @@ export default function SalesScreen() {
 	});
 
 	function confirmDelete(id: string, label: string) {
-		Alert.alert("Delete sale?", `Remove sale for ${label}?`, [
-			{ text: "Cancel", style: "cancel" },
-			{
-				text: "Delete",
-				style: "destructive",
-				onPress: () => del.mutate(id),
-			},
-		]);
+		Alert.alert(
+			t("sales.delete_confirm_title"),
+			t("sales.delete_confirm_body", { label }),
+			[
+				{ text: t("actions.cancel"), style: "cancel" },
+				{
+					text: t("actions.delete"),
+					style: "destructive",
+					onPress: () => del.mutate(id),
+				},
+			],
+		);
 	}
 
 	if (!me.data)
@@ -186,7 +190,7 @@ export default function SalesScreen() {
 						{topCrops.length > 0 ? (
 							<Card>
 								<Text size="lg" weight="bold" style={{ marginBottom: 8 }}>
-									Top crops (90d)
+									{t("sales.top_crops_90")}
 								</Text>
 								{topCrops.map((c) => (
 									<View
@@ -208,7 +212,7 @@ export default function SalesScreen() {
 
 				<View style={{ padding: 16, gap: 10 }}>
 					<Text size="lg" weight="bold">
-						Recent sales
+						{t("sales.recent")}
 					</Text>
 					<FlatList
 						data={sales.data?.data ?? []}
@@ -226,7 +230,7 @@ export default function SalesScreen() {
 								>
 									<View style={{ flex: 1 }}>
 										<Text weight="semibold">
-											{item.buyer_label ?? "Unnamed buyer"}
+											{item.buyer_label ?? t("sales.unnamed_buyer")}
 										</Text>
 										<Text size="xs" tone="muted">
 											{new Date(item.sold_at).toLocaleDateString()} ·{" "}
@@ -255,7 +259,7 @@ export default function SalesScreen() {
 											onPress={() =>
 												confirmDelete(
 													item.id,
-													item.buyer_label ?? "unnamed buyer",
+													item.buyer_label ?? t("sales.unnamed_buyer"),
 												)
 											}
 											hitSlop={10}

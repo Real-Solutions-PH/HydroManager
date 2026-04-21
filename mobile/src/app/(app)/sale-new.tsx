@@ -15,6 +15,7 @@ import {
 	type SaleChannel,
 	salesApi,
 } from "@/lib/hydro-api";
+import { useT } from "@/lib/i18n";
 import { formatPHP, handleError } from "@/lib/utils";
 
 const CHANNELS: SaleChannel[] = [
@@ -45,6 +46,7 @@ function newLine(): LineItem {
 }
 
 export default function NewSaleScreen() {
+	const { t } = useT();
 	const qc = useQueryClient();
 	const toast = useCustomToast();
 	const [buyer, setBuyer] = useState("");
@@ -186,7 +188,7 @@ export default function NewSaleScreen() {
 						>
 							<Ionicons name="add" size={16} color={colors.text} />
 							<Text size="sm" weight="semibold">
-								Add item
+								{t("sales.add_item")}
 							</Text>
 						</Pressable>
 					</View>
@@ -267,14 +269,14 @@ export default function NewSaleScreen() {
 
 				<View style={{ gap: 8, marginTop: 20 }}>
 					<Button
-						label="Save Sale"
+						label={t("sales.save")}
 						isLoading={create.isPending}
 						isDisabled={!allValid}
 						onPress={() => create.mutate()}
 					/>
 					<Button
 						variant="ghost"
-						label="Cancel"
+						label={t("actions.cancel")}
 						onPress={() => router.back()}
 					/>
 				</View>

@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { colors } from "@/constants/theme";
 import { hydroAiApi } from "@/lib/hydro-api";
+import { useT } from "@/lib/i18n";
 import { handleError } from "@/lib/utils";
 
 interface Msg {
@@ -27,6 +28,7 @@ function makeMsgId(): string {
 }
 
 export function AIChatFab() {
+	const { t } = useT();
 	const [open, setOpen] = useState(false);
 	const qc = useQueryClient();
 	const quota = useQuery({
@@ -207,7 +209,7 @@ export function AIChatFab() {
 							}}
 						>
 							<Text size="sm" weight="semibold" style={{ color: colors.error }}>
-								Quota reached
+								{t("ai.quota_reached")}
 							</Text>
 							<Text size="xs" tone="muted">
 								You've used {quota.data?.used ?? 0}/{quota.data?.limit ?? 0}{" "}
@@ -230,10 +232,10 @@ export function AIChatFab() {
 								value={input}
 								onChangeText={setInput}
 								placeholder={
-									quotaReached ? "Quota reached" : "Ask about your farm..."
+									quotaReached ? t("ai.quota_reached") : t("ai.placeholder")
 								}
 								onSubmitEditing={submit}
-								editable={!quotaReached}
+								editable={!quotaReached && !send.isPending}
 							/>
 						</View>
 						<Pressable
