@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { colors } from "@/constants/theme";
+import { colors, spacing } from "@/constants/theme";
 import { batchesApi, MILESTONE_ORDER, type Milestone } from "@/lib/hydro-api";
 
 const ALL_TARGETS: Milestone[] = [...MILESTONE_ORDER, "Failed"];
@@ -103,13 +103,18 @@ export default function BatchDetailScreen() {
 
 	return (
 		<GradientBackground>
-			<ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+			<ScrollView
+				contentContainerStyle={{
+					padding: spacing.md,
+					paddingBottom: spacing.xxxl,
+				}}
+			>
 				<View
 					style={{
 						flexDirection: "row",
 						alignItems: "center",
-						gap: 8,
-						marginBottom: 8,
+						gap: spacing.xs,
+						marginBottom: spacing.xs,
 					}}
 				>
 					<Pressable onPress={() => router.back()}>
@@ -133,12 +138,14 @@ export default function BatchDetailScreen() {
 						style={{
 							textTransform: "uppercase",
 							letterSpacing: 0.5,
-							marginBottom: 8,
+							marginBottom: spacing.xs,
 						}}
 					>
 						Current distribution
 					</Text>
-					<View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+					<View
+						style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.xs }}
+					>
 						{MILESTONE_ORDER.filter((m) => (byMs.get(m) ?? 0) > 0).map((m) => (
 							<Badge
 								key={m}
@@ -163,7 +170,7 @@ export default function BatchDetailScreen() {
 					<Text size="lg" weight="bold">
 						Record Transition
 					</Text>
-					<Text size="xs" tone="muted" style={{ marginBottom: 12 }}>
+					<Text size="xs" tone="muted" style={{ marginBottom: spacing.sm }}>
 						Nothing auto-advances. You approve each step.
 					</Text>
 
@@ -173,7 +180,7 @@ export default function BatchDetailScreen() {
 							flexDirection: "row",
 							flexWrap: "wrap",
 							gap: 6,
-							marginBottom: 12,
+							marginBottom: spacing.sm,
 						}}
 					>
 						{MILESTONE_ORDER.map((m) => {
@@ -185,8 +192,8 @@ export default function BatchDetailScreen() {
 									disabled={!has}
 									onPress={() => setFrom(m)}
 									style={{
-										paddingHorizontal: 8,
-										paddingVertical: 4,
+										paddingHorizontal: spacing.xs,
+										paddingVertical: spacing.xxs,
 										borderRadius: 999,
 										borderWidth: 1,
 										borderColor: active ? colors.primaryLight : colors.border,
@@ -217,7 +224,7 @@ export default function BatchDetailScreen() {
 							flexDirection: "row",
 							flexWrap: "wrap",
 							gap: 6,
-							marginBottom: 12,
+							marginBottom: spacing.sm,
 						}}
 					>
 						{ALL_TARGETS.map((m) => {
@@ -229,8 +236,8 @@ export default function BatchDetailScreen() {
 									key={m}
 									onPress={() => setTo(m)}
 									style={{
-										paddingHorizontal: 8,
-										paddingVertical: 4,
+										paddingHorizontal: spacing.xs,
+										paddingVertical: spacing.xxs,
 										borderRadius: 999,
 										borderWidth: 1,
 										borderColor: active ? col : colors.border,
@@ -280,7 +287,7 @@ export default function BatchDetailScreen() {
 					<Text size="lg" weight="bold">
 						Record Harvest
 					</Text>
-					<Text size="xs" tone="muted" style={{ marginBottom: 12 }}>
+					<Text size="xs" tone="muted" style={{ marginBottom: spacing.sm }}>
 						Available in HarvestReady: {byMs.get("HarvestReady") ?? 0}
 					</Text>
 					<View style={{ flexDirection: "row", gap: 10 }}>
@@ -307,7 +314,7 @@ export default function BatchDetailScreen() {
 				<View style={{ height: 20 }} />
 
 				<Card>
-					<Text size="lg" weight="bold" style={{ marginBottom: 8 }}>
+					<Text size="lg" weight="bold" style={{ marginBottom: spacing.xs }}>
 						Recent Transitions
 					</Text>
 					{b.recent_transitions.length === 0 ? (
@@ -323,7 +330,7 @@ export default function BatchDetailScreen() {
 										borderWidth: 1,
 										borderColor: colors.borderLight,
 										borderRadius: 12,
-										padding: 12,
+										padding: spacing.sm,
 									}}
 								>
 									<Text size="sm" weight="semibold">
@@ -333,7 +340,7 @@ export default function BatchDetailScreen() {
 										{new Date(t.occurred_at).toLocaleString()}
 									</Text>
 									{t.notes ? (
-										<Text size="xs" style={{ marginTop: 4 }}>
+										<Text size="xs" style={{ marginTop: spacing.xxs }}>
 											{t.notes}
 										</Text>
 									) : null}

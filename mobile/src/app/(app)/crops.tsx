@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
-import { colors } from "@/constants/theme";
+import { colors, spacing } from "@/constants/theme";
 import { type CropGuide, cropsApi } from "@/lib/hydro-api";
 import { capitalize } from "@/lib/utils";
 
@@ -31,7 +31,13 @@ export default function CropsScreen() {
 
 	return (
 		<GradientBackground>
-			<View style={{ paddingHorizontal: 16, paddingTop: 8, gap: 12 }}>
+			<View
+				style={{
+					paddingHorizontal: spacing.md,
+					paddingTop: spacing.xs,
+					gap: spacing.sm,
+				}}
+			>
 				<Text size="xxl" weight="bold">
 					Crops
 				</Text>
@@ -40,7 +46,9 @@ export default function CropsScreen() {
 					onChangeText={setQuery}
 					placeholder="Hanapin sa english or tagalog"
 				/>
-				<View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+				<View
+					style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.xs }}
+				>
 					<Chip
 						label="All"
 						active={category === null}
@@ -60,18 +68,20 @@ export default function CropsScreen() {
 			<FlatList
 				data={data?.data ?? []}
 				keyExtractor={(c) => c.id}
-				contentContainerStyle={{ padding: 16, gap: 12 }}
+				contentContainerStyle={{ padding: spacing.md, gap: spacing.sm }}
 				ListEmptyComponent={
 					isLoading ? (
 						<Text tone="muted">Loading...</Text>
 					) : (
-						<View style={{ alignItems: "center", paddingVertical: 48 }}>
+						<View
+							style={{ alignItems: "center", paddingVertical: spacing.jumbo }}
+						>
 							<Ionicons
 								name="leaf-outline"
 								size={48}
 								color={colors.textMuted}
 							/>
-							<Text tone="muted" style={{ marginTop: 12 }}>
+							<Text tone="muted" style={{ marginTop: spacing.sm }}>
 								No crops matched.
 							</Text>
 						</View>
@@ -99,7 +109,7 @@ function Chip({
 		<Pressable
 			onPress={onPress}
 			style={{
-				paddingHorizontal: 12,
+				paddingHorizontal: spacing.sm,
 				paddingVertical: 6,
 				borderRadius: 999,
 				borderWidth: 1,
@@ -125,7 +135,7 @@ function CropRow({ crop }: { crop: CropGuide }) {
 				style={{
 					flexDirection: "row",
 					alignItems: "center",
-					gap: 12,
+					gap: spacing.sm,
 				}}
 			>
 				<View
@@ -158,8 +168,8 @@ function CropRow({ crop }: { crop: CropGuide }) {
 				style={{
 					flexDirection: "row",
 					flexWrap: "wrap",
-					gap: 16,
-					marginTop: 12,
+					gap: spacing.md,
+					marginTop: spacing.sm,
 				}}
 			>
 				<Stat label="pH" value={`${crop.ph_min}-${crop.ph_max}`} />
@@ -168,7 +178,7 @@ function CropRow({ crop }: { crop: CropGuide }) {
 					<Stat label="Yield" value={`${crop.typical_yield_grams}g`} />
 				) : null}
 			</View>
-			<Text size="xs" tone="muted" style={{ marginTop: 8 }}>
+			<Text size="xs" tone="muted" style={{ marginTop: spacing.xs }}>
 				Setups: {crop.recommended_setups}
 			</Text>
 		</Card>

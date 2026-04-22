@@ -6,7 +6,7 @@ import { Providers } from "@/components/providers";
 export default function RootLayout() {
 	return (
 		<Providers>
-			<StatusBar style="auto" />
+			<StatusBar style="light" translucent />
 			<Stack screenOptions={{ headerShown: false }}>
 				<Stack.Screen name="(app)" />
 				<Stack.Screen name="login" />

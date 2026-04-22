@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { colors } from "@/constants/theme";
+import { colors, spacing } from "@/constants/theme";
 import { hydroAiApi } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
 import { handleError } from "@/lib/utils";
@@ -114,8 +114,8 @@ export function AIChatFab() {
 							flexDirection: "row",
 							alignItems: "center",
 							justifyContent: "space-between",
-							padding: 16,
-							paddingTop: 48,
+							padding: spacing.md,
+							paddingTop: spacing.jumbo,
 							borderBottomColor: colors.borderLight,
 							borderBottomWidth: 1,
 						}}
@@ -137,10 +137,13 @@ export function AIChatFab() {
 
 					<ScrollView
 						style={{ flex: 1 }}
-						contentContainerStyle={{ padding: 16, gap: 10 }}
+						contentContainerStyle={{ padding: spacing.md, gap: 10 }}
 					>
 						{msgs.length === 0 ? (
-							<Text tone="muted" style={{ textAlign: "center", marginTop: 40 }}>
+							<Text
+								tone="muted"
+								style={{ textAlign: "center", marginTop: spacing.xxxl }}
+							>
 								Tanungin mo — e.g. "Bakit may tip burn ang pechay ko?"
 							</Text>
 						) : null}
@@ -172,7 +175,7 @@ export function AIChatFab() {
 										style={{
 											flexDirection: "row",
 											flexWrap: "wrap",
-											gap: 4,
+											gap: spacing.xxs,
 											marginTop: 6,
 										}}
 									>
@@ -180,7 +183,7 @@ export function AIChatFab() {
 											<View
 												key={`${c.type}-${c.id}`}
 												style={{
-													paddingHorizontal: 8,
+													paddingHorizontal: spacing.xs,
 													paddingVertical: 2,
 													borderRadius: 999,
 													backgroundColor: colors.glass,
@@ -201,7 +204,7 @@ export function AIChatFab() {
 					{quotaReached ? (
 						<View
 							style={{
-								paddingHorizontal: 16,
+								paddingHorizontal: spacing.md,
 								paddingVertical: 10,
 								backgroundColor: `${colors.error}1F`,
 								borderTopColor: colors.error,
@@ -221,8 +224,8 @@ export function AIChatFab() {
 					<View
 						style={{
 							flexDirection: "row",
-							padding: 12,
-							gap: 8,
+							padding: spacing.sm,
+							gap: spacing.xs,
 							borderTopColor: colors.borderLight,
 							borderTopWidth: 1,
 						}}

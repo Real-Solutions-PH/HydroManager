@@ -1,11 +1,12 @@
 import { Link } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
+import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
+import { colors, spacing } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
 import {
 	confirmPasswordRules,
@@ -38,13 +39,19 @@ export default function SignupScreen() {
 	});
 
 	return (
-		<SafeAreaView className="flex-1 bg-background">
+		<GradientBackground>
 			<KeyboardAvoidingView
 				behavior={Platform.OS === "ios" ? "padding" : undefined}
-				className="flex-1 justify-center px-6"
+				style={{
+					flex: 1,
+					justifyContent: "center",
+					paddingHorizontal: spacing.xl,
+				}}
 			>
-				<View className="gap-6">
-					<Text className="text-3xl font-bold">Create Account</Text>
+				<View style={{ gap: spacing.lg }}>
+					<Text size="xxxl" weight="bold">
+						Create Account
+					</Text>
 
 					<Controller
 						control={control}
@@ -126,12 +133,12 @@ export default function SignupScreen() {
 					/>
 
 					<Link href="/login">
-						<Text className="text-sm text-primary">
+						<Text size="sm" style={{ color: colors.primaryLight }}>
 							Already have an account? Log in
 						</Text>
 					</Link>
 				</View>
 			</KeyboardAvoidingView>
-		</SafeAreaView>
+		</GradientBackground>
 	);
 }

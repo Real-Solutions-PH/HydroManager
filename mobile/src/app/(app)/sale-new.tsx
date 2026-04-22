@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { colors } from "@/constants/theme";
+import { colors, spacing } from "@/constants/theme";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import {
 	type PaymentStatus,
@@ -104,13 +104,18 @@ export default function NewSaleScreen() {
 
 	return (
 		<GradientBackground>
-			<ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+			<ScrollView
+				contentContainerStyle={{
+					padding: spacing.md,
+					paddingBottom: spacing.xxxl,
+				}}
+			>
 				<View
 					style={{
 						flexDirection: "row",
 						alignItems: "center",
-						gap: 8,
-						marginBottom: 12,
+						gap: spacing.xs,
+						marginBottom: spacing.sm,
 					}}
 				>
 					<Pressable onPress={() => router.back()}>
@@ -130,7 +135,13 @@ export default function NewSaleScreen() {
 						/>
 					</Field>
 					<Field label="Channel">
-						<View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+						<View
+							style={{
+								flexDirection: "row",
+								flexWrap: "wrap",
+								gap: spacing.xs,
+							}}
+						>
 							{CHANNELS.map((c) => (
 								<Chip
 									key={c}
@@ -142,7 +153,13 @@ export default function NewSaleScreen() {
 						</View>
 					</Field>
 					<Field label="Payment status">
-						<View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+						<View
+							style={{
+								flexDirection: "row",
+								flexWrap: "wrap",
+								gap: spacing.xs,
+							}}
+						>
 							{PAYMENT_STATUSES.map((p) => (
 								<Chip
 									key={p}
@@ -162,7 +179,7 @@ export default function NewSaleScreen() {
 					</Field>
 				</Card>
 
-				<View style={{ marginTop: 16, gap: 12 }}>
+				<View style={{ marginTop: spacing.md, gap: spacing.sm }}>
 					<View
 						style={{
 							flexDirection: "row",
@@ -178,7 +195,7 @@ export default function NewSaleScreen() {
 							style={{
 								flexDirection: "row",
 								alignItems: "center",
-								gap: 4,
+								gap: spacing.xxs,
 								paddingHorizontal: 10,
 								paddingVertical: 6,
 								borderRadius: 8,
@@ -200,7 +217,7 @@ export default function NewSaleScreen() {
 									flexDirection: "row",
 									justifyContent: "space-between",
 									alignItems: "center",
-									marginBottom: 8,
+									marginBottom: spacing.xs,
 								}}
 							>
 								<Text size="sm" weight="semibold" tone="muted">
@@ -223,7 +240,7 @@ export default function NewSaleScreen() {
 									placeholder="e.g. Pechay"
 								/>
 							</Field>
-							<View style={{ flexDirection: "row", gap: 8 }}>
+							<View style={{ flexDirection: "row", gap: spacing.xs }}>
 								<View style={{ flex: 1 }}>
 									<Field label="Quantity">
 										<Input
@@ -255,7 +272,7 @@ export default function NewSaleScreen() {
 					))}
 				</View>
 
-				<Card style={{ marginTop: 16 }}>
+				<Card style={{ marginTop: spacing.md }}>
 					<View
 						style={{
 							flexDirection: "row",
@@ -267,7 +284,7 @@ export default function NewSaleScreen() {
 					</View>
 				</Card>
 
-				<View style={{ gap: 8, marginTop: 20 }}>
+				<View style={{ gap: spacing.xs, marginTop: spacing.lg }}>
 					<Button
 						label={t("sales.save")}
 						isLoading={create.isPending}
@@ -298,7 +315,7 @@ function Chip({
 		<Pressable
 			onPress={onPress}
 			style={{
-				paddingHorizontal: 12,
+				paddingHorizontal: spacing.sm,
 				paddingVertical: 6,
 				borderRadius: 999,
 				borderWidth: 1,

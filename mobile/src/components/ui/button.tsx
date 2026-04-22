@@ -32,7 +32,7 @@ const buttonVariants = cva("flex-row items-center justify-center rounded-xl", {
 
 const VARIANT_BG: Record<string, string> = {
 	solid: colors.buttonSolidBg,
-	outline: "transparent",
+	outline: colors.glass,
 	ghost: "transparent",
 	danger: "#DC2626",
 	destructive: "#DC2626",

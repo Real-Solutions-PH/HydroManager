@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
-import { colors } from "@/constants/theme";
+import { colors, spacing } from "@/constants/theme";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { paymongoApi, salesApi, usersApi } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
@@ -77,12 +77,12 @@ export default function SalesScreen() {
 	if (!isPro) {
 		return (
 			<GradientBackground>
-				<View style={{ padding: 16, paddingTop: 8 }}>
+				<View style={{ padding: spacing.md, paddingTop: spacing.xs }}>
 					<Text size="xxl" weight="bold">
 						{t("sales.title")}
 					</Text>
 				</View>
-				<View style={{ padding: 16 }}>
+				<View style={{ padding: spacing.md }}>
 					<Card>
 						<Ionicons
 							name="lock-closed"
@@ -92,11 +92,11 @@ export default function SalesScreen() {
 						<Text
 							size="lg"
 							weight="bold"
-							style={{ marginTop: 12, marginBottom: 8 }}
+							style={{ marginTop: spacing.sm, marginBottom: spacing.xs }}
 						>
 							Pro-only feature
 						</Text>
-						<Text tone="subtle" style={{ marginBottom: 16 }}>
+						<Text tone="subtle" style={{ marginBottom: spacing.md }}>
 							{t("sales.pro_required")}
 						</Text>
 						<Button
@@ -125,14 +125,14 @@ export default function SalesScreen() {
 
 	return (
 		<GradientBackground>
-			<ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+			<ScrollView contentContainerStyle={{ paddingBottom: spacing.xxxl }}>
 				<View
 					style={{
 						flexDirection: "row",
 						justifyContent: "space-between",
 						alignItems: "center",
-						padding: 16,
-						paddingTop: 8,
+						padding: spacing.md,
+						paddingTop: spacing.xs,
 					}}
 				>
 					<Text size="xxl" weight="bold">
@@ -143,10 +143,10 @@ export default function SalesScreen() {
 							style={{
 								flexDirection: "row",
 								alignItems: "center",
-								gap: 4,
+								gap: spacing.xxs,
 								backgroundColor: colors.buttonSolidBg,
-								paddingHorizontal: 12,
-								paddingVertical: 8,
+								paddingHorizontal: spacing.sm,
+								paddingVertical: spacing.xs,
 								borderRadius: 12,
 							}}
 						>
@@ -157,7 +157,7 @@ export default function SalesScreen() {
 				</View>
 
 				{d ? (
-					<View style={{ paddingHorizontal: 16, gap: 12 }}>
+					<View style={{ paddingHorizontal: spacing.md, gap: spacing.sm }}>
 						<Card>
 							<Text
 								size="xs"
@@ -171,7 +171,7 @@ export default function SalesScreen() {
 								{netMargin.toFixed(1)}%
 							</Text>
 						</Card>
-						<View style={{ flexDirection: "row", gap: 12 }}>
+						<View style={{ flexDirection: "row", gap: spacing.sm }}>
 							<MiniStat
 								label={t("sales.gross_month")}
 								value={formatPHP(grossMonth)}
@@ -189,7 +189,11 @@ export default function SalesScreen() {
 
 						{topCrops.length > 0 ? (
 							<Card>
-								<Text size="lg" weight="bold" style={{ marginBottom: 8 }}>
+								<Text
+									size="lg"
+									weight="bold"
+									style={{ marginBottom: spacing.xs }}
+								>
 									{t("sales.top_crops_90")}
 								</Text>
 								{topCrops.map((c) => (
@@ -210,7 +214,7 @@ export default function SalesScreen() {
 					</View>
 				) : null}
 
-				<View style={{ padding: 16, gap: 10 }}>
+				<View style={{ padding: spacing.md, gap: 10 }}>
 					<Text size="lg" weight="bold">
 						{t("sales.recent")}
 					</Text>
@@ -241,7 +245,7 @@ export default function SalesScreen() {
 										style={{
 											flexDirection: "row",
 											alignItems: "center",
-											gap: 8,
+											gap: spacing.xs,
 										}}
 									>
 										<Badge
@@ -273,7 +277,7 @@ export default function SalesScreen() {
 										</Pressable>
 									</View>
 								</View>
-								<View style={{ marginTop: 8, gap: 4 }}>
+								<View style={{ marginTop: spacing.xs, gap: spacing.xxs }}>
 									{item.items.map((it) => (
 										<Text key={it.id} size="sm" tone="subtle">
 											{it.crop_name} — {it.quantity} {it.unit} ×{" "}
@@ -303,7 +307,7 @@ function MiniStat({
 		<View
 			style={{
 				flex: fullWidth ? undefined : 1,
-				padding: 16,
+				padding: spacing.md,
 				backgroundColor: colors.surfaceVariant,
 				borderWidth: 1,
 				borderColor: colors.border,

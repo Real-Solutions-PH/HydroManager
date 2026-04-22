@@ -15,7 +15,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { colors } from "@/constants/theme";
+import { colors, spacing } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { paymongoApi, usersApi } from "@/lib/hydro-api";
@@ -77,13 +77,18 @@ export default function SettingsScreen() {
 
 	return (
 		<GradientBackground>
-			<ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+			<ScrollView
+				contentContainerStyle={{
+					padding: spacing.md,
+					paddingBottom: spacing.xxxl,
+				}}
+			>
 				<View
 					style={{
 						flexDirection: "row",
 						alignItems: "center",
-						gap: 8,
-						marginBottom: 16,
+						gap: spacing.xs,
+						marginBottom: spacing.md,
 					}}
 				>
 					<Pressable onPress={() => router.back()}>
@@ -125,14 +130,14 @@ export default function SettingsScreen() {
 						style={{
 							flexDirection: "row",
 							alignItems: "center",
-							gap: 8,
+							gap: spacing.xs,
 							marginTop: 10,
 						}}
 					>
 						<View
 							style={{
-								paddingHorizontal: 12,
-								paddingVertical: 4,
+								paddingHorizontal: spacing.sm,
+								paddingVertical: spacing.xxs,
 								borderRadius: 999,
 								backgroundColor: `${colors.primaryLight}26`,
 							}}
@@ -149,7 +154,7 @@ export default function SettingsScreen() {
 				</Card>
 
 				{me.data?.tier !== "pro" ? (
-					<View style={{ gap: 8, marginTop: 16 }}>
+					<View style={{ gap: spacing.xs, marginTop: spacing.md }}>
 						{me.data?.tier === "free" ? (
 							<Button
 								label={`Upgrade to Grower (${formatPHP(199, 0)}/mo)`}
@@ -164,7 +169,7 @@ export default function SettingsScreen() {
 					</View>
 				) : null}
 
-				<View style={{ marginTop: 20 }}>
+				<View style={{ marginTop: spacing.lg }}>
 					<Text
 						size="xs"
 						weight="semibold"
@@ -172,7 +177,7 @@ export default function SettingsScreen() {
 						style={{
 							textTransform: "uppercase",
 							letterSpacing: 0.5,
-							marginBottom: 8,
+							marginBottom: spacing.xs,
 						}}
 					>
 						{t("settings.language")}
@@ -199,7 +204,7 @@ export default function SettingsScreen() {
 					</Card>
 				</View>
 
-				<View style={{ marginTop: 20 }}>
+				<View style={{ marginTop: spacing.lg }}>
 					<Button
 						variant="danger"
 						label={t("actions.logout")}
@@ -219,11 +224,11 @@ export default function SettingsScreen() {
 						flex: 1,
 						backgroundColor: "rgba(0,0,0,0.5)",
 						justifyContent: "center",
-						padding: 20,
+						padding: spacing.lg,
 					}}
 				>
 					<Card>
-						<Text size="lg" weight="bold" style={{ marginBottom: 12 }}>
+						<Text size="lg" weight="bold" style={{ marginBottom: spacing.sm }}>
 							{t("settings.edit_profile")}
 						</Text>
 						<Text
@@ -246,8 +251,8 @@ export default function SettingsScreen() {
 						<View
 							style={{
 								flexDirection: "row",
-								gap: 8,
-								marginTop: 16,
+								gap: spacing.xs,
+								marginTop: spacing.md,
 							}}
 						>
 							<View style={{ flex: 1 }}>
@@ -287,7 +292,7 @@ function LocaleBtn({
 			onPress={onPress}
 			style={{
 				flex: 1,
-				paddingVertical: 12,
+				paddingVertical: spacing.sm,
 				borderRadius: 12,
 				borderWidth: 1,
 				borderColor: active ? colors.primaryLight : colors.border,
