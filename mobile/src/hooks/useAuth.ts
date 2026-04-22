@@ -88,6 +88,11 @@ export function useAuth() {
 	});
 
 	async function logout() {
+		try {
+			await api.post("/api/v1/logout");
+		} catch {
+			// Network/401 — proceed with local cleanup anyway
+		}
 		await clearAccessToken();
 		useAuthStore.getState().clearAuth();
 		usersDb.clearUserCache();
