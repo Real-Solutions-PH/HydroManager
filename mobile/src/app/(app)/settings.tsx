@@ -6,6 +6,7 @@ import {
 	Alert,
 	Linking,
 	Modal,
+	Platform,
 	Pressable,
 	ScrollView,
 	View,
@@ -65,6 +66,13 @@ export default function SettingsScreen() {
 	}
 
 	function confirmLogout() {
+		if (Platform.OS === "web") {
+			const ok = globalThis.window?.confirm?.(
+				`${t("settings.logout_title")}\n\n${t("settings.logout_body")}`,
+			);
+			if (ok) logout();
+			return;
+		}
 		Alert.alert(t("settings.logout_title"), t("settings.logout_body"), [
 			{ text: t("actions.cancel"), style: "cancel" },
 			{
