@@ -18,7 +18,6 @@ function tabIcon(name: IoniconName, focused: boolean, color: string) {
 const HIDDEN_TAB = {
 	href: null,
 	tabBarItemStyle: { display: "none" as const },
-	tabBarButton: () => null,
 } as const;
 
 export default function AppLayout() {
