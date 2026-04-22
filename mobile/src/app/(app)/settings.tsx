@@ -80,7 +80,7 @@ export default function SettingsScreen() {
 			<ScrollView
 				contentContainerStyle={{
 					padding: spacing.md,
-					paddingBottom: spacing.xxxl,
+					paddingBottom: 120,
 				}}
 			>
 				<View
@@ -227,7 +227,10 @@ export default function SettingsScreen() {
 						padding: spacing.lg,
 					}}
 				>
-					<Card>
+					<Card
+						variant="outlined"
+						style={{ backgroundColor: colors.bgMid }}
+					>
 						<Text size="lg" weight="bold" style={{ marginBottom: spacing.sm }}>
 							{t("settings.edit_profile")}
 						</Text>
