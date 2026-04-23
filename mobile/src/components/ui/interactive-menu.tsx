@@ -58,7 +58,7 @@ function MenuItem({ item, isActive, accentColor, onPress }: MenuItemProps) {
 		transform: [{ translateY: bounce.value }],
 	}));
 
-	const iconBoxStyle = useAnimatedStyle(() => ({
+	const bubbleStyle = useAnimatedStyle(() => ({
 		borderColor: interpolateColor(
 			progress.value,
 			[0, 1],
@@ -91,14 +91,14 @@ function MenuItem({ item, isActive, accentColor, onPress }: MenuItemProps) {
 			accessibilityLabel={item.label}
 			hitSlop={8}
 		>
-			<Animated.View style={[styles.iconBox, iconBoxStyle]}>
+			<Animated.View style={[styles.bubble, bubbleStyle]}>
 				<Animated.View style={iconBounceStyle}>
 					<Icon size={ICON_SIZE} color={iconColor} strokeWidth={2.2} />
 				</Animated.View>
+				<Animated.Text numberOfLines={1} style={[styles.label, labelStyle]}>
+					{item.label}
+				</Animated.Text>
 			</Animated.View>
-			<Animated.Text numberOfLines={1} style={[styles.label, labelStyle]}>
-				{item.label}
-			</Animated.Text>
 		</Pressable>
 	);
 }
@@ -163,13 +163,13 @@ const styles = StyleSheet.create({
 		paddingVertical: spacing.xxs,
 		paddingHorizontal: spacing.xxs,
 	},
-	iconBox: {
-		paddingHorizontal: spacing.sm,
-		paddingVertical: spacing.xxs,
-		borderRadius: radii.md,
-		borderWidth: 1,
+	bubble: {
 		alignItems: "center",
 		justifyContent: "center",
+		paddingHorizontal: spacing.sm,
+		paddingVertical: spacing.xs,
+		borderRadius: radii.md,
+		borderWidth: 1,
 	},
 	label: {
 		fontSize: 11,
