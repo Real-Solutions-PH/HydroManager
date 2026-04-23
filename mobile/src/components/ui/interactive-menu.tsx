@@ -1,7 +1,8 @@
 import type { LucideIcon } from "lucide-react-native";
-import { useEffect, useRef, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 import Animated, {
+	interpolateColor,
 	useAnimatedStyle,
 	useSharedValue,
 	withSequence,
@@ -26,7 +27,7 @@ export interface InteractiveMenuProps {
 
 const DEFAULT_ACCENT = colors.accent;
 const ICON_SIZE = 22;
-const LABEL_ANIM_MS = 220;
+const ANIM_MS = 220;
 
 interface MenuItemProps {
 	item: InteractiveMenuItem;
@@ -36,13 +37,11 @@ interface MenuItemProps {
 }
 
 function MenuItem({ item, isActive, accentColor, onPress }: MenuItemProps) {
-	const [labelWidth, setLabelWidth] = useState(0);
 	const bounce = useSharedValue(0);
 	const progress = useSharedValue(isActive ? 1 : 0);
-	const measuredRef = useRef(false);
 
 	useEffect(() => {
-		progress.value = withTiming(isActive ? 1 : 0, { duration: LABEL_ANIM_MS });
+		progress.value = withTiming(isActive ? 1 : 0, { duration: ANIM_MS });
 	}, [isActive, progress]);
 
 	const handlePress = () => {
@@ -55,19 +54,29 @@ function MenuItem({ item, isActive, accentColor, onPress }: MenuItemProps) {
 		onPress();
 	};
 
-	const iconStyle = useAnimatedStyle(() => ({
+	const iconBounceStyle = useAnimatedStyle(() => ({
 		transform: [{ translateY: bounce.value }],
 	}));
 
-	const labelStyle = useAnimatedStyle(() => ({
-		opacity: progress.value,
-		maxWidth: progress.value * (labelWidth || 120),
-		marginLeft: progress.value * 6,
+	const iconBoxStyle = useAnimatedStyle(() => ({
+		borderColor: interpolateColor(
+			progress.value,
+			[0, 1],
+			["rgba(255,255,255,0)", colors.border],
+		),
+		backgroundColor: interpolateColor(
+			progress.value,
+			[0, 1],
+			["rgba(255,255,255,0)", "rgba(255,255,255,0.06)"],
+		),
 	}));
 
-	const underlineStyle = useAnimatedStyle(() => ({
-		width: progress.value * labelWidth,
-		opacity: progress.value,
+	const labelStyle = useAnimatedStyle(() => ({
+		color: interpolateColor(
+			progress.value,
+			[0, 1],
+			[colors.textMuted, colors.text],
+		),
 	}));
 
 	const Icon = item.icon;
@@ -82,45 +91,14 @@ function MenuItem({ item, isActive, accentColor, onPress }: MenuItemProps) {
 			accessibilityLabel={item.label}
 			hitSlop={8}
 		>
-			<View style={styles.itemRow}>
-				<Animated.View style={iconStyle}>
+			<Animated.View style={[styles.iconBox, iconBoxStyle]}>
+				<Animated.View style={iconBounceStyle}>
 					<Icon size={ICON_SIZE} color={iconColor} strokeWidth={2.2} />
 				</Animated.View>
-				<Animated.View style={[styles.labelWrap, labelStyle]}>
-					<Text
-						numberOfLines={1}
-						onLayout={(e) => {
-							if (!measuredRef.current) {
-								measuredRef.current = true;
-								setLabelWidth(Math.ceil(e.nativeEvent.layout.width));
-							}
-						}}
-						style={[styles.label, { color: accentColor }]}
-					>
-						{item.label}
-					</Text>
-				</Animated.View>
-			</View>
-			<Animated.View
-				style={[
-					styles.underline,
-					{ backgroundColor: accentColor },
-					underlineStyle,
-				]}
-			/>
-			{labelWidth === 0 && (
-				<Text
-					style={styles.measure}
-					onLayout={(e) => {
-						if (!measuredRef.current) {
-							measuredRef.current = true;
-							setLabelWidth(Math.ceil(e.nativeEvent.layout.width));
-						}
-					}}
-				>
-					{item.label}
-				</Text>
-			)}
+			</Animated.View>
+			<Animated.Text numberOfLines={1} style={[styles.label, labelStyle]}>
+				{item.label}
+			</Animated.Text>
 		</Pressable>
 	);
 }
@@ -182,30 +160,20 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: "center",
 		justifyContent: "center",
-		paddingVertical: spacing.xs,
-		paddingHorizontal: spacing.xs,
+		paddingVertical: spacing.xxs,
+		paddingHorizontal: spacing.xxs,
 	},
-	itemRow: {
-		flexDirection: "row",
+	iconBox: {
+		paddingHorizontal: spacing.sm,
+		paddingVertical: spacing.xxs,
+		borderRadius: radii.md,
+		borderWidth: 1,
 		alignItems: "center",
-	},
-	labelWrap: {
-		overflow: "hidden",
+		justifyContent: "center",
 	},
 	label: {
-		fontSize: 13,
-		fontWeight: "600",
-		textTransform: "capitalize",
-	},
-	underline: {
-		height: 2,
-		borderRadius: 1,
+		fontSize: 11,
+		fontWeight: "500",
 		marginTop: 4,
-	},
-	measure: {
-		position: "absolute",
-		opacity: 0,
-		fontSize: 13,
-		fontWeight: "600",
 	},
 });
