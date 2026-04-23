@@ -1,0 +1,50 @@
+{
+  "brand_identity": {
+    "app_name": "HydroGrow",
+    "version": "v2.1",
+    "theme": "Agri-Tech / Smart Farming",
+    "character_name": "Pechay-Bot",
+    "design_ethos": "Approachable, high-tech, organic, and professional"
+  },
+  "visual_style": {
+    "rendering_style": "Digital watercolor with soft pencil outlines",
+    "lighting": "Soft ambient glow with specific emissive highlights (Cyan/Blue)",
+    "aesthetic": "Chibi-inspired proportions with rounded, friendly silhouettes"
+  },
+  "color_palette": {
+    "primary_greens": {
+      "leaf_highlight": "#E2F5D1",
+      "leaf_midtone": "#C5E8A4",
+      "leaf_shadow": "#9BBF7B"
+    },
+    "secondary_tones": {
+      "stalk_white": "#F9FFF2",
+      "hat_brown": "#C68E5A",
+      "hat_shadow": "#96623D"
+    },
+    "tech_accents": {
+      "emissive_blue": "#5CE1FF",
+      "device_grey": "#4A4A4A",
+      "screen_glow": "rgba(92, 225, 255, 0.3)"
+    }
+  },
+  "character_attributes": {
+    "anatomy": "Anthro-vegetable (Bok Choy/Pechay) with stubby limbs and a layered leafy head",
+    "headwear": "Traditional conical Asian farmer's hat (Salakot style) made of woven bamboo",
+    "tech_gear": [
+      "Head-mounted blue LED antenna",
+      "Left-wrist smartwatch with digital display",
+      "Handheld tablet showing HydroGrow v2.1 dashboard"
+    ],
+    "expressions": [
+      "Happy/Determined",
+      "Confident/Arms-crossed",
+      "Excited/Jumping",
+      "Focused/Reading",
+      "Concerned/Alert"
+    ]
+  },
+  "ui_design_prompt": {
+    "system_instruction": "Generate UI assets consistent with a soft-wash watercolor texture. Use #C5E8A4 as the primary action color. Buttons should have rounded corners (radius: 20px) to match the character's organic shape. Icons should utilize thin, dark-grey pencil-style strokes. Incorporate the blue emissive glow (#5CE1FF) for active states and 'Smart' notifications."
+  }
+}
