@@ -1,15 +1,15 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { GradientBackground } from "@/components/ui/gradient-background";
-import { Input } from "@/components/ui/input";
-import { Text } from "@/components/ui/text";
-import { colors, systemTypes } from "@/constants/theme";
-import { batchesApi, cropsApi, setupsApi } from "@/lib/hydro-api";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { Alert, Pressable, ScrollView, View } from "react-native";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { GradientBackground } from "@/components/ui/gradient-background";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
+import { colors, spacing, systemTypes } from "@/constants/theme";
+import { batchesApi, cropsApi, setupsApi } from "@/lib/hydro-api";
 
 export default function NewBatchScreen() {
 	const { setup: setupParam } = useLocalSearchParams<{ setup?: string }>();
@@ -52,13 +52,18 @@ export default function NewBatchScreen() {
 
 	return (
 		<GradientBackground>
-			<ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+			<ScrollView
+				contentContainerStyle={{
+					padding: spacing.md,
+					paddingBottom: spacing.xxxl,
+				}}
+			>
 				<View
 					style={{
 						flexDirection: "row",
 						alignItems: "center",
-						gap: 8,
-						marginBottom: 8,
+						gap: spacing.xs,
+						marginBottom: spacing.xs,
 					}}
 				>
 					<Pressable onPress={() => router.back()}>
@@ -71,7 +76,13 @@ export default function NewBatchScreen() {
 
 				<Card>
 					<Field label="Setup">
-						<View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+						<View
+							style={{
+								flexDirection: "row",
+								flexWrap: "wrap",
+								gap: spacing.xs,
+							}}
+						>
 							{(setups.data?.data ?? []).map((s) => {
 								const active = setupId === s.id;
 								const c = systemTypes[s.type];
@@ -83,8 +94,8 @@ export default function NewBatchScreen() {
 											flexDirection: "row",
 											alignItems: "center",
 											gap: 6,
-											paddingHorizontal: 12,
-											paddingVertical: 8,
+											paddingHorizontal: spacing.sm,
+											paddingVertical: spacing.xs,
 											borderRadius: 12,
 											borderWidth: 1,
 											borderColor: active ? c.color : colors.border,
@@ -161,11 +172,13 @@ export default function NewBatchScreen() {
 					</Field>
 				</Card>
 
-				<View style={{ gap: 8, marginTop: 20 }}>
+				<View style={{ gap: spacing.xs, marginTop: spacing.lg }}>
 					<Button
 						label="Start Batch"
 						isLoading={create.isPending}
-						isDisabled={!valid}
+						isDisabled={
+							!valid || create.isPending || setups.isLoading || crops.isLoading
+						}
 						onPress={() => create.mutate()}
 					/>
 					<Button
@@ -182,9 +195,12 @@ export default function NewBatchScreen() {
 function Field({
 	label,
 	children,
-}: { label: string; children: React.ReactNode }) {
+}: {
+	label: string;
+	children: React.ReactNode;
+}) {
 	return (
-		<View style={{ gap: 6, marginBottom: 16 }}>
+		<View style={{ gap: 6, marginBottom: spacing.md }}>
 			<Text
 				size="xs"
 				weight="semibold"
@@ -202,7 +218,11 @@ function CropChip({
 	label,
 	active,
 	onPress,
-}: { label: string; active: boolean; onPress: () => void }) {
+}: {
+	label: string;
+	active: boolean;
+	onPress: () => void;
+}) {
 	return (
 		<Pressable
 			onPress={onPress}

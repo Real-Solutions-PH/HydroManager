@@ -1,11 +1,11 @@
-import { colors } from "@/constants/theme";
-import { cn } from "@/lib/utils";
 import {
 	Text as RNText,
 	type TextProps as RNTextProps,
 	type StyleProp,
 	type TextStyle,
 } from "react-native";
+import { colors } from "@/constants/theme";
+import { cn } from "@/lib/utils";
 
 type Tone = "default" | "muted" | "subtle" | "error" | "success" | "primary";
 type Size = "xs" | "sm" | "md" | "lg" | "xl" | "xxl" | "xxxl";

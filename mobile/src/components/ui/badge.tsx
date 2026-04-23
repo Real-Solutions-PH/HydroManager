@@ -1,4 +1,5 @@
 import { Text, View } from "react-native";
+import { spacing } from "@/constants/theme";
 
 interface BadgeProps {
 	label: string;
@@ -13,8 +14,8 @@ export function Badge({ label, color = "#FFFFFF", bg, small }: BadgeProps) {
 		<View
 			style={{
 				backgroundColor,
-				paddingHorizontal: 12,
-				paddingVertical: 4,
+				paddingHorizontal: spacing.sm,
+				paddingVertical: spacing.xxs,
 				borderRadius: 999,
 				alignSelf: "flex-start",
 			}}

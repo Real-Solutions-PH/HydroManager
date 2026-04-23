@@ -1,18 +1,25 @@
-import { Button } from "@/components/ui/button";
-import { FormField } from "@/components/ui/form-field";
-import { Input } from "@/components/ui/input";
-import { Text } from "@/components/ui/text";
-import { useAuth } from "@/hooks/useAuth";
-import { emailPattern, namePattern } from "@/lib/utils";
 import { Link } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Button } from "@/components/ui/button";
+import { FormField } from "@/components/ui/form-field";
+import { GradientBackground } from "@/components/ui/gradient-background";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
+import { colors, spacing } from "@/constants/theme";
+import { useAuth } from "@/hooks/useAuth";
+import {
+	confirmPasswordRules,
+	emailPattern,
+	namePattern,
+	passwordRules,
+} from "@/lib/utils";
 
 interface SignupForm {
 	full_name: string;
 	email: string;
 	password: string;
+	confirm_password: string;
 }
 
 export default function SignupScreen() {
@@ -20,19 +27,31 @@ export default function SignupScreen() {
 	const {
 		control,
 		handleSubmit,
+		getValues,
 		formState: { errors },
 	} = useForm<SignupForm>({
-		defaultValues: { full_name: "", email: "", password: "" },
+		defaultValues: {
+			full_name: "",
+			email: "",
+			password: "",
+			confirm_password: "",
+		},
 	});
 
 	return (
-		<SafeAreaView className="flex-1 bg-background">
+		<GradientBackground>
 			<KeyboardAvoidingView
 				behavior={Platform.OS === "ios" ? "padding" : undefined}
-				className="flex-1 justify-center px-6"
+				style={{
+					flex: 1,
+					justifyContent: "center",
+					paddingHorizontal: spacing.xl,
+				}}
 			>
-				<View className="gap-6">
-					<Text className="text-3xl font-bold">Create Account</Text>
+				<View style={{ gap: spacing.lg }}>
+					<Text size="xxxl" weight="bold">
+						Create Account
+					</Text>
 
 					<Controller
 						control={control}
@@ -69,10 +88,7 @@ export default function SignupScreen() {
 					<Controller
 						control={control}
 						name="password"
-						rules={{
-							required: "Password is required",
-							minLength: { value: 8, message: "Minimum 8 characters" },
-						}}
+						rules={passwordRules()}
 						render={({ field: { onChange, value } }) => (
 							<FormField label="Password" error={errors.password?.message}>
 								<Input
@@ -85,19 +101,44 @@ export default function SignupScreen() {
 						)}
 					/>
 
+					<Controller
+						control={control}
+						name="confirm_password"
+						rules={confirmPasswordRules(() => getValues())}
+						render={({ field: { onChange, value } }) => (
+							<FormField
+								label="Confirm password"
+								error={errors.confirm_password?.message}
+							>
+								<Input
+									value={value}
+									onChangeText={onChange}
+									placeholder="********"
+									secureTextEntry
+								/>
+							</FormField>
+						)}
+					/>
+
 					<Button
 						label={signup.isPending ? "Creating..." : "Sign Up"}
-						onPress={handleSubmit((d) => signup.mutate(d))}
+						onPress={handleSubmit((d) =>
+							signup.mutate({
+								full_name: d.full_name,
+								email: d.email,
+								password: d.password,
+							}),
+						)}
 						disabled={signup.isPending}
 					/>
 
 					<Link href="/login">
-						<Text className="text-sm text-primary">
+						<Text size="sm" style={{ color: colors.primaryLight }}>
 							Already have an account? Log in
 						</Text>
 					</Link>
 				</View>
 			</KeyboardAvoidingView>
-		</SafeAreaView>
+		</GradientBackground>
 	);
 }

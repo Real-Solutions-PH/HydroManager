@@ -1,14 +1,15 @@
-import { Button } from "@/components/ui/button";
-import { FormField } from "@/components/ui/form-field";
-import { Input } from "@/components/ui/input";
-import { Text } from "@/components/ui/text";
-import { useCustomToast } from "@/hooks/useCustomToast";
-import { api } from "@/lib/auth";
-import { emailPattern, handleError } from "@/lib/utils";
 import { useRouter } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Button } from "@/components/ui/button";
+import { FormField } from "@/components/ui/form-field";
+import { GradientBackground } from "@/components/ui/gradient-background";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
+import { spacing } from "@/constants/theme";
+import { useCustomToast } from "@/hooks/useCustomToast";
+import { passwordApi } from "@/lib/hydro-api";
+import { emailPattern, handleError } from "@/lib/utils";
 
 interface RecoverForm {
 	email: string;
@@ -25,7 +26,7 @@ export default function RecoverPasswordScreen() {
 
 	const onSubmit = async ({ email }: RecoverForm) => {
 		try {
-			await api.post(`/api/v1/password-recovery/${encodeURIComponent(email)}`);
+			await passwordApi.recover(email);
 			toast.success("Recovery email sent");
 			router.replace("/login");
 		} catch (err) {
@@ -34,9 +35,18 @@ export default function RecoverPasswordScreen() {
 	};
 
 	return (
-		<SafeAreaView className="flex-1 bg-background">
-			<View className="flex-1 justify-center gap-6 px-6">
-				<Text className="text-3xl font-bold">Recover Password</Text>
+		<GradientBackground>
+			<View
+				style={{
+					flex: 1,
+					justifyContent: "center",
+					gap: spacing.lg,
+					paddingHorizontal: spacing.xl,
+				}}
+			>
+				<Text size="xxxl" weight="bold">
+					Recover Password
+				</Text>
 				<Controller
 					control={control}
 					name="email"
@@ -59,6 +69,6 @@ export default function RecoverPasswordScreen() {
 					disabled={isSubmitting}
 				/>
 			</View>
-		</SafeAreaView>
+		</GradientBackground>
 	);
 }

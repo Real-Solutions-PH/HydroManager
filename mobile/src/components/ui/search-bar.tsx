@@ -1,6 +1,6 @@
-import { colors } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { TextInput, View } from "react-native";
+import { colors, spacing } from "@/constants/theme";
 
 interface Props {
 	value: string;
@@ -22,15 +22,15 @@ export function SearchBar({
 				borderWidth: 1,
 				borderColor: colors.borderLight,
 				borderRadius: 12,
-				paddingHorizontal: 16,
-				paddingVertical: 12,
+				paddingHorizontal: spacing.md,
+				paddingVertical: spacing.sm,
 			}}
 		>
 			<Ionicons
 				name="search"
 				size={18}
 				color={colors.textMuted}
-				style={{ marginRight: 8 }}
+				style={{ marginRight: spacing.xs }}
 			/>
 			<TextInput
 				value={value}

@@ -1,13 +1,14 @@
-import { Button } from "@/components/ui/button";
-import { FormField } from "@/components/ui/form-field";
-import { Input } from "@/components/ui/input";
-import { Text } from "@/components/ui/text";
-import { useAuth } from "@/hooks/useAuth";
-import { emailPattern } from "@/lib/utils";
 import { Link } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Button } from "@/components/ui/button";
+import { FormField } from "@/components/ui/form-field";
+import { GradientBackground } from "@/components/ui/gradient-background";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
+import { colors, spacing } from "@/constants/theme";
+import { useAuth } from "@/hooks/useAuth";
+import { emailPattern } from "@/lib/utils";
 
 interface LoginForm {
 	username: string;
@@ -27,13 +28,19 @@ export default function LoginScreen() {
 	const onSubmit = (data: LoginForm) => login.mutate(data);
 
 	return (
-		<SafeAreaView className="flex-1 bg-background">
+		<GradientBackground>
 			<KeyboardAvoidingView
 				behavior={Platform.OS === "ios" ? "padding" : undefined}
-				className="flex-1 justify-center px-6"
+				style={{
+					flex: 1,
+					justifyContent: "center",
+					paddingHorizontal: spacing.xl,
+				}}
 			>
-				<View className="gap-6">
-					<Text className="text-3xl font-bold">Log In</Text>
+				<View style={{ gap: spacing.lg }}>
+					<Text size="xxxl" weight="bold">
+						Log In
+					</Text>
 
 					<Controller
 						control={control}
@@ -74,16 +81,22 @@ export default function LoginScreen() {
 						disabled={login.isPending}
 					/>
 
-					<View className="flex-row justify-between">
+					<View
+						style={{ flexDirection: "row", justifyContent: "space-between" }}
+					>
 						<Link href="/signup">
-							<Text className="text-sm text-primary">Sign up</Text>
+							<Text size="sm" style={{ color: colors.primaryLight }}>
+								Sign up
+							</Text>
 						</Link>
 						<Link href="/recover-password">
-							<Text className="text-sm text-primary">Forgot password?</Text>
+							<Text size="sm" style={{ color: colors.primaryLight }}>
+								Forgot password?
+							</Text>
 						</Link>
 					</View>
 				</View>
 			</KeyboardAvoidingView>
-		</SafeAreaView>
+		</GradientBackground>
 	);
 }

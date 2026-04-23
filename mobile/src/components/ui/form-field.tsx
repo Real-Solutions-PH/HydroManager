@@ -1,6 +1,7 @@
-import { Text } from "@/components/ui/text";
 import type { ReactNode } from "react";
 import { View } from "react-native";
+import { Text } from "@/components/ui/text";
+import { spacing } from "@/constants/theme";
 
 interface FormFieldProps {
 	label?: string;
@@ -10,12 +11,23 @@ interface FormFieldProps {
 
 export function FormField({ label, error, children }: FormFieldProps) {
 	return (
-		<View className="gap-1.5">
+		<View style={{ gap: spacing.xxs }}>
 			{label ? (
-				<Text className="text-sm font-medium text-foreground">{label}</Text>
+				<Text
+					size="xs"
+					weight="semibold"
+					tone="subtle"
+					style={{ textTransform: "uppercase", letterSpacing: 0.5 }}
+				>
+					{label}
+				</Text>
 			) : null}
 			{children}
-			{error ? <Text className="text-xs text-destructive">{error}</Text> : null}
+			{error ? (
+				<Text size="xs" tone="error">
+					{error}
+				</Text>
+			) : null}
 		</View>
 	);
 }

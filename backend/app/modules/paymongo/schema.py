@@ -1,11 +1,13 @@
-from sqlmodel import Field, SQLModel
+from typing import Literal
+
+from sqlmodel import SQLModel
 
 from app.modules.iam.users.schema import UserTier
 
 
 class CheckoutRequest(SQLModel):
     target_tier: UserTier
-    billing_cycle: str = Field(default="monthly", pattern="^(monthly|yearly)$")
+    billing_cycle: Literal["monthly", "yearly"] = "monthly"
 
 
 class CheckoutResponse(SQLModel):

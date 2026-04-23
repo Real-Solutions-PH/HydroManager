@@ -1,7 +1,6 @@
-import { runSync } from "@/lib/sync";
-import { useNetworkStore } from "@/stores/network-store";
 import NetInfo from "@react-native-community/netinfo";
 import { useEffect } from "react";
+import { useNetworkStore } from "@/stores/network-store";
 
 export function useNetworkStatus() {
 	const setNetworkState = useNetworkStore((s) => s.setNetworkState);
@@ -17,13 +16,7 @@ export function useNetworkStatus() {
 						: state.type === "none"
 							? "none"
 							: "unknown";
-
-			const wasWifi = useNetworkStore.getState().isWifi;
 			setNetworkState(isConnected, type);
-
-			if (!wasWifi && type === "wifi") {
-				runSync();
-			}
 		});
 
 		return () => unsubscribe();

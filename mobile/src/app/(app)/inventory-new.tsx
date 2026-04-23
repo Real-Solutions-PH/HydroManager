@@ -1,19 +1,19 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { GradientBackground } from "@/components/ui/gradient-background";
-import { Input } from "@/components/ui/input";
-import { Text } from "@/components/ui/text";
-import { colors, inventoryCategoryMeta } from "@/constants/theme";
-import {
-	type InventoryCategory,
-	type InventoryUnit,
-	inventoryApi,
-} from "@/lib/hydro-api";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, Pressable, ScrollView, View } from "react-native";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { GradientBackground } from "@/components/ui/gradient-background";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
+import { colors, inventoryCategoryMeta, spacing } from "@/constants/theme";
+import {
+	type InventoryCategory,
+	type InventoryUnit,
+	inventoryApi,
+} from "@/lib/hydro-api";
 
 const CATEGORIES: InventoryCategory[] = [
 	"seeds",
@@ -55,13 +55,18 @@ export default function NewInventoryItemScreen() {
 
 	return (
 		<GradientBackground>
-			<ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+			<ScrollView
+				contentContainerStyle={{
+					padding: spacing.md,
+					paddingBottom: spacing.xxxl,
+				}}
+			>
 				<View
 					style={{
 						flexDirection: "row",
 						alignItems: "center",
-						gap: 8,
-						marginBottom: 8,
+						gap: spacing.xs,
+						marginBottom: spacing.xs,
 					}}
 				>
 					<Pressable onPress={() => router.back()}>
@@ -82,7 +87,13 @@ export default function NewInventoryItemScreen() {
 					</Field>
 
 					<Field label="Category">
-						<View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+						<View
+							style={{
+								flexDirection: "row",
+								flexWrap: "wrap",
+								gap: spacing.xs,
+							}}
+						>
 							{CATEGORIES.map((c) => {
 								const meta = inventoryCategoryMeta[c];
 								const active = category === c;
@@ -94,8 +105,8 @@ export default function NewInventoryItemScreen() {
 											flexDirection: "row",
 											alignItems: "center",
 											gap: 6,
-											paddingHorizontal: 12,
-											paddingVertical: 8,
+											paddingHorizontal: spacing.sm,
+											paddingVertical: spacing.xs,
 											borderRadius: 12,
 											borderWidth: 1,
 											borderColor: active ? meta.color : colors.border,
@@ -125,7 +136,13 @@ export default function NewInventoryItemScreen() {
 					</Field>
 
 					<Field label="Unit">
-						<View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+						<View
+							style={{
+								flexDirection: "row",
+								flexWrap: "wrap",
+								gap: spacing.xs,
+							}}
+						>
 							{UNITS.map((u) => (
 								<Chip
 									key={u}
@@ -168,7 +185,7 @@ export default function NewInventoryItemScreen() {
 					</Field>
 				</Card>
 
-				<View style={{ gap: 8, marginTop: 20 }}>
+				<View style={{ gap: spacing.xs, marginTop: spacing.lg }}>
 					<Button
 						label="Create Item"
 						isLoading={create.isPending}
@@ -189,9 +206,12 @@ export default function NewInventoryItemScreen() {
 function Field({
 	label,
 	children,
-}: { label: string; children: React.ReactNode }) {
+}: {
+	label: string;
+	children: React.ReactNode;
+}) {
 	return (
-		<View style={{ gap: 6, marginBottom: 16 }}>
+		<View style={{ gap: 6, marginBottom: spacing.md }}>
 			<Text
 				size="xs"
 				weight="semibold"
@@ -209,12 +229,16 @@ function Chip({
 	label,
 	active,
 	onPress,
-}: { label: string; active: boolean; onPress: () => void }) {
+}: {
+	label: string;
+	active: boolean;
+	onPress: () => void;
+}) {
 	return (
 		<Pressable
 			onPress={onPress}
 			style={{
-				paddingHorizontal: 12,
+				paddingHorizontal: spacing.sm,
 				paddingVertical: 6,
 				borderRadius: 999,
 				borderWidth: 1,

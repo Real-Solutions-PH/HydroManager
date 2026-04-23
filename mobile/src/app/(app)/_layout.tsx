@@ -1,10 +1,10 @@
+import { Ionicons } from "@expo/vector-icons";
+import { Redirect, Tabs } from "expo-router";
+import { View } from "react-native";
 import { AIChatFab } from "@/components/ai-chat";
 import { OfflineBanner } from "@/components/offline-banner";
 import { colors } from "@/constants/theme";
 import { useAuthStore } from "@/stores/auth-store";
-import { Ionicons } from "@expo/vector-icons";
-import { Redirect, Tabs } from "expo-router";
-import { View } from "react-native";
 
 type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
 
@@ -14,6 +14,11 @@ function tabIcon(name: IoniconName, focused: boolean, color: string) {
 		: (`${name}-outline` as IoniconName);
 	return <Ionicons name={resolved} size={22} color={color} />;
 }
+
+const HIDDEN_TAB = {
+	href: null,
+	tabBarItemStyle: { display: "none" as const },
+} as const;
 
 export default function AppLayout() {
 	const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -76,13 +81,12 @@ export default function AppLayout() {
 						tabBarIcon: ({ focused, color }) => tabIcon("cash", focused, color),
 					}}
 				/>
-				<Tabs.Screen name="crops" options={{ href: null }} />
-				<Tabs.Screen name="settings" options={{ href: null }} />
-				<Tabs.Screen name="items" options={{ href: null }} />
-				<Tabs.Screen name="inventory-new" options={{ href: null }} />
-				<Tabs.Screen name="sale-new" options={{ href: null }} />
-				<Tabs.Screen name="setup" options={{ href: null }} />
-				<Tabs.Screen name="batch" options={{ href: null }} />
+				<Tabs.Screen name="crops" options={HIDDEN_TAB} />
+				<Tabs.Screen name="settings" options={HIDDEN_TAB} />
+				<Tabs.Screen name="inventory-new" options={HIDDEN_TAB} />
+				<Tabs.Screen name="sale-new" options={HIDDEN_TAB} />
+				<Tabs.Screen name="setup" options={HIDDEN_TAB} />
+				<Tabs.Screen name="batch" options={HIDDEN_TAB} />
 			</Tabs>
 			<AIChatFab />
 		</View>

@@ -1,8 +1,8 @@
-import { colors } from "@/constants/theme";
-import { cn } from "@/lib/utils";
 import { BlurView } from "expo-blur";
 import type { ReactNode } from "react";
 import { Platform, Pressable, View, type ViewProps } from "react-native";
+import { colors, spacing } from "@/constants/theme";
+import { cn } from "@/lib/utils";
 
 interface CardProps extends ViewProps {
 	children: ReactNode;
@@ -52,7 +52,7 @@ export function Card({
 					backgroundColor: colors.cardGlassOverlay,
 				}}
 			/>
-			<View style={{ padding: 16 }}>{children}</View>
+			<View style={{ padding: spacing.md }}>{children}</View>
 		</View>
 	);
 	if (onPress) {

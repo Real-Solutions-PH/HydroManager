@@ -1,20 +1,21 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "expo-router";
+import { Pressable, ScrollView, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { SectionHeader } from "@/components/ui/section-header";
 import { StatCard } from "@/components/ui/stat-card";
 import { Text } from "@/components/ui/text";
-import { colors, systemTypes } from "@/constants/theme";
-import * as usersDb from "@/lib/db/users";
-import { batchesApi, inventoryApi, setupsApi } from "@/lib/hydro-api";
-import { Ionicons } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "expo-router";
-import { Pressable, ScrollView, View } from "react-native";
+import { colors, spacing, systemTypes } from "@/constants/theme";
+import { batchesApi, inventoryApi, setupsApi, usersApi } from "@/lib/hydro-api";
+import { useT } from "@/lib/i18n";
 
 export default function HomeScreen() {
+	const { t } = useT();
 	const { data: user } = useQuery({
-		queryKey: ["currentUser"],
-		queryFn: () => usersDb.getCachedUser(),
+		queryKey: ["me"],
+		queryFn: () => usersApi.me(),
 	});
 	const setups = useQuery({
 		queryKey: ["setups"],
@@ -39,7 +40,7 @@ export default function HomeScreen() {
 	return (
 		<GradientBackground>
 			<ScrollView
-				contentContainerStyle={{ paddingBottom: 40 }}
+				contentContainerStyle={{ paddingBottom: spacing.xxxl }}
 				style={{ flex: 1 }}
 			>
 				<View
@@ -47,19 +48,19 @@ export default function HomeScreen() {
 						flexDirection: "row",
 						alignItems: "center",
 						justifyContent: "space-between",
-						paddingHorizontal: 16,
-						paddingTop: 8,
+						paddingHorizontal: spacing.md,
+						paddingTop: spacing.xs,
 					}}
 				>
 					<View>
 						<Text size="sm" tone="muted">
-							Kumusta,
+							{t("home.greeting")}
 						</Text>
 						<Text size="xxl" weight="bold">
-							{user?.full_name?.split(" ")[0] ?? "Grower"}
+							{user?.full_name?.split(" ")[0] ?? t("home.default_name")}
 						</Text>
 					</View>
-					<View style={{ flexDirection: "row", gap: 8 }}>
+					<View style={{ flexDirection: "row", gap: spacing.xs }}>
 						<Link href="/crops" asChild>
 							<Pressable
 								style={{
@@ -100,8 +101,8 @@ export default function HomeScreen() {
 					style={{
 						flexDirection: "row",
 						flexWrap: "wrap",
-						gap: 12,
-						paddingHorizontal: 16,
+						gap: spacing.sm,
+						paddingHorizontal: spacing.md,
 					}}
 				>
 					<StatCard
@@ -129,7 +130,14 @@ export default function HomeScreen() {
 				</View>
 
 				<SectionHeader title="Quick Actions" />
-				<View style={{ paddingHorizontal: 16, gap: 10 }}>
+				<View
+					style={{
+						flexDirection: "row",
+						flexWrap: "wrap",
+						gap: spacing.sm,
+						paddingHorizontal: spacing.md,
+					}}
+				>
 					<QuickAction
 						label="New Setup"
 						icon="add-circle-outline"
@@ -143,9 +151,15 @@ export default function HomeScreen() {
 						variant="outline"
 					/>
 					<QuickAction
-						label="Add Inventory Item"
+						label="Add Inventory"
 						icon="cube-outline"
 						href="/inventory-new"
+						variant="outline"
+					/>
+					<QuickAction
+						label="New Sale"
+						icon="cash-outline"
+						href="/sale-new"
 						variant="outline"
 					/>
 				</View>
@@ -153,7 +167,7 @@ export default function HomeScreen() {
 				{lowStock.length > 0 ? (
 					<>
 						<SectionHeader title="Alerts" />
-						<View style={{ paddingHorizontal: 16 }}>
+						<View style={{ paddingHorizontal: spacing.md }}>
 							<Card
 								style={{
 									borderLeftWidth: 4,
@@ -174,7 +188,7 @@ export default function HomeScreen() {
 				) : null}
 
 				<SectionHeader title="Setups" subtitle="Your active systems" />
-				<View style={{ paddingHorizontal: 16, gap: 12 }}>
+				<View style={{ paddingHorizontal: spacing.md, gap: spacing.sm }}>
 					{(setups.data?.data ?? []).slice(0, 3).map((s) => {
 						const c = systemTypes[s.type];
 						return (
@@ -185,7 +199,7 @@ export default function HomeScreen() {
 											style={{
 												flexDirection: "row",
 												alignItems: "center",
-												gap: 12,
+												gap: spacing.sm,
 											}}
 										>
 											<View
@@ -249,12 +263,12 @@ function QuickAction({
 		<Link href={href as never} asChild>
 			<Pressable
 				style={({ pressed }) => ({
-					flexDirection: "row",
-					alignItems: "center",
-					justifyContent: "center",
-					gap: 10,
-					height: 48,
-					borderRadius: 12,
+					flex: 1,
+					minWidth: "47%",
+					alignItems: "flex-start",
+					gap: spacing.xs,
+					padding: spacing.md,
+					borderRadius: 16,
 					borderWidth: solid ? 0 : 1,
 					borderColor: colors.borderStrong,
 					backgroundColor: solid
@@ -263,10 +277,21 @@ function QuickAction({
 							: colors.buttonSolidBg
 						: pressed
 							? colors.glassHover
-							: "transparent",
+							: colors.glass,
 				})}
 			>
-				<Ionicons name={icon} size={18} color={colors.text} />
+				<View
+					style={{
+						width: 36,
+						height: 36,
+						borderRadius: 10,
+						alignItems: "center",
+						justifyContent: "center",
+						backgroundColor: solid ? "rgba(255,255,255,0.18)" : colors.glass,
+					}}
+				>
+					<Ionicons name={icon} size={20} color={colors.text} />
+				</View>
 				<Text weight="semibold">{label}</Text>
 			</Pressable>
 		</Link>

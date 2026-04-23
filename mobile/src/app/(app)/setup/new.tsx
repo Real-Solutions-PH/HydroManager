@@ -1,21 +1,21 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { GradientBackground } from "@/components/ui/gradient-background";
-import { Input } from "@/components/ui/input";
-import { Text } from "@/components/ui/text";
-import { colors, systemTypes } from "@/constants/theme";
-import {
-	type SetupType,
-	hydroAiApi,
-	photosApi,
-	setupsApi,
-} from "@/lib/hydro-api";
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, Image, Pressable, ScrollView, View } from "react-native";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { GradientBackground } from "@/components/ui/gradient-background";
+import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
+import { colors, spacing, systemTypes } from "@/constants/theme";
+import {
+	hydroAiApi,
+	photosApi,
+	type SetupType,
+	setupsApi,
+} from "@/lib/hydro-api";
 
 const TYPES: SetupType[] = ["DFT", "NFT", "DutchBucket", "Kratky", "SNAP"];
 
@@ -90,13 +90,18 @@ export default function NewSetupScreen() {
 
 	return (
 		<GradientBackground>
-			<ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+			<ScrollView
+				contentContainerStyle={{
+					padding: spacing.md,
+					paddingBottom: spacing.xxxl,
+				}}
+			>
 				<View
 					style={{
 						flexDirection: "row",
 						alignItems: "center",
-						gap: 8,
-						marginBottom: 8,
+						gap: spacing.xs,
+						marginBottom: spacing.xs,
 					}}
 				>
 					<Pressable onPress={() => router.back()}>
@@ -115,7 +120,7 @@ export default function NewSetupScreen() {
 						style={{
 							textTransform: "uppercase",
 							letterSpacing: 0.5,
-							marginBottom: 8,
+							marginBottom: spacing.xs,
 						}}
 					>
 						Photo onboarding (optional)
@@ -128,7 +133,7 @@ export default function NewSetupScreen() {
 									width: "100%",
 									height: 180,
 									borderRadius: 12,
-									marginBottom: 8,
+									marginBottom: spacing.xs,
 								}}
 							/>
 							{analyzing ? (
@@ -148,13 +153,13 @@ export default function NewSetupScreen() {
 							flexDirection: "row",
 							alignItems: "center",
 							justifyContent: "center",
-							gap: 8,
-							paddingVertical: 12,
+							gap: spacing.xs,
+							paddingVertical: spacing.sm,
 							borderWidth: 1,
 							borderColor: colors.border,
 							borderStyle: "dashed",
 							borderRadius: 12,
-							marginTop: 8,
+							marginTop: spacing.xs,
 						}}
 					>
 						<Ionicons name="camera" size={18} color={colors.text} />
@@ -176,7 +181,13 @@ export default function NewSetupScreen() {
 					</Field>
 
 					<Field label="Setup Type">
-						<View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+						<View
+							style={{
+								flexDirection: "row",
+								flexWrap: "wrap",
+								gap: spacing.xs,
+							}}
+						>
 							{TYPES.map((tv) => {
 								const active = type === tv;
 								const c = systemTypes[tv];
@@ -188,8 +199,8 @@ export default function NewSetupScreen() {
 											flexDirection: "row",
 											alignItems: "center",
 											gap: 6,
-											paddingHorizontal: 12,
-											paddingVertical: 8,
+											paddingHorizontal: spacing.sm,
+											paddingVertical: spacing.xs,
 											borderRadius: 999,
 											borderWidth: active ? 2 : 1,
 											borderColor: active ? c.color : colors.border,
@@ -240,7 +251,7 @@ export default function NewSetupScreen() {
 					</Field>
 				</Card>
 
-				<View style={{ gap: 8, marginTop: 20 }}>
+				<View style={{ gap: spacing.xs, marginTop: spacing.lg }}>
 					<Button
 						label="Create Setup"
 						isLoading={createSetup.isPending}
@@ -261,9 +272,12 @@ export default function NewSetupScreen() {
 function Field({
 	label,
 	children,
-}: { label: string; children: React.ReactNode }) {
+}: {
+	label: string;
+	children: React.ReactNode;
+}) {
 	return (
-		<View style={{ gap: 6, marginBottom: 16 }}>
+		<View style={{ gap: 6, marginBottom: spacing.md }}>
 			<Text
 				size="xs"
 				weight="semibold"

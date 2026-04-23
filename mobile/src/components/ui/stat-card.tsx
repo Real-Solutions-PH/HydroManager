@@ -1,6 +1,6 @@
-import { colors } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
+import { colors, spacing } from "@/constants/theme";
 
 interface Props {
 	label: string;
@@ -20,7 +20,7 @@ export function StatCard({ label, value, icon, accent, onPress }: Props) {
 				borderWidth: 1,
 				borderColor: colors.border,
 				borderRadius: 16,
-				padding: 16,
+				padding: spacing.md,
 			}}
 		>
 			<View
@@ -47,7 +47,7 @@ export function StatCard({ label, value, icon, accent, onPress }: Props) {
 			</View>
 			<Text
 				style={{
-					marginTop: 8,
+					marginTop: spacing.xs,
 					fontSize: 32,
 					fontWeight: "700",
 					color: accent ?? colors.text,

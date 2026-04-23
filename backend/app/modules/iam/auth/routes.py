@@ -33,6 +33,11 @@ def test_token(current_user: CurrentUser) -> Any:
     return current_user
 
 
+@router.post("/logout")
+def logout(current_user: CurrentUser) -> Message:
+    return Message(message="Logged out")
+
+
 @router.post("/password-recovery/{email}")
 def recover_password(email: str, session: SessionDep) -> Message:
     auth_service.recover_password(session=session, email=email)

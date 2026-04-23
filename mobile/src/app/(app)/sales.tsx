@@ -1,13 +1,5 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { GradientBackground } from "@/components/ui/gradient-background";
-import { Text } from "@/components/ui/text";
-import { colors } from "@/constants/theme";
-import { paymongoApi, salesApi, usersApi } from "@/lib/hydro-api";
-import { useT } from "@/lib/i18n";
 import { Ionicons } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import {
 	Alert,
@@ -17,9 +9,21 @@ import {
 	ScrollView,
 	View,
 } from "react-native";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { GradientBackground } from "@/components/ui/gradient-background";
+import { Text } from "@/components/ui/text";
+import { colors, spacing } from "@/constants/theme";
+import { useCustomToast } from "@/hooks/useCustomToast";
+import { paymongoApi, salesApi, usersApi } from "@/lib/hydro-api";
+import { useT } from "@/lib/i18n";
+import { formatPHP, handleError } from "@/lib/utils";
 
 export default function SalesScreen() {
 	const { t } = useT();
+	const toast = useCustomToast();
+	const qc = useQueryClient();
 	const me = useQuery({ queryKey: ["me"], queryFn: () => usersApi.me() });
 	const isPro = me.data?.tier === "pro";
 
@@ -33,6 +37,31 @@ export default function SalesScreen() {
 		queryFn: () => salesApi.dashboard(),
 		enabled: isPro,
 	});
+
+	const del = useMutation({
+		mutationFn: (id: string) => salesApi.delete(id),
+		onSuccess: () => {
+			toast.success("Sale deleted");
+			qc.invalidateQueries({ queryKey: ["sales"] });
+			qc.invalidateQueries({ queryKey: ["sales-dashboard"] });
+		},
+		onError: (err) => toast.error(handleError(err)),
+	});
+
+	function confirmDelete(id: string, label: string) {
+		Alert.alert(
+			t("sales.delete_confirm_title"),
+			t("sales.delete_confirm_body", { label }),
+			[
+				{ text: t("actions.cancel"), style: "cancel" },
+				{
+					text: t("actions.delete"),
+					style: "destructive",
+					onPress: () => del.mutate(id),
+				},
+			],
+		);
+	}
 
 	if (!me.data)
 		return (
@@ -48,12 +77,12 @@ export default function SalesScreen() {
 	if (!isPro) {
 		return (
 			<GradientBackground>
-				<View style={{ padding: 16, paddingTop: 8 }}>
+				<View style={{ padding: spacing.md, paddingTop: spacing.xs }}>
 					<Text size="xxl" weight="bold">
 						{t("sales.title")}
 					</Text>
 				</View>
-				<View style={{ padding: 16 }}>
+				<View style={{ padding: spacing.md }}>
 					<Card>
 						<Ionicons
 							name="lock-closed"
@@ -63,11 +92,11 @@ export default function SalesScreen() {
 						<Text
 							size="lg"
 							weight="bold"
-							style={{ marginTop: 12, marginBottom: 8 }}
+							style={{ marginTop: spacing.sm, marginBottom: spacing.xs }}
 						>
 							Pro-only feature
 						</Text>
-						<Text tone="subtle" style={{ marginBottom: 16 }}>
+						<Text tone="subtle" style={{ marginBottom: spacing.md }}>
 							{t("sales.pro_required")}
 						</Text>
 						<Button
@@ -77,7 +106,7 @@ export default function SalesScreen() {
 									const r = await paymongoApi.checkout("pro", "monthly");
 									Linking.openURL(r.checkout_url);
 								} catch (e) {
-									Alert.alert("Error", String(e));
+									Alert.alert("Error", handleError(e));
 								}
 							}}
 						/>
@@ -88,17 +117,22 @@ export default function SalesScreen() {
 	}
 
 	const d = dashboard.data;
+	const netMargin = d?.net_margin_pct ?? 0;
+	const grossMonth = d?.gross_current_month ?? 0;
+	const gross90 = d?.gross_last_90_days ?? 0;
+	const grossYtd = d?.gross_ytd ?? 0;
+	const topCrops = d?.top_crops ?? [];
 
 	return (
 		<GradientBackground>
-			<ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+			<ScrollView contentContainerStyle={{ paddingBottom: spacing.xxxl }}>
 				<View
 					style={{
 						flexDirection: "row",
 						justifyContent: "space-between",
 						alignItems: "center",
-						padding: 16,
-						paddingTop: 8,
+						padding: spacing.md,
+						paddingTop: spacing.xs,
 					}}
 				>
 					<Text size="xxl" weight="bold">
@@ -109,10 +143,10 @@ export default function SalesScreen() {
 							style={{
 								flexDirection: "row",
 								alignItems: "center",
-								gap: 4,
+								gap: spacing.xxs,
 								backgroundColor: colors.buttonSolidBg,
-								paddingHorizontal: 12,
-								paddingVertical: 8,
+								paddingHorizontal: spacing.sm,
+								paddingVertical: spacing.xs,
 								borderRadius: 12,
 							}}
 						>
@@ -123,7 +157,7 @@ export default function SalesScreen() {
 				</View>
 
 				{d ? (
-					<View style={{ paddingHorizontal: 16, gap: 12 }}>
+					<View style={{ paddingHorizontal: spacing.md, gap: spacing.sm }}>
 						<Card>
 							<Text
 								size="xs"
@@ -134,31 +168,35 @@ export default function SalesScreen() {
 								{t("sales.net_margin")}
 							</Text>
 							<Text size="xxxl" weight="bold" style={{ marginTop: 6 }}>
-								{d.net_margin_pct}%
+								{netMargin.toFixed(1)}%
 							</Text>
 						</Card>
-						<View style={{ flexDirection: "row", gap: 12 }}>
+						<View style={{ flexDirection: "row", gap: spacing.sm }}>
 							<MiniStat
 								label={t("sales.gross_month")}
-								value={`₱${d.gross_current_month}`}
+								value={formatPHP(grossMonth)}
 							/>
 							<MiniStat
 								label={t("sales.gross_90")}
-								value={`₱${d.gross_last_90_days}`}
+								value={formatPHP(gross90)}
 							/>
 						</View>
 						<MiniStat
 							label={t("sales.gross_ytd")}
-							value={`₱${d.gross_ytd}`}
+							value={formatPHP(grossYtd)}
 							fullWidth
 						/>
 
-						{d.top_crops.length > 0 ? (
+						{topCrops.length > 0 ? (
 							<Card>
-								<Text size="lg" weight="bold" style={{ marginBottom: 8 }}>
-									Top crops (90d)
+								<Text
+									size="lg"
+									weight="bold"
+									style={{ marginBottom: spacing.xs }}
+								>
+									{t("sales.top_crops_90")}
 								</Text>
-								{d.top_crops.map((c) => (
+								{topCrops.map((c) => (
 									<View
 										key={c.crop}
 										style={{
@@ -168,7 +206,7 @@ export default function SalesScreen() {
 										}}
 									>
 										<Text>{c.crop}</Text>
-										<Text weight="semibold">₱{c.revenue}</Text>
+										<Text weight="semibold">{formatPHP(c.revenue)}</Text>
 									</View>
 								))}
 							</Card>
@@ -176,9 +214,9 @@ export default function SalesScreen() {
 					</View>
 				) : null}
 
-				<View style={{ padding: 16, gap: 10 }}>
+				<View style={{ padding: spacing.md, gap: 10 }}>
 					<Text size="lg" weight="bold">
-						Recent sales
+						{t("sales.recent")}
 					</Text>
 					<FlatList
 						data={sales.data?.data ?? []}
@@ -196,30 +234,54 @@ export default function SalesScreen() {
 								>
 									<View style={{ flex: 1 }}>
 										<Text weight="semibold">
-											{item.buyer_label ?? "Unnamed buyer"}
+											{item.buyer_label ?? t("sales.unnamed_buyer")}
 										</Text>
 										<Text size="xs" tone="muted">
 											{new Date(item.sold_at).toLocaleDateString()} ·{" "}
 											{item.channel}
 										</Text>
 									</View>
-									<Badge
-										label={item.payment_status}
-										color={
-											item.payment_status === "paid"
-												? colors.success
-												: item.payment_status === "pending"
-													? colors.warning
-													: colors.error
-										}
-										small
-									/>
+									<View
+										style={{
+											flexDirection: "row",
+											alignItems: "center",
+											gap: spacing.xs,
+										}}
+									>
+										<Badge
+											label={item.payment_status}
+											color={
+												item.payment_status === "paid"
+													? colors.success
+													: item.payment_status === "pending"
+														? colors.warning
+														: colors.error
+											}
+											small
+										/>
+										<Pressable
+											onPress={() =>
+												confirmDelete(
+													item.id,
+													item.buyer_label ?? t("sales.unnamed_buyer"),
+												)
+											}
+											hitSlop={10}
+											disabled={del.isPending}
+										>
+											<Ionicons
+												name="trash-outline"
+												size={18}
+												color={colors.error}
+											/>
+										</Pressable>
+									</View>
 								</View>
-								<View style={{ marginTop: 8, gap: 4 }}>
+								<View style={{ marginTop: spacing.xs, gap: spacing.xxs }}>
 									{item.items.map((it) => (
 										<Text key={it.id} size="sm" tone="subtle">
-											{it.crop_name} — {it.quantity} {it.unit} × ₱
-											{it.unit_price.toFixed(2)}
+											{it.crop_name} — {it.quantity} {it.unit} ×{" "}
+											{formatPHP(it.unit_price)}
 										</Text>
 									))}
 								</View>
@@ -236,12 +298,16 @@ function MiniStat({
 	label,
 	value,
 	fullWidth,
-}: { label: string; value: string; fullWidth?: boolean }) {
+}: {
+	label: string;
+	value: string;
+	fullWidth?: boolean;
+}) {
 	return (
 		<View
 			style={{
 				flex: fullWidth ? undefined : 1,
-				padding: 16,
+				padding: spacing.md,
 				backgroundColor: colors.surfaceVariant,
 				borderWidth: 1,
 				borderColor: colors.border,

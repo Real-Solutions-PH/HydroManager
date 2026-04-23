@@ -1,13 +1,10 @@
-import { useCustomToast } from "@/hooks/useCustomToast";
-import { api, clearAccessToken, setAccessToken } from "@/lib/auth";
-import * as itemsDb from "@/lib/db/items";
-import * as syncQueueDb from "@/lib/db/sync-queue";
-import * as usersDb from "@/lib/db/users";
-import { runSync } from "@/lib/sync";
-import { handleError } from "@/lib/utils";
-import { useAuthStore } from "@/stores/auth-store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
+import { useCustomToast } from "@/hooks/useCustomToast";
+import { api, clearAccessToken, setAccessToken } from "@/lib/auth";
+import * as usersDb from "@/lib/db/users";
+import { handleError } from "@/lib/utils";
+import { useAuthStore } from "@/stores/auth-store";
 
 export interface CurrentUser {
 	id: string;
@@ -68,7 +65,6 @@ export function useAuth() {
 					is_superuser: user.is_superuser,
 				});
 				useAuthStore.getState().setAuthenticated(user);
-				runSync();
 			} catch {
 				// Offline login — mark authenticated anyway (token stored)
 				useAuthStore.getState().setAuthenticated({
@@ -92,11 +88,14 @@ export function useAuth() {
 	});
 
 	async function logout() {
+		try {
+			await api.post("/api/v1/logout");
+		} catch {
+			// Network/401 — proceed with local cleanup anyway
+		}
 		await clearAccessToken();
 		useAuthStore.getState().clearAuth();
 		usersDb.clearUserCache();
-		itemsDb.clearItems();
-		syncQueueDb.clearSyncQueue();
 		queryClient.removeQueries();
 		router.replace("/login");
 	}
