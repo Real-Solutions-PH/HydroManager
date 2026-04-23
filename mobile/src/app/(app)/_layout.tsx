@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AIChatFab } from "@/components/ai-chat";
 import { OfflineBanner } from "@/components/offline-banner";
 import { colors } from "@/constants/theme";
@@ -23,7 +22,6 @@ const HIDDEN_TAB = {
 
 export default function AppLayout() {
 	const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-	const insets = useSafeAreaInsets();
 
 	if (!isAuthenticated) return <Redirect href="/login" />;
 
@@ -37,9 +35,6 @@ export default function AppLayout() {
 						backgroundColor: colors.tabBarBg,
 						borderTopColor: colors.tabBarTopBorder,
 						borderTopWidth: 1,
-						height: 65 + insets.bottom,
-						paddingTop: 6,
-						paddingBottom: 10 + insets.bottom,
 					},
 					tabBarActiveTintColor: colors.text,
 					tabBarInactiveTintColor: colors.textMuted,
