@@ -320,6 +320,79 @@ function RangeBar({
 	);
 }
 
+function MeterRow({
+	icon,
+	iconColor,
+	label,
+	sublabel,
+	value,
+	unit,
+	min,
+	max,
+	domainMin,
+	domainMax,
+}: {
+	icon: keyof typeof Ionicons.glyphMap;
+	iconColor: string;
+	label: string;
+	sublabel: string;
+	value: string;
+	unit: string;
+	min: number;
+	max: number;
+	domainMin: number;
+	domainMax: number;
+}) {
+	return (
+		<View style={{ flexDirection: "row", gap: spacing.sm, alignItems: "center" }}>
+			<View
+				style={{
+					width: 44,
+					height: 44,
+					borderRadius: 22,
+					backgroundColor: colors.surfaceVariant,
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+			>
+				<Ionicons name={icon} size={22} color={iconColor} />
+			</View>
+			<View style={{ flex: 1, gap: 6 }}>
+				<View
+					style={{
+						flexDirection: "row",
+						justifyContent: "space-between",
+						alignItems: "flex-end",
+					}}
+				>
+					<View style={{ flex: 1 }}>
+						<Text size="md" weight="semibold">
+							{label}
+						</Text>
+						<Text size="xs" tone="muted">
+							{sublabel}
+						</Text>
+					</View>
+					<View style={{ alignItems: "flex-end" }}>
+						<Text size="md" weight="bold">
+							{value}
+						</Text>
+						<Text size="xs" tone="muted">
+							{unit}
+						</Text>
+					</View>
+				</View>
+				<RangeBar
+					min={min}
+					max={max}
+					domainMin={domainMin}
+					domainMax={domainMax}
+				/>
+			</View>
+		</View>
+	);
+}
+
 function StatGrid({
 	stats,
 }: {
