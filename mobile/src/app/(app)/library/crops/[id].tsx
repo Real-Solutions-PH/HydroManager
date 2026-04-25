@@ -9,6 +9,21 @@ import { colors, spacing } from "@/constants/theme";
 import { useCrop } from "@/hooks/use-library";
 import type { CropGuide } from "@/lib/hydro-api";
 
+function parseRange(s: string | null | undefined): [number, number] | null {
+	if (!s) return null;
+	const parts = s.split("-").map((p) => p.trim());
+	if (parts.length !== 2) return null;
+	const min = Number.parseFloat(parts[0]);
+	const max = Number.parseFloat(parts[1]);
+	if (Number.isNaN(min) || Number.isNaN(max)) return null;
+	return [min, max];
+}
+
+function formatRange(min: number, max: number): string {
+	const isInt = Number.isInteger(min) && Number.isInteger(max);
+	return isInt ? `${min}-${max}` : `${min.toFixed(1)}-${max.toFixed(1)}`;
+}
+
 export default function CropDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const router = useRouter();
