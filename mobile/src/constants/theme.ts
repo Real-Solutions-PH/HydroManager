@@ -77,6 +77,18 @@ export const inventoryCategoryMeta = {
 	other: { color: "rgba(255, 255, 255, 0.5)", icon: "ellipsis-horizontal" },
 } as const;
 
+export const produceStatusMeta = {
+	ready: { color: "#66BB6A", icon: "checkmark-circle", label: "Ready" },
+	reserved: { color: "#FFB74D", icon: "time", label: "Reserved" },
+	sold: { color: "rgba(255, 255, 255, 0.5)", icon: "cash", label: "Sold" },
+} as const;
+
+export const expiryStatusMeta = {
+	ok: { color: "#66BB6A", icon: "checkmark-circle", label: "OK" },
+	warning: { color: "#FFB74D", icon: "warning", label: "EXPIRES SOON" },
+	expired: { color: "#EF5350", icon: "alert-circle", label: "EXPIRED" },
+} as const;
+
 export const spacing = {
 	xxs: 4,
 	xs: 8,

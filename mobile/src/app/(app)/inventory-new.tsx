@@ -32,18 +32,24 @@ export default function NewInventoryItemScreen() {
 	const [unit, setUnit] = useState<InventoryUnit>("grams");
 	const [stock, setStock] = useState("0");
 	const [threshold, setThreshold] = useState("0");
+	const [expiry, setExpiry] = useState("");
 	const [notes, setNotes] = useState("");
 
 	const create = useMutation({
-		mutationFn: () =>
-			inventoryApi.create({
+		mutationFn: () => {
+			const expiryValid =
+				expiry.length === 0 || /^\d{4}-\d{2}-\d{2}$/.test(expiry);
+			if (!expiryValid) throw new Error("Expiry date must be YYYY-MM-DD");
+			return inventoryApi.create({
 				name: name.trim(),
 				category,
 				unit,
 				current_stock: Number.parseFloat(stock) || 0,
 				low_stock_threshold: Number.parseFloat(threshold) || 0,
+				expiry_date: expiry.trim().length > 0 ? expiry.trim() : null,
 				notes: notes.trim() || undefined,
-			}),
+			});
+		},
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: ["inventory"] });
 			router.back();
@@ -174,6 +180,15 @@ export default function NewInventoryItemScreen() {
 							</Field>
 						</View>
 					</View>
+
+					<Field label="Expiry Date (YYYY-MM-DD)">
+						<Input
+							placeholder="2026-12-31"
+							value={expiry}
+							onChangeText={setExpiry}
+							autoCapitalize="none"
+						/>
+					</Field>
 
 					<Field label="Notes">
 						<Input

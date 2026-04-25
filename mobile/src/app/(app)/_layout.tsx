@@ -75,6 +75,9 @@ export default function AppLayout() {
 				<Tabs.Screen name="crops" options={HIDDEN_TAB} />
 				<Tabs.Screen name="settings" options={HIDDEN_TAB} />
 				<Tabs.Screen name="inventory-new" options={HIDDEN_TAB} />
+				<Tabs.Screen name="inventory/[id]" options={HIDDEN_TAB} />
+				<Tabs.Screen name="produce-new" options={HIDDEN_TAB} />
+				<Tabs.Screen name="produce/[id]" options={HIDDEN_TAB} />
 				<Tabs.Screen name="sale-new" options={HIDDEN_TAB} />
 				<Tabs.Screen name="setup" options={HIDDEN_TAB} />
 				<Tabs.Screen name="batch" options={HIDDEN_TAB} />
