@@ -7,10 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
+import { Select, type SelectOption } from "@/components/ui/select";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import {
+	type InventoryItem,
+	inventoryApi,
 	type PaymentStatus,
 	type Produce,
 	produceApi,
@@ -36,6 +39,7 @@ interface LineItem {
 	unit: string;
 	price: string;
 	produceId: string | null;
+	inventoryItemId: string | null;
 	custom: boolean;
 }
 
@@ -47,6 +51,7 @@ function newLine(): LineItem {
 		unit: "kg",
 		price: "0",
 		produceId: null,
+		inventoryItemId: null,
 		custom: false,
 	};
 }
@@ -60,6 +65,7 @@ function lineFromProduce(p: Produce): LineItem {
 		price:
 			p.selling_price !== null ? String(p.selling_price) : "0",
 		produceId: p.id,
+		inventoryItemId: null,
 		custom: false,
 	};
 }
@@ -74,13 +80,18 @@ export default function NewSaleScreen() {
 	const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("paid");
 	const [notes, setNotes] = useState("");
 	const [lines, setLines] = useState<LineItem[]>([newLine()]);
-	const [pickerOpenFor, setPickerOpenFor] = useState<string | null>(null);
 
 	const readyProduce = useQuery({
 		queryKey: ["produce", "ready"],
 		queryFn: () => produceApi.list({ status: "ready" }),
 	});
 	const readyList = readyProduce.data?.data ?? [];
+
+	const inventory = useQuery({
+		queryKey: ["inventory", "all"],
+		queryFn: () => inventoryApi.list(),
+	});
+	const inventoryList = inventory.data?.data ?? [];
 
 	useEffect(() => {
 		const pid = params.produce_id;
@@ -109,9 +120,19 @@ export default function NewSaleScreen() {
 			price:
 				p.selling_price !== null ? String(p.selling_price) : "0",
 			produceId: p.id,
+			inventoryItemId: null,
 			custom: false,
 		});
-		setPickerOpenFor(null);
+	}
+	function pickInventory(lineId: string, item: InventoryItem) {
+		updateLine(lineId, {
+			cropName: item.name,
+			unit: item.unit,
+			price: item.unit_cost !== null ? String(item.unit_cost) : "0",
+			produceId: null,
+			inventoryItemId: item.id,
+			custom: true,
+		});
 	}
 
 	const total = lines.reduce((sum, l) => {
@@ -124,7 +145,8 @@ export default function NewSaleScreen() {
 		(l) =>
 			l.cropName.trim().length > 0 &&
 			Number.parseFloat(l.qty) > 0 &&
-			Number.parseFloat(l.price) >= 0,
+			Number.parseFloat(l.price) >= 0 &&
+			(l.custom ? l.inventoryItemId !== null : l.produceId !== null),
 	);
 
 	const create = useMutation({
@@ -291,9 +313,17 @@ export default function NewSaleScreen() {
 								}}
 							>
 								<Pressable
-									onPress={() =>
-										setPickerOpenFor(pickerOpenFor === l.id ? null : l.id)
-									}
+									onPress={() => {
+										if (l.custom) {
+											updateLine(l.id, {
+												custom: false,
+												inventoryItemId: null,
+												cropName: "",
+												unit: "kg",
+												price: "0",
+											});
+										}
+									}}
 									style={{
 										flex: 1,
 										paddingVertical: 8,
@@ -319,9 +349,18 @@ export default function NewSaleScreen() {
 									</Text>
 								</Pressable>
 								<Pressable
-									onPress={() =>
-										updateLine(l.id, { custom: true, produceId: null })
-									}
+									onPress={() => {
+										if (!l.custom) {
+											updateLine(l.id, {
+												custom: true,
+												produceId: null,
+												inventoryItemId: null,
+												cropName: "",
+												unit: "kg",
+												price: "0",
+											});
+										}
+									}}
 									style={{
 										flex: 1,
 										paddingVertical: 8,
@@ -346,71 +385,56 @@ export default function NewSaleScreen() {
 								</Pressable>
 							</View>
 
-							{!l.custom && pickerOpenFor === l.id ? (
-								<View
-									style={{
-										gap: spacing.xxs,
-										marginBottom: spacing.sm,
-										maxHeight: 220,
-									}}
-								>
-									{readyList.length === 0 ? (
-										<Text size="sm" tone="muted">
-											No produce ready. Add some on the Inventory tab.
-										</Text>
-									) : (
-										readyList.map((p) => (
-											<Pressable
-												key={p.id}
-												onPress={() => pickProduce(l.id, p)}
-												style={{
-													padding: spacing.sm,
-													borderRadius: 10,
-													borderWidth: 1,
-													borderColor: colors.border,
-													opacity: p.expiry_status === "expired" ? 0.4 : 1,
-												}}
-												disabled={p.expiry_status === "expired"}
-											>
-												<View
-													style={{
-														flexDirection: "row",
-														justifyContent: "space-between",
-													}}
-												>
-													<Text weight="semibold">{p.name}</Text>
-													<Text size="sm" tone="muted">
-														{p.quantity} {p.unit}
-													</Text>
-												</View>
-												{p.expiry_status !== "ok" ? (
-													<Text
-														size="xs"
-														style={{
-															color:
-																p.expiry_status === "expired"
-																	? colors.error
-																	: colors.warning,
-														}}
-													>
-														{p.expiry_status === "expired"
-															? "EXPIRED"
-															: `Expires in ${p.days_until_expiry ?? "?"} days`}
-													</Text>
-												) : null}
-											</Pressable>
-										))
-									)}
-								</View>
-							) : null}
-
-							<Field label="Crop">
-								<Input
-									value={l.cropName}
-									onChangeText={(v) => updateLine(l.id, { cropName: v })}
-									placeholder="e.g. Pechay"
-									editable={l.custom || l.produceId === null}
-								/>
+							<Field label={l.custom ? "Item" : "Crop"}>
+								{(() => {
+									const options: SelectOption[] = l.custom
+										? inventoryList.map((item) => ({
+												value: item.id,
+												label: `${item.name} (${item.category})`,
+												disabled: item.current_stock <= 0,
+												trailing: `${item.current_stock} ${item.unit}`,
+											}))
+										: readyList.map((p) => ({
+												value: p.id,
+												label:
+													p.expiry_status === "expired"
+														? `${p.name} — EXPIRED`
+														: p.expiry_status === "warning"
+															? `${p.name} — expires in ${p.days_until_expiry ?? "?"}d`
+															: p.name,
+												disabled: p.expiry_status === "expired",
+												trailing: `${p.quantity} ${p.unit}`,
+											}));
+									return (
+										<Select
+											value={
+												l.custom ? l.inventoryItemId : l.produceId
+											}
+											options={options}
+											placeholder={
+												l.custom
+													? "Select inventory item"
+													: "Select produce"
+											}
+											emptyMessage={
+												l.custom
+													? "No inventory items. Add one on the Inventory tab first."
+													: "No produce ready. Add some on the Inventory tab."
+											}
+											onValueChange={(val) => {
+												if (l.custom) {
+													const item = inventoryList.find(
+														(i) => i.id === val,
+													);
+													if (item) pickInventory(l.id, item);
+												} else {
+													const p = readyList.find((r) => r.id === val);
+													if (p) pickProduce(l.id, p);
+												}
+											}}
+										/>
+									);
+								})()}
 							</Field>
 							<View style={{ flexDirection: "row", gap: spacing.xs }}>
 								<View style={{ flex: 1 }}>
