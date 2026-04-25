@@ -1,7 +1,7 @@
 """Add unit_cost to inventory_item; create produce + produce_movement tables
 
 Revision ID: d7e3f4a5b6c7
-Revises: c6a1b2d3e4f5
+Revises: d7e8f1a2b3c4
 Create Date: 2026-04-25 00:00:00.000000
 
 """
@@ -11,7 +11,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = 'd7e3f4a5b6c7'
-down_revision = 'c6a1b2d3e4f5'
+down_revision = 'd7e8f1a2b3c4'
 branch_labels = None
 depends_on = None
 

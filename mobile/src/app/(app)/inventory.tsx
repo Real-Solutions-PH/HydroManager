@@ -407,6 +407,7 @@ export function ExpiryPill({
 }) {
 	if (status === "ok") return null;
 	const meta = expiryStatusMeta[status];
+	if (!meta) return null;
 	const label =
 		status === "expired"
 			? "EXPIRED"
