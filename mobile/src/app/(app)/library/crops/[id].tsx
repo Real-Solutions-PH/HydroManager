@@ -16,6 +16,7 @@ function parseRange(s: string | null | undefined): [number, number] | null {
 	const min = Number.parseFloat(parts[0]);
 	const max = Number.parseFloat(parts[1]);
 	if (Number.isNaN(min) || Number.isNaN(max)) return null;
+	if (min > max) return null;
 	return [min, max];
 }
 
@@ -291,14 +292,17 @@ function RangeBar({
 	domainMin: number;
 	domainMax: number;
 }) {
+	const lo = Math.min(min, max);
+	const hi = Math.max(min, max);
 	const span = domainMax - domainMin;
 	const safeSpan = span > 0 ? span : 1;
-	const startPct = Math.max(0, Math.min(100, ((min - domainMin) / safeSpan) * 100));
-	const endPct = Math.max(0, Math.min(100, ((max - domainMin) / safeSpan) * 100));
+	const startPct = Math.max(0, Math.min(100, ((lo - domainMin) / safeSpan) * 100));
+	const endPct = Math.max(0, Math.min(100, ((hi - domainMin) / safeSpan) * 100));
 	const widthPct = Math.max(0, endPct - startPct);
 	return (
 		<View
 			style={{
+				position: "relative",
 				height: 8,
 				borderRadius: 999,
 				backgroundColor: colors.surfaceVariant,
