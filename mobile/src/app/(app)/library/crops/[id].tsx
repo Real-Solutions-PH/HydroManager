@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { colors, radii, spacing } from "@/constants/theme";
 import { useCrop } from "@/hooks/use-library";
 import type { CropGuide } from "@/lib/hydro-api";
 
@@ -454,6 +454,49 @@ function HarvestHighlight({ text }: { text: string | null }) {
 				</View>
 			</View>
 		</Card>
+	);
+}
+
+function HeroHeader({
+	imageUrl,
+	onBack,
+}: {
+	imageUrl: string | null;
+	onBack: () => void;
+}) {
+	return (
+		<View
+			style={{
+				height: 240,
+				borderRadius: radii.xxl,
+				overflow: "hidden",
+				backgroundColor: colors.surfaceVariant,
+			}}
+		>
+			{imageUrl ? (
+				<Image
+					source={{ uri: imageUrl }}
+					style={{ width: "100%", height: "100%" }}
+				/>
+			) : null}
+			<Pressable
+				onPress={onBack}
+				hitSlop={8}
+				style={{
+					position: "absolute",
+					top: spacing.sm,
+					left: spacing.sm,
+					width: 40,
+					height: 40,
+					borderRadius: 20,
+					backgroundColor: "rgba(0,0,0,0.45)",
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+			>
+				<Ionicons name="chevron-back" size={22} color={colors.text} />
+			</Pressable>
+		</View>
 	);
 }
 
