@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image, Pressable, ScrollView, View } from "react-native";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
@@ -39,85 +38,237 @@ export default function CropDetailScreen() {
 					gap: spacing.md,
 				}}
 			>
-				<Pressable
-					onPress={() => router.back()}
-					hitSlop={8}
-					style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-				>
-					<Ionicons name="chevron-back" size={22} color={colors.text} />
-					<Text size="sm">Back</Text>
-				</Pressable>
 				{isLoading || !crop ? (
 					<Text tone="muted">Loading...</Text>
 				) : (
-					<CropDetail crop={crop} />
+					<CropDetail crop={crop} onBack={() => router.back()} />
 				)}
 			</ScrollView>
 		</GradientBackground>
 	);
 }
 
-function CropDetail({ crop }: { crop: CropGuide }) {
+function CropDetail({
+	crop,
+	onBack,
+}: {
+	crop: CropGuide;
+	onBack: () => void;
+}) {
+	const sunlightRange = parseRange(crop.sunlight_hours);
+	const growlightRange = parseRange(crop.growlight_hours);
+	const dayTempRange = parseRange(crop.temperature_day_c);
+	const nightTempRange = parseRange(crop.temperature_night_c);
+	const waterTempRange = parseRange(crop.water_temp_c);
+	const humidityRange = parseRange(crop.humidity_pct);
+
+	type MeterDef = {
+		key: string;
+		icon: keyof typeof Ionicons.glyphMap;
+		iconColor: string;
+		label: string;
+		sublabel: string;
+		min: number;
+		max: number;
+		domainMin: number;
+		domainMax: number;
+		unit: string;
+	};
+
+	const meters: MeterDef[] = [];
+	meters.push({
+		key: "ph",
+		icon: "water-outline",
+		iconColor: colors.info,
+		label: "pH",
+		sublabel: "Soil/water pH",
+		min: crop.ph_min,
+		max: crop.ph_max,
+		domainMin: 0,
+		domainMax: 14,
+		unit: "(pH)",
+	});
+	meters.push({
+		key: "ec",
+		icon: "flash-outline",
+		iconColor: colors.warning,
+		label: "EC",
+		sublabel: "Nutrient strength",
+		min: crop.ec_min,
+		max: crop.ec_max,
+		domainMin: 0,
+		domainMax: 4,
+		unit: "(mS/cm)",
+	});
+	if (sunlightRange) {
+		meters.push({
+			key: "sunlight",
+			icon: "sunny-outline",
+			iconColor: colors.warning,
+			label: "Sunlight",
+			sublabel: "Daily hours",
+			min: sunlightRange[0],
+			max: sunlightRange[1],
+			domainMin: 0,
+			domainMax: 24,
+			unit: "(h)",
+		});
+	}
+	if (growlightRange) {
+		meters.push({
+			key: "growlight",
+			icon: "bulb-outline",
+			iconColor: colors.primaryLight,
+			label: "Growlight",
+			sublabel: "Supplemental hours",
+			min: growlightRange[0],
+			max: growlightRange[1],
+			domainMin: 0,
+			domainMax: 24,
+			unit: "(h)",
+		});
+	}
+	if (dayTempRange) {
+		meters.push({
+			key: "day-temp",
+			icon: "thermometer-outline",
+			iconColor: colors.error,
+			label: "Day temp",
+			sublabel: "Air temperature",
+			min: dayTempRange[0],
+			max: dayTempRange[1],
+			domainMin: 0,
+			domainMax: 40,
+			unit: "(°C)",
+		});
+	}
+	if (nightTempRange) {
+		meters.push({
+			key: "night-temp",
+			icon: "moon-outline",
+			iconColor: colors.info,
+			label: "Night temp",
+			sublabel: "Air temperature",
+			min: nightTempRange[0],
+			max: nightTempRange[1],
+			domainMin: 0,
+			domainMax: 40,
+			unit: "(°C)",
+		});
+	}
+	if (waterTempRange) {
+		meters.push({
+			key: "water-temp",
+			icon: "water",
+			iconColor: colors.info,
+			label: "Water temp",
+			sublabel: "Reservoir",
+			min: waterTempRange[0],
+			max: waterTempRange[1],
+			domainMin: 0,
+			domainMax: 40,
+			unit: "(°C)",
+		});
+	}
+	if (humidityRange) {
+		meters.push({
+			key: "humidity",
+			icon: "cloud-outline",
+			iconColor: colors.info,
+			label: "Humidity",
+			sublabel: "Relative humidity",
+			min: humidityRange[0],
+			max: humidityRange[1],
+			domainMin: 0,
+			domainMax: 100,
+			unit: "(%)",
+		});
+	}
+	meters.push({
+		key: "harvest",
+		icon: "leaf-outline",
+		iconColor: colors.primaryLight,
+		label: "Days to harvest",
+		sublabel: "Crop cycle",
+		min: crop.days_to_harvest_min,
+		max: crop.days_to_harvest_max,
+		domainMin: 0,
+		domainMax: 120,
+		unit: "(days)",
+	});
+	if (
+		crop.local_price_php_per_kg_min !== null &&
+		crop.local_price_php_per_kg_max !== null
+	) {
+		meters.push({
+			key: "price",
+			icon: "cash-outline",
+			iconColor: colors.success,
+			label: "Local price",
+			sublabel: "PHP per kg",
+			min: crop.local_price_php_per_kg_min,
+			max: crop.local_price_php_per_kg_max,
+			domainMin: 0,
+			domainMax: 500,
+			unit: "(₱/kg)",
+		});
+	}
+
 	return (
 		<View style={{ gap: spacing.md }}>
-			{crop.image_url ? (
-				<Image
-					source={{ uri: crop.image_url }}
-					style={{ width: "100%", height: 200, borderRadius: 16 }}
-				/>
-			) : null}
+			<HeroHeader imageUrl={crop.image_url} onBack={onBack} />
+
 			<View>
 				<Text size="xxl" weight="bold">
 					{crop.name_en}
 				</Text>
 				<Text size="sm" tone="muted">
-					{crop.name_tl}
+					{crop.name_tl} · {crop.category}
 				</Text>
-				<View
-					style={{
-						flexDirection: "row",
-						gap: spacing.xs,
-						marginTop: spacing.xs,
-						flexWrap: "wrap",
-					}}
-				>
-					<Badge label={crop.category} color={colors.primaryLight} small />
-					<Badge
-						label={`${crop.days_to_harvest_min}-${crop.days_to_harvest_max}d`}
-						color={colors.info}
-						small
-					/>
-					{crop.local_price_php_per_kg_min ? (
-						<Badge
-							label={`PHP ${crop.local_price_php_per_kg_min}-${crop.local_price_php_per_kg_max}/kg`}
-							color={colors.warning}
-							small
-						/>
-					) : null}
-				</View>
 			</View>
 
+			<HarvestHighlight text={crop.harvest_indicator} />
+
 			<Section title="General Info">
-				<StatGrid
-					stats={[
-						{ label: "pH", value: `${crop.ph_min}-${crop.ph_max}` },
-						{ label: "EC range", value: `${crop.ec_min}-${crop.ec_max}` },
-						{ label: "Sunlight", value: crop.sunlight_hours },
-						{ label: "Growlight", value: crop.growlight_hours },
-						{ label: "Day temp", value: crop.temperature_day_c },
-						{ label: "Night temp", value: crop.temperature_night_c },
-						{ label: "Water temp", value: crop.water_temp_c },
-						{ label: "Humidity", value: crop.humidity_pct },
-						{
-							label: "Yield",
-							value: crop.typical_yield_grams
-								? `${crop.typical_yield_grams}g / plant`
-								: null,
-						},
-						{ label: "Setups", value: crop.recommended_setups },
-					]}
-				/>
+				<View style={{ gap: spacing.md }}>
+					{meters.map((m) => (
+						<MeterRow
+							key={m.key}
+							icon={m.icon}
+							iconColor={m.iconColor}
+							label={m.label}
+							sublabel={m.sublabel}
+							value={formatRange(m.min, m.max)}
+							unit={m.unit}
+							min={m.min}
+							max={m.max}
+							domainMin={m.domainMin}
+							domainMax={m.domainMax}
+						/>
+					))}
+					{crop.typical_yield_grams != null ? (
+						<View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+							<View>
+								<Text size="md" weight="semibold">
+									Typical yield
+								</Text>
+								<Text size="xs" tone="muted">
+									Per plant
+								</Text>
+							</View>
+							<Text size="md" weight="bold">
+								{crop.typical_yield_grams}g
+							</Text>
+						</View>
+					) : null}
+				</View>
 			</Section>
+
+			{crop.recommended_setups ? (
+				<Section title="Setups">
+					<TagList value={crop.recommended_setups} />
+				</Section>
+			) : null}
 
 			{crop.ec_seedling != null ||
 			crop.ec_vegetative != null ||
@@ -244,14 +395,6 @@ function CropDetail({ crop }: { crop: CropGuide }) {
 							</Card>
 						))}
 					</View>
-				</Section>
-			) : null}
-
-			{crop.harvest_indicator ? (
-				<Section title="Harvest Indicator">
-					<Text size="sm" tone="subtle">
-						{crop.harvest_indicator}
-					</Text>
 				</Section>
 			) : null}
 
