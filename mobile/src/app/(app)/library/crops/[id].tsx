@@ -229,7 +229,7 @@ function CropDetail({
 			});
 		}
 		return arr;
-	}, [crop, sunlightRange, growlightRange, dayTempRange, nightTempRange, waterTempRange, humidityRange]);
+	}, [crop]);
 
 	return (
 		<View style={{ gap: spacing.md }}>
