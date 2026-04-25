@@ -3,6 +3,7 @@ import uuid
 from sqlmodel import Session, col, func, or_, select
 
 from app.modules.crops.models import CropGuide
+from app.modules.library_seed_data import load_seed_json
 
 
 def get_by_id(*, session: Session, crop_id: uuid.UUID) -> CropGuide | None:
@@ -38,12 +39,11 @@ def get_multi(
 
 
 def seed_if_empty(*, session: Session) -> int:
-    from app.modules.crops.seed import CROP_SEED
-
     existing = session.exec(select(func.count()).select_from(CropGuide)).one()
     if existing > 0:
         return 0
-    for row in CROP_SEED:
+    rows = load_seed_json("crops.json")
+    for row in rows:
         session.add(CropGuide(**row))
     session.commit()
-    return len(CROP_SEED)
+    return len(rows)

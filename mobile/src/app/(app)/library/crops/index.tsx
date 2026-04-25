@@ -1,14 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
+import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { FlatList, Image, Pressable, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
-import { type CropGuide, cropsApi } from "@/lib/hydro-api";
+import { useCrops } from "@/hooks/use-library";
+import type { CropGuide } from "@/lib/hydro-api";
 import { capitalize } from "@/lib/utils";
 
 const CATEGORIES = ["leafy", "herb", "fruiting", "other"] as const;
@@ -21,13 +22,11 @@ const CAT_COLOR: Record<Cat, string> = {
 	other: colors.info,
 };
 
-export default function CropsScreen() {
+export default function CropsListScreen() {
+	const router = useRouter();
 	const [query, setQuery] = useState("");
 	const [category, setCategory] = useState<Cat | null>(null);
-	const { data, isLoading } = useQuery({
-		queryKey: ["crops", query, category],
-		queryFn: () => cropsApi.list(query || undefined, category ?? undefined),
-	});
+	const { data, isLoading } = useCrops(query, category ?? undefined);
 
 	return (
 		<GradientBackground>
@@ -38,9 +37,20 @@ export default function CropsScreen() {
 					gap: spacing.sm,
 				}}
 			>
-				<Text size="xxl" weight="bold">
-					Crops
-				</Text>
+				<View
+					style={{
+						flexDirection: "row",
+						alignItems: "center",
+						gap: spacing.sm,
+					}}
+				>
+					<Pressable onPress={() => router.back()} hitSlop={8}>
+						<Ionicons name="chevron-back" size={26} color={colors.text} />
+					</Pressable>
+					<Text size="xxl" weight="bold">
+						Crops
+					</Text>
+				</View>
 				<SearchBar
 					value={query}
 					onChangeText={setQuery}
@@ -68,7 +78,11 @@ export default function CropsScreen() {
 			<FlatList
 				data={data?.data ?? []}
 				keyExtractor={(c) => c.id}
-				contentContainerStyle={{ padding: spacing.md, gap: spacing.sm }}
+				contentContainerStyle={{
+					padding: spacing.md,
+					paddingBottom: spacing.jumbo * 2,
+					gap: spacing.sm,
+				}}
 				ListEmptyComponent={
 					isLoading ? (
 						<Text tone="muted">Loading...</Text>
@@ -130,77 +144,65 @@ function Chip({
 
 function CropRow({ crop }: { crop: CropGuide }) {
 	return (
-		<Card>
-			<View
-				style={{
-					flexDirection: "row",
-					alignItems: "center",
-					gap: spacing.sm,
-				}}
-			>
+		<Link href={`/library/crops/${crop.id}`} asChild>
+			<Card onPress={() => {}}>
 				<View
 					style={{
-						width: 56,
-						height: 56,
-						borderRadius: 12,
-						backgroundColor: colors.glass,
+						flexDirection: "row",
 						alignItems: "center",
-						justifyContent: "center",
+						gap: spacing.sm,
 					}}
 				>
-					<Ionicons name="leaf" size={28} color={colors.primaryLight} />
+					{crop.image_url ? (
+						<Image
+							source={{ uri: crop.image_url }}
+							style={{ width: 64, height: 64, borderRadius: 12 }}
+						/>
+					) : (
+						<View
+							style={{
+								width: 64,
+								height: 64,
+								borderRadius: 12,
+								backgroundColor: colors.glass,
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+						>
+							<Ionicons name="leaf" size={28} color={colors.primaryLight} />
+						</View>
+					)}
+					<View style={{ flex: 1 }}>
+						<Text size="lg" weight="semibold">
+							{crop.name_en}
+						</Text>
+						<Text size="xs" tone="muted">
+							{crop.name_tl} · {crop.category}
+						</Text>
+						<View
+							style={{
+								flexDirection: "row",
+								gap: spacing.sm,
+								marginTop: 4,
+								flexWrap: "wrap",
+							}}
+						>
+							<Badge
+								label={`${crop.days_to_harvest_min}-${crop.days_to_harvest_max}d`}
+								color={colors.primaryLight}
+								small
+							/>
+							{crop.local_price_php_per_kg_min ? (
+								<Badge
+									label={`PHP ${crop.local_price_php_per_kg_min}-${crop.local_price_php_per_kg_max}/kg`}
+									color={colors.warning}
+									small
+								/>
+							) : null}
+						</View>
+					</View>
 				</View>
-				<View style={{ flex: 1 }}>
-					<Text size="lg" weight="semibold">
-						{crop.name_en}
-					</Text>
-					<Text size="xs" tone="muted">
-						{crop.name_tl} · {crop.category}
-					</Text>
-				</View>
-				<Badge
-					label={`${crop.days_to_harvest_min}-${crop.days_to_harvest_max}d`}
-					color={colors.primaryLight}
-					small
-				/>
-			</View>
-			<View
-				style={{
-					flexDirection: "row",
-					flexWrap: "wrap",
-					gap: spacing.md,
-					marginTop: spacing.sm,
-				}}
-			>
-				<Stat label="pH" value={`${crop.ph_min}-${crop.ph_max}`} />
-				<Stat label="EC" value={`${crop.ec_min}-${crop.ec_max}`} />
-				{crop.typical_yield_grams ? (
-					<Stat label="Yield" value={`${crop.typical_yield_grams}g`} />
-				) : null}
-			</View>
-			<Text size="xs" tone="muted" style={{ marginTop: spacing.xs }}>
-				Setups: {crop.recommended_setups}
-			</Text>
-		</Card>
-	);
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-	return (
-		<View>
-			<Text
-				size="xs"
-				tone="muted"
-				style={{
-					textTransform: "uppercase",
-					letterSpacing: 0.5,
-				}}
-			>
-				{label}
-			</Text>
-			<Text size="md" weight="semibold">
-				{value}
-			</Text>
-		</View>
+			</Card>
+		</Link>
 	);
 }

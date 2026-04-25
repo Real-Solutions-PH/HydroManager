@@ -11,7 +11,10 @@ import { colors } from "@/constants/theme";
 type Variant = "solid" | "outline" | "ghost" | "danger" | "destructive";
 type Size = "sm" | "md" | "lg" | "default" | "icon";
 
-const SIZE_STYLE: Record<Size, { height: number; paddingHorizontal?: number; width?: number }> = {
+const SIZE_STYLE: Record<
+	Size,
+	{ height: number; paddingHorizontal?: number; width?: number }
+> = {
 	sm: { height: 36, paddingHorizontal: 12 },
 	md: { height: 44, paddingHorizontal: 16 },
 	lg: { height: 48, paddingHorizontal: 20 },
