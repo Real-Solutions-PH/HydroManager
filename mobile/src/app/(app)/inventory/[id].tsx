@@ -18,7 +18,7 @@ import {
 } from "@/constants/theme";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { inventoryApi, type MovementType } from "@/lib/hydro-api";
-import { handleError } from "@/lib/utils";
+import { formatPHP, handleError } from "@/lib/utils";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -40,6 +40,7 @@ export default function InventoryDetailScreen() {
 
 	const [name, setName] = useState("");
 	const [threshold, setThreshold] = useState("0");
+	const [unitCost, setUnitCost] = useState("");
 	const [expiry, setExpiry] = useState("");
 	const [notes, setNotes] = useState("");
 	const [movementType, setMovementType] = useState<MovementType | null>(null);
@@ -48,6 +49,9 @@ export default function InventoryDetailScreen() {
 		if (item.data) {
 			setName(item.data.name);
 			setThreshold(String(item.data.low_stock_threshold ?? 0));
+			setUnitCost(
+				item.data.unit_cost !== null ? String(item.data.unit_cost) : "",
+			);
 			setExpiry(item.data.expiry_date ?? "");
 			setNotes(item.data.notes ?? "");
 		}
@@ -60,6 +64,8 @@ export default function InventoryDetailScreen() {
 			return inventoryApi.update(id, {
 				name: name.trim(),
 				low_stock_threshold: Number.parseFloat(threshold) || 0,
+				unit_cost:
+					unitCost.trim().length > 0 ? Number.parseFloat(unitCost) : null,
 				expiry_date: expiry.trim().length > 0 ? expiry.trim() : null,
 				notes: notes.trim() || undefined,
 			});
@@ -192,6 +198,11 @@ export default function InventoryDetailScreen() {
 							<Text size="xs" tone="muted">
 								Min {it.low_stock_threshold} {it.unit}
 							</Text>
+							{it.unit_cost !== null ? (
+								<Text size="sm" tone="subtle" style={{ marginTop: 4 }}>
+									Cost {formatPHP(it.unit_cost)} / {it.unit}
+								</Text>
+							) : null}
 						</View>
 					</View>
 					<View style={{ flexDirection: "row", gap: spacing.xs }}>
@@ -232,6 +243,14 @@ export default function InventoryDetailScreen() {
 							keyboardType="numeric"
 							value={threshold}
 							onChangeText={setThreshold}
+						/>
+					</Field>
+					<Field label="Unit cost (₱)">
+						<Input
+							keyboardType="numeric"
+							value={unitCost}
+							onChangeText={setUnitCost}
+							placeholder="0.00"
 						/>
 					</Field>
 					<Field label="Expiry date (YYYY-MM-DD)">

@@ -27,5 +27,6 @@ from app.modules.items.models import Item  # noqa: F401
 from app.modules.library_guides.models import LibraryGuide  # noqa: F401
 from app.modules.library_pests.models import LibraryPest  # noqa: F401
 from app.modules.ocr.models import OcrDocument  # noqa: F401
+from app.modules.produce.models import Produce, ProduceMovement  # noqa: F401
 from app.modules.sales.models import OverheadCost, Sale, SaleItem  # noqa: F401
 from app.modules.setups.models import Setup, SetupPhoto, SetupSlot  # noqa: F401

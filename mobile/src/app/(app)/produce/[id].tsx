@@ -54,8 +54,8 @@ export default function ProduceDetailScreen() {
 			setStatus(item.data.status);
 			setExpiry(item.data.expiry_date ?? "");
 			setPrice(
-				item.data.suggested_unit_price !== null
-					? String(item.data.suggested_unit_price)
+				item.data.selling_price !== null
+					? String(item.data.selling_price)
 					: "",
 			);
 			setNotes(item.data.notes ?? "");
@@ -72,7 +72,7 @@ export default function ProduceDetailScreen() {
 				unit: unit.trim(),
 				status,
 				expiry_date: expiry.trim() || null,
-				suggested_unit_price:
+				selling_price:
 					price.trim().length > 0 ? Number.parseFloat(price) : null,
 				notes: notes.trim() || undefined,
 			});
@@ -182,9 +182,9 @@ export default function ProduceDetailScreen() {
 					<Text size="xs" tone="muted">
 						Harvested {new Date(it.harvested_at).toLocaleDateString()}
 					</Text>
-					{it.suggested_unit_price !== null ? (
+					{it.selling_price !== null ? (
 						<Text size="sm" tone="subtle" style={{ marginTop: 4 }}>
-							Suggested {formatPHP(it.suggested_unit_price)} / {it.unit}
+							{formatPHP(it.selling_price)} / {it.unit}
 						</Text>
 					) : null}
 					{it.status === "ready" ? (
@@ -266,7 +266,7 @@ export default function ProduceDetailScreen() {
 							autoCapitalize="none"
 						/>
 					</Field>
-					<Field label="Suggested unit price (₱)">
+					<Field label="Selling price (₱)">
 						<Input
 							keyboardType="numeric"
 							value={price}
