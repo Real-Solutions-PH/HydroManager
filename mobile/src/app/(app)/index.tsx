@@ -61,7 +61,7 @@ export default function HomeScreen() {
 						</Text>
 					</View>
 					<View style={{ flexDirection: "row", gap: spacing.xs }}>
-						<Link href="/crops" asChild>
+						<Link href="/library/crops" asChild>
 							<Pressable
 								style={{
 									width: 40,

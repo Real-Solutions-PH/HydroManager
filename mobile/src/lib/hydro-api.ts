@@ -129,6 +129,20 @@ export interface InventoryMovement {
 	notes: string | null;
 }
 
+export interface CropRisk {
+	title: string;
+	description: string;
+	mitigation: string;
+}
+
+export interface CropGrowthStage {
+	stage: string;
+	day_min: number;
+	day_max: number;
+	description: string;
+	actions: string[];
+}
+
 export interface CropGuide {
 	id: string;
 	name_en: string;
@@ -148,6 +162,58 @@ export interface CropGuide {
 	common_issues: string | null;
 	harvest_indicator: string | null;
 	image_key: string | null;
+	source: string | null;
+	image_url: string | null;
+	ec_seedling: number | null;
+	ec_vegetative: number | null;
+	ec_mature: number | null;
+	ec_fruiting: number | null;
+	water_temp_c: string | null;
+	humidity_pct: string | null;
+	growlight_hours: string | null;
+	local_price_php_per_kg_min: number | null;
+	local_price_php_per_kg_max: number | null;
+	tips: string[] | null;
+	risks: CropRisk[] | null;
+	growth_stages: CropGrowthStage[] | null;
+}
+
+export type GuideCategory =
+	| "setup"
+	| "nutrition"
+	| "business"
+	| "safety"
+	| "operations"
+	| "other";
+
+export interface LibraryGuide {
+	id: string;
+	title: string;
+	summary: string;
+	category: GuideCategory;
+	body_md: string;
+	image_key: string | null;
+	image_url: string | null;
+	read_time_min: number | null;
+	tags: string[] | null;
+	source: string | null;
+}
+
+export type PestKind = "pest" | "disease" | "deficiency";
+export type PestSeverity = "low" | "medium" | "high";
+
+export interface LibraryPest {
+	id: string;
+	name: string;
+	kind: PestKind;
+	severity: PestSeverity;
+	affected_crops: string[] | null;
+	symptoms: string[] | null;
+	causes: string[] | null;
+	prevention: string[] | null;
+	treatment: string[] | null;
+	image_key: string | null;
+	image_url: string | null;
 	source: string | null;
 }
 
@@ -281,6 +347,36 @@ export const cropsApi = {
 	async get(id: string): Promise<CropGuide> {
 		const r = await api.get(`${V1}/crops/${id}`);
 		return r.data;
+	},
+};
+
+export const libraryApi = {
+	guides: {
+		async list(
+			query?: string,
+			category?: GuideCategory,
+		): Promise<Paged<LibraryGuide>> {
+			const r = await api.get(`${V1}/library/guides/`, {
+				params: { query, category },
+			});
+			return r.data;
+		},
+		async get(id: string): Promise<LibraryGuide> {
+			const r = await api.get(`${V1}/library/guides/${id}`);
+			return r.data;
+		},
+	},
+	pests: {
+		async list(query?: string, kind?: PestKind): Promise<Paged<LibraryPest>> {
+			const r = await api.get(`${V1}/library/pests/`, {
+				params: { query, kind },
+			});
+			return r.data;
+		},
+		async get(id: string): Promise<LibraryPest> {
+			const r = await api.get(`${V1}/library/pests/${id}`);
+			return r.data;
+		},
 	},
 };
 

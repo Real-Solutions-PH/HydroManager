@@ -1,0 +1,57 @@
+[
+  {
+    "title": "Mixing Nutrient Solution from Concentrate",
+    "summary": "Step-by-step on diluting Part A and Part B without nutrient lockout.",
+    "category": "nutrition",
+    "body_md": "## Equipment\n- 20 L mixing bucket\n- TDS / EC meter\n- pH meter and calibration solution\n\n## Steps\n1. Fill bucket with 18 L of room-temp water.\n2. Add **Part A** first — stir 30 seconds.\n3. Add **Part B** — never together with A in concentrate form.\n4. Adjust pH to target with phosphoric acid or potassium hydroxide.\n5. Verify EC matches crop stage chart.\n\n## Tips\n- Always calibrate meters weekly.\n- Use cool water — heat speeds nutrient breakdown.",
+    "image_url": "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=800",
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": ["nutrients", "operations", "beginner"],
+    "source": "Real Solutions PH knowledge base"
+  },
+  {
+    "title": "Choosing the Right Hydroponic Setup for Your Crop",
+    "summary": "DFT, NFT, Kratky, Dutch Bucket, SNAP — pick by crop weight and water tolerance.",
+    "category": "setup",
+    "body_md": "## Quick Match\n| Crop class | Best setup | Why |\n|---|---|---|\n| Lightweight leafy | DFT, NFT, Kratky | Constant flow, no fruiting load |\n| Herbs | DFT, Kratky | Low EC, easy maintenance |\n| Heavy fruiting | Dutch Bucket | Supports root mass + trellising |\n| Beginner farm | SNAP | Passive, no electricity |\n\n## Notes\n- DFT is the safest entry point — pumps fail gracefully.\n- NFT requires steady power; backup pump recommended.\n- Dutch Bucket needs more space and structural support.",
+    "image_url": "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=800",
+    "image_key": null,
+    "read_time_min": 6,
+    "tags": ["setup", "planning"],
+    "source": "HydroGuide editorial"
+  },
+  {
+    "title": "Daily Operations Checklist for Staff",
+    "summary": "Morning and afternoon routine to keep batches healthy.",
+    "category": "business",
+    "body_md": "## Morning (06:00 - 07:00)\n- Inspect pumps and aerators.\n- Check pH and EC of each reservoir.\n- Note any wilting, discoloration, or pest signs.\n- Top up reservoirs to mark line.\n\n## Mid-day (12:00)\n- Verify shade-cloth deployed if outdoor.\n- Spot-check water temperature.\n\n## Afternoon (16:00 - 17:00)\n- Harvest mature batches.\n- Pack and pre-cool produce.\n- Log all observations in HydroGuide app.\n\n## End of week\n- Drain and refresh nutrient solution.\n- Sanitize empty channels with 1% H2O2.",
+    "image_url": "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=800",
+    "image_key": null,
+    "read_time_min": 5,
+    "tags": ["staff", "operations", "checklist"],
+    "source": "Real Solutions PH SOP"
+  },
+  {
+    "title": "Pricing Your Hydroponic Produce in Manila",
+    "summary": "Market segments, price benchmarks, and margin tips for owners.",
+    "category": "business",
+    "body_md": "## Channels\n- **Direct to consumer (DTC):** highest margin, requires logistics.\n- **Restaurants:** stable volume, weekly invoicing.\n- **Wet markets:** fastest cash but lowest margin.\n- **Online (Lazada / Shopee):** good for premium herbs.\n\n## Benchmark price ranges\n- Romaine lettuce: PHP 200-350/kg DTC\n- Basil: PHP 400-900/kg restaurant\n- Cherry tomato: PHP 150-320/kg DTC\n\n## Margin tips\n- Bundle slow movers with hero crops.\n- Offer 10% subscription discount to lock revenue.\n- Track CoGS in HydroGuide Sales tab to know your floor.",
+    "image_url": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=800",
+    "image_key": null,
+    "read_time_min": 7,
+    "tags": ["pricing", "business", "owner"],
+    "source": "DA-AMAS, HydroGuide market notes"
+  },
+  {
+    "title": "Hygiene and Biosecurity Basics",
+    "summary": "Prevent disease entry and cross-contamination between batches.",
+    "category": "safety",
+    "body_md": "## Entry protocol\n- Footbath with 1% bleach at greenhouse entrance.\n- Hand sanitizer before handling plants.\n\n## Tools\n- Sterilize scissors with 70% alcohol between batches.\n- Color-code tools per zone (nursery / production / harvest).\n\n## Reservoirs\n- Drain and scrub every 14 days.\n- Replace airline tubing quarterly.\n- Cover reservoirs to block algae and insect oviposition.",
+    "image_url": "https://images.unsplash.com/photo-1584473457409-ce95a9c00017?w=800",
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": ["safety", "biosecurity"],
+    "source": "DA-BPI Phytosanitary"
+  }
+]

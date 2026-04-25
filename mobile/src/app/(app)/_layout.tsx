@@ -1,5 +1,6 @@
 import { Redirect, Tabs } from "expo-router";
 import {
+	BookOpen,
 	CheckSquare,
 	DollarSign,
 	Grid3x3,
@@ -27,6 +28,7 @@ const TAB_ITEMS: InteractiveMenuItem[] = [
 	{ key: "checklist", label: "Tasks", icon: CheckSquare },
 	{ key: "inventory", label: "Inventory", icon: Package },
 	{ key: "sales", label: "Sales", icon: DollarSign },
+	{ key: "library", label: "Library", icon: BookOpen },
 ];
 
 export default function AppLayout() {
@@ -72,7 +74,7 @@ export default function AppLayout() {
 				<Tabs.Screen name="checklist" options={{ title: "Tasks" }} />
 				<Tabs.Screen name="inventory" options={{ title: "Inventory" }} />
 				<Tabs.Screen name="sales" options={{ title: "Sales" }} />
-				<Tabs.Screen name="crops" options={HIDDEN_TAB} />
+				<Tabs.Screen name="library" options={{ title: "Library" }} />
 				<Tabs.Screen name="settings" options={HIDDEN_TAB} />
 				<Tabs.Screen name="inventory-new" options={HIDDEN_TAB} />
 				<Tabs.Screen name="sale-new" options={HIDDEN_TAB} />
