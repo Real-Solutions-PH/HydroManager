@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { router } from "expo-router";
-import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,6 +12,8 @@ import { colors, spacing } from "@/constants/theme";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import {
 	type PaymentStatus,
+	type Produce,
+	produceApi,
 	type SaleChannel,
 	salesApi,
 } from "@/lib/hydro-api";
@@ -33,6 +35,8 @@ interface LineItem {
 	qty: string;
 	unit: string;
 	price: string;
+	produceId: string | null;
+	custom: boolean;
 }
 
 function newLine(): LineItem {
@@ -42,6 +46,21 @@ function newLine(): LineItem {
 		qty: "1",
 		unit: "kg",
 		price: "0",
+		produceId: null,
+		custom: false,
+	};
+}
+
+function lineFromProduce(p: Produce): LineItem {
+	return {
+		id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+		cropName: p.name,
+		qty: "1",
+		unit: p.unit,
+		price:
+			p.suggested_unit_price !== null ? String(p.suggested_unit_price) : "0",
+		produceId: p.id,
+		custom: false,
 	};
 }
 
@@ -49,11 +68,28 @@ export default function NewSaleScreen() {
 	const { t } = useT();
 	const qc = useQueryClient();
 	const toast = useCustomToast();
+	const params = useLocalSearchParams<{ produce_id?: string }>();
 	const [buyer, setBuyer] = useState("");
 	const [channel, setChannel] = useState<SaleChannel>("direct");
 	const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("paid");
 	const [notes, setNotes] = useState("");
 	const [lines, setLines] = useState<LineItem[]>([newLine()]);
+	const [pickerOpenFor, setPickerOpenFor] = useState<string | null>(null);
+
+	const readyProduce = useQuery({
+		queryKey: ["produce", "ready"],
+		queryFn: () => produceApi.list({ status: "ready" }),
+	});
+	const readyList = readyProduce.data?.data ?? [];
+
+	useEffect(() => {
+		const pid = params.produce_id;
+		if (!pid || readyList.length === 0) return;
+		const p = readyList.find((r) => r.id === pid);
+		if (p && lines.length === 1 && lines[0].cropName === "") {
+			setLines([lineFromProduce(p)]);
+		}
+	}, [readyList.length, params.produce_id]);
 
 	function updateLine(id: string, patch: Partial<LineItem>) {
 		setLines((prev) => prev.map((l) => (l.id === id ? { ...l, ...patch } : l)));
@@ -65,6 +101,17 @@ export default function NewSaleScreen() {
 		setLines((prev) =>
 			prev.length <= 1 ? prev : prev.filter((l) => l.id !== id),
 		);
+	}
+	function pickProduce(lineId: string, p: Produce) {
+		updateLine(lineId, {
+			cropName: p.name,
+			unit: p.unit,
+			price:
+				p.suggested_unit_price !== null ? String(p.suggested_unit_price) : "0",
+			produceId: p.id,
+			custom: false,
+		});
+		setPickerOpenFor(null);
 	}
 
 	const total = lines.reduce((sum, l) => {
@@ -92,11 +139,13 @@ export default function NewSaleScreen() {
 					quantity: Number.parseFloat(l.qty) || 0,
 					unit: l.unit.trim() || "kg",
 					unit_price: Number.parseFloat(l.price) || 0,
+					linked_produce_id: l.produceId,
 				})),
 			}),
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: ["sales"] });
 			qc.invalidateQueries({ queryKey: ["sales-dashboard"] });
+			qc.invalidateQueries({ queryKey: ["produce"] });
 			router.back();
 		},
 		onError: (err) => toast.error(handleError(err)),
@@ -233,11 +282,134 @@ export default function NewSaleScreen() {
 									</Pressable>
 								) : null}
 							</View>
+
+							<View
+								style={{
+									flexDirection: "row",
+									gap: spacing.xs,
+									marginBottom: spacing.sm,
+								}}
+							>
+								<Pressable
+									onPress={() =>
+										setPickerOpenFor(pickerOpenFor === l.id ? null : l.id)
+									}
+									style={{
+										flex: 1,
+										paddingVertical: 8,
+										borderRadius: 10,
+										borderWidth: 1,
+										borderColor: !l.custom
+											? colors.primaryLight
+											: colors.border,
+										backgroundColor: !l.custom
+											? `${colors.primaryLight}26`
+											: "transparent",
+										alignItems: "center",
+									}}
+								>
+									<Text
+										size="sm"
+										weight="semibold"
+										style={{
+											color: !l.custom ? colors.primaryLight : colors.text,
+										}}
+									>
+										From produce
+									</Text>
+								</Pressable>
+								<Pressable
+									onPress={() =>
+										updateLine(l.id, { custom: true, produceId: null })
+									}
+									style={{
+										flex: 1,
+										paddingVertical: 8,
+										borderRadius: 10,
+										borderWidth: 1,
+										borderColor: l.custom ? colors.primaryLight : colors.border,
+										backgroundColor: l.custom
+											? `${colors.primaryLight}26`
+											: "transparent",
+										alignItems: "center",
+									}}
+								>
+									<Text
+										size="sm"
+										weight="semibold"
+										style={{
+											color: l.custom ? colors.primaryLight : colors.text,
+										}}
+									>
+										Custom
+									</Text>
+								</Pressable>
+							</View>
+
+							{!l.custom && pickerOpenFor === l.id ? (
+								<View
+									style={{
+										gap: spacing.xxs,
+										marginBottom: spacing.sm,
+										maxHeight: 220,
+									}}
+								>
+									{readyList.length === 0 ? (
+										<Text size="sm" tone="muted">
+											No produce ready. Add some on the Inventory tab.
+										</Text>
+									) : (
+										readyList.map((p) => (
+											<Pressable
+												key={p.id}
+												onPress={() => pickProduce(l.id, p)}
+												style={{
+													padding: spacing.sm,
+													borderRadius: 10,
+													borderWidth: 1,
+													borderColor: colors.border,
+													opacity: p.expiry_status === "expired" ? 0.4 : 1,
+												}}
+												disabled={p.expiry_status === "expired"}
+											>
+												<View
+													style={{
+														flexDirection: "row",
+														justifyContent: "space-between",
+													}}
+												>
+													<Text weight="semibold">{p.name}</Text>
+													<Text size="sm" tone="muted">
+														{p.quantity} {p.unit}
+													</Text>
+												</View>
+												{p.expiry_status !== "ok" ? (
+													<Text
+														size="xs"
+														style={{
+															color:
+																p.expiry_status === "expired"
+																	? colors.error
+																	: colors.warning,
+														}}
+													>
+														{p.expiry_status === "expired"
+															? "EXPIRED"
+															: `Expires in ${p.days_until_expiry ?? "?"} days`}
+													</Text>
+												) : null}
+											</Pressable>
+										))
+									)}
+								</View>
+							) : null}
+
 							<Field label="Crop">
 								<Input
 									value={l.cropName}
 									onChangeText={(v) => updateLine(l.id, { cropName: v })}
 									placeholder="e.g. Pechay"
+									editable={l.custom || l.produceId === null}
 								/>
 							</Field>
 							<View style={{ flexDirection: "row", gap: spacing.xs }}>

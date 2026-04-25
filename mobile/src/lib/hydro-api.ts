@@ -104,6 +104,7 @@ export type InventoryCategory =
 	| "other";
 export type InventoryUnit = "grams" | "pieces" | "liters" | "milliliters";
 export type MovementType = "restock" | "consume" | "adjust";
+export type ExpiryStatus = "ok" | "warning" | "expired";
 
 export interface InventoryItem {
 	id: string;
@@ -116,6 +117,10 @@ export interface InventoryItem {
 	notes: string | null;
 	created_at: string;
 	is_low_stock: boolean;
+	expiry_date: string | null;
+	expiry_status: ExpiryStatus;
+	days_until_expiry: number | null;
+	last_restocked_at: string | null;
 }
 
 export interface InventoryMovement {
@@ -141,6 +146,40 @@ export interface CropGrowthStage {
 	day_max: number;
 	description: string;
 	actions: string[];
+}
+export type ProduceStatus = "ready" | "reserved" | "sold";
+export type ProduceMovementType =
+	| "harvest"
+	| "reserve"
+	| "sell"
+	| "discard"
+	| "adjust";
+
+export interface Produce {
+	id: string;
+	owner_id: string;
+	name: string;
+	source_batch_id: string | null;
+	quantity: number;
+	unit: string;
+	status: ProduceStatus;
+	harvested_at: string;
+	expiry_date: string | null;
+	expiry_status: ExpiryStatus;
+	days_until_expiry: number | null;
+	suggested_unit_price: number | null;
+	notes: string | null;
+	created_at: string;
+}
+
+export interface ProduceMovement {
+	id: string;
+	produce_id: string;
+	movement_type: ProduceMovementType;
+	quantity: number;
+	related_sale_id: string | null;
+	occurred_at: string;
+	notes: string | null;
 }
 
 export interface CropGuide {
@@ -300,10 +339,20 @@ export const batchesApi = {
 };
 
 export const inventoryApi = {
-	async list(category?: InventoryCategory): Promise<Paged<InventoryItem>> {
+	async list(params?: {
+		category?: InventoryCategory;
+		near_expiry?: boolean;
+	}): Promise<Paged<InventoryItem>> {
 		const r = await api.get(`${V1}/inventory/items`, {
-			params: category ? { category } : undefined,
+			params: {
+				category: params?.category,
+				near_expiry: params?.near_expiry ? true : undefined,
+			},
 		});
+		return r.data;
+	},
+	async get(id: string): Promise<InventoryItem> {
+		const r = await api.get(`${V1}/inventory/items/${id}`);
 		return r.data;
 	},
 	async create(data: {
@@ -312,9 +361,22 @@ export const inventoryApi = {
 		unit: InventoryUnit;
 		current_stock: number;
 		low_stock_threshold: number;
+		expiry_date?: string | null;
 		notes?: string;
 	}): Promise<InventoryItem> {
 		const r = await api.post(`${V1}/inventory/items`, data);
+		return r.data;
+	},
+	async update(
+		id: string,
+		data: {
+			name?: string;
+			low_stock_threshold?: number;
+			expiry_date?: string | null;
+			notes?: string;
+		},
+	): Promise<InventoryItem> {
+		const r = await api.patch(`${V1}/inventory/items/${id}`, data);
 		return r.data;
 	},
 	async movement(
@@ -329,8 +391,82 @@ export const inventoryApi = {
 		const r = await api.post(`${V1}/inventory/items/${id}/movements`, data);
 		return r.data;
 	},
+	async movements(id: string): Promise<Paged<InventoryMovement>> {
+		const r = await api.get(`${V1}/inventory/items/${id}/movements`);
+		return r.data;
+	},
 	async delete(id: string): Promise<void> {
 		await api.delete(`${V1}/inventory/items/${id}`);
+	},
+};
+
+export const produceApi = {
+	async list(params?: {
+		status?: ProduceStatus | "all";
+		near_expiry?: boolean;
+	}): Promise<Paged<Produce>> {
+		const r = await api.get(`${V1}/produce/`, {
+			params: {
+				status:
+					params?.status && params.status !== "all" ? params.status : undefined,
+				near_expiry: params?.near_expiry ? true : undefined,
+			},
+		});
+		return r.data;
+	},
+	async get(id: string): Promise<Produce> {
+		const r = await api.get(`${V1}/produce/${id}`);
+		return r.data;
+	},
+	async create(data: {
+		name: string;
+		source_batch_id?: string | null;
+		quantity: number;
+		unit: string;
+		harvested_at: string;
+		expiry_date?: string | null;
+		suggested_unit_price?: number | null;
+		notes?: string;
+	}): Promise<Produce> {
+		const r = await api.post(`${V1}/produce/`, data);
+		return r.data;
+	},
+	async update(
+		id: string,
+		data: {
+			name?: string;
+			quantity?: number;
+			unit?: string;
+			status?: ProduceStatus;
+			expiry_date?: string | null;
+			suggested_unit_price?: number | null;
+			notes?: string;
+		},
+	): Promise<Produce> {
+		const r = await api.patch(`${V1}/produce/${id}`, data);
+		return r.data;
+	},
+	async movement(
+		id: string,
+		data: {
+			movement_type: ProduceMovementType;
+			quantity: number;
+			notes?: string;
+		},
+	): Promise<ProduceMovement> {
+		const r = await api.post(`${V1}/produce/${id}/movements`, data);
+		return r.data;
+	},
+	async movements(id: string): Promise<Paged<ProduceMovement>> {
+		const r = await api.get(`${V1}/produce/${id}/movements`);
+		return r.data;
+	},
+	async nearExpiry(): Promise<Paged<Produce>> {
+		const r = await api.get(`${V1}/produce/near-expiry`);
+		return r.data;
+	},
+	async delete(id: string): Promise<void> {
+		await api.delete(`${V1}/produce/${id}`);
 	},
 };
 
@@ -400,6 +536,15 @@ export const INVENTORY_CATEGORY_COLOR: Record<
 	other: { fg: "rgba(255,255,255,0.5)", bg: "rgba(255,255,255,0.06)" },
 };
 
+export const PRODUCE_STATUS_COLOR: Record<
+	ProduceStatus,
+	{ fg: string; bg: string }
+> = {
+	ready: { fg: "#66BB6A", bg: "rgba(102,187,106,0.15)" },
+	reserved: { fg: "#FFB74D", bg: "rgba(255,183,77,0.15)" },
+	sold: { fg: "rgba(255,255,255,0.5)", bg: "rgba(255,255,255,0.06)" },
+};
+
 export type UserTier = "free" | "grower" | "pro";
 export type SaleChannel = "direct" | "market" | "delivery" | "resto" | "other";
 export type PaymentStatus = "paid" | "pending" | "cancelled";
@@ -411,6 +556,7 @@ export interface SaleItem {
 	unit: string;
 	unit_price: number;
 	linked_batch_id: string | null;
+	linked_produce_id: string | null;
 }
 
 export interface Sale {
@@ -425,13 +571,22 @@ export interface Sale {
 }
 
 export interface Dashboard {
+	gross_current_week: number;
 	gross_current_month: number;
 	gross_last_90_days: number;
 	gross_ytd: number;
+	cogs_current_week: number;
 	cogs_current_month: number;
 	cogs_last_90_days: number;
 	cogs_ytd: number;
+	net_current_week: number;
+	net_current_month: number;
+	net_last_90_days: number;
+	net_ytd: number;
 	net_margin_pct: number;
+	sold_count_week: number;
+	sold_count_month: number;
+	produce_ready_count: number;
 	top_crops: { crop: string; revenue: number }[];
 	channel_revenue: { channel: string; revenue: number }[];
 }
@@ -479,6 +634,7 @@ export const salesApi = {
 			unit: string;
 			unit_price: number;
 			linked_batch_id?: string | null;
+			linked_produce_id?: string | null;
 		}>;
 	}): Promise<Sale> {
 		const r = await api.post(`${V1}/sales/`, data);
