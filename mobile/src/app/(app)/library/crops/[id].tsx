@@ -441,6 +441,8 @@ function Section({
 	);
 }
 
+const RANGE_BAR_SEGMENTS = 5;
+
 function RangeBar({
 	min,
 	max,
@@ -456,30 +458,27 @@ function RangeBar({
 	const hi = Math.max(min, max);
 	const span = domainMax - domainMin;
 	const safeSpan = span > 0 ? span : 1;
-	const startPct = Math.max(0, Math.min(100, ((lo - domainMin) / safeSpan) * 100));
-	const endPct = Math.max(0, Math.min(100, ((hi - domainMin) / safeSpan) * 100));
-	const widthPct = Math.max(0, endPct - startPct);
+	const segmentSpan = safeSpan / RANGE_BAR_SEGMENTS;
 	return (
-		<View
-			style={{
-				position: "relative",
-				height: 8,
-				borderRadius: 999,
-				backgroundColor: colors.surfaceVariant,
-				overflow: "hidden",
-			}}
-		>
-			<View
-				style={{
-					position: "absolute",
-					left: `${startPct}%`,
-					width: `${widthPct}%`,
-					top: 0,
-					bottom: 0,
-					backgroundColor: colors.primaryLight,
-					borderRadius: 999,
-				}}
-			/>
+		<View style={{ flexDirection: "row", gap: 4 }}>
+			{Array.from({ length: RANGE_BAR_SEGMENTS }).map((_, i) => {
+				const segStart = domainMin + i * segmentSpan;
+				const segEnd = segStart + segmentSpan;
+				const inRange = segEnd > lo && segStart < hi;
+				return (
+					<View
+						key={`seg-${i}`}
+						style={{
+							flex: 1,
+							height: 8,
+							borderRadius: 999,
+							backgroundColor: inRange
+								? colors.primaryLight
+								: colors.surfaceVariant,
+						}}
+					/>
+				);
+			})}
 		</View>
 	);
 }
