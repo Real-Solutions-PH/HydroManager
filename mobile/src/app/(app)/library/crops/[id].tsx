@@ -280,6 +280,46 @@ function Section({
 	);
 }
 
+function RangeBar({
+	min,
+	max,
+	domainMin,
+	domainMax,
+}: {
+	min: number;
+	max: number;
+	domainMin: number;
+	domainMax: number;
+}) {
+	const span = domainMax - domainMin;
+	const safeSpan = span > 0 ? span : 1;
+	const startPct = Math.max(0, Math.min(100, ((min - domainMin) / safeSpan) * 100));
+	const endPct = Math.max(0, Math.min(100, ((max - domainMin) / safeSpan) * 100));
+	const widthPct = Math.max(0, endPct - startPct);
+	return (
+		<View
+			style={{
+				height: 8,
+				borderRadius: 999,
+				backgroundColor: colors.surfaceVariant,
+				overflow: "hidden",
+			}}
+		>
+			<View
+				style={{
+					position: "absolute",
+					left: `${startPct}%`,
+					width: `${widthPct}%`,
+					top: 0,
+					bottom: 0,
+					backgroundColor: colors.primaryLight,
+					borderRadius: 999,
+				}}
+			/>
+		</View>
+	);
+}
+
 function StatGrid({
 	stats,
 }: {
