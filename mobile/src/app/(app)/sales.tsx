@@ -1,22 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, router } from "expo-router";
-import {
-	Alert,
-	FlatList,
-	Linking,
-	Pressable,
-	ScrollView,
-	View,
-} from "react-native";
+import { Alert, FlatList, Pressable, ScrollView, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
 import { useCustomToast } from "@/hooks/useCustomToast";
-import { paymongoApi, salesApi, usersApi } from "@/lib/hydro-api";
+import { salesApi, usersApi } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
 import { formatPHP, handleError } from "@/lib/utils";
 
@@ -25,17 +17,14 @@ export default function SalesScreen() {
 	const toast = useCustomToast();
 	const qc = useQueryClient();
 	const me = useQuery({ queryKey: ["me"], queryFn: () => usersApi.me() });
-	const isPro = me.data?.tier === "pro";
 
 	const sales = useQuery({
 		queryKey: ["sales"],
 		queryFn: () => salesApi.list(),
-		enabled: isPro,
 	});
 	const dashboard = useQuery({
 		queryKey: ["sales-dashboard"],
 		queryFn: () => salesApi.dashboard(),
-		enabled: isPro,
 	});
 
 	const del = useMutation({
@@ -73,48 +62,6 @@ export default function SalesScreen() {
 				</View>
 			</GradientBackground>
 		);
-
-	if (!isPro) {
-		return (
-			<GradientBackground>
-				<View style={{ padding: spacing.md, paddingTop: spacing.xs }}>
-					<Text size="xxl" weight="bold">
-						{t("sales.title")}
-					</Text>
-				</View>
-				<View style={{ padding: spacing.md }}>
-					<Card>
-						<Ionicons
-							name="lock-closed"
-							size={32}
-							color={colors.primaryLight}
-						/>
-						<Text
-							size="lg"
-							weight="bold"
-							style={{ marginTop: spacing.sm, marginBottom: spacing.xs }}
-						>
-							Pro-only feature
-						</Text>
-						<Text tone="subtle" style={{ marginBottom: spacing.md }}>
-							{t("sales.pro_required")}
-						</Text>
-						<Button
-							label={t("sales.upgrade")}
-							onPress={async () => {
-								try {
-									const r = await paymongoApi.checkout("pro", "monthly");
-									Linking.openURL(r.checkout_url);
-								} catch (e) {
-									Alert.alert("Error", handleError(e));
-								}
-							}}
-						/>
-					</Card>
-				</View>
-			</GradientBackground>
-		);
-	}
 
 	const d = dashboard.data;
 	const netMargin = d?.net_margin_pct ?? 0;
