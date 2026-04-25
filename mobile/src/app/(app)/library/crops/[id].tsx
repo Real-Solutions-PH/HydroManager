@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useMemo } from "react";
 import { Image, Pressable, ScrollView, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -22,6 +23,19 @@ function parseRange(s: string | null | undefined): [number, number] | null {
 function formatRange(min: number, max: number): string {
 	const isInt = Number.isInteger(min) && Number.isInteger(max);
 	return isInt ? `${min}-${max}` : `${min.toFixed(1)}-${max.toFixed(1)}`;
+}
+
+function tryParseRange(
+	field: string,
+	value: string | null | undefined,
+): [number, number] | null {
+	const result = parseRange(value);
+	if (__DEV__ && value && !result) {
+		console.warn(
+			`[crop-detail] Failed to parse range for "${field}": ${JSON.stringify(value)}`,
+		);
+	}
+	return result;
 }
 
 export default function CropDetailScreen() {
@@ -55,12 +69,12 @@ function CropDetail({
 	crop: CropGuide;
 	onBack: () => void;
 }) {
-	const sunlightRange = parseRange(crop.sunlight_hours);
-	const growlightRange = parseRange(crop.growlight_hours);
-	const dayTempRange = parseRange(crop.temperature_day_c);
-	const nightTempRange = parseRange(crop.temperature_night_c);
-	const waterTempRange = parseRange(crop.water_temp_c);
-	const humidityRange = parseRange(crop.humidity_pct);
+	const sunlightRange = tryParseRange("sunlight_hours", crop.sunlight_hours);
+	const growlightRange = tryParseRange("growlight_hours", crop.growlight_hours);
+	const dayTempRange = tryParseRange("temperature_day_c", crop.temperature_day_c);
+	const nightTempRange = tryParseRange("temperature_night_c", crop.temperature_night_c);
+	const waterTempRange = tryParseRange("water_temp_c", crop.water_temp_c);
+	const humidityRange = tryParseRange("humidity_pct", crop.humidity_pct);
 
 	type MeterDef = {
 		key: string;
@@ -75,144 +89,147 @@ function CropDetail({
 		unit: string;
 	};
 
-	const meters: MeterDef[] = [];
-	meters.push({
-		key: "ph",
-		icon: "water-outline",
-		iconColor: colors.info,
-		label: "pH",
-		sublabel: "Soil/water pH",
-		min: crop.ph_min,
-		max: crop.ph_max,
-		domainMin: 0,
-		domainMax: 14,
-		unit: "(pH)",
-	});
-	meters.push({
-		key: "ec",
-		icon: "flash-outline",
-		iconColor: colors.warning,
-		label: "EC",
-		sublabel: "Nutrient strength",
-		min: crop.ec_min,
-		max: crop.ec_max,
-		domainMin: 0,
-		domainMax: 4,
-		unit: "(mS/cm)",
-	});
-	if (sunlightRange) {
-		meters.push({
-			key: "sunlight",
-			icon: "sunny-outline",
+	const meters = useMemo<MeterDef[]>(() => {
+		const arr: MeterDef[] = [];
+		arr.push({
+			key: "ph",
+			icon: "water-outline",
+			iconColor: colors.info,
+			label: "pH",
+			sublabel: "Soil/water pH",
+			min: crop.ph_min,
+			max: crop.ph_max,
+			domainMin: 0,
+			domainMax: 14,
+			unit: "(pH)",
+		});
+		arr.push({
+			key: "ec",
+			icon: "flash-outline",
 			iconColor: colors.warning,
-			label: "Sunlight",
-			sublabel: "Daily hours",
-			min: sunlightRange[0],
-			max: sunlightRange[1],
+			label: "EC",
+			sublabel: "Nutrient strength",
+			min: crop.ec_min,
+			max: crop.ec_max,
 			domainMin: 0,
-			domainMax: 24,
-			unit: "(h)",
+			domainMax: 4,
+			unit: "(mS/cm)",
 		});
-	}
-	if (growlightRange) {
-		meters.push({
-			key: "growlight",
-			icon: "bulb-outline",
+		if (sunlightRange) {
+			arr.push({
+				key: "sunlight",
+				icon: "sunny-outline",
+				iconColor: colors.warning,
+				label: "Sunlight",
+				sublabel: "Daily hours",
+				min: sunlightRange[0],
+				max: sunlightRange[1],
+				domainMin: 0,
+				domainMax: 24,
+				unit: "(h)",
+			});
+		}
+		if (growlightRange) {
+			arr.push({
+				key: "growlight",
+				icon: "bulb-outline",
+				iconColor: colors.primaryLight,
+				label: "Growlight",
+				sublabel: "Supplemental hours",
+				min: growlightRange[0],
+				max: growlightRange[1],
+				domainMin: 0,
+				domainMax: 24,
+				unit: "(h)",
+			});
+		}
+		if (dayTempRange) {
+			arr.push({
+				key: "day-temp",
+				icon: "thermometer-outline",
+				iconColor: colors.error,
+				label: "Day temp",
+				sublabel: "Air temperature",
+				min: dayTempRange[0],
+				max: dayTempRange[1],
+				domainMin: 0,
+				domainMax: 40,
+				unit: "(°C)",
+			});
+		}
+		if (nightTempRange) {
+			arr.push({
+				key: "night-temp",
+				icon: "moon-outline",
+				iconColor: colors.info,
+				label: "Night temp",
+				sublabel: "Air temperature",
+				min: nightTempRange[0],
+				max: nightTempRange[1],
+				domainMin: 0,
+				domainMax: 40,
+				unit: "(°C)",
+			});
+		}
+		if (waterTempRange) {
+			arr.push({
+				key: "water-temp",
+				icon: "water",
+				iconColor: colors.info,
+				label: "Water temp",
+				sublabel: "Reservoir",
+				min: waterTempRange[0],
+				max: waterTempRange[1],
+				domainMin: 0,
+				domainMax: 40,
+				unit: "(°C)",
+			});
+		}
+		if (humidityRange) {
+			arr.push({
+				key: "humidity",
+				icon: "cloud-outline",
+				iconColor: colors.info,
+				label: "Humidity",
+				sublabel: "Relative humidity",
+				min: humidityRange[0],
+				max: humidityRange[1],
+				domainMin: 0,
+				domainMax: 100,
+				unit: "(%)",
+			});
+		}
+		arr.push({
+			key: "harvest",
+			icon: "leaf-outline",
 			iconColor: colors.primaryLight,
-			label: "Growlight",
-			sublabel: "Supplemental hours",
-			min: growlightRange[0],
-			max: growlightRange[1],
+			label: "Days to harvest",
+			sublabel: "Crop cycle",
+			min: crop.days_to_harvest_min,
+			max: crop.days_to_harvest_max,
 			domainMin: 0,
-			domainMax: 24,
-			unit: "(h)",
+			domainMax: 120,
+			unit: "(days)",
 		});
-	}
-	if (dayTempRange) {
-		meters.push({
-			key: "day-temp",
-			icon: "thermometer-outline",
-			iconColor: colors.error,
-			label: "Day temp",
-			sublabel: "Air temperature",
-			min: dayTempRange[0],
-			max: dayTempRange[1],
-			domainMin: 0,
-			domainMax: 40,
-			unit: "(°C)",
-		});
-	}
-	if (nightTempRange) {
-		meters.push({
-			key: "night-temp",
-			icon: "moon-outline",
-			iconColor: colors.info,
-			label: "Night temp",
-			sublabel: "Air temperature",
-			min: nightTempRange[0],
-			max: nightTempRange[1],
-			domainMin: 0,
-			domainMax: 40,
-			unit: "(°C)",
-		});
-	}
-	if (waterTempRange) {
-		meters.push({
-			key: "water-temp",
-			icon: "water",
-			iconColor: colors.info,
-			label: "Water temp",
-			sublabel: "Reservoir",
-			min: waterTempRange[0],
-			max: waterTempRange[1],
-			domainMin: 0,
-			domainMax: 40,
-			unit: "(°C)",
-		});
-	}
-	if (humidityRange) {
-		meters.push({
-			key: "humidity",
-			icon: "cloud-outline",
-			iconColor: colors.info,
-			label: "Humidity",
-			sublabel: "Relative humidity",
-			min: humidityRange[0],
-			max: humidityRange[1],
-			domainMin: 0,
-			domainMax: 100,
-			unit: "(%)",
-		});
-	}
-	meters.push({
-		key: "harvest",
-		icon: "leaf-outline",
-		iconColor: colors.primaryLight,
-		label: "Days to harvest",
-		sublabel: "Crop cycle",
-		min: crop.days_to_harvest_min,
-		max: crop.days_to_harvest_max,
-		domainMin: 0,
-		domainMax: 120,
-		unit: "(days)",
-	});
-	if (
-		crop.local_price_php_per_kg_min !== null &&
-		crop.local_price_php_per_kg_max !== null
-	) {
-		meters.push({
-			key: "price",
-			icon: "cash-outline",
-			iconColor: colors.success,
-			label: "Local price",
-			sublabel: "PHP per kg",
-			min: crop.local_price_php_per_kg_min,
-			max: crop.local_price_php_per_kg_max,
-			domainMin: 0,
-			domainMax: 500,
-			unit: "(₱/kg)",
-		});
-	}
+		if (
+			crop.local_price_php_per_kg_min !== null &&
+			crop.local_price_php_per_kg_max !== null
+		) {
+			arr.push({
+				key: "price",
+				icon: "cash-outline",
+				iconColor: colors.success,
+				label: "Local price",
+				sublabel: "PHP per kg",
+				min: crop.local_price_php_per_kg_min,
+				max: crop.local_price_php_per_kg_max,
+				domainMin: 0,
+				domainMax: 500,
+				unit: "(₱/kg)",
+			});
+		}
+		return arr;
+	}, [crop, sunlightRange, growlightRange, dayTempRange, nightTempRange, waterTempRange, humidityRange]);
 
 	return (
 		<View style={{ gap: spacing.md }}>
