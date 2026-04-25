@@ -32,6 +32,7 @@ export default function NewInventoryItemScreen() {
 	const [unit, setUnit] = useState<InventoryUnit>("grams");
 	const [stock, setStock] = useState("0");
 	const [threshold, setThreshold] = useState("0");
+	const [unitCost, setUnitCost] = useState("");
 	const [expiry, setExpiry] = useState("");
 	const [notes, setNotes] = useState("");
 
@@ -46,6 +47,8 @@ export default function NewInventoryItemScreen() {
 				unit,
 				current_stock: Number.parseFloat(stock) || 0,
 				low_stock_threshold: Number.parseFloat(threshold) || 0,
+				unit_cost:
+					unitCost.trim().length > 0 ? Number.parseFloat(unitCost) : null,
 				expiry_date: expiry.trim().length > 0 ? expiry.trim() : null,
 				notes: notes.trim() || undefined,
 			});
@@ -180,6 +183,15 @@ export default function NewInventoryItemScreen() {
 							</Field>
 						</View>
 					</View>
+
+					<Field label="Unit Cost (₱, optional)">
+						<Input
+							keyboardType="numeric"
+							placeholder="0.00"
+							value={unitCost}
+							onChangeText={setUnitCost}
+						/>
+					</Field>
 
 					<Field label="Expiry Date (YYYY-MM-DD)">
 						<Input

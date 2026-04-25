@@ -10,6 +10,7 @@ from app.modules.iam.main import router as iam_router
 from app.modules.inventory.main import router as inventory_router
 from app.modules.items.main import router as items_router
 from app.modules.paymongo.main import router as paymongo_router
+from app.modules.produce.main import router as produce_router
 from app.modules.sales.main import router as sales_router
 from app.modules.setups.main import router as setups_router
 from app.modules.system.main import router as system_router
@@ -23,6 +24,7 @@ v1_router.include_router(batches_router)
 v1_router.include_router(inventory_router)
 v1_router.include_router(crops_router)
 v1_router.include_router(checklist_router)
+v1_router.include_router(produce_router)
 v1_router.include_router(sales_router)
 v1_router.include_router(hydro_ai_router)
 v1_router.include_router(hydro_common_router)

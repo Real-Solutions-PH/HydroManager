@@ -58,7 +58,7 @@ function lineFromProduce(p: Produce): LineItem {
 		qty: "1",
 		unit: p.unit,
 		price:
-			p.suggested_unit_price !== null ? String(p.suggested_unit_price) : "0",
+			p.selling_price !== null ? String(p.selling_price) : "0",
 		produceId: p.id,
 		custom: false,
 	};
@@ -107,7 +107,7 @@ export default function NewSaleScreen() {
 			cropName: p.name,
 			unit: p.unit,
 			price:
-				p.suggested_unit_price !== null ? String(p.suggested_unit_price) : "0",
+				p.selling_price !== null ? String(p.selling_price) : "0",
 			produceId: p.id,
 			custom: false,
 		});

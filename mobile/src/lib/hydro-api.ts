@@ -114,6 +114,7 @@ export interface InventoryItem {
 	unit: InventoryUnit;
 	current_stock: number;
 	low_stock_threshold: number;
+	unit_cost: number | null;
 	notes: string | null;
 	created_at: string;
 	is_low_stock: boolean;
@@ -154,7 +155,7 @@ export interface Produce {
 	expiry_date: string | null;
 	expiry_status: ExpiryStatus;
 	days_until_expiry: number | null;
-	suggested_unit_price: number | null;
+	selling_price: number | null;
 	notes: string | null;
 	created_at: string;
 }
@@ -296,6 +297,7 @@ export const inventoryApi = {
 		unit: InventoryUnit;
 		current_stock: number;
 		low_stock_threshold: number;
+		unit_cost?: number | null;
 		expiry_date?: string | null;
 		notes?: string;
 	}): Promise<InventoryItem> {
@@ -307,6 +309,7 @@ export const inventoryApi = {
 		data: {
 			name?: string;
 			low_stock_threshold?: number;
+			unit_cost?: number | null;
 			expiry_date?: string | null;
 			notes?: string;
 		},
@@ -360,7 +363,7 @@ export const produceApi = {
 		unit: string;
 		harvested_at: string;
 		expiry_date?: string | null;
-		suggested_unit_price?: number | null;
+		selling_price?: number | null;
 		notes?: string;
 	}): Promise<Produce> {
 		const r = await api.post(`${V1}/produce/`, data);
@@ -374,7 +377,7 @@ export const produceApi = {
 			unit?: string;
 			status?: ProduceStatus;
 			expiry_date?: string | null;
-			suggested_unit_price?: number | null;
+			selling_price?: number | null;
 			notes?: string;
 		},
 	): Promise<Produce> {

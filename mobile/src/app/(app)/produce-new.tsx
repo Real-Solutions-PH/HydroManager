@@ -49,7 +49,7 @@ export default function NewProduceScreen() {
 				unit: unit.trim() || "kg",
 				harvested_at: harvestedAt,
 				expiry_date: expiry.trim() || null,
-				suggested_unit_price:
+				selling_price:
 					price.trim().length > 0 ? Number.parseFloat(price) : null,
 				notes: notes.trim() || undefined,
 			});
@@ -159,7 +159,7 @@ export default function NewProduceScreen() {
 						/>
 					</Field>
 
-					<Field label="Suggested unit price (₱, optional)">
+					<Field label="Selling price (₱, optional)">
 						<Input
 							keyboardType="numeric"
 							value={price}
