@@ -2,6 +2,8 @@
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-24s\033[0m %s\n", $$1, $$2}'
 
+export PATH := $(HOME)/.bun/bin:$(PATH)
+
 # ---------------------------------------------------------------------------
 # Docker
 # ---------------------------------------------------------------------------
@@ -74,7 +76,7 @@ frontend-preview: ## Preview production build locally
 frontend-generate-client: ## Generate TypeScript API client from OpenAPI spec
 	bash scripts/generate-client.sh
 
-fronrend-test: ## Run Playwright E2E tests
+frontend-test: ## Run Playwright E2E tests
 	cd frontend && bunx playwright test
 
 frontend-test-ui: ## Run Playwright tests with UI

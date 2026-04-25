@@ -25,7 +25,7 @@ export const colors = {
 	borderInput: "rgba(255, 255, 255, 0.15)",
 	borderError: "#F87171",
 	tabBarTopBorder: "rgba(255, 255, 255, 0.06)",
-	tabBarBg: "rgba(20, 60, 35, 0.95)",
+	tabBarBg: "rgba(13, 40, 24, 0.55)",
 	success: "#66BB6A",
 	successLight: "rgba(102, 187, 106, 0.15)",
 	warning: "#FFB74D",
