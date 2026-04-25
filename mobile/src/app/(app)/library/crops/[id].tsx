@@ -427,6 +427,36 @@ function TagList({ value }: { value: string | null | undefined }) {
 	);
 }
 
+function HarvestHighlight({ text }: { text: string | null }) {
+	if (!text) return null;
+	return (
+		<Card variant="outlined">
+			<View style={{ flexDirection: "row", gap: spacing.sm, alignItems: "center" }}>
+				<View
+					style={{
+						width: 40,
+						height: 40,
+						borderRadius: 20,
+						backgroundColor: `${colors.primaryLight}26`,
+						alignItems: "center",
+						justifyContent: "center",
+					}}
+				>
+					<Ionicons name="bulb-outline" size={20} color={colors.primaryLight} />
+				</View>
+				<View style={{ flex: 1 }}>
+					<Text size="xs" tone="muted" weight="semibold" style={{ textTransform: "uppercase", letterSpacing: 0.5 }}>
+						Harvest Indicator
+					</Text>
+					<Text size="sm" tone="subtle" style={{ marginTop: 2 }}>
+						{text}
+					</Text>
+				</View>
+			</View>
+		</Card>
+	);
+}
+
 function StatGrid({
 	stats,
 }: {
