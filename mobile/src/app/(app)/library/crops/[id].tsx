@@ -393,6 +393,40 @@ function MeterRow({
 	);
 }
 
+function TagList({ value }: { value: string | null | undefined }) {
+	if (!value) return null;
+	const tags = value
+		.split(",")
+		.map((t) => t.trim())
+		.filter((t) => t.length > 0);
+	if (tags.length === 0) return null;
+	return (
+		<View style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.xs }}>
+			{tags.map((tag) => (
+				<View
+					key={tag}
+					style={{
+						paddingHorizontal: spacing.sm,
+						paddingVertical: 6,
+						borderRadius: 999,
+						borderWidth: 1,
+						borderColor: colors.primaryLight,
+						backgroundColor: `${colors.primaryLight}26`,
+					}}
+				>
+					<Text
+						size="sm"
+						weight="semibold"
+						style={{ color: colors.primaryLight }}
+					>
+						{tag}
+					</Text>
+				</View>
+			))}
+		</View>
+	);
+}
+
 function StatGrid({
 	stats,
 }: {
