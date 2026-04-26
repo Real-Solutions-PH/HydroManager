@@ -5,7 +5,7 @@ import { Image, Pressable, ScrollView, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
-import { colors, radii, spacing } from "@/constants/theme";
+import { colors, radii, spacing, systemTypes } from "@/constants/theme";
 import { useCrop, useCropStats } from "@/hooks/use-library";
 import type { CropGuide, CropStatValue } from "@/lib/hydro-api";
 
@@ -59,13 +59,13 @@ export default function CropDetailScreen() {
 		<GradientBackground>
 			<ScrollView
 				contentContainerStyle={{
-					padding: spacing.md,
 					paddingBottom: spacing.jumbo * 2,
-					gap: spacing.md,
 				}}
 			>
 				{isLoading || !crop ? (
-					<Text tone="muted">Loading...</Text>
+					<View style={{ padding: spacing.md }}>
+						<Text tone="muted">Loading...</Text>
+					</View>
 				) : (
 					<CropDetail
 						crop={crop}
@@ -315,8 +315,13 @@ function CropDetail({
 
 	return (
 		<View style={{ gap: spacing.md }}>
-			<HeroHeader imageUrl={crop.image_url} onBack={onBack} />
+			<HeroHeader
+				imageUrl={crop.image_url}
+				onBack={onBack}
+				setups={crop.recommended_setups}
+			/>
 
+			<View style={{ paddingHorizontal: spacing.md, gap: spacing.md }}>
 			<View>
 				<Text size="xxl" weight="bold">
 					{crop.name_en}
@@ -350,12 +355,6 @@ function CropDetail({
 					))}
 				</View>
 			</Section>
-
-			{crop.recommended_setups ? (
-				<Section title="Setups">
-					<TagList value={crop.recommended_setups} />
-				</Section>
-			) : null}
 
 			{crop.ec_seedling != null ||
 			crop.ec_vegetative != null ||
@@ -490,6 +489,7 @@ function CropDetail({
 					Source: {crop.source}
 				</Text>
 			) : null}
+			</View>
 		</View>
 	);
 }
@@ -663,40 +663,6 @@ function MeterRow({
 	);
 }
 
-function TagList({ value }: { value: string | null | undefined }) {
-	if (!value) return null;
-	const tags = value
-		.split(",")
-		.map((t) => t.trim())
-		.filter((t) => t.length > 0);
-	if (tags.length === 0) return null;
-	return (
-		<View style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.xs }}>
-			{tags.map((tag) => (
-				<View
-					key={tag}
-					style={{
-						paddingHorizontal: spacing.sm,
-						paddingVertical: 6,
-						borderRadius: 999,
-						borderWidth: 1,
-						borderColor: colors.primaryLight,
-						backgroundColor: `${colors.primaryLight}26`,
-					}}
-				>
-					<Text
-						size="sm"
-						weight="semibold"
-						style={{ color: colors.primaryLight }}
-					>
-						{tag}
-					</Text>
-				</View>
-			))}
-		</View>
-	);
-}
-
 function HarvestHighlight({ text }: { text: string | null }) {
 	if (!text) return null;
 	return (
@@ -730,15 +696,24 @@ function HarvestHighlight({ text }: { text: string | null }) {
 function HeroHeader({
 	imageUrl,
 	onBack,
+	setups,
 }: {
 	imageUrl: string | null;
 	onBack: () => void;
+	setups?: string | null;
 }) {
+	const setupTags = setups
+		? setups
+				.split(",")
+				.map((t) => t.trim())
+				.filter((t) => t.length > 0)
+		: [];
 	return (
 		<View
 			style={{
-				height: 240,
-				borderRadius: radii.xxl,
+				height: 280,
+				borderBottomLeftRadius: radii.xxl,
+				borderBottomRightRadius: radii.xxl,
 				overflow: "hidden",
 				backgroundColor: colors.surfaceVariant,
 			}}
@@ -754,8 +729,8 @@ function HeroHeader({
 				hitSlop={8}
 				style={{
 					position: "absolute",
-					top: spacing.sm,
-					left: spacing.sm,
+					top: spacing.lg,
+					left: spacing.md,
 					width: 40,
 					height: 40,
 					borderRadius: 20,
@@ -766,6 +741,46 @@ function HeroHeader({
 			>
 				<Ionicons name="chevron-back" size={22} color={colors.text} />
 			</Pressable>
+			{setupTags.length > 0 ? (
+				<View
+					style={{
+						position: "absolute",
+						left: spacing.md,
+						right: spacing.md,
+						bottom: spacing.md,
+						flexDirection: "row",
+						flexWrap: "wrap",
+						gap: spacing.xs,
+					}}
+				>
+					{setupTags.map((tag) => {
+						const meta = systemTypes[tag as keyof typeof systemTypes];
+						const color = meta?.color ?? colors.primaryLight;
+						const bg = meta?.bg ?? `${colors.primaryLight}26`;
+						return (
+							<View
+								key={tag}
+								style={{
+									paddingHorizontal: spacing.sm,
+									paddingVertical: 6,
+									borderRadius: 999,
+									borderWidth: 1,
+									borderColor: color,
+									backgroundColor: bg,
+								}}
+							>
+								<Text
+									size="sm"
+									weight="semibold"
+									style={{ color }}
+								>
+									{tag}
+								</Text>
+							</View>
+						);
+					})}
+				</View>
+			) : null}
 		</View>
 	);
 }
