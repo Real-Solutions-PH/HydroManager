@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
+	Alert,
 	KeyboardAvoidingView,
 	Modal,
 	Platform,
@@ -73,7 +74,42 @@ export function InventoryMovementSheet({ item, onClose, defaultType }: Props) {
 		onError: (err) => toast.error(handleError(err)),
 	});
 
+	const deleteMutation = useMutation({
+		mutationFn: () => {
+			if (!item) throw new Error("No item");
+			return inventoryApi.delete(item.id);
+		},
+		onSuccess: () => {
+			toast.success("Item deleted");
+			qc.invalidateQueries({ queryKey: ["inventory"] });
+			if (item)
+				qc.invalidateQueries({ queryKey: ["inventory-movements", item.id] });
+			onClose();
+		},
+		onError: (err) => toast.error(handleError(err)),
+	});
+
+	const confirmDelete = () => {
+		if (!item) return;
+		const message = `Remove ${item.name}? This also removes its movement history and cannot be undone.`;
+		if (Platform.OS === "web") {
+			if (typeof window !== "undefined" && window.confirm(message)) {
+				deleteMutation.mutate();
+			}
+			return;
+		}
+		Alert.alert("Delete item?", message, [
+			{ text: "Cancel", style: "cancel" },
+			{
+				text: "Delete",
+				style: "destructive",
+				onPress: () => deleteMutation.mutate(),
+			},
+		]);
+	};
+
 	const valid = Number.parseFloat(qty) > 0;
+	const busy = mutation.isPending || deleteMutation.isPending;
 
 	return (
 		<Modal
@@ -204,8 +240,15 @@ export function InventoryMovementSheet({ item, onClose, defaultType }: Props) {
 						<Button
 							label="Save"
 							isLoading={mutation.isPending}
-							isDisabled={!valid}
+							isDisabled={!valid || busy}
 							onPress={() => mutation.mutate()}
+						/>
+						<Button
+							variant="destructive"
+							label="Delete item"
+							isLoading={deleteMutation.isPending}
+							isDisabled={busy}
+							onPress={confirmDelete}
 						/>
 						<Button variant="ghost" label="Cancel" onPress={onClose} />
 					</View>
