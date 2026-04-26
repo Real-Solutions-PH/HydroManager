@@ -62,6 +62,7 @@ class SetupPublic(SetupBase):
     owner_id: uuid.UUID
     created_at: datetime
     archived_at: datetime | None = None
+    primary_photo_url: str | None = None
 
 
 class SetupDetail(SetupPublic):

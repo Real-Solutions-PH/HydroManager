@@ -44,7 +44,7 @@ def list_setups(
     include_archived: bool = False,
     skip: int = 0,
     limit: int = 100,
-) -> tuple[list[Setup], int]:
+) -> tuple[list[tuple[Setup, str | None]], int]:
     owner_id = None if current_user.is_superuser else current_user.id
     return setups_repo.get_multi(
         session=session,

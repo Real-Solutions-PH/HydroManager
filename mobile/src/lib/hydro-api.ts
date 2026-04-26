@@ -1,4 +1,6 @@
-import { api } from "@/lib/auth";
+import * as FileSystem from "expo-file-system";
+import { Platform } from "react-native";
+import { API_URL, api, getAccessToken } from "@/lib/auth";
 
 const V1 = "/api/v1";
 
@@ -16,6 +18,7 @@ export interface Setup {
 	installed_at: string | null;
 	created_at: string;
 	archived_at: string | null;
+	primary_photo_url: string | null;
 }
 
 export interface SetupSlot {
@@ -307,6 +310,10 @@ export const setupsApi = {
 	},
 	async delete(id: string): Promise<void> {
 		await api.delete(`${V1}/setups/${id}`);
+	},
+	async addPhoto(id: string, storage_url: string): Promise<SetupPhoto> {
+		const r = await api.post(`${V1}/setups/${id}/photos`, { storage_url });
+		return r.data;
 	},
 };
 
@@ -760,20 +767,44 @@ export const photosApi = {
 	async upload(
 		scope: string,
 		uri: string,
-		filename: string,
 		mime: string,
 	): Promise<{ url: string }> {
-		const form = new FormData();
-		form.append("scope", scope);
-		form.append("file", {
-			uri,
-			name: filename,
-			type: mime,
-		} as unknown as Blob);
-		const r = await api.post(`${V1}/hydro/photos/upload`, form, {
-			headers: { "Content-Type": "multipart/form-data" },
+		const token = await getAccessToken();
+		const endpoint = `${API_URL}${V1}/hydro/photos/upload`;
+
+		if (Platform.OS === "web") {
+			const blob = await (await fetch(uri)).blob();
+			const form = new FormData();
+			form.append("scope", scope);
+			const ext = mime.split("/")[1] || "jpg";
+			form.append("file", blob, `upload-${Date.now()}.${ext}`);
+			const res = await fetch(endpoint, {
+				method: "POST",
+				body: form,
+				headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+			});
+			if (!res.ok) {
+				throw new Error(`Upload failed (${res.status}): ${await res.text()}`);
+			}
+			return res.json();
+		}
+
+		const res = await FileSystem.uploadAsync(endpoint, uri, {
+			httpMethod: "POST",
+			uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+			fieldName: "file",
+			mimeType: mime,
+			parameters: { scope },
+			headers: token ? { Authorization: `Bearer ${token}` } : {},
 		});
-		return r.data;
+		if (res.status < 200 || res.status >= 300) {
+			throw new Error(`Upload failed (${res.status}): ${res.body}`);
+		}
+		try {
+			return JSON.parse(res.body) as { url: string };
+		} catch {
+			throw new Error(`Upload returned non-JSON: ${res.body}`);
+		}
 	},
 };
 

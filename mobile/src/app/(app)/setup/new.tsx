@@ -29,6 +29,7 @@ export default function NewSetupScreen() {
 	const [location, setLocation] = useState("");
 	const [notes, setNotes] = useState("");
 	const [photoUri, setPhotoUri] = useState<string | null>(null);
+	const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
 	const [analyzing, setAnalyzing] = useState(false);
 	const [confidence, setConfidence] = useState<number | null>(null);
 
@@ -49,11 +50,19 @@ export default function NewSetupScreen() {
 		const asset = result.assets[0];
 		setPhotoUri(asset.uri);
 		setAnalyzing(true);
+		const mime = asset.mimeType ?? "image/jpeg";
+		let url: string | null = null;
 		try {
-			const filename = asset.fileName ?? `setup-${Date.now()}.jpg`;
-			const mime = asset.mimeType ?? "image/jpeg";
-			const up = await photosApi.upload("setup", asset.uri, filename, mime);
-			const v = await hydroAiApi.visionOnboard(up.url);
+			const up = await photosApi.upload("setup", asset.uri, mime);
+			url = up.url;
+			setUploadedUrl(up.url);
+		} catch (e) {
+			setAnalyzing(false);
+			Alert.alert("Upload failed", (e as Error).message);
+			return;
+		}
+		try {
+			const v = await hydroAiApi.visionOnboard(url);
 			if (v.setup_type && TYPES.includes(v.setup_type as SetupType)) {
 				setType(v.setup_type as SetupType);
 			}
@@ -73,14 +82,23 @@ export default function NewSetupScreen() {
 	}
 
 	const createSetup = useMutation({
-		mutationFn: () =>
-			setupsApi.create({
+		mutationFn: async () => {
+			const setup = await setupsApi.create({
 				name: name.trim(),
 				type,
 				slot_count: Number.parseInt(slotCount, 10) || 0,
 				location_label: location.trim() || undefined,
 				notes: notes.trim() || undefined,
-			}),
+			});
+			if (uploadedUrl) {
+				try {
+					await setupsApi.addPhoto(setup.id, uploadedUrl);
+				} catch (_e) {
+					// non-fatal: setup created without photo attachment
+				}
+			}
+			return setup;
+		},
 		onSuccess: (setup) => {
 			qc.invalidateQueries({ queryKey: ["setups"] });
 			router.replace(`/setup/${setup.id}`);

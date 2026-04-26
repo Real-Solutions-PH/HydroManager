@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { useMemo } from "react";
-import { Alert, Pressable, ScrollView, View } from "react-native";
+import { Alert, Image, Pressable, ScrollView, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -235,6 +235,23 @@ export default function SetupDetailScreen() {
 						/>
 					) : null}
 				</View>
+
+				{s.photos.length > 0 ? (
+					<View
+						style={{
+							marginBottom: spacing.md,
+							borderRadius: 16,
+							overflow: "hidden",
+							backgroundColor: colors.glass,
+						}}
+					>
+						<Image
+							source={{ uri: s.photos[0].storage_url }}
+							style={{ width: "100%", height: 200 }}
+							resizeMode="cover"
+						/>
+					</View>
+				) : null}
 
 				<Card>
 					<Text

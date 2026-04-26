@@ -1,9 +1,25 @@
+from urllib.parse import urlparse, urlunparse
+
 import boto3
 from botocore.client import BaseClient
 from botocore.exceptions import ClientError
 
 from app.core.config import settings
 from app.logger import app_logger
+
+
+def rewrite_public_url(url: str | None) -> str | None:
+    """Rewrite stored MinIO URL host to MINIO_PUBLIC_ENDPOINT if set."""
+    if not url:
+        return url
+    public = settings.MINIO_PUBLIC_ENDPOINT
+    if not public:
+        return url
+    pub = urlparse(public)
+    parsed = urlparse(url)
+    return urlunparse(
+        (pub.scheme or parsed.scheme, pub.netloc or parsed.netloc, *parsed[2:])
+    )
 
 
 class MinioEngine:
@@ -63,11 +79,12 @@ class MinioEngine:
     def generate_presigned_url(
         self, *, bucket: str, key: str, expires_in: int = 3600
     ) -> str:
-        return self._client.generate_presigned_url(
+        url = self._client.generate_presigned_url(
             "get_object",
             Params={"Bucket": bucket, "Key": key},
             ExpiresIn=expires_in,
         )
+        return rewrite_public_url(url) or url
 
 
 # Backward-compatible module-level helpers

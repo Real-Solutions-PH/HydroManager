@@ -1,8 +1,9 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Pressable, ScrollView, View } from "react-native";
+import { Alert, Image, Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -10,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { colors, spacing, systemTypes } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
-import { type SetupType, setupsApi } from "@/lib/hydro-api";
+import { photosApi, type SetupType, setupsApi } from "@/lib/hydro-api";
 
 const TYPES: SetupType[] = ["DFT", "NFT", "DutchBucket", "Kratky", "SNAP"];
 
@@ -32,6 +33,40 @@ export default function EditSetupScreen() {
 	const [location, setLocation] = useState("");
 	const [notes, setNotes] = useState("");
 	const [hydrated, setHydrated] = useState(false);
+	const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+	const [uploading, setUploading] = useState(false);
+
+	const currentPhotoUrl =
+		photoPreview ?? setup.data?.photos[0]?.storage_url ?? null;
+
+	async function pickAndUploadPhoto() {
+		const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+		if (!perm.granted) {
+			Alert.alert("Permission needed", "Allow photo access to add an image.");
+			return;
+		}
+		const result = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			quality: 0.7,
+		});
+		if (result.canceled) return;
+		const asset = result.assets[0];
+		setPhotoPreview(asset.uri);
+		setUploading(true);
+		try {
+			const mime = asset.mimeType ?? "image/jpeg";
+			const up = await photosApi.upload("setup", asset.uri, mime);
+			await setupsApi.addPhoto(setupId, up.url);
+			qc.invalidateQueries({ queryKey: ["setup", setupId] });
+			qc.invalidateQueries({ queryKey: ["setups"] });
+			setPhotoPreview(up.url);
+		} catch (e) {
+			setPhotoPreview(null);
+			Alert.alert("Upload failed", (e as Error).message);
+		} finally {
+			setUploading(false);
+		}
+	}
 
 	useEffect(() => {
 		if (!hydrated && setup.data) {
@@ -106,6 +141,46 @@ export default function EditSetupScreen() {
 				</View>
 
 				<Card>
+					<Field label="Photo">
+						{currentPhotoUrl ? (
+							<Image
+								source={{ uri: currentPhotoUrl }}
+								style={{
+									width: "100%",
+									height: 180,
+									borderRadius: 12,
+									marginBottom: spacing.xs,
+									backgroundColor: colors.glass,
+								}}
+							/>
+						) : null}
+						<Pressable
+							onPress={pickAndUploadPhoto}
+							disabled={uploading}
+							style={{
+								flexDirection: "row",
+								alignItems: "center",
+								justifyContent: "center",
+								gap: spacing.xs,
+								paddingVertical: spacing.sm,
+								borderWidth: 1,
+								borderColor: colors.border,
+								borderStyle: "dashed",
+								borderRadius: 12,
+								opacity: uploading ? 0.6 : 1,
+							}}
+						>
+							<Ionicons name="camera" size={18} color={colors.text} />
+							<Text weight="semibold">
+								{uploading
+									? "Uploading..."
+									: currentPhotoUrl
+										? "Change photo"
+										: "Add photo"}
+							</Text>
+						</Pressable>
+					</Field>
+
 					<Field label="Name">
 						<Input value={name} onChangeText={setName} />
 					</Field>
