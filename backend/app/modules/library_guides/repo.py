@@ -1,7 +1,8 @@
 import uuid
 
-from sqlmodel import Session, col, func, or_, select
+from sqlmodel import Session, col, delete, func, or_, select
 
+from app.core.config import settings
 from app.modules.library_guides.models import LibraryGuide
 from app.modules.library_seed_data import load_seed_json
 
@@ -43,8 +44,11 @@ def get_multi(
 
 def seed_if_empty(*, session: Session) -> int:
     existing = session.exec(select(func.count()).select_from(LibraryGuide)).one()
-    if existing > 0:
+    if existing > 0 and not settings.LIBRARY_SEED_FORCE_REFRESH:
         return 0
+    if existing > 0:
+        session.exec(delete(LibraryGuide))
+        session.commit()
     rows = load_seed_json("guides.json")
     for row in rows:
         session.add(LibraryGuide(**row))
