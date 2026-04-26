@@ -4,11 +4,16 @@ from contextlib import asynccontextmanager
 import sentry_sdk
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
+from sqlmodel import Session
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api import v1_router
 from app.core.config import settings
+from app.core.db import engine
 from app.core.storage import ensure_bucket
+from app.modules.crops import repo as crops_repo
+from app.modules.library_guides import repo as guides_repo
+from app.modules.library_pests import repo as pests_repo
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:
@@ -24,6 +29,10 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     ensure_bucket(settings.MINIO_DEFAULT_BUCKET)
     if settings.OCR_ENABLED:
         ensure_bucket(settings.OCR_BUCKET)
+    with Session(engine) as session:
+        crops_repo.seed_if_empty(session=session)
+        guides_repo.seed_if_empty(session=session)
+        pests_repo.seed_if_empty(session=session)
     yield
 
 

@@ -1,22 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link } from "expo-router";
-import {
-	Alert,
-	FlatList,
-	Linking,
-	Pressable,
-	ScrollView,
-	View,
-} from "react-native";
+import { Link, router } from "expo-router";
+import { Alert, FlatList, Pressable, ScrollView, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
 import { useCustomToast } from "@/hooks/useCustomToast";
-import { paymongoApi, salesApi, usersApi } from "@/lib/hydro-api";
+import { salesApi, usersApi } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
 import { formatPHP, handleError } from "@/lib/utils";
 
@@ -25,17 +17,14 @@ export default function SalesScreen() {
 	const toast = useCustomToast();
 	const qc = useQueryClient();
 	const me = useQuery({ queryKey: ["me"], queryFn: () => usersApi.me() });
-	const isPro = me.data?.tier === "pro";
 
 	const sales = useQuery({
 		queryKey: ["sales"],
 		queryFn: () => salesApi.list(),
-		enabled: isPro,
 	});
 	const dashboard = useQuery({
 		queryKey: ["sales-dashboard"],
 		queryFn: () => salesApi.dashboard(),
-		enabled: isPro,
 	});
 
 	const del = useMutation({
@@ -74,53 +63,17 @@ export default function SalesScreen() {
 			</GradientBackground>
 		);
 
-	if (!isPro) {
-		return (
-			<GradientBackground>
-				<View style={{ padding: spacing.md, paddingTop: spacing.xs }}>
-					<Text size="xxl" weight="bold">
-						{t("sales.title")}
-					</Text>
-				</View>
-				<View style={{ padding: spacing.md }}>
-					<Card>
-						<Ionicons
-							name="lock-closed"
-							size={32}
-							color={colors.primaryLight}
-						/>
-						<Text
-							size="lg"
-							weight="bold"
-							style={{ marginTop: spacing.sm, marginBottom: spacing.xs }}
-						>
-							Pro-only feature
-						</Text>
-						<Text tone="subtle" style={{ marginBottom: spacing.md }}>
-							{t("sales.pro_required")}
-						</Text>
-						<Button
-							label={t("sales.upgrade")}
-							onPress={async () => {
-								try {
-									const r = await paymongoApi.checkout("pro", "monthly");
-									Linking.openURL(r.checkout_url);
-								} catch (e) {
-									Alert.alert("Error", handleError(e));
-								}
-							}}
-						/>
-					</Card>
-				</View>
-			</GradientBackground>
-		);
-	}
-
 	const d = dashboard.data;
 	const netMargin = d?.net_margin_pct ?? 0;
+	const grossWeek = d?.gross_current_week ?? 0;
 	const grossMonth = d?.gross_current_month ?? 0;
-	const gross90 = d?.gross_last_90_days ?? 0;
 	const grossYtd = d?.gross_ytd ?? 0;
+	const netWeek = d?.net_current_week ?? 0;
+	const netMonth = d?.net_current_month ?? 0;
+	const netYtd = d?.net_ytd ?? 0;
+	const soldWeek = d?.sold_count_week ?? 0;
+	const soldMonth = d?.sold_count_month ?? 0;
+	const readyCount = d?.produce_ready_count ?? 0;
 	const topCrops = d?.top_crops ?? [];
 
 	return (
@@ -156,63 +109,161 @@ export default function SalesScreen() {
 					</Link>
 				</View>
 
-				{d ? (
-					<View style={{ paddingHorizontal: spacing.md, gap: spacing.sm }}>
-						<Card>
+				<View style={{ paddingHorizontal: spacing.md, gap: spacing.sm }}>
+					<Pressable onPress={() => router.push("/inventory?tab=produce")}>
+						<Card
+							style={{
+								borderColor: colors.primaryLight,
+								borderWidth: 1,
+							}}
+						>
+							<View
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+									gap: spacing.sm,
+								}}
+							>
+								<View
+									style={{
+										width: 44,
+										height: 44,
+										borderRadius: 12,
+										backgroundColor: `${colors.primaryLight}26`,
+										alignItems: "center",
+										justifyContent: "center",
+									}}
+								>
+									<Ionicons name="leaf" size={22} color={colors.primaryLight} />
+								</View>
+								<View style={{ flex: 1 }}>
+									<Text size="xs" tone="muted">
+										READY TO SELL
+									</Text>
+									<Text size="xl" weight="bold">
+										{readyCount}{" "}
+										<Text size="sm" tone="muted">
+											produce items
+										</Text>
+									</Text>
+								</View>
+								<Ionicons
+									name="chevron-forward"
+									size={20}
+									color={colors.textMuted}
+								/>
+							</View>
+						</Card>
+					</Pressable>
+
+					{d ? (
+						<>
+							<Card>
+								<Text
+									size="xs"
+									weight="semibold"
+									tone="muted"
+									style={{ textTransform: "uppercase", letterSpacing: 0.5 }}
+								>
+									{t("sales.net_margin")}
+								</Text>
+								<Text size="xxxl" weight="bold" style={{ marginTop: 6 }}>
+									{netMargin.toFixed(1)}%
+								</Text>
+							</Card>
+
 							<Text
 								size="xs"
 								weight="semibold"
 								tone="muted"
-								style={{ textTransform: "uppercase", letterSpacing: 0.5 }}
+								style={{
+									textTransform: "uppercase",
+									letterSpacing: 0.5,
+									marginTop: spacing.xs,
+								}}
 							>
-								{t("sales.net_margin")}
+								This week
 							</Text>
-							<Text size="xxxl" weight="bold" style={{ marginTop: 6 }}>
-								{netMargin.toFixed(1)}%
-							</Text>
-						</Card>
-						<View style={{ flexDirection: "row", gap: spacing.sm }}>
-							<MiniStat
-								label={t("sales.gross_month")}
-								value={formatPHP(grossMonth)}
-							/>
-							<MiniStat
-								label={t("sales.gross_90")}
-								value={formatPHP(gross90)}
-							/>
-						</View>
-						<MiniStat
-							label={t("sales.gross_ytd")}
-							value={formatPHP(grossYtd)}
-							fullWidth
-						/>
+							<View style={{ flexDirection: "row", gap: spacing.sm }}>
+								<MiniStat label="Gross" value={formatPHP(grossWeek)} />
+								<MiniStat
+									label="Net"
+									value={formatPHP(netWeek)}
+									accent={colors.primaryLight}
+								/>
+								<MiniStat label="Sales" value={String(soldWeek)} />
+							</View>
 
-						{topCrops.length > 0 ? (
-							<Card>
-								<Text
-									size="lg"
-									weight="bold"
-									style={{ marginBottom: spacing.xs }}
-								>
-									{t("sales.top_crops_90")}
-								</Text>
-								{topCrops.map((c) => (
-									<View
-										key={c.crop}
-										style={{
-											flexDirection: "row",
-											justifyContent: "space-between",
-											paddingVertical: 6,
-										}}
+							<Text
+								size="xs"
+								weight="semibold"
+								tone="muted"
+								style={{
+									textTransform: "uppercase",
+									letterSpacing: 0.5,
+									marginTop: spacing.xs,
+								}}
+							>
+								This month
+							</Text>
+							<View style={{ flexDirection: "row", gap: spacing.sm }}>
+								<MiniStat label="Gross" value={formatPHP(grossMonth)} />
+								<MiniStat
+									label="Net"
+									value={formatPHP(netMonth)}
+									accent={colors.primaryLight}
+								/>
+								<MiniStat label="Sales" value={String(soldMonth)} />
+							</View>
+
+							<Text
+								size="xs"
+								weight="semibold"
+								tone="muted"
+								style={{
+									textTransform: "uppercase",
+									letterSpacing: 0.5,
+									marginTop: spacing.xs,
+								}}
+							>
+								Year to date
+							</Text>
+							<View style={{ flexDirection: "row", gap: spacing.sm }}>
+								<MiniStat label="Gross" value={formatPHP(grossYtd)} />
+								<MiniStat
+									label="Net"
+									value={formatPHP(netYtd)}
+									accent={colors.primaryLight}
+								/>
+							</View>
+
+							{topCrops.length > 0 ? (
+								<Card>
+									<Text
+										size="lg"
+										weight="bold"
+										style={{ marginBottom: spacing.xs }}
 									>
-										<Text>{c.crop}</Text>
-										<Text weight="semibold">{formatPHP(c.revenue)}</Text>
-									</View>
-								))}
-							</Card>
-						) : null}
-					</View>
-				) : null}
+										{t("sales.top_crops_90")}
+									</Text>
+									{topCrops.map((c) => (
+										<View
+											key={c.crop}
+											style={{
+												flexDirection: "row",
+												justifyContent: "space-between",
+												paddingVertical: 6,
+											}}
+										>
+											<Text>{c.crop}</Text>
+											<Text weight="semibold">{formatPHP(c.revenue)}</Text>
+										</View>
+									))}
+								</Card>
+							) : null}
+						</>
+					) : null}
+				</View>
 
 				<View style={{ padding: spacing.md, gap: 10 }}>
 					<Text size="lg" weight="bold">
@@ -297,20 +348,20 @@ export default function SalesScreen() {
 function MiniStat({
 	label,
 	value,
-	fullWidth,
+	accent,
 }: {
 	label: string;
 	value: string;
-	fullWidth?: boolean;
+	accent?: string;
 }) {
 	return (
 		<View
 			style={{
-				flex: fullWidth ? undefined : 1,
+				flex: 1,
 				padding: spacing.md,
 				backgroundColor: colors.surfaceVariant,
 				borderWidth: 1,
-				borderColor: colors.border,
+				borderColor: accent ?? colors.border,
 				borderRadius: 16,
 			}}
 		>
@@ -321,7 +372,11 @@ function MiniStat({
 			>
 				{label}
 			</Text>
-			<Text size="xl" weight="bold" style={{ marginTop: 6 }}>
+			<Text
+				size="lg"
+				weight="bold"
+				style={{ marginTop: 6, color: accent ?? colors.text }}
+			>
 				{value}
 			</Text>
 		</View>

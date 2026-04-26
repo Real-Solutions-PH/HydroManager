@@ -33,6 +33,7 @@ class InventoryItemBase(SQLModel):
     unit: InventoryUnit
     current_stock: float = Field(ge=0, default=0)
     low_stock_threshold: float = Field(ge=0, default=0)
+    unit_cost: float | None = Field(default=None, ge=0)
     notes: str | None = Field(default=None, max_length=500)
 
 
@@ -45,6 +46,7 @@ class InventoryItemUpdate(SQLModel):
     category: InventoryCategory | None = None
     unit: InventoryUnit | None = None
     low_stock_threshold: float | None = Field(default=None, ge=0)
+    unit_cost: float | None = Field(default=None, ge=0)
     notes: str | None = Field(default=None, max_length=500)
 
 

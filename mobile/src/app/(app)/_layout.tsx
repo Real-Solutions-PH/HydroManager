@@ -1,11 +1,13 @@
-import { Redirect, Tabs } from "expo-router";
+import { Redirect, Tabs, usePathname } from "expo-router";
 import {
+	BookOpen,
 	CheckSquare,
 	DollarSign,
 	Grid3x3,
 	Home,
 	Package,
 } from "lucide-react-native";
+import { useEffect } from "react";
 import { View } from "react-native";
 import { AIChatFab } from "@/components/ai-chat";
 import { OfflineBanner } from "@/components/offline-banner";
@@ -15,6 +17,7 @@ import {
 } from "@/components/ui/interactive-menu";
 import { colors } from "@/constants/theme";
 import { useAuthStore } from "@/stores/auth-store";
+import { useNavHistoryStore } from "@/stores/nav-history-store";
 
 const HIDDEN_TAB = {
 	href: null,
@@ -27,10 +30,17 @@ const TAB_ITEMS: InteractiveMenuItem[] = [
 	{ key: "checklist", label: "Tasks", icon: CheckSquare },
 	{ key: "inventory", label: "Inventory", icon: Package },
 	{ key: "sales", label: "Sales", icon: DollarSign },
+	{ key: "library", label: "Library", icon: BookOpen },
 ];
 
 export default function AppLayout() {
 	const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+	const pathname = usePathname();
+	const pushNav = useNavHistoryStore((s) => s.push);
+
+	useEffect(() => {
+		if (pathname) pushNav(pathname);
+	}, [pathname, pushNav]);
 
 	if (!isAuthenticated) return <Redirect href="/login" />;
 
@@ -72,9 +82,12 @@ export default function AppLayout() {
 				<Tabs.Screen name="checklist" options={{ title: "Tasks" }} />
 				<Tabs.Screen name="inventory" options={{ title: "Inventory" }} />
 				<Tabs.Screen name="sales" options={{ title: "Sales" }} />
-				<Tabs.Screen name="crops" options={HIDDEN_TAB} />
+				<Tabs.Screen name="library" options={{ title: "Library" }} />
 				<Tabs.Screen name="settings" options={HIDDEN_TAB} />
 				<Tabs.Screen name="inventory-new" options={HIDDEN_TAB} />
+				<Tabs.Screen name="inventory/[id]" options={HIDDEN_TAB} />
+				<Tabs.Screen name="produce-new" options={HIDDEN_TAB} />
+				<Tabs.Screen name="produce/[id]" options={HIDDEN_TAB} />
 				<Tabs.Screen name="sale-new" options={HIDDEN_TAB} />
 				<Tabs.Screen name="setup" options={HIDDEN_TAB} />
 				<Tabs.Screen name="batch" options={HIDDEN_TAB} />

@@ -5,6 +5,7 @@ from fastapi import APIRouter
 
 from app.modules.batches import services as batches_service
 from app.modules.batches.schema import (
+    BatchAllocateSlots,
     BatchCreate,
     BatchDetail,
     BatchesPublic,
@@ -40,7 +41,12 @@ def list_batches(
         skip=skip,
         limit=limit,
     )
-    data = [BatchPublic.model_validate(r, from_attributes=True) for r in rows]
+    data = [
+        BatchPublic.model_validate(
+            {**r.model_dump(), "legacy": r.slots_used is None},
+        )
+        for r in rows
+    ]
     return BatchesPublic(data=data, count=count)
 
 
@@ -67,7 +73,9 @@ def read_batch(
         session=session, current_user=current_user, batch_id=id, limit=10
     )
     return BatchDetail(
-        **BatchPublic.model_validate(batch, from_attributes=True).model_dump(),
+        **BatchPublic.model_validate(
+            {**batch.model_dump(), "legacy": batch.slots_used is None},
+        ).model_dump(),
         state_counts=[
             BatchStateCountPublic.model_validate(c, from_attributes=True)
             for c in counts
@@ -89,6 +97,23 @@ def update_batch(
 ) -> Any:
     return batches_service.update_batch(
         session=session, current_user=current_user, batch_id=id, data=data
+    )
+
+
+@router.post("/{id}/allocate-slots", response_model=BatchPublic)
+def allocate_slots(
+    *,
+    session: SessionDep,
+    current_user: CurrentUser,
+    id: uuid.UUID,
+    data: BatchAllocateSlots,
+) -> Any:
+    return batches_service.allocate_slots(
+        session=session,
+        current_user=current_user,
+        batch_id=id,
+        slots_used=data.slots_used,
+        seeds_per_slot=data.seeds_per_slot,
     )
 
 

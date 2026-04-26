@@ -1,4 +1,6 @@
-import { api } from "@/lib/auth";
+import * as FileSystem from "expo-file-system";
+import { Platform } from "react-native";
+import { API_URL, api, getAccessToken } from "@/lib/auth";
 
 const V1 = "/api/v1";
 
@@ -16,6 +18,7 @@ export interface Setup {
 	installed_at: string | null;
 	created_at: string;
 	archived_at: string | null;
+	primary_photo_url: string | null;
 }
 
 export interface SetupSlot {
@@ -23,6 +26,7 @@ export interface SetupSlot {
 	slot_code: string;
 	position_index: number;
 	status: SlotStatus;
+	batch_id: string | null;
 }
 
 export interface SetupPhoto {
@@ -69,9 +73,12 @@ export interface Batch {
 	crop_guide_id: string | null;
 	variety_name: string;
 	initial_count: number;
+	slots_used: number | null;
+	seeds_per_slot: number | null;
 	notes: string | null;
 	started_at: string;
 	archived_at: string | null;
+	legacy: boolean;
 }
 
 export interface BatchStateCount {
@@ -104,6 +111,7 @@ export type InventoryCategory =
 	| "other";
 export type InventoryUnit = "grams" | "pieces" | "liters" | "milliliters";
 export type MovementType = "restock" | "consume" | "adjust";
+export type ExpiryStatus = "ok" | "warning" | "expired";
 
 export interface InventoryItem {
 	id: string;
@@ -113,9 +121,14 @@ export interface InventoryItem {
 	unit: InventoryUnit;
 	current_stock: number;
 	low_stock_threshold: number;
+	unit_cost: number | null;
 	notes: string | null;
 	created_at: string;
 	is_low_stock: boolean;
+	expiry_date: string | null;
+	expiry_status: ExpiryStatus;
+	days_until_expiry: number | null;
+	last_restocked_at: string | null;
 }
 
 export interface InventoryMovement {
@@ -125,6 +138,54 @@ export interface InventoryMovement {
 	quantity: number;
 	cost_total: number | null;
 	related_batch_id: string | null;
+	occurred_at: string;
+	notes: string | null;
+}
+
+export interface CropRisk {
+	title: string;
+	description: string;
+	mitigation: string;
+}
+
+export interface CropGrowthStage {
+	stage: string;
+	day_min: number;
+	day_max: number;
+	description: string;
+	actions: string[];
+}
+export type ProduceStatus = "ready" | "reserved" | "sold";
+export type ProduceMovementType =
+	| "harvest"
+	| "reserve"
+	| "sell"
+	| "discard"
+	| "adjust";
+
+export interface Produce {
+	id: string;
+	owner_id: string;
+	name: string;
+	source_batch_id: string | null;
+	quantity: number;
+	unit: string;
+	status: ProduceStatus;
+	harvested_at: string;
+	expiry_date: string | null;
+	expiry_status: ExpiryStatus;
+	days_until_expiry: number | null;
+	selling_price: number | null;
+	notes: string | null;
+	created_at: string;
+}
+
+export interface ProduceMovement {
+	id: string;
+	produce_id: string;
+	movement_type: ProduceMovementType;
+	quantity: number;
+	related_sale_id: string | null;
 	occurred_at: string;
 	notes: string | null;
 }
@@ -148,6 +209,58 @@ export interface CropGuide {
 	common_issues: string | null;
 	harvest_indicator: string | null;
 	image_key: string | null;
+	source: string | null;
+	image_url: string | null;
+	ec_seedling: number | null;
+	ec_vegetative: number | null;
+	ec_mature: number | null;
+	ec_fruiting: number | null;
+	water_temp_c: string | null;
+	humidity_pct: string | null;
+	growlight_hours: string | null;
+	local_price_php_per_kg_min: number | null;
+	local_price_php_per_kg_max: number | null;
+	tips: string[] | null;
+	risks: CropRisk[] | null;
+	growth_stages: CropGrowthStage[] | null;
+}
+
+export type GuideCategory =
+	| "setup"
+	| "nutrition"
+	| "business"
+	| "safety"
+	| "operations"
+	| "other";
+
+export interface LibraryGuide {
+	id: string;
+	title: string;
+	summary: string;
+	category: GuideCategory;
+	body_md: string;
+	image_key: string | null;
+	image_url: string | null;
+	read_time_min: number | null;
+	tags: string[] | null;
+	source: string | null;
+}
+
+export type PestKind = "pest" | "disease" | "deficiency";
+export type PestSeverity = "low" | "medium" | "high";
+
+export interface LibraryPest {
+	id: string;
+	name: string;
+	kind: PestKind;
+	severity: PestSeverity;
+	affected_crops: string[] | null;
+	symptoms: string[] | null;
+	causes: string[] | null;
+	prevention: string[] | null;
+	treatment: string[] | null;
+	image_key: string | null;
+	image_url: string | null;
 	source: string | null;
 }
 
@@ -177,12 +290,30 @@ export const setupsApi = {
 		const r = await api.post(`${V1}/setups/`, data);
 		return r.data;
 	},
+	async update(
+		id: string,
+		data: {
+			name?: string;
+			type?: SetupType;
+			slot_count?: number;
+			location_label?: string | null;
+			notes?: string | null;
+			installed_at?: string | null;
+		},
+	): Promise<Setup> {
+		const r = await api.put(`${V1}/setups/${id}`, data);
+		return r.data;
+	},
 	async archive(id: string): Promise<Setup> {
 		const r = await api.post(`${V1}/setups/${id}/archive`);
 		return r.data;
 	},
 	async delete(id: string): Promise<void> {
 		await api.delete(`${V1}/setups/${id}`);
+	},
+	async addPhoto(id: string, storage_url: string): Promise<SetupPhoto> {
+		const r = await api.post(`${V1}/setups/${id}/photos`, { storage_url });
+		return r.data;
 	},
 };
 
@@ -201,7 +332,8 @@ export const batchesApi = {
 	async create(data: {
 		setup_id: string;
 		variety_name: string;
-		initial_count: number;
+		slots_used: number;
+		seeds_per_slot: number;
 		crop_guide_id?: string | null;
 		notes?: string;
 	}): Promise<Batch> {
@@ -231,13 +363,33 @@ export const batchesApi = {
 		const r = await api.post(`${V1}/batches/${id}/archive`);
 		return r.data;
 	},
+	async delete(id: string): Promise<void> {
+		await api.delete(`${V1}/batches/${id}`);
+	},
+	async allocateSlots(
+		id: string,
+		data: { slots_used: number; seeds_per_slot: number },
+	): Promise<Batch> {
+		const r = await api.post(`${V1}/batches/${id}/allocate-slots`, data);
+		return r.data;
+	},
 };
 
 export const inventoryApi = {
-	async list(category?: InventoryCategory): Promise<Paged<InventoryItem>> {
+	async list(params?: {
+		category?: InventoryCategory;
+		near_expiry?: boolean;
+	}): Promise<Paged<InventoryItem>> {
 		const r = await api.get(`${V1}/inventory/items`, {
-			params: category ? { category } : undefined,
+			params: {
+				category: params?.category,
+				near_expiry: params?.near_expiry ? true : undefined,
+			},
 		});
+		return r.data;
+	},
+	async get(id: string): Promise<InventoryItem> {
+		const r = await api.get(`${V1}/inventory/items/${id}`);
 		return r.data;
 	},
 	async create(data: {
@@ -246,9 +398,24 @@ export const inventoryApi = {
 		unit: InventoryUnit;
 		current_stock: number;
 		low_stock_threshold: number;
+		unit_cost?: number | null;
+		expiry_date?: string | null;
 		notes?: string;
 	}): Promise<InventoryItem> {
 		const r = await api.post(`${V1}/inventory/items`, data);
+		return r.data;
+	},
+	async update(
+		id: string,
+		data: {
+			name?: string;
+			low_stock_threshold?: number;
+			unit_cost?: number | null;
+			expiry_date?: string | null;
+			notes?: string;
+		},
+	): Promise<InventoryItem> {
+		const r = await api.patch(`${V1}/inventory/items/${id}`, data);
 		return r.data;
 	},
 	async movement(
@@ -263,10 +430,94 @@ export const inventoryApi = {
 		const r = await api.post(`${V1}/inventory/items/${id}/movements`, data);
 		return r.data;
 	},
+	async movements(id: string): Promise<Paged<InventoryMovement>> {
+		const r = await api.get(`${V1}/inventory/items/${id}/movements`);
+		return r.data;
+	},
 	async delete(id: string): Promise<void> {
 		await api.delete(`${V1}/inventory/items/${id}`);
 	},
 };
+
+export const produceApi = {
+	async list(params?: {
+		status?: ProduceStatus | "all";
+		near_expiry?: boolean;
+	}): Promise<Paged<Produce>> {
+		const r = await api.get(`${V1}/produce/`, {
+			params: {
+				status:
+					params?.status && params.status !== "all" ? params.status : undefined,
+				near_expiry: params?.near_expiry ? true : undefined,
+			},
+		});
+		return r.data;
+	},
+	async get(id: string): Promise<Produce> {
+		const r = await api.get(`${V1}/produce/${id}`);
+		return r.data;
+	},
+	async create(data: {
+		name: string;
+		source_batch_id?: string | null;
+		quantity: number;
+		unit: string;
+		harvested_at: string;
+		expiry_date?: string | null;
+		selling_price?: number | null;
+		notes?: string;
+	}): Promise<Produce> {
+		const r = await api.post(`${V1}/produce/`, data);
+		return r.data;
+	},
+	async update(
+		id: string,
+		data: {
+			name?: string;
+			quantity?: number;
+			unit?: string;
+			status?: ProduceStatus;
+			expiry_date?: string | null;
+			selling_price?: number | null;
+			notes?: string;
+		},
+	): Promise<Produce> {
+		const r = await api.patch(`${V1}/produce/${id}`, data);
+		return r.data;
+	},
+	async movement(
+		id: string,
+		data: {
+			movement_type: ProduceMovementType;
+			quantity: number;
+			notes?: string;
+		},
+	): Promise<ProduceMovement> {
+		const r = await api.post(`${V1}/produce/${id}/movements`, data);
+		return r.data;
+	},
+	async movements(id: string): Promise<Paged<ProduceMovement>> {
+		const r = await api.get(`${V1}/produce/${id}/movements`);
+		return r.data;
+	},
+	async nearExpiry(): Promise<Paged<Produce>> {
+		const r = await api.get(`${V1}/produce/near-expiry`);
+		return r.data;
+	},
+	async delete(id: string): Promise<void> {
+		await api.delete(`${V1}/produce/${id}`);
+	},
+};
+
+export interface CropStatValue {
+	min: number;
+	max: number;
+	avg: number;
+}
+
+export interface CropStatsResponse {
+	stats: Record<string, CropStatValue>;
+}
 
 export const cropsApi = {
 	async list(
@@ -281,6 +532,72 @@ export const cropsApi = {
 	async get(id: string): Promise<CropGuide> {
 		const r = await api.get(`${V1}/crops/${id}`);
 		return r.data;
+	},
+	async stats(): Promise<CropStatsResponse> {
+		const r = await api.get(`${V1}/crops/stats`);
+		return r.data;
+	},
+};
+
+export type ClimateProviderName = "open_meteo" | "nasa_power";
+
+export interface ClimateNormals {
+	provider: string;
+	lat: number;
+	lon: number;
+	month: number;
+	air_temp_c_avg: number | null;
+	air_temp_c_min: number | null;
+	air_temp_c_max: number | null;
+	humidity_pct_avg: number | null;
+	sunlight_hours_avg: number | null;
+	precipitation_mm_total: number | null;
+	solar_radiation_mj_m2_day: number | null;
+}
+
+export const climateApi = {
+	async normals(params: {
+		lat: number;
+		lon: number;
+		month: number;
+		provider?: ClimateProviderName;
+	}): Promise<ClimateNormals> {
+		const r = await api.get(`${V1}/climate/normals`, { params });
+		return r.data;
+	},
+	async providers(): Promise<{ providers: string[] }> {
+		const r = await api.get(`${V1}/climate/providers`);
+		return r.data;
+	},
+};
+
+export const libraryApi = {
+	guides: {
+		async list(
+			query?: string,
+			category?: GuideCategory,
+		): Promise<Paged<LibraryGuide>> {
+			const r = await api.get(`${V1}/library/guides/`, {
+				params: { query, category },
+			});
+			return r.data;
+		},
+		async get(id: string): Promise<LibraryGuide> {
+			const r = await api.get(`${V1}/library/guides/${id}`);
+			return r.data;
+		},
+	},
+	pests: {
+		async list(query?: string, kind?: PestKind): Promise<Paged<LibraryPest>> {
+			const r = await api.get(`${V1}/library/pests/`, {
+				params: { query, kind },
+			});
+			return r.data;
+		},
+		async get(id: string): Promise<LibraryPest> {
+			const r = await api.get(`${V1}/library/pests/${id}`);
+			return r.data;
+		},
 	},
 };
 
@@ -304,6 +621,15 @@ export const INVENTORY_CATEGORY_COLOR: Record<
 	other: { fg: "rgba(255,255,255,0.5)", bg: "rgba(255,255,255,0.06)" },
 };
 
+export const PRODUCE_STATUS_COLOR: Record<
+	ProduceStatus,
+	{ fg: string; bg: string }
+> = {
+	ready: { fg: "#66BB6A", bg: "rgba(102,187,106,0.15)" },
+	reserved: { fg: "#FFB74D", bg: "rgba(255,183,77,0.15)" },
+	sold: { fg: "rgba(255,255,255,0.5)", bg: "rgba(255,255,255,0.06)" },
+};
+
 export type UserTier = "free" | "grower" | "pro";
 export type SaleChannel = "direct" | "market" | "delivery" | "resto" | "other";
 export type PaymentStatus = "paid" | "pending" | "cancelled";
@@ -315,6 +641,7 @@ export interface SaleItem {
 	unit: string;
 	unit_price: number;
 	linked_batch_id: string | null;
+	linked_produce_id: string | null;
 }
 
 export interface Sale {
@@ -329,13 +656,22 @@ export interface Sale {
 }
 
 export interface Dashboard {
+	gross_current_week: number;
 	gross_current_month: number;
 	gross_last_90_days: number;
 	gross_ytd: number;
+	cogs_current_week: number;
 	cogs_current_month: number;
 	cogs_last_90_days: number;
 	cogs_ytd: number;
+	net_current_week: number;
+	net_current_month: number;
+	net_last_90_days: number;
+	net_ytd: number;
 	net_margin_pct: number;
+	sold_count_week: number;
+	sold_count_month: number;
+	produce_ready_count: number;
 	top_crops: { crop: string; revenue: number }[];
 	channel_revenue: { channel: string; revenue: number }[];
 }
@@ -383,6 +719,7 @@ export const salesApi = {
 			unit: string;
 			unit_price: number;
 			linked_batch_id?: string | null;
+			linked_produce_id?: string | null;
 		}>;
 	}): Promise<Sale> {
 		const r = await api.post(`${V1}/sales/`, data);
@@ -430,20 +767,44 @@ export const photosApi = {
 	async upload(
 		scope: string,
 		uri: string,
-		filename: string,
 		mime: string,
 	): Promise<{ url: string }> {
-		const form = new FormData();
-		form.append("scope", scope);
-		form.append("file", {
-			uri,
-			name: filename,
-			type: mime,
-		} as unknown as Blob);
-		const r = await api.post(`${V1}/hydro/photos/upload`, form, {
-			headers: { "Content-Type": "multipart/form-data" },
+		const token = await getAccessToken();
+		const endpoint = `${API_URL}${V1}/hydro/photos/upload`;
+
+		if (Platform.OS === "web") {
+			const blob = await (await fetch(uri)).blob();
+			const form = new FormData();
+			form.append("scope", scope);
+			const ext = mime.split("/")[1] || "jpg";
+			form.append("file", blob, `upload-${Date.now()}.${ext}`);
+			const res = await fetch(endpoint, {
+				method: "POST",
+				body: form,
+				headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+			});
+			if (!res.ok) {
+				throw new Error(`Upload failed (${res.status}): ${await res.text()}`);
+			}
+			return res.json();
+		}
+
+		const res = await FileSystem.uploadAsync(endpoint, uri, {
+			httpMethod: "POST",
+			uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+			fieldName: "file",
+			mimeType: mime,
+			parameters: { scope },
+			headers: token ? { Authorization: `Bearer ${token}` } : {},
 		});
-		return r.data;
+		if (res.status < 200 || res.status >= 300) {
+			throw new Error(`Upload failed (${res.status}): ${res.body}`);
+		}
+		try {
+			return JSON.parse(res.body) as { url: string };
+		} catch {
+			throw new Error(`Upload returned non-JSON: ${res.body}`);
+		}
 	},
 };
 

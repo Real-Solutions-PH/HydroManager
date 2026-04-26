@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { FlatList, Image, Pressable, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -132,22 +132,34 @@ export default function SetupsScreen() {
 											gap: spacing.sm,
 										}}
 									>
-										<View
-											style={{
-												width: 44,
-												height: 44,
-												borderRadius: 12,
-												backgroundColor: c.bg,
-												alignItems: "center",
-												justifyContent: "center",
-											}}
-										>
-											<Ionicons
-												name={c.icon as never}
-												size={22}
-												color={c.color}
+										{item.primary_photo_url ? (
+											<Image
+												source={{ uri: item.primary_photo_url }}
+												style={{
+													width: 44,
+													height: 44,
+													borderRadius: 12,
+													backgroundColor: c.bg,
+												}}
 											/>
-										</View>
+										) : (
+											<View
+												style={{
+													width: 44,
+													height: 44,
+													borderRadius: 12,
+													backgroundColor: c.bg,
+													alignItems: "center",
+													justifyContent: "center",
+												}}
+											>
+												<Ionicons
+													name={c.icon as never}
+													size={22}
+													color={c.color}
+												/>
+											</View>
+										)}
 										<View style={{ flex: 1 }}>
 											<Text size="lg" weight="semibold">
 												{item.name}

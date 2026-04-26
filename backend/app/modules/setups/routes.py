@@ -3,6 +3,7 @@ from typing import Any
 
 from fastapi import APIRouter
 
+from app.core.storage import rewrite_public_url
 from app.modules.iam.deps import CurrentUser
 from app.modules.setups import services as setups_service
 from app.modules.setups.schema import (
@@ -36,7 +37,15 @@ def list_setups(
         skip=skip,
         limit=limit,
     )
-    data = [SetupPublic.model_validate(r, from_attributes=True) for r in rows]
+    data = [
+        SetupPublic.model_validate(
+            {
+                **SetupPublic.model_validate(setup, from_attributes=True).model_dump(),
+                "primary_photo_url": rewrite_public_url(photo_url),
+            }
+        )
+        for setup, photo_url in rows
+    ]
     return SetupsPublic(data=data, count=count)
 
 
@@ -56,15 +65,24 @@ def read_setup(
     setup = setups_service.get_setup(
         session=session, current_user=current_user, setup_id=id
     )
+    photos_sorted = sorted(setup.photos, key=lambda p: p.uploaded_at, reverse=True)
+    base = SetupPublic.model_validate(setup, from_attributes=True).model_dump()
+    base["primary_photo_url"] = (
+        rewrite_public_url(photos_sorted[0].storage_url) if photos_sorted else None
+    )
     return SetupDetail(
-        **SetupPublic.model_validate(setup, from_attributes=True).model_dump(),
+        **base,
         slots=[
             SetupSlotPublic.model_validate(s, from_attributes=True)
             for s in setup.slots
         ],
         photos=[
-            SetupPhotoPublic.model_validate(p, from_attributes=True)
-            for p in setup.photos
+            SetupPhotoPublic(
+                id=p.id,
+                storage_url=rewrite_public_url(p.storage_url) or p.storage_url,
+                uploaded_at=p.uploaded_at,
+            )
+            for p in photos_sorted
         ],
     )
 
@@ -118,7 +136,14 @@ def list_photos(
     photos = setups_service.list_photos(
         session=session, current_user=current_user, setup_id=id
     )
-    return [SetupPhotoPublic.model_validate(p, from_attributes=True) for p in photos]
+    return [
+        SetupPhotoPublic(
+            id=p.id,
+            storage_url=rewrite_public_url(p.storage_url) or p.storage_url,
+            uploaded_at=p.uploaded_at,
+        )
+        for p in photos
+    ]
 
 
 @router.post("/{id}/photos", response_model=SetupPhotoPublic)
@@ -129,6 +154,11 @@ def add_photo(
     id: uuid.UUID,
     data: SetupPhotoCreate,
 ) -> Any:
-    return setups_service.add_photo(
+    p = setups_service.add_photo(
         session=session, current_user=current_user, setup_id=id, data=data
+    )
+    return SetupPhotoPublic(
+        id=p.id,
+        storage_url=rewrite_public_url(p.storage_url) or p.storage_url,
+        uploaded_at=p.uploaded_at,
     )

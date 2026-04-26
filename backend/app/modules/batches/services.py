@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 
 from fastapi import HTTPException
-from sqlmodel import Session
+from sqlmodel import Session, col, select
 
 from app.modules.batches import repo as batches_repo
 from app.modules.batches.models import Batch, BatchHarvest, BatchTransition
@@ -16,6 +16,8 @@ from app.modules.batches.schema import (
 from app.modules.hydro_common.quota import enforce_active_batch_limit
 from app.modules.iam.users.models import User
 from app.modules.setups import repo as setups_repo
+from app.modules.setups.models import SetupSlot
+from app.modules.setups.schema import SlotStatus
 
 
 def _authorize(batch: Batch, user: User) -> None:
@@ -53,6 +55,30 @@ def get_batch(
     return batch
 
 
+def _get_empty_slots(
+    *, session: Session, setup_id: uuid.UUID, count: int
+) -> list[SetupSlot]:
+    q = (
+        select(SetupSlot)
+        .where(
+            SetupSlot.setup_id == setup_id,
+            SetupSlot.status == SlotStatus.EMPTY,
+            SetupSlot.batch_id.is_(None),  # type: ignore
+        )
+        .order_by(col(SetupSlot.position_index).asc())
+        .limit(count)
+    )
+    return list(session.exec(q).all())
+
+
+def _free_slots_for_batch(*, session: Session, batch_id: uuid.UUID) -> None:
+    q = select(SetupSlot).where(SetupSlot.batch_id == batch_id)
+    for slot in session.exec(q).all():
+        slot.batch_id = None
+        slot.status = SlotStatus.EMPTY
+        session.add(slot)
+
+
 def create_batch(
     *, session: Session, current_user: User, data: BatchCreate
 ) -> Batch:
@@ -61,14 +87,45 @@ def create_batch(
         raise HTTPException(status_code=404, detail="Setup not found")
     if not current_user.is_superuser and setup.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not enough permissions")
+    if setup.archived_at is not None:
+        raise HTTPException(status_code=400, detail="Setup is archived")
     if not current_user.is_superuser:
         enforce_active_batch_limit(
             session=session, user_id=current_user.id, tier=current_user.tier
         )
-    payload = data.model_dump(exclude_none=True)
-    payload["owner_id"] = current_user.id
+    empty_slots = _get_empty_slots(
+        session=session, setup_id=setup.id, count=data.slots_used
+    )
+    if len(empty_slots) < data.slots_used:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Not enough empty slots: need {data.slots_used}, "
+                f"have {len(empty_slots)}"
+            ),
+        )
+    initial_count = data.slots_used * data.seeds_per_slot
+    payload = {
+        "setup_id": data.setup_id,
+        "crop_guide_id": data.crop_guide_id,
+        "variety_name": data.variety_name,
+        "initial_count": initial_count,
+        "slots_used": data.slots_used,
+        "seeds_per_slot": data.seeds_per_slot,
+        "notes": data.notes,
+        "owner_id": current_user.id,
+    }
+    if data.started_at is not None:
+        payload["started_at"] = data.started_at
     db = Batch.model_validate(payload)
-    return batches_repo.create(session=session, batch=db)
+    batch = batches_repo.create(session=session, batch=db)
+    for slot in empty_slots:
+        slot.batch_id = batch.id
+        slot.status = SlotStatus.PLANTED
+        session.add(slot)
+    session.commit()
+    session.refresh(batch)
+    return batch
 
 
 def update_batch(
@@ -86,12 +143,57 @@ def update_batch(
     )
 
 
+def allocate_slots(
+    *,
+    session: Session,
+    current_user: User,
+    batch_id: uuid.UUID,
+    slots_used: int,
+    seeds_per_slot: int,
+) -> Batch:
+    batch = get_batch(
+        session=session, current_user=current_user, batch_id=batch_id
+    )
+    if batch.slots_used is not None:
+        raise HTTPException(
+            status_code=400, detail="Batch already has slot allocation"
+        )
+    if batch.archived_at is not None:
+        raise HTTPException(
+            status_code=400, detail="Cannot allocate slots for archived batch"
+        )
+    empty_slots = _get_empty_slots(
+        session=session, setup_id=batch.setup_id, count=slots_used
+    )
+    if len(empty_slots) < slots_used:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Not enough empty slots: need {slots_used}, "
+                f"have {len(empty_slots)}"
+            ),
+        )
+    for slot in empty_slots:
+        slot.batch_id = batch.id
+        slot.status = SlotStatus.PLANTED
+        session.add(slot)
+    return batches_repo.update(
+        session=session,
+        batch=batch,
+        update_data={
+            "slots_used": slots_used,
+            "seeds_per_slot": seeds_per_slot,
+        },
+    )
+
+
 def archive_batch(
     *, session: Session, current_user: User, batch_id: uuid.UUID
 ) -> Batch:
     batch = get_batch(
         session=session, current_user=current_user, batch_id=batch_id
     )
+    _free_slots_for_batch(session=session, batch_id=batch.id)
     return batches_repo.update(
         session=session,
         batch=batch,
@@ -105,6 +207,8 @@ def delete_batch(
     batch = get_batch(
         session=session, current_user=current_user, batch_id=batch_id
     )
+    _free_slots_for_batch(session=session, batch_id=batch.id)
+    session.commit()
     batches_repo.delete(session=session, batch=batch)
 
 
