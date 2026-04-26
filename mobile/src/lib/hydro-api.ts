@@ -473,6 +473,16 @@ export const produceApi = {
 	},
 };
 
+export interface CropStatValue {
+	min: number;
+	max: number;
+	avg: number;
+}
+
+export interface CropStatsResponse {
+	stats: Record<string, CropStatValue>;
+}
+
 export const cropsApi = {
 	async list(
 		query?: string,
@@ -485,6 +495,10 @@ export const cropsApi = {
 	},
 	async get(id: string): Promise<CropGuide> {
 		const r = await api.get(`${V1}/crops/${id}`);
+		return r.data;
+	},
+	async stats(): Promise<CropStatsResponse> {
+		const r = await api.get(`${V1}/crops/stats`);
 		return r.data;
 	},
 };

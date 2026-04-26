@@ -61,3 +61,11 @@ export function usePest(id: string | undefined) {
 		staleTime: STALE,
 	});
 }
+
+export function useCropStats() {
+	return useQuery({
+		queryKey: ["library", "crops", "stats"],
+		queryFn: () => cropsApi.stats(),
+		staleTime: 1000 * 60 * 5,
+	});
+}
