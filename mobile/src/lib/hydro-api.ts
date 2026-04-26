@@ -503,6 +503,38 @@ export const cropsApi = {
 	},
 };
 
+export type ClimateProviderName = "open_meteo" | "nasa_power";
+
+export interface ClimateNormals {
+	provider: string;
+	lat: number;
+	lon: number;
+	month: number;
+	air_temp_c_avg: number | null;
+	air_temp_c_min: number | null;
+	air_temp_c_max: number | null;
+	humidity_pct_avg: number | null;
+	sunlight_hours_avg: number | null;
+	precipitation_mm_total: number | null;
+	solar_radiation_mj_m2_day: number | null;
+}
+
+export const climateApi = {
+	async normals(params: {
+		lat: number;
+		lon: number;
+		month: number;
+		provider?: ClimateProviderName;
+	}): Promise<ClimateNormals> {
+		const r = await api.get(`${V1}/climate/normals`, { params });
+		return r.data;
+	},
+	async providers(): Promise<{ providers: string[] }> {
+		const r = await api.get(`${V1}/climate/providers`);
+		return r.data;
+	},
+};
+
 export const libraryApi = {
 	guides: {
 		async list(

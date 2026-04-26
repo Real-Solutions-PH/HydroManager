@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
+	type ClimateProviderName,
+	climateApi,
 	cropsApi,
 	type GuideCategory,
 	libraryApi,
@@ -67,5 +69,28 @@ export function useCropStats() {
 		queryKey: ["library", "crops", "stats"],
 		queryFn: () => cropsApi.stats(),
 		staleTime: 1000 * 60 * 5,
+	});
+}
+
+export function useClimateNormals(
+	args: {
+		lat: number | null;
+		lon: number | null;
+		month: number | null;
+		provider?: ClimateProviderName;
+	},
+) {
+	const { lat, lon, month, provider } = args;
+	return useQuery({
+		queryKey: ["climate", "normals", lat, lon, month, provider ?? "open_meteo"],
+		queryFn: () =>
+			climateApi.normals({
+				lat: lat as number,
+				lon: lon as number,
+				month: month as number,
+				provider,
+			}),
+		enabled: lat != null && lon != null && month != null,
+		staleTime: 1000 * 60 * 60 * 6,
 	});
 }
