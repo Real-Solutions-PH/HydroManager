@@ -10,6 +10,7 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 import { batchesApi, MILESTONE_ORDER, type Milestone } from "@/lib/hydro-api";
 
 const ALL_TARGETS: Milestone[] = [...MILESTONE_ORDER, "Failed"];
@@ -18,6 +19,7 @@ export default function BatchDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const batchId = id ?? "";
 	const qc = useQueryClient();
+	const goBack = useBack();
 
 	const batch = useQuery({
 		queryKey: ["batch", batchId],
@@ -117,7 +119,7 @@ export default function BatchDetailScreen() {
 						marginBottom: spacing.xs,
 					}}
 				>
-					<Pressable onPress={() => router.back()}>
+					<Pressable onPress={goBack}>
 						<Ionicons name="arrow-back" size={24} color={colors.text} />
 					</Pressable>
 					<View style={{ flex: 1 }}>

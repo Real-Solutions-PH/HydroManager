@@ -9,6 +9,7 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { batchesApi, produceApi } from "@/lib/hydro-api";
 import { handleError } from "@/lib/utils";
@@ -21,6 +22,7 @@ function todayISO(): string {
 
 export default function NewProduceScreen() {
 	const qc = useQueryClient();
+	const goBack = useBack();
 	const toast = useCustomToast();
 	const [name, setName] = useState("");
 	const [batchId, setBatchId] = useState<string | null>(null);
@@ -84,7 +86,7 @@ export default function NewProduceScreen() {
 						marginBottom: spacing.sm,
 					}}
 				>
-					<Pressable onPress={() => router.back()}>
+					<Pressable onPress={goBack}>
 						<Ionicons name="arrow-back" size={24} color={colors.text} />
 					</Pressable>
 					<Text size="xxl" weight="bold">
@@ -188,7 +190,7 @@ export default function NewProduceScreen() {
 					<Button
 						variant="ghost"
 						label="Cancel"
-						onPress={() => router.back()}
+						onPress={goBack}
 					/>
 				</View>
 			</ScrollView>

@@ -8,6 +8,7 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 import { usePests } from "@/hooks/use-library";
 import type { LibraryPest, PestKind, PestSeverity } from "@/lib/hydro-api";
 import { capitalize } from "@/lib/utils";
@@ -28,6 +29,7 @@ const SEV_COLOR: Record<PestSeverity, string> = {
 
 export default function PestsListScreen() {
 	const router = useRouter();
+	const goBack = useBack();
 	const [query, setQuery] = useState("");
 	const [kind, setKind] = useState<PestKind | null>(null);
 	const { data, isLoading } = usePests(query, kind ?? undefined);
@@ -48,7 +50,7 @@ export default function PestsListScreen() {
 						gap: spacing.sm,
 					}}
 				>
-					<Pressable onPress={() => router.back()} hitSlop={8}>
+					<Pressable onPress={goBack} hitSlop={8}>
 						<Ionicons name="chevron-back" size={26} color={colors.text} />
 					</Pressable>
 					<Text size="xxl" weight="bold">

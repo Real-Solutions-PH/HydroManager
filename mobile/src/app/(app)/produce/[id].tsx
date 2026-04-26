@@ -15,6 +15,7 @@ import {
 	produceStatusMeta,
 	spacing,
 } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { type ProduceStatus, produceApi } from "@/lib/hydro-api";
 import { formatPHP, handleError } from "@/lib/utils";
@@ -26,6 +27,7 @@ export default function ProduceDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const qc = useQueryClient();
 	const toast = useCustomToast();
+	const goBack = useBack();
 
 	const item = useQuery({
 		queryKey: ["produce", id],
@@ -129,7 +131,7 @@ export default function ProduceDetailScreen() {
 						marginBottom: spacing.sm,
 					}}
 				>
-					<Pressable onPress={() => router.back()}>
+					<Pressable onPress={goBack}>
 						<Ionicons name="arrow-back" size={24} color={colors.text} />
 					</Pressable>
 					<Text size="xxl" weight="bold" style={{ flex: 1 }}>

@@ -8,6 +8,7 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 import { useGuides } from "@/hooks/use-library";
 import type { GuideCategory, LibraryGuide } from "@/lib/hydro-api";
 import { capitalize } from "@/lib/utils";
@@ -32,6 +33,7 @@ const CAT_COLOR: Record<GuideCategory, string> = {
 
 export default function GuidesListScreen() {
 	const router = useRouter();
+	const goBack = useBack();
 	const [query, setQuery] = useState("");
 	const [category, setCategory] = useState<GuideCategory | null>(null);
 	const { data, isLoading } = useGuides(query, category ?? undefined);
@@ -52,7 +54,7 @@ export default function GuidesListScreen() {
 						gap: spacing.sm,
 					}}
 				>
-					<Pressable onPress={() => router.back()} hitSlop={8}>
+					<Pressable onPress={goBack} hitSlop={8}>
 						<Ionicons name="chevron-back" size={26} color={colors.text} />
 					</Pressable>
 					<Text size="xxl" weight="bold">

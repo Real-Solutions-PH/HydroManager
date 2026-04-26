@@ -5,12 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 import { useGuide } from "@/hooks/use-library";
 import { MarkdownRender } from "@/lib/markdown-render";
 
 export default function GuideDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const router = useRouter();
+	const goBack = useBack();
 	const { data: guide, isLoading } = useGuide(id);
 
 	return (
@@ -23,7 +25,7 @@ export default function GuideDetailScreen() {
 				}}
 			>
 				<Pressable
-					onPress={() => router.back()}
+					onPress={goBack}
 					hitSlop={8}
 					style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
 				>

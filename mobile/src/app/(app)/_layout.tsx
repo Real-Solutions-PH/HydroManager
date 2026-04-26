@@ -1,4 +1,4 @@
-import { Redirect, Tabs } from "expo-router";
+import { Redirect, Tabs, usePathname } from "expo-router";
 import {
 	BookOpen,
 	CheckSquare,
@@ -7,6 +7,7 @@ import {
 	Home,
 	Package,
 } from "lucide-react-native";
+import { useEffect } from "react";
 import { View } from "react-native";
 import { AIChatFab } from "@/components/ai-chat";
 import { OfflineBanner } from "@/components/offline-banner";
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/interactive-menu";
 import { colors } from "@/constants/theme";
 import { useAuthStore } from "@/stores/auth-store";
+import { useNavHistoryStore } from "@/stores/nav-history-store";
 
 const HIDDEN_TAB = {
 	href: null,
@@ -33,6 +35,12 @@ const TAB_ITEMS: InteractiveMenuItem[] = [
 
 export default function AppLayout() {
 	const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+	const pathname = usePathname();
+	const pushNav = useNavHistoryStore((s) => s.push);
+
+	useEffect(() => {
+		if (pathname) pushNav(pathname);
+	}, [pathname, pushNav]);
 
 	if (!isAuthenticated) return <Redirect href="/login" />;
 

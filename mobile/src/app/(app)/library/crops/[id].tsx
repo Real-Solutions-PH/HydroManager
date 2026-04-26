@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
 import { colors, radii, spacing, systemTypes } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 import { useCrop, useCropStats } from "@/hooks/use-library";
 import type { CropGuide, CropStatValue } from "@/lib/hydro-api";
 
@@ -52,6 +53,7 @@ function tryParseRange(
 export default function CropDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const router = useRouter();
+	const goBack = useBack();
 	const { data: crop, isLoading } = useCrop(id);
 	const { data: statsResponse } = useCropStats();
 
@@ -70,7 +72,7 @@ export default function CropDetailScreen() {
 					<CropDetail
 						crop={crop}
 						stats={statsResponse?.stats ?? {}}
-						onBack={() => router.back()}
+						onBack={goBack}
 					/>
 				)}
 			</ScrollView>

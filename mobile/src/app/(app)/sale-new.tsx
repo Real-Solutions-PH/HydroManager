@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select, type SelectOption } from "@/components/ui/select";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import {
 	type InventoryItem,
@@ -74,6 +75,7 @@ export default function NewSaleScreen() {
 	const { t } = useT();
 	const qc = useQueryClient();
 	const toast = useCustomToast();
+	const goBack = useBack();
 	const params = useLocalSearchParams<{ produce_id?: string }>();
 	const [buyer, setBuyer] = useState("");
 	const [channel, setChannel] = useState<SaleChannel>("direct");
@@ -189,7 +191,7 @@ export default function NewSaleScreen() {
 						marginBottom: spacing.sm,
 					}}
 				>
-					<Pressable onPress={() => router.back()}>
+					<Pressable onPress={goBack}>
 						<Ionicons name="arrow-back" size={24} color={colors.text} />
 					</Pressable>
 					<Text size="xxl" weight="bold">
@@ -490,7 +492,7 @@ export default function NewSaleScreen() {
 					<Button
 						variant="ghost"
 						label={t("actions.cancel")}
-						onPress={() => router.back()}
+						onPress={goBack}
 					/>
 				</View>
 			</ScrollView>

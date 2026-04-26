@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 import { usePest } from "@/hooks/use-library";
 import type { LibraryPest, PestKind, PestSeverity } from "@/lib/hydro-api";
 
@@ -24,6 +25,7 @@ const SEV_COLOR: Record<PestSeverity, string> = {
 export default function PestDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const router = useRouter();
+	const goBack = useBack();
 	const { data: pest, isLoading } = usePest(id);
 
 	return (
@@ -36,7 +38,7 @@ export default function PestDetailScreen() {
 				}}
 			>
 				<Pressable
-					onPress={() => router.back()}
+					onPress={goBack}
 					hitSlop={8}
 					style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
 				>

@@ -8,12 +8,14 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
 import { colors, spacing, systemTypes } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 import { batchesApi, setupsApi } from "@/lib/hydro-api";
 
 export default function SetupDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const setupId = id ?? "";
 	const qc = useQueryClient();
+	const goBack = useBack();
 
 	const setup = useQuery({
 		queryKey: ["setup", setupId],
@@ -91,7 +93,7 @@ export default function SetupDetailScreen() {
 						marginBottom: spacing.sm,
 					}}
 				>
-					<Pressable onPress={() => router.back()}>
+					<Pressable onPress={goBack}>
 						<Ionicons name="arrow-back" size={24} color={colors.text} />
 					</Pressable>
 					<View style={{ flex: 1 }}>

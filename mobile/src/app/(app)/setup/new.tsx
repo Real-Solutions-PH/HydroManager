@@ -10,6 +10,7 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { colors, spacing, systemTypes } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 import {
 	hydroAiApi,
 	photosApi,
@@ -21,6 +22,7 @@ const TYPES: SetupType[] = ["DFT", "NFT", "DutchBucket", "Kratky", "SNAP"];
 
 export default function NewSetupScreen() {
 	const qc = useQueryClient();
+	const goBack = useBack();
 	const [name, setName] = useState("");
 	const [type, setType] = useState<SetupType>("DFT");
 	const [slotCount, setSlotCount] = useState("20");
@@ -104,7 +106,7 @@ export default function NewSetupScreen() {
 						marginBottom: spacing.xs,
 					}}
 				>
-					<Pressable onPress={() => router.back()}>
+					<Pressable onPress={goBack}>
 						<Ionicons name="arrow-back" size={24} color={colors.text} />
 					</Pressable>
 					<Text size="xxl" weight="bold">
@@ -261,7 +263,7 @@ export default function NewSetupScreen() {
 					<Button
 						variant="ghost"
 						label="Cancel"
-						onPress={() => router.back()}
+						onPress={goBack}
 					/>
 				</View>
 			</ScrollView>
