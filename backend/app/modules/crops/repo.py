@@ -39,6 +39,8 @@ def get_multi(
 
 
 def seed_if_empty(*, session: Session) -> int:
+    from app.modules.crops.stats_repo import recompute_stats
+
     existing = session.exec(select(func.count()).select_from(CropGuide)).one()
     if existing > 0:
         return 0
@@ -46,4 +48,5 @@ def seed_if_empty(*, session: Session) -> int:
     for row in rows:
         session.add(CropGuide(**row))
     session.commit()
+    recompute_stats(session=session)
     return len(rows)
