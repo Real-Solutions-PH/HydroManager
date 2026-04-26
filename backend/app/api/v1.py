@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.core.config import settings
 from app.modules.batches.main import router as batches_router
 from app.modules.checklist.main import router as checklist_router
+from app.modules.climate.main import router as climate_router
 from app.modules.crops.main import router as crops_router
 from app.modules.hydro_ai.main import router as hydro_ai_router
 from app.modules.hydro_common.main import router as hydro_common_router
@@ -25,6 +26,7 @@ v1_router.include_router(setups_router)
 v1_router.include_router(batches_router)
 v1_router.include_router(inventory_router)
 v1_router.include_router(crops_router)
+v1_router.include_router(climate_router)
 v1_router.include_router(library_guides_router)
 v1_router.include_router(library_pests_router)
 v1_router.include_router(checklist_router)
