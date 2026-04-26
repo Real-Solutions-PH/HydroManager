@@ -44,6 +44,9 @@ class SetupSlot(SQLModel, table=True):
     setup_id: uuid.UUID = Field(
         foreign_key="setup.id", nullable=False, ondelete="CASCADE"
     )
+    batch_id: uuid.UUID | None = Field(
+        default=None, foreign_key="batch.id", nullable=True, ondelete="SET NULL"
+    )
     slot_code: str = Field(max_length=40)
     position_index: int
     status: SlotStatus = Field(default=SlotStatus.EMPTY)

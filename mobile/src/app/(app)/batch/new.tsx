@@ -28,20 +28,37 @@ export default function NewBatchScreen() {
 	const [setupId, setSetupId] = useState(setupParam ?? "");
 	const [variety, setVariety] = useState("");
 	const [cropId, setCropId] = useState<string | null>(null);
-	const [count, setCount] = useState("20");
+	const [slotsUsed, setSlotsUsed] = useState("4");
+	const [seedsPerSlot, setSeedsPerSlot] = useState("1");
 	const [notes, setNotes] = useState("");
+
+	const selectedSetup = useQuery({
+		queryKey: ["setup", setupId],
+		queryFn: () => setupsApi.get(setupId),
+		enabled: !!setupId,
+	});
+	const emptySlots =
+		selectedSetup.data?.slots.filter(
+			(s) => s.status === "empty" && !s.batch_id,
+		).length ?? 0;
+
+	const slotsUsedNum = Number.parseInt(slotsUsed, 10) || 0;
+	const seedsPerSlotNum = Number.parseInt(seedsPerSlot, 10) || 0;
+	const totalSeeds = slotsUsedNum * seedsPerSlotNum;
 
 	const create = useMutation({
 		mutationFn: () =>
 			batchesApi.create({
 				setup_id: setupId,
 				variety_name: variety.trim(),
-				initial_count: Number.parseInt(count, 10) || 0,
+				slots_used: slotsUsedNum,
+				seeds_per_slot: seedsPerSlotNum,
 				crop_guide_id: cropId,
 				notes: notes.trim() || undefined,
 			}),
 		onSuccess: (b) => {
 			qc.invalidateQueries({ queryKey: ["batches"] });
+			qc.invalidateQueries({ queryKey: ["setup", setupId] });
 			router.replace(`/batch/${b.id}`);
 		},
 		onError: (e: Error) => Alert.alert("Error", e.message),
@@ -50,7 +67,9 @@ export default function NewBatchScreen() {
 	const valid =
 		setupId.length > 0 &&
 		variety.trim().length > 0 &&
-		Number.parseInt(count, 10) > 0;
+		slotsUsedNum > 0 &&
+		seedsPerSlotNum > 0 &&
+		slotsUsedNum <= emptySlots;
 
 	return (
 		<GradientBackground>
@@ -156,12 +175,30 @@ export default function NewBatchScreen() {
 						</View>
 					</Field>
 
-					<Field label="Initial Count (Sowed)">
+					<Field label="Slots Used">
 						<Input
 							keyboardType="numeric"
-							value={count}
-							onChangeText={setCount}
+							value={slotsUsed}
+							onChangeText={setSlotsUsed}
 						/>
+						{setupId ? (
+							<Text size="xs" tone="muted" style={{ marginTop: 4 }}>
+								{emptySlots} empty slots available
+							</Text>
+						) : null}
+					</Field>
+
+					<Field label="Seeds per Slot">
+						<Input
+							keyboardType="numeric"
+							value={seedsPerSlot}
+							onChangeText={setSeedsPerSlot}
+						/>
+						{slotsUsedNum > 0 && seedsPerSlotNum > 0 ? (
+							<Text size="xs" tone="muted" style={{ marginTop: 4 }}>
+								Total seeds (Sowed): {totalSeeds}
+							</Text>
+						) : null}
 					</Field>
 
 					<Field label="Notes">

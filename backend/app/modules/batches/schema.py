@@ -24,10 +24,18 @@ class BatchBase(SQLModel):
     crop_guide_id: uuid.UUID | None = None
     variety_name: str = Field(min_length=1, max_length=120)
     initial_count: int = Field(ge=1)
+    slots_used: int | None = Field(default=None, ge=1, le=2000)
+    seeds_per_slot: int | None = Field(default=None, ge=1, le=100)
     notes: str | None = Field(default=None, max_length=1000)
 
 
-class BatchCreate(BatchBase):
+class BatchCreate(SQLModel):
+    setup_id: uuid.UUID
+    crop_guide_id: uuid.UUID | None = None
+    variety_name: str = Field(min_length=1, max_length=120)
+    slots_used: int = Field(ge=1, le=2000)
+    seeds_per_slot: int = Field(ge=1, le=100)
+    notes: str | None = Field(default=None, max_length=1000)
     started_at: datetime | None = None
 
 
@@ -69,6 +77,11 @@ class BatchHarvestCreate(SQLModel):
     harvested_at: datetime | None = None
 
 
+class BatchAllocateSlots(SQLModel):
+    slots_used: int = Field(ge=1, le=2000)
+    seeds_per_slot: int = Field(ge=1, le=100)
+
+
 class BatchHarvestPublic(SQLModel):
     id: uuid.UUID
     weight_grams: float
@@ -82,6 +95,7 @@ class BatchPublic(BatchBase):
     owner_id: uuid.UUID
     started_at: datetime
     archived_at: datetime | None = None
+    legacy: bool = False
 
 
 class BatchDetail(BatchPublic):

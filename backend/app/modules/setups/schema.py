@@ -36,6 +36,7 @@ class SetupCreate(SetupBase):
 class SetupUpdate(SQLModel):
     name: str | None = Field(default=None, min_length=1, max_length=100)
     type: SetupType | None = None
+    slot_count: int | None = Field(default=None, ge=1, le=2000)
     location_label: str | None = Field(default=None, max_length=120)
     notes: str | None = Field(default=None, max_length=1000)
     installed_at: datetime | None = None
@@ -47,6 +48,7 @@ class SetupSlotPublic(SQLModel):
     slot_code: str
     position_index: int
     status: SlotStatus
+    batch_id: uuid.UUID | None = None
 
 
 class SetupPhotoPublic(SQLModel):

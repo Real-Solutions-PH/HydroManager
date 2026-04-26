@@ -11,7 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
-import { batchesApi, MILESTONE_ORDER, type Milestone } from "@/lib/hydro-api";
+import {
+	batchesApi,
+	MILESTONE_ORDER,
+	type Milestone,
+	setupsApi,
+} from "@/lib/hydro-api";
 
 const ALL_TARGETS: Milestone[] = [...MILESTONE_ORDER, "Failed"];
 
@@ -51,6 +56,42 @@ export default function BatchDetailScreen() {
 
 	const [hw, setHw] = useState("");
 	const [hc, setHc] = useState("");
+	const [allocSlots, setAllocSlots] = useState("");
+	const [allocSeeds, setAllocSeeds] = useState("1");
+
+	const setupQ = useQuery({
+		queryKey: ["setup", batch.data?.setup_id],
+		queryFn: () => setupsApi.get(batch.data?.setup_id ?? ""),
+		enabled: !!batch.data?.setup_id && batch.data?.legacy === true,
+	});
+	const emptySlots =
+		setupQ.data?.slots.filter((s) => s.status === "empty" && !s.batch_id)
+			.length ?? 0;
+
+	const allocate = useMutation({
+		mutationFn: () =>
+			batchesApi.allocateSlots(batchId, {
+				slots_used: Number.parseInt(allocSlots, 10) || 0,
+				seeds_per_slot: Number.parseInt(allocSeeds, 10) || 0,
+			}),
+		onSuccess: () => {
+			qc.invalidateQueries({ queryKey: ["batch", batchId] });
+			qc.invalidateQueries({ queryKey: ["batches"] });
+			qc.invalidateQueries({ queryKey: ["setup"] });
+			setAllocSlots("");
+		},
+		onError: (e: Error) => Alert.alert("Allocate failed", e.message),
+	});
+
+	const del = useMutation({
+		mutationFn: () => batchesApi.delete(batchId),
+		onSuccess: () => {
+			qc.invalidateQueries({ queryKey: ["batches"] });
+			qc.invalidateQueries({ queryKey: ["setup"] });
+			router.back();
+		},
+		onError: (e: Error) => Alert.alert("Delete failed", e.message),
+	});
 
 	const harvest = useMutation({
 		mutationFn: () =>
@@ -128,9 +169,94 @@ export default function BatchDetailScreen() {
 						</Text>
 						<Text size="xs" tone="muted">
 							Day {age} · {b.initial_count} units initial
+							{b.slots_used && b.seeds_per_slot
+								? ` · ${b.slots_used} slots × ${b.seeds_per_slot}`
+								: ""}
 						</Text>
 					</View>
+					<Pressable
+						hitSlop={8}
+						onPress={() =>
+							Alert.alert(
+								"Delete Batch",
+								"Delete this batch? Slots will be freed. Cannot be undone.",
+								[
+									{ text: "Cancel", style: "cancel" },
+									{
+										text: "Delete",
+										style: "destructive",
+										onPress: () => del.mutate(),
+									},
+								],
+							)
+						}
+						disabled={del.isPending}
+						style={{
+							width: 36,
+							height: 36,
+							borderRadius: 12,
+							borderWidth: 1,
+							borderColor: colors.error ?? "#EF4444",
+							alignItems: "center",
+							justifyContent: "center",
+						}}
+					>
+						<Ionicons
+							name="trash-outline"
+							size={18}
+							color={colors.error ?? "#EF4444"}
+						/>
+					</Pressable>
 				</View>
+
+				{b.legacy ? (
+					<Card>
+						<View
+							style={{
+								flexDirection: "row",
+								alignItems: "center",
+								gap: spacing.xs,
+							}}
+						>
+							<Badge label="Legacy" color={colors.textMuted} bg={colors.glass} small />
+							<Text size="sm" tone="muted" style={{ flex: 1 }}>
+								No slot allocation. Assign slots to track.
+							</Text>
+						</View>
+						<View style={{ height: spacing.sm }} />
+						<Label>SLOTS USED</Label>
+						<Input
+							keyboardType="numeric"
+							value={allocSlots}
+							onChangeText={setAllocSlots}
+							placeholder={`Up to ${emptySlots} empty`}
+						/>
+						<Text size="xs" tone="muted" style={{ marginTop: 4 }}>
+							{emptySlots} empty slots in setup
+						</Text>
+						<View style={{ height: spacing.sm }} />
+						<Label>SEEDS PER SLOT</Label>
+						<Input
+							keyboardType="numeric"
+							value={allocSeeds}
+							onChangeText={setAllocSeeds}
+						/>
+						<View style={{ height: spacing.md }} />
+						<Button
+							label="Allocate Slots"
+							isLoading={allocate.isPending}
+							isDisabled={
+								Number.parseInt(allocSlots, 10) <= 0 ||
+								Number.parseInt(allocSlots, 10) > emptySlots ||
+								Number.parseInt(allocSeeds, 10) <= 0 ||
+								allocate.isPending
+							}
+							onPress={() => allocate.mutate()}
+						/>
+					</Card>
+				) : null}
+
+				{b.legacy ? <View style={{ height: 20 }} /> : null}
 
 				<Card>
 					<Text

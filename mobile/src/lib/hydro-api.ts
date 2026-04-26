@@ -23,6 +23,7 @@ export interface SetupSlot {
 	slot_code: string;
 	position_index: number;
 	status: SlotStatus;
+	batch_id: string | null;
 }
 
 export interface SetupPhoto {
@@ -69,9 +70,12 @@ export interface Batch {
 	crop_guide_id: string | null;
 	variety_name: string;
 	initial_count: number;
+	slots_used: number | null;
+	seeds_per_slot: number | null;
 	notes: string | null;
 	started_at: string;
 	archived_at: string | null;
+	legacy: boolean;
 }
 
 export interface BatchStateCount {
@@ -283,6 +287,20 @@ export const setupsApi = {
 		const r = await api.post(`${V1}/setups/`, data);
 		return r.data;
 	},
+	async update(
+		id: string,
+		data: {
+			name?: string;
+			type?: SetupType;
+			slot_count?: number;
+			location_label?: string | null;
+			notes?: string | null;
+			installed_at?: string | null;
+		},
+	): Promise<Setup> {
+		const r = await api.put(`${V1}/setups/${id}`, data);
+		return r.data;
+	},
 	async archive(id: string): Promise<Setup> {
 		const r = await api.post(`${V1}/setups/${id}/archive`);
 		return r.data;
@@ -307,7 +325,8 @@ export const batchesApi = {
 	async create(data: {
 		setup_id: string;
 		variety_name: string;
-		initial_count: number;
+		slots_used: number;
+		seeds_per_slot: number;
 		crop_guide_id?: string | null;
 		notes?: string;
 	}): Promise<Batch> {
@@ -335,6 +354,16 @@ export const batchesApi = {
 	},
 	async archive(id: string): Promise<Batch> {
 		const r = await api.post(`${V1}/batches/${id}/archive`);
+		return r.data;
+	},
+	async delete(id: string): Promise<void> {
+		await api.delete(`${V1}/batches/${id}`);
+	},
+	async allocateSlots(
+		id: string,
+		data: { slots_used: number; seeds_per_slot: number },
+	): Promise<Batch> {
+		const r = await api.post(`${V1}/batches/${id}/allocate-slots`, data);
 		return r.data;
 	},
 };
