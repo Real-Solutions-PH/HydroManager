@@ -28,7 +28,7 @@ function formatRange(min: number, max: number): string {
 function paddedDomain(stat: { min: number; max: number }): [number, number] {
 	const spread = stat.max - stat.min;
 	const tightThreshold = Math.abs(stat.max) * 0.1;
-	if (spread < tightThreshold) {
+	if (spread <= tightThreshold) {
 		const mid = (stat.min + stat.max) / 2;
 		const halfWidth = Math.max(Math.abs(mid) * 0.2, 1);
 		return [mid - halfWidth, mid + halfWidth];
