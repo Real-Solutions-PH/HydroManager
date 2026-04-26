@@ -6,8 +6,8 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
 import { colors, radii, spacing } from "@/constants/theme";
-import { useCrop } from "@/hooks/use-library";
-import type { CropGuide } from "@/lib/hydro-api";
+import { useCrop, useCropStats } from "@/hooks/use-library";
+import type { CropGuide, CropStatValue } from "@/lib/hydro-api";
 
 function parseRange(s: string | null | undefined): [number, number] | null {
 	if (!s) return null;
@@ -53,6 +53,7 @@ export default function CropDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const router = useRouter();
 	const { data: crop, isLoading } = useCrop(id);
+	const { data: statsResponse } = useCropStats();
 
 	return (
 		<GradientBackground>
@@ -66,7 +67,11 @@ export default function CropDetailScreen() {
 				{isLoading || !crop ? (
 					<Text tone="muted">Loading...</Text>
 				) : (
-					<CropDetail crop={crop} onBack={() => router.back()} />
+					<CropDetail
+						crop={crop}
+						stats={statsResponse?.stats ?? {}}
+						onBack={() => router.back()}
+					/>
 				)}
 			</ScrollView>
 		</GradientBackground>
@@ -75,9 +80,11 @@ export default function CropDetailScreen() {
 
 function CropDetail({
 	crop,
+	stats,
 	onBack,
 }: {
 	crop: CropGuide;
+	stats: Record<string, CropStatValue>;
 	onBack: () => void;
 }) {
 	const sunlightRange = tryParseRange("sunlight_hours", crop.sunlight_hours);
@@ -86,6 +93,23 @@ function CropDetail({
 	const nightTempRange = tryParseRange("temperature_night_c", crop.temperature_night_c);
 	const waterTempRange = tryParseRange("water_temp_c", crop.water_temp_c);
 	const humidityRange = tryParseRange("humidity_pct", crop.humidity_pct);
+
+	function domainFor(
+		statKey: string,
+		fallbackMin: number,
+		fallbackMax: number,
+	): { domainMin: number; domainMax: number; avg: number | undefined } {
+		const stat = stats[statKey];
+		if (!stat) {
+			return {
+				domainMin: fallbackMin,
+				domainMax: fallbackMax,
+				avg: undefined,
+			};
+		}
+		const [domainMin, domainMax] = paddedDomain(stat);
+		return { domainMin, domainMax, avg: stat.avg };
+	}
 
 	type MeterDef = {
 		key: string;
@@ -97,36 +121,46 @@ function CropDetail({
 		max: number;
 		domainMin: number;
 		domainMax: number;
+		avg?: number;
 		unit: string;
 	};
 
 	const meters = useMemo<MeterDef[]>(() => {
 		const arr: MeterDef[] = [];
-		arr.push({
-			key: "ph",
-			icon: "water-outline",
-			iconColor: colors.info,
-			label: "pH",
-			sublabel: "Soil/water pH",
-			min: crop.ph_min,
-			max: crop.ph_max,
-			domainMin: 0,
-			domainMax: 14,
-			unit: "(pH)",
-		});
-		arr.push({
-			key: "ec",
-			icon: "flash-outline",
-			iconColor: colors.warning,
-			label: "EC",
-			sublabel: "Nutrient strength",
-			min: crop.ec_min,
-			max: crop.ec_max,
-			domainMin: 0,
-			domainMax: 4,
-			unit: "(mS/cm)",
-		});
+		{
+			const d = domainFor("ph", 0, 14);
+			arr.push({
+				key: "ph",
+				icon: "water-outline",
+				iconColor: colors.info,
+				label: "pH",
+				sublabel: "Soil/water pH",
+				min: crop.ph_min,
+				max: crop.ph_max,
+				domainMin: d.domainMin,
+				domainMax: d.domainMax,
+				avg: d.avg,
+				unit: "(pH)",
+			});
+		}
+		{
+			const d = domainFor("ec", 0, 4);
+			arr.push({
+				key: "ec",
+				icon: "flash-outline",
+				iconColor: colors.warning,
+				label: "EC",
+				sublabel: "Nutrient strength",
+				min: crop.ec_min,
+				max: crop.ec_max,
+				domainMin: d.domainMin,
+				domainMax: d.domainMax,
+				avg: d.avg,
+				unit: "(mS/cm)",
+			});
+		}
 		if (sunlightRange) {
+			const d = domainFor("sunlight_hours", 0, 24);
 			arr.push({
 				key: "sunlight",
 				icon: "sunny-outline",
@@ -135,12 +169,14 @@ function CropDetail({
 				sublabel: "Daily hours",
 				min: sunlightRange[0],
 				max: sunlightRange[1],
-				domainMin: 0,
-				domainMax: 24,
+				domainMin: d.domainMin,
+				domainMax: d.domainMax,
+				avg: d.avg,
 				unit: "(h)",
 			});
 		}
 		if (growlightRange) {
+			const d = domainFor("growlight_hours", 0, 24);
 			arr.push({
 				key: "growlight",
 				icon: "bulb-outline",
@@ -149,12 +185,14 @@ function CropDetail({
 				sublabel: "Supplemental hours",
 				min: growlightRange[0],
 				max: growlightRange[1],
-				domainMin: 0,
-				domainMax: 24,
+				domainMin: d.domainMin,
+				domainMax: d.domainMax,
+				avg: d.avg,
 				unit: "(h)",
 			});
 		}
 		if (dayTempRange) {
+			const d = domainFor("temperature_day_c", 0, 40);
 			arr.push({
 				key: "day-temp",
 				icon: "thermometer-outline",
@@ -163,12 +201,14 @@ function CropDetail({
 				sublabel: "Air temperature",
 				min: dayTempRange[0],
 				max: dayTempRange[1],
-				domainMin: 0,
-				domainMax: 40,
+				domainMin: d.domainMin,
+				domainMax: d.domainMax,
+				avg: d.avg,
 				unit: "(°C)",
 			});
 		}
 		if (nightTempRange) {
+			const d = domainFor("temperature_night_c", 0, 40);
 			arr.push({
 				key: "night-temp",
 				icon: "moon-outline",
@@ -177,12 +217,14 @@ function CropDetail({
 				sublabel: "Air temperature",
 				min: nightTempRange[0],
 				max: nightTempRange[1],
-				domainMin: 0,
-				domainMax: 40,
+				domainMin: d.domainMin,
+				domainMax: d.domainMax,
+				avg: d.avg,
 				unit: "(°C)",
 			});
 		}
 		if (waterTempRange) {
+			const d = domainFor("water_temp_c", 0, 40);
 			arr.push({
 				key: "water-temp",
 				icon: "water",
@@ -191,12 +233,14 @@ function CropDetail({
 				sublabel: "Reservoir",
 				min: waterTempRange[0],
 				max: waterTempRange[1],
-				domainMin: 0,
-				domainMax: 40,
+				domainMin: d.domainMin,
+				domainMax: d.domainMax,
+				avg: d.avg,
 				unit: "(°C)",
 			});
 		}
 		if (humidityRange) {
+			const d = domainFor("humidity_pct", 0, 100);
 			arr.push({
 				key: "humidity",
 				icon: "cloud-outline",
@@ -205,27 +249,33 @@ function CropDetail({
 				sublabel: "Relative humidity",
 				min: humidityRange[0],
 				max: humidityRange[1],
-				domainMin: 0,
-				domainMax: 100,
+				domainMin: d.domainMin,
+				domainMax: d.domainMax,
+				avg: d.avg,
 				unit: "(%)",
 			});
 		}
-		arr.push({
-			key: "harvest",
-			icon: "leaf-outline",
-			iconColor: colors.primaryLight,
-			label: "Days to harvest",
-			sublabel: "Crop cycle",
-			min: crop.days_to_harvest_min,
-			max: crop.days_to_harvest_max,
-			domainMin: 0,
-			domainMax: 120,
-			unit: "(days)",
-		});
+		{
+			const d = domainFor("days_to_harvest", 0, 120);
+			arr.push({
+				key: "harvest",
+				icon: "leaf-outline",
+				iconColor: colors.primaryLight,
+				label: "Days to harvest",
+				sublabel: "Crop cycle",
+				min: crop.days_to_harvest_min,
+				max: crop.days_to_harvest_max,
+				domainMin: d.domainMin,
+				domainMax: d.domainMax,
+				avg: d.avg,
+				unit: "(days)",
+			});
+		}
 		if (
 			crop.local_price_php_per_kg_min !== null &&
 			crop.local_price_php_per_kg_max !== null
 		) {
+			const d = domainFor("local_price_php_per_kg", 0, 500);
 			arr.push({
 				key: "price",
 				icon: "cash-outline",
@@ -234,13 +284,34 @@ function CropDetail({
 				sublabel: "PHP per kg",
 				min: crop.local_price_php_per_kg_min,
 				max: crop.local_price_php_per_kg_max,
-				domainMin: 0,
-				domainMax: 500,
+				domainMin: d.domainMin,
+				domainMax: d.domainMax,
+				avg: d.avg,
 				unit: "(₱/kg)",
 			});
 		}
+		if (crop.typical_yield_grams != null) {
+			const d = domainFor(
+				"typical_yield_grams",
+				0,
+				Math.max(1000, crop.typical_yield_grams * 1.2),
+			);
+			arr.push({
+				key: "yield",
+				icon: "leaf",
+				iconColor: colors.primaryLight,
+				label: "Typical yield",
+				sublabel: "Per plant",
+				min: crop.typical_yield_grams,
+				max: crop.typical_yield_grams,
+				domainMin: d.domainMin,
+				domainMax: d.domainMax,
+				avg: d.avg,
+				unit: "(g)",
+			});
+		}
 		return arr;
-	}, [crop]);
+	}, [crop, stats]);
 
 	return (
 		<View style={{ gap: spacing.md }}>
@@ -266,29 +337,17 @@ function CropDetail({
 							iconColor={m.iconColor}
 							label={m.label}
 							sublabel={m.sublabel}
-							value={formatRange(m.min, m.max)}
+							value={
+								m.min === m.max ? `${m.min}` : formatRange(m.min, m.max)
+							}
 							unit={m.unit}
 							min={m.min}
 							max={m.max}
 							domainMin={m.domainMin}
 							domainMax={m.domainMax}
+							avg={m.avg}
 						/>
 					))}
-					{crop.typical_yield_grams != null ? (
-						<View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-							<View>
-								<Text size="md" weight="semibold">
-									Typical yield
-								</Text>
-								<Text size="xs" tone="muted">
-									Per plant
-								</Text>
-							</View>
-							<Text size="md" weight="bold">
-								{crop.typical_yield_grams}g
-							</Text>
-						</View>
-					) : null}
 				</View>
 			</Section>
 
