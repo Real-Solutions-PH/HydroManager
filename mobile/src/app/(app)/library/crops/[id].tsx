@@ -25,6 +25,17 @@ function formatRange(min: number, max: number): string {
 	return isInt ? `${min}-${max}` : `${min.toFixed(1)}-${max.toFixed(1)}`;
 }
 
+function paddedDomain(stat: { min: number; max: number }): [number, number] {
+	const spread = stat.max - stat.min;
+	const tightThreshold = Math.abs(stat.max) * 0.1;
+	if (spread < tightThreshold) {
+		const mid = (stat.min + stat.max) / 2;
+		const halfWidth = Math.max(Math.abs(mid) * 0.2, 1);
+		return [mid - halfWidth, mid + halfWidth];
+	}
+	return [stat.min - spread * 0.1, stat.max + spread * 0.1];
+}
+
 function tryParseRange(
 	field: string,
 	value: string | null | undefined,
@@ -448,37 +459,71 @@ function RangeBar({
 	max,
 	domainMin,
 	domainMax,
+	avg,
 }: {
 	min: number;
 	max: number;
 	domainMin: number;
 	domainMax: number;
+	avg?: number;
 }) {
 	const lo = Math.min(min, max);
 	const hi = Math.max(min, max);
 	const span = domainMax - domainMin;
 	const safeSpan = span > 0 ? span : 1;
 	const segmentSpan = safeSpan / RANGE_BAR_SEGMENTS;
+	const showAvg =
+		avg !== undefined && avg >= domainMin && avg <= domainMax;
+	const avgPct = showAvg
+		? ((avg - domainMin) / safeSpan) * 100
+		: 0;
 	return (
-		<View style={{ flexDirection: "row", gap: 4 }}>
-			{Array.from({ length: RANGE_BAR_SEGMENTS }).map((_, i) => {
-				const segStart = domainMin + i * segmentSpan;
-				const segEnd = segStart + segmentSpan;
-				const inRange = segEnd > lo && segStart < hi;
-				return (
+		<View>
+			{showAvg ? (
+				<View
+					style={{
+						height: 8,
+						marginBottom: 2,
+						position: "relative",
+					}}
+				>
 					<View
-						key={`seg-${i}`}
 						style={{
-							flex: 1,
-							height: 8,
-							borderRadius: 999,
-							backgroundColor: inRange
-								? colors.primaryLight
-								: colors.surfaceVariant,
+							position: "absolute",
+							left: `${avgPct}%`,
+							marginLeft: -5,
+							width: 0,
+							height: 0,
+							borderLeftWidth: 5,
+							borderRightWidth: 5,
+							borderTopWidth: 6,
+							borderLeftColor: "transparent",
+							borderRightColor: "transparent",
+							borderTopColor: colors.text,
 						}}
 					/>
-				);
-			})}
+				</View>
+			) : null}
+			<View style={{ flexDirection: "row", gap: 4 }}>
+				{Array.from({ length: RANGE_BAR_SEGMENTS }).map((_, i) => {
+					const segStart = domainMin + i * segmentSpan;
+					const segEnd = segStart + segmentSpan;
+					const inRange = segEnd > lo && segStart < hi;
+					return (
+						<View
+							key={`seg-${i}`}
+							style={{
+								flex: 1,
+								height: 8,
+								borderRadius: 999,
+								backgroundColor: inRange
+									? colors.primaryLight
+									: colors.surfaceVariant,
+							}}
+						/>
+					);
+				})}
+			</View>
 		</View>
 	);
 }
@@ -494,6 +539,7 @@ function MeterRow({
 	max,
 	domainMin,
 	domainMax,
+	avg,
 }: {
 	icon: keyof typeof Ionicons.glyphMap;
 	iconColor: string;
@@ -505,6 +551,7 @@ function MeterRow({
 	max: number;
 	domainMin: number;
 	domainMax: number;
+	avg?: number;
 }) {
 	return (
 		<View style={{ flexDirection: "row", gap: spacing.sm, alignItems: "center" }}>
@@ -550,6 +597,7 @@ function MeterRow({
 					max={max}
 					domainMin={domainMin}
 					domainMax={domainMax}
+					avg={avg}
 				/>
 			</View>
 		</View>
