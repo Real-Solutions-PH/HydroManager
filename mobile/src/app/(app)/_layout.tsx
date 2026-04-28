@@ -6,6 +6,7 @@ import {
 	Grid3x3,
 	Home,
 	Package,
+	Sprout,
 } from "lucide-react-native";
 import { useEffect } from "react";
 import { View } from "react-native";
@@ -27,6 +28,7 @@ const HIDDEN_TAB = {
 const TAB_ITEMS: InteractiveMenuItem[] = [
 	{ key: "index", label: "Home", icon: Home },
 	{ key: "setups", label: "Setups", icon: Grid3x3 },
+	{ key: "seeds", label: "Seeds", icon: Sprout },
 	{ key: "checklist", label: "Tasks", icon: CheckSquare },
 	{ key: "inventory", label: "Inventory", icon: Package },
 	{ key: "sales", label: "Sales", icon: DollarSign },
@@ -79,6 +81,7 @@ export default function AppLayout() {
 			>
 				<Tabs.Screen name="index" options={{ title: "Home" }} />
 				<Tabs.Screen name="setups" options={{ title: "Setups" }} />
+				<Tabs.Screen name="seeds" options={{ title: "Seeds" }} />
 				<Tabs.Screen name="checklist" options={{ title: "Tasks" }} />
 				<Tabs.Screen name="inventory" options={{ title: "Inventory" }} />
 				<Tabs.Screen name="sales" options={{ title: "Sales" }} />
