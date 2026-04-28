@@ -56,9 +56,7 @@ export default function ProduceDetailScreen() {
 			setStatus(item.data.status);
 			setExpiry(item.data.expiry_date ?? "");
 			setPrice(
-				item.data.selling_price !== null
-					? String(item.data.selling_price)
-					: "",
+				item.data.selling_price !== null ? String(item.data.selling_price) : "",
 			);
 			setNotes(item.data.notes ?? "");
 		}

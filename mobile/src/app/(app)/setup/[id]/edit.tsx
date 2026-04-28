@@ -98,8 +98,7 @@ export default function EditSetupScreen() {
 		onError: (e: Error) => Alert.alert("Update failed", e.message),
 	});
 
-	const valid =
-		name.trim().length > 0 && Number.parseInt(slotCount, 10) > 0;
+	const valid = name.trim().length > 0 && Number.parseInt(slotCount, 10) > 0;
 
 	if (setup.isLoading || !hydrated)
 		return (

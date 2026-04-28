@@ -72,14 +72,12 @@ export function useCropStats() {
 	});
 }
 
-export function useClimateNormals(
-	args: {
-		lat: number | null;
-		lon: number | null;
-		month: number | null;
-		provider?: ClimateProviderName;
-	},
-) {
+export function useClimateNormals(args: {
+	lat: number | null;
+	lon: number | null;
+	month: number | null;
+	provider?: ClimateProviderName;
+}) {
 	const { lat, lon, month, provider } = args;
 	return useQuery({
 		queryKey: ["climate", "normals", lat, lon, month, provider ?? "open_meteo"],

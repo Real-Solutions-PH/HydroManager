@@ -63,8 +63,7 @@ function lineFromProduce(p: Produce): LineItem {
 		cropName: p.name,
 		qty: "1",
 		unit: p.unit,
-		price:
-			p.selling_price !== null ? String(p.selling_price) : "0",
+		price: p.selling_price !== null ? String(p.selling_price) : "0",
 		produceId: p.id,
 		inventoryItemId: null,
 		custom: false,
@@ -102,7 +101,13 @@ export default function NewSaleScreen() {
 		if (p && lines.length === 1 && lines[0].cropName === "") {
 			setLines([lineFromProduce(p)]);
 		}
-	}, [readyList.length, params.produce_id]);
+	}, [
+		readyList.length,
+		params.produce_id,
+		lines[0].cropName,
+		lines.length,
+		readyList,
+	]);
 
 	function updateLine(id: string, patch: Partial<LineItem>) {
 		setLines((prev) => prev.map((l) => (l.id === id ? { ...l, ...patch } : l)));
@@ -119,8 +124,7 @@ export default function NewSaleScreen() {
 		updateLine(lineId, {
 			cropName: p.name,
 			unit: p.unit,
-			price:
-				p.selling_price !== null ? String(p.selling_price) : "0",
+			price: p.selling_price !== null ? String(p.selling_price) : "0",
 			produceId: p.id,
 			inventoryItemId: null,
 			custom: false,
@@ -409,14 +413,10 @@ export default function NewSaleScreen() {
 											}));
 									return (
 										<Select
-											value={
-												l.custom ? l.inventoryItemId : l.produceId
-											}
+											value={l.custom ? l.inventoryItemId : l.produceId}
 											options={options}
 											placeholder={
-												l.custom
-													? "Select inventory item"
-													: "Select produce"
+												l.custom ? "Select inventory item" : "Select produce"
 											}
 											emptyMessage={
 												l.custom
@@ -425,9 +425,7 @@ export default function NewSaleScreen() {
 											}
 											onValueChange={(val) => {
 												if (l.custom) {
-													const item = inventoryList.find(
-														(i) => i.id === val,
-													);
+													const item = inventoryList.find((i) => i.id === val);
 													if (item) pickInventory(l.id, item);
 												} else {
 													const p = readyList.find((r) => r.id === val);

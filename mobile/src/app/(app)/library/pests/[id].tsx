@@ -24,7 +24,7 @@ const SEV_COLOR: Record<PestSeverity, string> = {
 
 export default function PestDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
-	const router = useRouter();
+	const _router = useRouter();
 	const goBack = useBack();
 	const { data: pest, isLoading } = usePest(id);
 

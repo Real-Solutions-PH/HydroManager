@@ -1,7 +1,7 @@
 import * as SelectPrimitive from "@rn-primitives/select";
 import { ScrollView, View } from "react-native";
-import { colors, spacing } from "@/constants/theme";
 import { Text } from "@/components/ui/text";
+import { colors, spacing } from "@/constants/theme";
 
 export interface SelectOption {
 	value: string;
@@ -79,30 +79,30 @@ export function Select({
 						}}
 					>
 						<SelectPrimitive.Viewport>
-						<ScrollView nestedScrollEnabled>
-							{options.map((opt) => (
-								<SelectPrimitive.Item
-									key={opt.value}
-									value={opt.value}
-									label={
-										opt.trailing
-											? `${opt.label}  ·  ${opt.trailing}`
-											: opt.label
-									}
-									disabled={opt.disabled}
-									style={{
-										padding: spacing.sm,
-										borderBottomWidth: 1,
-										borderBottomColor: colors.border,
-										opacity: opt.disabled ? 0.4 : 1,
-									}}
-								>
-									<SelectPrimitive.ItemText
-										style={{ color: colors.text, fontSize: 14 }}
-									/>
-								</SelectPrimitive.Item>
-							))}
-						</ScrollView>
+							<ScrollView nestedScrollEnabled>
+								{options.map((opt) => (
+									<SelectPrimitive.Item
+										key={opt.value}
+										value={opt.value}
+										label={
+											opt.trailing
+												? `${opt.label}  ·  ${opt.trailing}`
+												: opt.label
+										}
+										disabled={opt.disabled}
+										style={{
+											padding: spacing.sm,
+											borderBottomWidth: 1,
+											borderBottomColor: colors.border,
+											opacity: opt.disabled ? 0.4 : 1,
+										}}
+									>
+										<SelectPrimitive.ItemText
+											style={{ color: colors.text, fontSize: 14 }}
+										/>
+									</SelectPrimitive.Item>
+								))}
+							</ScrollView>
 						</SelectPrimitive.Viewport>
 					</SelectPrimitive.Content>
 				</SelectPrimitive.Portal>

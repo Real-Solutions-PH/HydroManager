@@ -38,9 +38,8 @@ export default function NewBatchScreen() {
 		enabled: !!setupId,
 	});
 	const emptySlots =
-		selectedSetup.data?.slots.filter(
-			(s) => s.status === "empty" && !s.batch_id,
-		).length ?? 0;
+		selectedSetup.data?.slots.filter((s) => s.status === "empty" && !s.batch_id)
+			.length ?? 0;
 
 	const slotsUsedNum = Number.parseInt(slotsUsed, 10) || 0;
 	const seedsPerSlotNum = Number.parseInt(seedsPerSlot, 10) || 0;
@@ -220,11 +219,7 @@ export default function NewBatchScreen() {
 						}
 						onPress={() => create.mutate()}
 					/>
-					<Button
-						variant="ghost"
-						label="Cancel"
-						onPress={goBack}
-					/>
+					<Button variant="ghost" label="Cancel" onPress={goBack} />
 				</View>
 			</ScrollView>
 		</GradientBackground>

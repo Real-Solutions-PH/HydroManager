@@ -187,11 +187,7 @@ export default function NewProduceScreen() {
 						isDisabled={!valid}
 						onPress={() => create.mutate()}
 					/>
-					<Button
-						variant="ghost"
-						label="Cancel"
-						onPress={goBack}
-					/>
+					<Button variant="ghost" label="Cancel" onPress={goBack} />
 				</View>
 			</ScrollView>
 		</GradientBackground>

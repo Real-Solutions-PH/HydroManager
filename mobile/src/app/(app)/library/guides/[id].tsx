@@ -11,7 +11,7 @@ import { MarkdownRender } from "@/lib/markdown-render";
 
 export default function GuideDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
-	const router = useRouter();
+	const _router = useRouter();
 	const goBack = useBack();
 	const { data: guide, isLoading } = useGuide(id);
 

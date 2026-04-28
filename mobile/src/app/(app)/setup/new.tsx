@@ -278,11 +278,7 @@ export default function NewSetupScreen() {
 						isDisabled={!valid}
 						onPress={() => createSetup.mutate()}
 					/>
-					<Button
-						variant="ghost"
-						label="Cancel"
-						onPress={goBack}
-					/>
+					<Button variant="ghost" label="Cancel" onPress={goBack} />
 				</View>
 			</ScrollView>
 		</GradientBackground>

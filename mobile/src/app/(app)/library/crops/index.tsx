@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { useBack } from "@/hooks/use-back";
 import { FlatList, Image, Pressable, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -10,6 +9,7 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { Select } from "@/components/ui/select";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { useClimateNormals, useCrops } from "@/hooks/use-library";
 import type { ClimateNormals, CropGuide } from "@/lib/hydro-api";
@@ -26,8 +26,18 @@ const CAT_COLOR: Record<Cat, string> = {
 };
 
 const MONTHS = [
-	"January", "February", "March", "April", "May", "June",
-	"July", "August", "September", "October", "November", "December",
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December",
 ];
 
 type SortKey =
@@ -105,10 +115,16 @@ function sortCrops(crops: CropGuide[], key: SortKey): CropGuide[] {
 		case "name":
 			return copy.sort((a, b) => a.name_en.localeCompare(b.name_en));
 		case "yield":
-			return copy.sort((a, b) => cmp(num(a.typical_yield_grams), num(b.typical_yield_grams), -1));
+			return copy.sort((a, b) =>
+				cmp(num(a.typical_yield_grams), num(b.typical_yield_grams), -1),
+			);
 		case "price":
 			return copy.sort((a, b) =>
-				cmp(num(a.local_price_php_per_kg_max), num(b.local_price_php_per_kg_max), -1),
+				cmp(
+					num(a.local_price_php_per_kg_max),
+					num(b.local_price_php_per_kg_max),
+					-1,
+				),
 			);
 		case "ph":
 			return copy.sort((a, b) => cmp(num(a.ph_min), num(b.ph_min), 1));
@@ -116,23 +132,37 @@ function sortCrops(crops: CropGuide[], key: SortKey): CropGuide[] {
 			return copy.sort((a, b) => cmp(num(a.ec_min), num(b.ec_min), 1));
 		case "sunlight":
 			return copy.sort((a, b) =>
-				cmp(rangeMid(parseRange(a.sunlight_hours)), rangeMid(parseRange(b.sunlight_hours)), -1),
+				cmp(
+					rangeMid(parseRange(a.sunlight_hours)),
+					rangeMid(parseRange(b.sunlight_hours)),
+					-1,
+				),
 			);
 		case "growlight":
 			return copy.sort((a, b) =>
-				cmp(rangeMid(parseRange(a.growlight_hours)), rangeMid(parseRange(b.growlight_hours)), 1),
+				cmp(
+					rangeMid(parseRange(a.growlight_hours)),
+					rangeMid(parseRange(b.growlight_hours)),
+					1,
+				),
 			);
 		case "humidity":
 			return copy.sort((a, b) =>
-				cmp(rangeMid(parseRange(a.humidity_pct)), rangeMid(parseRange(b.humidity_pct)), 1),
+				cmp(
+					rangeMid(parseRange(a.humidity_pct)),
+					rangeMid(parseRange(b.humidity_pct)),
+					1,
+				),
 			);
 		case "days_to_harvest":
-			return copy.sort((a, b) => cmp(num(a.days_to_harvest_min), num(b.days_to_harvest_min), 1));
+			return copy.sort((a, b) =>
+				cmp(num(a.days_to_harvest_min), num(b.days_to_harvest_min), 1),
+			);
 	}
 }
 
 export default function CropsListScreen() {
-	const router = useRouter();
+	const _router = useRouter();
 	const goBack = useBack();
 	const [query, setQuery] = useState("");
 	const [category, setCategory] = useState<Cat | null>(null);
@@ -141,7 +171,11 @@ export default function CropsListScreen() {
 	const [sort, setSort] = useState<SortKey>("name");
 	const [advOpen, setAdvOpen] = useState(false);
 
-	const { coords, status: geoStatus, refresh: refreshGeo } = useGeolocation(true);
+	const {
+		coords,
+		status: geoStatus,
+		refresh: refreshGeo,
+	} = useGeolocation(true);
 	const { data: env, isLoading: envLoading } = useClimateNormals({
 		lat: coords?.lat ?? null,
 		lon: coords?.lon ?? null,
@@ -156,7 +190,8 @@ export default function CropsListScreen() {
 
 	const crops = useMemo(() => {
 		const base = data?.data ?? [];
-		const filtered = envFilterOn && env ? base.filter((c) => cropMatchesEnv(c, env)) : base;
+		const filtered =
+			envFilterOn && env ? base.filter((c) => cropMatchesEnv(c, env)) : base;
 		return sortCrops(filtered, sort);
 	}, [data, envFilterOn, env, sort]);
 

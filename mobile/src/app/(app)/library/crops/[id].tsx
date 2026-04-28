@@ -52,7 +52,7 @@ function tryParseRange(
 
 export default function CropDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
-	const router = useRouter();
+	const _router = useRouter();
 	const goBack = useBack();
 	const { data: crop, isLoading } = useCrop(id);
 	const { data: statsResponse } = useCropStats();
@@ -91,8 +91,14 @@ function CropDetail({
 }) {
 	const sunlightRange = tryParseRange("sunlight_hours", crop.sunlight_hours);
 	const growlightRange = tryParseRange("growlight_hours", crop.growlight_hours);
-	const dayTempRange = tryParseRange("temperature_day_c", crop.temperature_day_c);
-	const nightTempRange = tryParseRange("temperature_night_c", crop.temperature_night_c);
+	const dayTempRange = tryParseRange(
+		"temperature_day_c",
+		crop.temperature_day_c,
+	);
+	const nightTempRange = tryParseRange(
+		"temperature_night_c",
+		crop.temperature_night_c,
+	);
 	const waterTempRange = tryParseRange("water_temp_c", crop.water_temp_c);
 	const humidityRange = tryParseRange("humidity_pct", crop.humidity_pct);
 
@@ -313,7 +319,16 @@ function CropDetail({
 			});
 		}
 		return arr;
-	}, [crop, stats]);
+	}, [
+		crop,
+		dayTempRange,
+		domainFor,
+		growlightRange,
+		humidityRange,
+		nightTempRange,
+		sunlightRange,
+		waterTempRange,
+	]);
 
 	return (
 		<View style={{ gap: spacing.md }}>
@@ -324,173 +339,174 @@ function CropDetail({
 			/>
 
 			<View style={{ paddingHorizontal: spacing.md, gap: spacing.md }}>
-			<View>
-				<Text size="xxl" weight="bold">
-					{crop.name_en}
-				</Text>
-				<Text size="sm" tone="muted">
-					{crop.name_tl} · {crop.category}
-				</Text>
-			</View>
-
-			<HarvestHighlight text={crop.harvest_indicator} />
-
-			<Section title="General Info">
-				<View style={{ gap: spacing.md }}>
-					{meters.map((m) => (
-						<MeterRow
-							key={m.key}
-							icon={m.icon}
-							iconColor={m.iconColor}
-							label={m.label}
-							sublabel={m.sublabel}
-							value={
-								m.min === m.max ? `${m.min}` : formatRange(m.min, m.max)
-							}
-							unit={m.unit}
-							min={m.min}
-							max={m.max}
-							domainMin={m.domainMin}
-							domainMax={m.domainMax}
-							avg={m.avg}
-						/>
-					))}
+				<View>
+					<Text size="xxl" weight="bold">
+						{crop.name_en}
+					</Text>
+					<Text size="sm" tone="muted">
+						{crop.name_tl} · {crop.category}
+					</Text>
 				</View>
-			</Section>
 
-			{crop.ec_seedling != null ||
-			crop.ec_vegetative != null ||
-			crop.ec_mature != null ||
-			crop.ec_fruiting != null ? (
-				<Section title="EC by Stage">
-					<StatGrid
-						stats={[
-							{
-								label: "Seedling",
-								value:
-									crop.ec_seedling != null ? String(crop.ec_seedling) : null,
-							},
-							{
-								label: "Vegetative",
-								value:
-									crop.ec_vegetative != null
-										? String(crop.ec_vegetative)
-										: null,
-							},
-							{
-								label: "Mature",
-								value: crop.ec_mature != null ? String(crop.ec_mature) : null,
-							},
-							{
-								label: "Fruiting",
-								value:
-									crop.ec_fruiting != null ? String(crop.ec_fruiting) : null,
-							},
-						]}
-					/>
-				</Section>
-			) : null}
+				<HarvestHighlight text={crop.harvest_indicator} />
 
-			{crop.growth_stages?.length ? (
-				<Section title="Crop Guide">
-					<View style={{ gap: spacing.sm }}>
-						{crop.growth_stages.map((stage, i) => (
-							<Card key={`${stage.stage}-${stage.day_min}`} variant="outlined">
-								<View
-									style={{
-										flexDirection: "row",
-										justifyContent: "space-between",
-										marginBottom: 4,
-									}}
-								>
-									<Text size="md" weight="semibold">
-										{i + 1}. {stage.stage}
-									</Text>
-									<Text size="xs" tone="muted">
-										Day {stage.day_min}-{stage.day_max}
-									</Text>
-								</View>
-								<Text size="sm" tone="subtle">
-									{stage.description}
-								</Text>
-								{stage.actions?.length ? (
-									<View style={{ marginTop: spacing.xs, gap: 2 }}>
-										{stage.actions.map((a) => (
-											<Text
-												key={`${stage.stage}-action-${a}`}
-												size="xs"
-												tone="muted"
-											>
-												• {a}
-											</Text>
-										))}
-									</View>
-								) : null}
-							</Card>
+				<Section title="General Info">
+					<View style={{ gap: spacing.md }}>
+						{meters.map((m) => (
+							<MeterRow
+								key={m.key}
+								icon={m.icon}
+								iconColor={m.iconColor}
+								label={m.label}
+								sublabel={m.sublabel}
+								value={m.min === m.max ? `${m.min}` : formatRange(m.min, m.max)}
+								unit={m.unit}
+								min={m.min}
+								max={m.max}
+								domainMin={m.domainMin}
+								domainMax={m.domainMax}
+								avg={m.avg}
+							/>
 						))}
 					</View>
 				</Section>
-			) : null}
 
-			{crop.tips?.length ? (
-				<Section title="Tips">
-					<Card variant="outlined">
-						<View style={{ gap: spacing.xs }}>
-							{crop.tips.map((tip) => (
-								<View
-									key={`tip-${tip}`}
-									style={{ flexDirection: "row", gap: spacing.xs }}
+				{crop.ec_seedling != null ||
+				crop.ec_vegetative != null ||
+				crop.ec_mature != null ||
+				crop.ec_fruiting != null ? (
+					<Section title="EC by Stage">
+						<StatGrid
+							stats={[
+								{
+									label: "Seedling",
+									value:
+										crop.ec_seedling != null ? String(crop.ec_seedling) : null,
+								},
+								{
+									label: "Vegetative",
+									value:
+										crop.ec_vegetative != null
+											? String(crop.ec_vegetative)
+											: null,
+								},
+								{
+									label: "Mature",
+									value: crop.ec_mature != null ? String(crop.ec_mature) : null,
+								},
+								{
+									label: "Fruiting",
+									value:
+										crop.ec_fruiting != null ? String(crop.ec_fruiting) : null,
+								},
+							]}
+						/>
+					</Section>
+				) : null}
+
+				{crop.growth_stages?.length ? (
+					<Section title="Crop Guide">
+						<View style={{ gap: spacing.sm }}>
+							{crop.growth_stages.map((stage, i) => (
+								<Card
+									key={`${stage.stage}-${stage.day_min}`}
+									variant="outlined"
 								>
-									<Text
-										size="md"
-										weight="bold"
-										style={{ color: colors.primaryLight }}
+									<View
+										style={{
+											flexDirection: "row",
+											justifyContent: "space-between",
+											marginBottom: 4,
+										}}
 									>
-										•
+										<Text size="md" weight="semibold">
+											{i + 1}. {stage.stage}
+										</Text>
+										<Text size="xs" tone="muted">
+											Day {stage.day_min}-{stage.day_max}
+										</Text>
+									</View>
+									<Text size="sm" tone="subtle">
+										{stage.description}
 									</Text>
-									<Text size="sm" tone="subtle" style={{ flex: 1 }}>
-										{tip}
-									</Text>
-								</View>
+									{stage.actions?.length ? (
+										<View style={{ marginTop: spacing.xs, gap: 2 }}>
+											{stage.actions.map((a) => (
+												<Text
+													key={`${stage.stage}-action-${a}`}
+													size="xs"
+													tone="muted"
+												>
+													• {a}
+												</Text>
+											))}
+										</View>
+									) : null}
+								</Card>
 							))}
 						</View>
-					</Card>
-				</Section>
-			) : null}
+					</Section>
+				) : null}
 
-			{crop.risks?.length ? (
-				<Section title="Risks & Mitigation">
-					<View style={{ gap: spacing.sm }}>
-						{crop.risks.map((risk) => (
-							<Card key={`risk-${risk.title}`} variant="outlined">
-								<Text
-									size="md"
-									weight="semibold"
-									style={{ color: colors.warning }}
-								>
-									{risk.title}
-								</Text>
-								<Text size="sm" tone="subtle" style={{ marginTop: 4 }}>
-									{risk.description}
-								</Text>
-								<Text
-									size="xs"
-									tone="muted"
-									style={{ marginTop: spacing.xs, fontStyle: "italic" }}
-								>
-									Mitigation: {risk.mitigation}
-								</Text>
-							</Card>
-						))}
-					</View>
-				</Section>
-			) : null}
+				{crop.tips?.length ? (
+					<Section title="Tips">
+						<Card variant="outlined">
+							<View style={{ gap: spacing.xs }}>
+								{crop.tips.map((tip) => (
+									<View
+										key={`tip-${tip}`}
+										style={{ flexDirection: "row", gap: spacing.xs }}
+									>
+										<Text
+											size="md"
+											weight="bold"
+											style={{ color: colors.primaryLight }}
+										>
+											•
+										</Text>
+										<Text size="sm" tone="subtle" style={{ flex: 1 }}>
+											{tip}
+										</Text>
+									</View>
+								))}
+							</View>
+						</Card>
+					</Section>
+				) : null}
 
-			{crop.source ? (
-				<Text size="xs" tone="muted" style={{ marginTop: spacing.md }}>
-					Source: {crop.source}
-				</Text>
-			) : null}
+				{crop.risks?.length ? (
+					<Section title="Risks & Mitigation">
+						<View style={{ gap: spacing.sm }}>
+							{crop.risks.map((risk) => (
+								<Card key={`risk-${risk.title}`} variant="outlined">
+									<Text
+										size="md"
+										weight="semibold"
+										style={{ color: colors.warning }}
+									>
+										{risk.title}
+									</Text>
+									<Text size="sm" tone="subtle" style={{ marginTop: 4 }}>
+										{risk.description}
+									</Text>
+									<Text
+										size="xs"
+										tone="muted"
+										style={{ marginTop: spacing.xs, fontStyle: "italic" }}
+									>
+										Mitigation: {risk.mitigation}
+									</Text>
+								</Card>
+							))}
+						</View>
+					</Section>
+				) : null}
+
+				{crop.source ? (
+					<Text size="xs" tone="muted" style={{ marginTop: spacing.md }}>
+						Source: {crop.source}
+					</Text>
+				) : null}
 			</View>
 		</View>
 	);
@@ -533,11 +549,8 @@ function RangeBar({
 	const span = domainMax - domainMin;
 	const safeSpan = span > 0 ? span : 1;
 	const segmentSpan = safeSpan / RANGE_BAR_SEGMENTS;
-	const showAvg =
-		avg !== undefined && avg >= domainMin && avg <= domainMax;
-	const avgPct = showAvg
-		? ((avg - domainMin) / safeSpan) * 100
-		: 0;
+	const showAvg = avg !== undefined && avg >= domainMin && avg <= domainMax;
+	const avgPct = showAvg ? ((avg - domainMin) / safeSpan) * 100 : 0;
 	return (
 		<View>
 			{showAvg ? (
@@ -615,7 +628,9 @@ function MeterRow({
 	avg?: number;
 }) {
 	return (
-		<View style={{ flexDirection: "row", gap: spacing.sm, alignItems: "center" }}>
+		<View
+			style={{ flexDirection: "row", gap: spacing.sm, alignItems: "center" }}
+		>
 			<View
 				style={{
 					width: 44,
@@ -669,7 +684,9 @@ function HarvestHighlight({ text }: { text: string | null }) {
 	if (!text) return null;
 	return (
 		<Card variant="outlined">
-			<View style={{ flexDirection: "row", gap: spacing.sm, alignItems: "center" }}>
+			<View
+				style={{ flexDirection: "row", gap: spacing.sm, alignItems: "center" }}
+			>
 				<View
 					style={{
 						width: 40,
@@ -683,7 +700,12 @@ function HarvestHighlight({ text }: { text: string | null }) {
 					<Ionicons name="bulb-outline" size={20} color={colors.primaryLight} />
 				</View>
 				<View style={{ flex: 1 }}>
-					<Text size="xs" tone="muted" weight="semibold" style={{ textTransform: "uppercase", letterSpacing: 0.5 }}>
+					<Text
+						size="xs"
+						tone="muted"
+						weight="semibold"
+						style={{ textTransform: "uppercase", letterSpacing: 0.5 }}
+					>
 						Harvest Indicator
 					</Text>
 					<Text size="sm" tone="subtle" style={{ marginTop: 2 }}>
@@ -771,11 +793,7 @@ function HeroHeader({
 									backgroundColor: bg,
 								}}
 							>
-								<Text
-									size="sm"
-									weight="semibold"
-									style={{ color }}
-								>
+								<Text size="sm" weight="semibold" style={{ color }}>
 									{tag}
 								</Text>
 							</View>

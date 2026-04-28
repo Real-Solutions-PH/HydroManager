@@ -367,7 +367,10 @@ export default function SetupDetailScreen() {
 						<Text
 							size="lg"
 							weight="bold"
-							style={{ marginBottom: spacing.xs, paddingHorizontal: spacing.xxs }}
+							style={{
+								marginBottom: spacing.xs,
+								paddingHorizontal: spacing.xxs,
+							}}
 						>
 							History
 						</Text>

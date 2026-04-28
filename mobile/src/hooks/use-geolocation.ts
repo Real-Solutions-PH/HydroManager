@@ -22,7 +22,8 @@ export function useGeolocation(auto: boolean = true): GeolocationState {
 		setStatus("requesting");
 		setError(null);
 		try {
-			const { status: perm } = await Location.requestForegroundPermissionsAsync();
+			const { status: perm } =
+				await Location.requestForegroundPermissionsAsync();
 			if (perm !== "granted") {
 				setStatus("denied");
 				setError("Location permission denied");

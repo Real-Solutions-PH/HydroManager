@@ -32,7 +32,7 @@ const CAT_COLOR: Record<GuideCategory, string> = {
 };
 
 export default function GuidesListScreen() {
-	const router = useRouter();
+	const _router = useRouter();
 	const goBack = useBack();
 	const [query, setQuery] = useState("");
 	const [category, setCategory] = useState<GuideCategory | null>(null);

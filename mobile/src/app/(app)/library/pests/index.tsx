@@ -28,7 +28,7 @@ const SEV_COLOR: Record<PestSeverity, string> = {
 };
 
 export default function PestsListScreen() {
-	const router = useRouter();
+	const _router = useRouter();
 	const goBack = useBack();
 	const [query, setQuery] = useState("");
 	const [kind, setKind] = useState<PestKind | null>(null);

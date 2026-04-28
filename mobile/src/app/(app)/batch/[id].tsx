@@ -218,7 +218,12 @@ export default function BatchDetailScreen() {
 								gap: spacing.xs,
 							}}
 						>
-							<Badge label="Legacy" color={colors.textMuted} bg={colors.glass} small />
+							<Badge
+								label="Legacy"
+								color={colors.textMuted}
+								bg={colors.glass}
+								small
+							/>
 							<Text size="sm" tone="muted" style={{ flex: 1 }}>
 								No slot allocation. Assign slots to track.
 							</Text>
