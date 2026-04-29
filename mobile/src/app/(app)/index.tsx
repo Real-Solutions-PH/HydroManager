@@ -563,59 +563,91 @@ export default function HomeScreen() {
 					<Text size="lg" weight="bold">
 						{t("home.quick_actions")}
 					</Text>
+
+					{/* TODO: route to a dedicated readings entry once the endpoint exists. */}
+					<Pressable
+						accessibilityRole="link"
+						accessibilityLabel={t("home.qa_log_reading")}
+						onPress={() => router.push("/checklist")}
+						style={({ pressed }) => ({
+							flexDirection: "row",
+							alignItems: "center",
+							gap: spacing.md,
+							padding: spacing.md,
+							borderRadius: radii.lg,
+							backgroundColor: pressed
+								? colors.glassHover
+								: colors.surfaceVariant,
+							borderWidth: 1,
+							borderColor: colors.border,
+						})}
+					>
+						<View
+							style={{
+								width: 48,
+								height: 48,
+								borderRadius: radii.md,
+								backgroundColor: colors.infoLight,
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+						>
+							<Ionicons name="water" size={24} color={colors.info} />
+						</View>
+						<View style={{ flex: 1, gap: 2 }}>
+							<Text weight="bold" size="md">
+								{t("home.qa_log_reading")}
+							</Text>
+							<Text size="sm" tone="muted">
+								{t("home.qa_log_reading_sub")}
+							</Text>
+						</View>
+						<Ionicons
+							name="chevron-forward"
+							size={20}
+							color={colors.textMuted}
+						/>
+					</Pressable>
+
 					<View
 						style={{
 							flexDirection: "row",
 							flexWrap: "wrap",
-							gap: spacing.sm,
+							gap: spacing.xs,
 						}}
 					>
-						<QuickActionTile
+						<QuickActionChip
 							icon="add"
-							iconBg={colors.successLight}
 							iconColor={colors.primaryLight}
 							label={t("home.qa_new_batch")}
 							href="/batch/new"
 						/>
-						{/* TODO: route to a dedicated readings entry once the endpoint exists. */}
-						<QuickActionTile
-							icon="water"
-							iconBg={colors.infoLight}
-							iconColor={colors.info}
-							label={t("home.qa_log_reading")}
-							href="/checklist"
-						/>
-						<QuickActionTile
-							icon="book"
-							iconBg={colors.warningLight}
-							iconColor={colors.warning}
-							label={t("home.qa_crop_guide")}
-							href="/library/crops"
-						/>
-						<QuickActionTile
+						<QuickActionChip
 							icon="trending-up"
-							iconBg={colors.salesAccentLight}
 							iconColor={colors.salesAccent}
 							label={t("home.qa_add_sale")}
 							href="/sale-new"
 						/>
-						<QuickActionTile
+						<QuickActionChip
 							icon="cube"
-							iconBg={colors.restockAccentLight}
 							iconColor={colors.restockAccent}
 							label={t("home.qa_restock")}
 							href="/inventory-new"
 						/>
-						<QuickActionTile
+						<QuickActionChip
 							icon="flash"
-							iconBg={colors.successLight}
 							iconColor={colors.primaryLight}
 							label={t("home.qa_tasks")}
 							href="/checklist"
 						/>
-						<QuickActionTile
+						<QuickActionChip
+							icon="book"
+							iconColor={colors.warning}
+							label={t("home.qa_crop_guide")}
+							href="/library/crops"
+						/>
+						<QuickActionChip
 							icon="library"
-							iconBg={colors.warningLight}
 							iconColor={colors.warning}
 							label={t("home.qa_library")}
 							href="/library"
@@ -675,49 +707,39 @@ function KpiTile({
 	);
 }
 
-function QuickActionTile({
+function QuickActionChip({
 	icon,
-	iconBg,
 	iconColor,
 	label,
 	href,
 }: {
 	icon: React.ComponentProps<typeof Ionicons>["name"];
-	iconBg: string;
 	iconColor: string;
 	label: string;
 	href: Href;
 }) {
 	return (
-		<Link href={href} asChild>
-			<Pressable
-				accessibilityRole="link"
-				style={({ pressed }) => ({
-					width: "31.5%",
-					padding: spacing.md,
-					borderRadius: radii.lg,
-					backgroundColor: pressed ? colors.glassHover : colors.surfaceVariant,
-					borderWidth: 1,
-					borderColor: colors.border,
-					gap: spacing.sm,
-				})}
-			>
-				<View
-					style={{
-						width: 36,
-						height: 36,
-						borderRadius: radii.md,
-						backgroundColor: iconBg,
-						alignItems: "center",
-						justifyContent: "center",
-					}}
-				>
-					<Ionicons name={icon} size={18} color={iconColor} />
-				</View>
-				<Text weight="semibold" size="sm" numberOfLines={1}>
-					{label}
-				</Text>
-			</Pressable>
-		</Link>
+		<Pressable
+			accessibilityRole="link"
+			accessibilityLabel={label}
+			onPress={() => router.push(href)}
+			style={({ pressed }) => ({
+				flexDirection: "row",
+				alignItems: "center",
+				gap: spacing.xs,
+				paddingVertical: spacing.sm,
+				paddingHorizontal: spacing.md,
+				borderRadius: radii.full,
+				backgroundColor: pressed ? colors.glassHover : colors.surfaceVariant,
+				borderWidth: 1,
+				borderColor: colors.border,
+				minHeight: 44,
+			})}
+		>
+			<Ionicons name={icon} size={16} color={iconColor} />
+			<Text weight="semibold" size="sm">
+				{label}
+			</Text>
+		</Pressable>
 	);
 }
