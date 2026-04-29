@@ -477,7 +477,7 @@ export default function HomeScreen() {
 
     const firstName =
         userQ.data?.full_name?.split(" ")[0] ?? t("home.default_name");
-    const farmName = `${firstName}${t("home.farm_suffix")}`;
+    const farmName = t("home.farm_label", { name: firstName });
     const greeting = t(getGreetingKey(new Date().getHours()));
 
     const lowStock = (inventoryQ.data?.data ?? []).filter((i) => i.is_low_stock);
@@ -770,16 +770,7 @@ function KpiTile({
 ```
 
 Notes:
-- `useT()` returns `{ t, locale }`. Confirm `t()` supports `{tasks}`/`{n}` variables — the existing screens use this pattern (e.g. `setups.slots: "{n} slots"`). If the helper does not interpolate, fall back to a plain `String.replace` chain inline. Verify by inspecting `useT` and the `t()` function in `mobile/src/lib/i18n.ts`. If interpolation is missing, add a small inline helper in this file:
-  ```ts
-  function fmt(template: string, vars: Record<string, string>) {
-      return Object.entries(vars).reduce(
-          (acc, [k, v]) => acc.replaceAll(`{${k}}`, v),
-          template,
-      );
-  }
-  ```
-  Then use `fmt(t("home.checkin_summary"), { tasks, harvests, low })`. Keep this helper local; do not change `i18n.ts`.
+- `useT()` returns `{ t, locale }`. The existing `t()` helper at `mobile/src/lib/i18n.ts:293` natively interpolates `{var}` placeholders via the second `params` argument. Use `t("home.checkin_summary", { tasks, harvests, low })` directly — no helper needed.
 
 - [ ] **Step 2: Typecheck**
 
