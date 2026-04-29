@@ -693,8 +693,7 @@ function QuickActionTile({
 			<Pressable
 				accessibilityRole="link"
 				style={({ pressed }) => ({
-					flex: 1,
-					minWidth: "31%",
+					width: "31.5%",
 					padding: spacing.md,
 					borderRadius: radii.lg,
 					backgroundColor: pressed ? colors.glassHover : colors.surfaceVariant,
