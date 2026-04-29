@@ -179,7 +179,7 @@ export default function HomeScreen() {
 		<GradientBackground>
 			<ScrollView
 				contentContainerStyle={{
-					paddingBottom: insets.bottom + 96,
+					paddingBottom: insets.bottom + 128,
 					gap: spacing.md,
 				}}
 				style={{ flex: 1 }}
@@ -613,6 +613,13 @@ export default function HomeScreen() {
 							label={t("home.qa_tasks")}
 							href="/checklist"
 						/>
+						<QuickActionTile
+							icon="library"
+							iconBg={colors.warningLight}
+							iconColor={colors.warning}
+							label={t("home.qa_library")}
+							href="/library"
+						/>
 					</View>
 				</View>
 			</ScrollView>
@@ -687,26 +694,27 @@ function QuickActionTile({
 				accessibilityRole="link"
 				style={({ pressed }) => ({
 					width: "31%",
-					padding: spacing.md,
+					paddingVertical: spacing.lg,
+					paddingHorizontal: spacing.sm,
 					borderRadius: radii.lg,
 					backgroundColor: pressed ? colors.glassHover : colors.surfaceVariant,
 					borderWidth: 1,
 					borderColor: colors.border,
-					gap: spacing.xs,
+					gap: spacing.sm,
 					alignItems: "center",
 				})}
 			>
 				<View
 					style={{
-						width: 36,
-						height: 36,
+						width: 44,
+						height: 44,
 						borderRadius: radii.md,
 						backgroundColor: iconBg,
 						alignItems: "center",
 						justifyContent: "center",
 					}}
 				>
-					<Ionicons name={icon} size={18} color={iconColor} />
+					<Ionicons name={icon} size={22} color={iconColor} />
 				</View>
 				<Text weight="semibold" size="sm">
 					{label}
