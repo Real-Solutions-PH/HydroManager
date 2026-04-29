@@ -563,59 +563,64 @@ export default function HomeScreen() {
 					<Text size="lg" weight="bold">
 						{t("home.quick_actions")}
 					</Text>
-					<QuickActionsGrid
-						items={[
-							{
-								icon: "add",
-								iconBg: colors.successLight,
-								iconColor: colors.primaryLight,
-								label: t("home.qa_new_batch"),
-								href: "/batch/new",
-							},
-							{
-								icon: "water",
-								iconBg: colors.infoLight,
-								iconColor: colors.info,
-								label: t("home.qa_log_reading"),
-								href: "/checklist",
-							},
-							{
-								icon: "book",
-								iconBg: colors.warningLight,
-								iconColor: colors.warning,
-								label: t("home.qa_crop_guide"),
-								href: "/library/crops",
-							},
-							{
-								icon: "trending-up",
-								iconBg: colors.salesAccentLight,
-								iconColor: colors.salesAccent,
-								label: t("home.qa_add_sale"),
-								href: "/sale-new",
-							},
-							{
-								icon: "cube",
-								iconBg: colors.restockAccentLight,
-								iconColor: colors.restockAccent,
-								label: t("home.qa_restock"),
-								href: "/inventory-new",
-							},
-							{
-								icon: "flash",
-								iconBg: colors.successLight,
-								iconColor: colors.primaryLight,
-								label: t("home.qa_tasks"),
-								href: "/checklist",
-							},
-							{
-								icon: "library",
-								iconBg: colors.warningLight,
-								iconColor: colors.warning,
-								label: t("home.qa_library"),
-								href: "/library",
-							},
-						]}
-					/>
+					<View
+						style={{
+							flexDirection: "row",
+							flexWrap: "wrap",
+							gap: spacing.sm,
+						}}
+					>
+						<QuickActionTile
+							icon="add"
+							iconBg={colors.successLight}
+							iconColor={colors.primaryLight}
+							label={t("home.qa_new_batch")}
+							href="/batch/new"
+						/>
+						{/* TODO: route to a dedicated readings entry once the endpoint exists. */}
+						<QuickActionTile
+							icon="water"
+							iconBg={colors.infoLight}
+							iconColor={colors.info}
+							label={t("home.qa_log_reading")}
+							href="/checklist"
+						/>
+						<QuickActionTile
+							icon="book"
+							iconBg={colors.warningLight}
+							iconColor={colors.warning}
+							label={t("home.qa_crop_guide")}
+							href="/library/crops"
+						/>
+						<QuickActionTile
+							icon="trending-up"
+							iconBg={colors.salesAccentLight}
+							iconColor={colors.salesAccent}
+							label={t("home.qa_add_sale")}
+							href="/sale-new"
+						/>
+						<QuickActionTile
+							icon="cube"
+							iconBg={colors.restockAccentLight}
+							iconColor={colors.restockAccent}
+							label={t("home.qa_restock")}
+							href="/inventory-new"
+						/>
+						<QuickActionTile
+							icon="flash"
+							iconBg={colors.successLight}
+							iconColor={colors.primaryLight}
+							label={t("home.qa_tasks")}
+							href="/checklist"
+						/>
+						<QuickActionTile
+							icon="library"
+							iconBg={colors.warningLight}
+							iconColor={colors.warning}
+							label={t("home.qa_library")}
+							href="/library"
+						/>
+					</View>
 				</View>
 			</ScrollView>
 		</GradientBackground>
@@ -670,80 +675,45 @@ function KpiTile({
 	);
 }
 
-interface QuickAction {
+function QuickActionTile({
+	icon,
+	iconBg,
+	iconColor,
+	label,
+	href,
+}: {
 	icon: React.ComponentProps<typeof Ionicons>["name"];
 	iconBg: string;
 	iconColor: string;
 	label: string;
 	href: Href;
-}
-
-const QUICK_ACTION_COLUMNS = 3;
-const QUICK_ACTION_TILE_HEIGHT = 108;
-
-function QuickActionsGrid({ items }: { items: QuickAction[] }) {
-	const rows: QuickAction[][] = [];
-	for (let i = 0; i < items.length; i += QUICK_ACTION_COLUMNS) {
-		rows.push(items.slice(i, i + QUICK_ACTION_COLUMNS));
-	}
-	return (
-		<View style={{ gap: spacing.sm }}>
-			{rows.map((row, rowIdx) => {
-				const fillers = QUICK_ACTION_COLUMNS - row.length;
-				return (
-					<View
-						// biome-ignore lint/suspicious/noArrayIndexKey: row order is stable
-						key={rowIdx}
-						style={{ flexDirection: "row", gap: spacing.sm }}
-					>
-						{row.map((a) => (
-							<QuickActionTile key={a.label} action={a} />
-						))}
-						{Array.from({ length: fillers }).map((_, i) => (
-							<View
-								// biome-ignore lint/suspicious/noArrayIndexKey: filler slot
-								key={`filler-${i}`}
-								style={{ flex: 1 }}
-							/>
-						))}
-					</View>
-				);
-			})}
-		</View>
-	);
-}
-
-function QuickActionTile({ action }: { action: QuickAction }) {
-	const { icon, iconBg, iconColor, label, href } = action;
+}) {
 	return (
 		<Link href={href} asChild>
 			<Pressable
 				accessibilityRole="link"
 				style={({ pressed }) => ({
 					flex: 1,
-					height: QUICK_ACTION_TILE_HEIGHT,
-					paddingVertical: spacing.sm,
-					paddingHorizontal: spacing.xs,
+					minWidth: "31%",
+					padding: spacing.md,
 					borderRadius: radii.lg,
 					backgroundColor: pressed ? colors.glassHover : colors.surfaceVariant,
 					borderWidth: 1,
 					borderColor: colors.border,
 					gap: spacing.sm,
-					alignItems: "center",
-					justifyContent: "center",
 				})}
 			>
 				<View
 					style={{
-						width: 44,
-						height: 44,
+						width: 36,
+						height: 36,
 						borderRadius: radii.md,
 						backgroundColor: iconBg,
 						alignItems: "center",
 						justifyContent: "center",
 					}}
 				>
-					<Ionicons name={icon} size={22} color={iconColor} />
+					<Ionicons name={icon} size={18} color={iconColor} />
 				</View>
 				<Text weight="semibold" size="sm" numberOfLines={1}>
 					{label}
