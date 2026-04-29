@@ -641,6 +641,7 @@ export default function HomeScreen() {
                                 strokeWidth={6}
                                 progress={TASKS_PROGRESS_MOCK}
                                 color={colors.primaryLight}
+                                accessibilityLabel="Today's tasks completion"
                             >
                                 <Text size="sm" weight="bold">
                                     {`${Math.round(TASKS_PROGRESS_MOCK * 100)}%`}
