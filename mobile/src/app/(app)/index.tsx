@@ -4,45 +4,78 @@ import { Link } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
-import { SectionHeader } from "@/components/ui/section-header";
-import { StatCard } from "@/components/ui/stat-card";
+import { ProgressRing } from "@/components/ui/progress-ring";
 import { Text } from "@/components/ui/text";
-import { colors, spacing, systemTypes } from "@/constants/theme";
-import { batchesApi, inventoryApi, setupsApi, usersApi } from "@/lib/hydro-api";
+import { colors, radii, spacing } from "@/constants/theme";
+import {
+	batchesApi,
+	checklistApi,
+	inventoryApi,
+	setupsApi,
+	usersApi,
+} from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
 
+const TASKS_PROGRESS_MOCK = 0.67;
+const TASKS_DONE_MOCK = 8;
+const TASKS_TOTAL_MOCK = 12;
+
+function getGreetingKey(hour: number): string {
+	if (hour < 12) return "home.greeting_morning";
+	if (hour < 18) return "home.greeting_afternoon";
+	return "home.greeting_evening";
+}
+
 export default function HomeScreen() {
-	const { t } = useT();
-	const { data: user } = useQuery({
-		queryKey: ["me"],
-		queryFn: () => usersApi.me(),
-	});
-	const setups = useQuery({
+	const { t, locale } = useT();
+
+	const userQ = useQuery({ queryKey: ["me"], queryFn: () => usersApi.me() });
+	const setupsQ = useQuery({
 		queryKey: ["setups"],
 		queryFn: () => setupsApi.list(),
 	});
-	const batches = useQuery({
+	const batchesQ = useQuery({
 		queryKey: ["batches"],
 		queryFn: () => batchesApi.list(),
 	});
-	const inventory = useQuery({
+	const inventoryQ = useQuery({
 		queryKey: ["inventory"],
 		queryFn: () => inventoryApi.list(),
 	});
+	const checklistQ = useQuery({
+		queryKey: ["checklist"],
+		queryFn: () => checklistApi.list(),
+	});
 
-	const lowStock = (inventory.data?.data ?? []).filter((i) => i.is_low_stock);
-	const harvestReady = (batches.data?.data ?? []).filter(
+	const firstName =
+		userQ.data?.full_name?.split(" ")[0] ?? t("home.default_name");
+	const farmName = t("home.farm_label", { name: firstName });
+	const greeting = t(getGreetingKey(new Date().getHours()));
+
+	const lowStock = (inventoryQ.data?.data ?? []).filter((i) => i.is_low_stock);
+	const harvestReady = (batchesQ.data?.data ?? []).filter(
 		(b) =>
-			Math.floor((Date.now() - new Date(b.started_at).getTime()) / 86400000) >=
-			25,
+			Math.floor(
+				(Date.now() - new Date(b.started_at).getTime()) / 86400000,
+			) >= 25,
 	);
+	const tasksPending = checklistQ.data?.count ?? 0;
+
+	const dateLabel = new Intl.DateTimeFormat(
+		locale === "tl" ? "fil-PH" : "en-US",
+		{ month: "long", day: "numeric", year: "numeric" },
+	).format(new Date());
 
 	return (
 		<GradientBackground>
 			<ScrollView
-				contentContainerStyle={{ paddingBottom: spacing.xxxl }}
+				contentContainerStyle={{
+					paddingBottom: spacing.xxxl,
+					gap: spacing.md,
+				}}
 				style={{ flex: 1 }}
 			>
+				{/* Header */}
 				<View
 					style={{
 						flexDirection: "row",
@@ -52,248 +85,258 @@ export default function HomeScreen() {
 						paddingTop: spacing.xs,
 					}}
 				>
-					<View>
+					<View style={{ flex: 1 }}>
 						<Text size="sm" tone="muted">
-							{t("home.greeting")}
+							{greeting}
 						</Text>
 						<Text size="xxl" weight="bold">
-							{user?.full_name?.split(" ")[0] ?? t("home.default_name")}
+							{farmName}
 						</Text>
 					</View>
 					<View style={{ flexDirection: "row", gap: spacing.xs }}>
-						<Link href="/library/crops" asChild>
+						<Link href="/checklist" asChild>
 							<Pressable
+								accessibilityLabel="Notifications"
+								accessibilityRole="button"
 								style={{
-									width: 40,
-									height: 40,
-									borderRadius: 999,
-									backgroundColor: colors.glass,
-									alignItems: "center",
-									justifyContent: "center",
-								}}
-							>
-								<Ionicons name="leaf-outline" size={20} color={colors.text} />
-							</Pressable>
-						</Link>
-						<Link href="/settings" asChild>
-							<Pressable
-								style={{
-									width: 40,
-									height: 40,
-									borderRadius: 999,
+									width: 44,
+									height: 44,
+									borderRadius: radii.md,
 									backgroundColor: colors.glass,
 									alignItems: "center",
 									justifyContent: "center",
 								}}
 							>
 								<Ionicons
-									name="person-circle-outline"
+									name="notifications-outline"
 									size={20}
 									color={colors.text}
 								/>
+								{tasksPending + lowStock.length > 0 ? (
+									<View
+										style={{
+											position: "absolute",
+											top: 8,
+											right: 10,
+											width: 8,
+											height: 8,
+											borderRadius: 4,
+											backgroundColor: colors.error,
+										}}
+									/>
+								) : null}
+							</Pressable>
+						</Link>
+						<Link href="/settings" asChild>
+							<Pressable
+								accessibilityLabel="Profile"
+								accessibilityRole="button"
+								style={{
+									width: 44,
+									height: 44,
+									borderRadius: radii.md,
+									backgroundColor: colors.primaryDark,
+									alignItems: "center",
+									justifyContent: "center",
+								}}
+							>
+								<Text weight="bold">
+									{firstName.charAt(0).toUpperCase()}
+								</Text>
 							</Pressable>
 						</Link>
 					</View>
 				</View>
 
-				<SectionHeader title="Today" subtitle="At-a-glance farm status" />
-				<View
-					style={{
-						flexDirection: "row",
-						flexWrap: "wrap",
-						gap: spacing.sm,
-						paddingHorizontal: spacing.md,
-					}}
-				>
-					<StatCard
-						label="Setups"
-						value={setups.data?.count ?? 0}
-						icon="grid"
-					/>
-					<StatCard
-						label="Batches"
-						value={batches.data?.count ?? 0}
-						icon="leaf"
-					/>
-					<StatCard
-						label="Near Harvest"
-						value={harvestReady.length}
-						icon="nutrition"
-						accent={colors.primaryLight}
-					/>
-					<StatCard
-						label="Low Stock"
-						value={lowStock.length}
-						icon="alert-circle"
-						accent={lowStock.length > 0 ? colors.error : undefined}
-					/>
-				</View>
-
-				<SectionHeader title="Quick Actions" />
-				<View
-					style={{
-						flexDirection: "row",
-						flexWrap: "wrap",
-						gap: spacing.sm,
-						paddingHorizontal: spacing.md,
-					}}
-				>
-					<QuickAction
-						label="New Setup"
-						icon="add-circle-outline"
-						href="/setup/new"
-						variant="solid"
-					/>
-					<QuickAction
-						label="Start a Batch"
-						icon="leaf-outline"
-						href="/batch/new"
-						variant="outline"
-					/>
-					<QuickAction
-						label="Add Inventory"
-						icon="cube-outline"
-						href="/inventory-new"
-						variant="outline"
-					/>
-					<QuickAction
-						label="New Sale"
-						icon="cash-outline"
-						href="/sale-new"
-						variant="outline"
-					/>
-				</View>
-
-				{lowStock.length > 0 ? (
-					<>
-						<SectionHeader title="Alerts" />
-						<View style={{ paddingHorizontal: spacing.md }}>
-							<Card
+				{/* Daily Check-in */}
+				<View style={{ paddingHorizontal: spacing.md }}>
+					<Card>
+						<View
+							style={{
+								flexDirection: "row",
+								gap: spacing.sm,
+								alignItems: "center",
+							}}
+						>
+							<View
 								style={{
-									borderLeftWidth: 4,
-									borderLeftColor: colors.error,
+									width: 64,
+									height: 64,
+									borderRadius: radii.lg,
+									backgroundColor: colors.successLight,
+									alignItems: "center",
+									justifyContent: "center",
 								}}
 							>
-								<Text weight="semibold" tone="error">
-									Low Stock
+								<Ionicons
+									name="leaf"
+									size={32}
+									color={colors.primaryLight}
+								/>
+							</View>
+							<View style={{ flex: 1 }}>
+								<Text weight="bold" size="md">
+									{`"${t("home.checkin_quote")}"`}
 								</Text>
-								{lowStock.slice(0, 3).map((it) => (
-									<Text key={it.id} size="sm" tone="muted">
-										{it.name}: {it.current_stock} {it.unit}
-									</Text>
-								))}
-							</Card>
+								<Text size="sm" tone="muted">
+									{t("home.checkin_summary", {
+										tasks: String(tasksPending),
+										harvests: String(harvestReady.length),
+										low: String(lowStock.length),
+									})}
+								</Text>
+							</View>
 						</View>
-					</>
-				) : null}
+					</Card>
+				</View>
 
-				<SectionHeader title="Setups" subtitle="Your active systems" />
-				<View style={{ paddingHorizontal: spacing.md, gap: spacing.sm }}>
-					{(setups.data?.data ?? []).slice(0, 3).map((s) => {
-						const c = systemTypes[s.type];
-						return (
-							<Link key={s.id} href={`/setup/${s.id}`} asChild>
-								<Pressable>
-									<Card>
-										<View
-											style={{
-												flexDirection: "row",
-												alignItems: "center",
-												gap: spacing.sm,
-											}}
-										>
-											<View
-												style={{
-													width: 44,
-													height: 44,
-													borderRadius: 12,
-													backgroundColor: c.bg,
-													alignItems: "center",
-													justifyContent: "center",
-												}}
-											>
-												<Ionicons
-													name={c.icon as never}
-													size={22}
-													color={c.color}
-												/>
-											</View>
-											<View style={{ flex: 1 }}>
-												<Text weight="semibold">{s.name}</Text>
-												<Text size="sm" tone="muted">
-													{s.slot_count} slots ·{" "}
-													{s.location_label ?? "No location"}
-												</Text>
-											</View>
-											<Ionicons
-												name="chevron-forward"
-												size={18}
-												color={colors.textMuted}
-											/>
-										</View>
-									</Card>
-								</Pressable>
-							</Link>
-						);
-					})}
-					{(setups.data?.data ?? []).length === 0 ? (
-						<Card variant="outlined">
-							<Text tone="muted">No setups yet. Add your first.</Text>
-						</Card>
-					) : null}
+				{/* Today's Tasks */}
+				<View style={{ paddingHorizontal: spacing.md }}>
+					<Card>
+						<View
+							style={{
+								flexDirection: "row",
+								alignItems: "center",
+								justifyContent: "space-between",
+							}}
+						>
+							<View style={{ flex: 1 }}>
+								<Text weight="bold" size="lg">
+									{t("home.todays_tasks")}
+								</Text>
+								<Text size="sm" tone="muted">
+									{dateLabel}
+								</Text>
+							</View>
+							<ProgressRing
+								size={64}
+								strokeWidth={6}
+								progress={TASKS_PROGRESS_MOCK}
+								color={colors.primaryLight}
+								accessibilityLabel="Today's tasks completion"
+							>
+								<Text size="sm" weight="bold">
+									{`${Math.round(TASKS_PROGRESS_MOCK * 100)}%`}
+								</Text>
+							</ProgressRing>
+						</View>
+						<View
+							style={{
+								height: 6,
+								borderRadius: radii.full,
+								backgroundColor: colors.glass,
+								marginTop: spacing.sm,
+								overflow: "hidden",
+							}}
+						>
+							<View
+								style={{
+									width: `${Math.round(TASKS_PROGRESS_MOCK * 100)}%`,
+									height: "100%",
+									backgroundColor: colors.primaryLight,
+								}}
+							/>
+						</View>
+						<Text
+							size="sm"
+							tone="muted"
+							style={{ marginTop: spacing.xs }}
+						>
+							{t("home.tasks_done_count", {
+								done: String(TASKS_DONE_MOCK),
+								total: String(TASKS_TOTAL_MOCK),
+							})}
+						</Text>
+					</Card>
+				</View>
+
+				{/* KPI Grid 2x2 */}
+				<View
+					style={{
+						flexDirection: "row",
+						flexWrap: "wrap",
+						gap: spacing.sm,
+						paddingHorizontal: spacing.md,
+					}}
+				>
+					<KpiTile
+						icon="grid"
+						iconBg={colors.successLight}
+						iconColor={colors.primaryLight}
+						value={setupsQ.data?.count ?? 0}
+						label={t("home.kpi_active_setups")}
+					/>
+					<KpiTile
+						icon="leaf"
+						iconBg={colors.infoLight}
+						iconColor={colors.info}
+						value={batchesQ.data?.count ?? 0}
+						label={t("home.kpi_plant_batches")}
+					/>
+					<KpiTile
+						icon="nutrition"
+						iconBg={colors.successLight}
+						iconColor={colors.primaryLight}
+						value={harvestReady.length}
+						label={t("home.kpi_near_harvest")}
+					/>
+					<KpiTile
+						icon="alert-circle"
+						iconBg={colors.errorLight}
+						iconColor={colors.error}
+						value={lowStock.length}
+						label={t("home.kpi_low_stock")}
+					/>
 				</View>
 			</ScrollView>
 		</GradientBackground>
 	);
 }
 
-function QuickAction({
-	label,
+function KpiTile({
 	icon,
-	href,
-	variant,
+	iconBg,
+	iconColor,
+	value,
+	label,
 }: {
-	label: string;
 	icon: React.ComponentProps<typeof Ionicons>["name"];
-	href: string;
-	variant: "solid" | "outline";
+	iconBg: string;
+	iconColor: string;
+	value: number | string;
+	label: string;
 }) {
-	const solid = variant === "solid";
 	return (
-		<Link href={href as never} asChild>
-			<Pressable
-				style={({ pressed }) => ({
-					flex: 1,
-					minWidth: "47%",
-					alignItems: "flex-start",
-					gap: spacing.xs,
-					padding: spacing.md,
-					borderRadius: 16,
-					borderWidth: solid ? 0 : 1,
-					borderColor: colors.borderStrong,
-					backgroundColor: solid
-						? pressed
-							? colors.buttonSolidActive
-							: colors.buttonSolidBg
-						: pressed
-							? colors.glassHover
-							: colors.glass,
-				})}
+		<View
+			style={{
+				flex: 1,
+				minWidth: "47%",
+				padding: spacing.md,
+				borderRadius: radii.lg,
+				backgroundColor: colors.surfaceVariant,
+				borderWidth: 1,
+				borderColor: colors.border,
+				gap: spacing.sm,
+			}}
+		>
+			<View
+				style={{
+					width: 36,
+					height: 36,
+					borderRadius: radii.md,
+					backgroundColor: iconBg,
+					alignItems: "center",
+					justifyContent: "center",
+				}}
 			>
-				<View
-					style={{
-						width: 36,
-						height: 36,
-						borderRadius: 10,
-						alignItems: "center",
-						justifyContent: "center",
-						backgroundColor: solid ? "rgba(255,255,255,0.18)" : colors.glass,
-					}}
-				>
-					<Ionicons name={icon} size={20} color={colors.text} />
-				</View>
-				<Text weight="semibold">{label}</Text>
-			</Pressable>
-		</Link>
+				<Ionicons name={icon} size={18} color={iconColor} />
+			</View>
+			<Text size="xxxl" weight="bold">
+				{value}
+			</Text>
+			<Text size="sm" tone="muted">
+				{label}
+			</Text>
+		</View>
 	);
 }
