@@ -10,6 +10,7 @@ interface ProgressRingProps {
     color?: string;
     trackColor?: string;
     children?: ReactNode;
+    accessibilityLabel?: string;
 }
 
 export function ProgressRing({
@@ -19,6 +20,7 @@ export function ProgressRing({
     color = colors.primaryLight,
     trackColor = colors.glass,
     children,
+    accessibilityLabel,
 }: ProgressRingProps) {
     const clamped = Math.max(0, Math.min(1, progress));
     const radius = (size - strokeWidth) / 2;
@@ -31,6 +33,7 @@ export function ProgressRing({
         <View
             style={{ width: size, height: size }}
             accessibilityRole="progressbar"
+            accessibilityLabel={accessibilityLabel}
             accessibilityValue={{ now: percent, min: 0, max: 100 }}
         >
             <Svg width={size} height={size}>
