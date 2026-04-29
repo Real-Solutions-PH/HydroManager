@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
-import { Link, type Href } from "expo-router";
+import { Link, router, type Href } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
 import { AlertCard, type AlertSeverity } from "@/components/ui/alert-card";
 import { Card } from "@/components/ui/card";
@@ -77,6 +77,7 @@ interface HomeAlert {
 	subtitle: string;
 	pillLabel?: string;
 	chevron?: boolean;
+	onPress?: () => void;
 }
 
 function getGreetingKey(hour: number): string {
@@ -140,8 +141,8 @@ export default function HomeScreen() {
 			id: `low-${firstLow.id}`,
 			severity: "low",
 			icon: "cube",
-			title: `${firstLow.name} Running Low`,
-			subtitle: `${firstLow.current_stock} ${firstLow.unit} remaining — min: ${firstLow.low_stock_threshold}`,
+			title: t("home.alert_low_stock_title", { name: firstLow.name }),
+			subtitle: t("home.alert_low_stock_subtitle", { stock: String(firstLow.current_stock), unit: firstLow.unit, min: String(firstLow.low_stock_threshold) }),
 			pillLabel: t("home.alert_severity_low"),
 		});
 	}
@@ -154,9 +155,10 @@ export default function HomeScreen() {
 			id: `ready-${firstReady.id}`,
 			severity: "info",
 			icon: "time",
-			title: `${firstReady.variety_name} Batch Ready to Check`,
-			subtitle: `Day ${days} — Harvest window: Day 25–35`,
+			title: t("home.alert_harvest_ready_title", { variety: firstReady.variety_name }),
+			subtitle: t("home.alert_harvest_ready_subtitle", { day: String(days) }),
 			chevron: true,
+			onPress: () => router.push("/setups"),
 		});
 	}
 
@@ -201,7 +203,7 @@ export default function HomeScreen() {
 					<View style={{ flexDirection: "row", gap: spacing.xs }}>
 						<Link href="/checklist" asChild>
 							<Pressable
-								accessibilityLabel="Notifications"
+								accessibilityLabel={t("home.a11y_notifications")}
 								accessibilityRole="button"
 								style={{
 									width: 44,
@@ -217,7 +219,7 @@ export default function HomeScreen() {
 									size={20}
 									color={colors.text}
 								/>
-								{lowStock.length + harvestReady.length > 0 ? (
+								{alerts.length > 0 ? (
 									<View
 										style={{
 											position: "absolute",
@@ -234,7 +236,7 @@ export default function HomeScreen() {
 						</Link>
 						<Link href="/settings" asChild>
 							<Pressable
-								accessibilityLabel="Profile"
+								accessibilityLabel={t("home.a11y_profile")}
 								accessibilityRole="button"
 								style={{
 									width: 44,
@@ -404,6 +406,7 @@ export default function HomeScreen() {
 								subtitle={a.subtitle}
 								pillLabel={a.pillLabel}
 								chevron={a.chevron}
+								onPress={a.onPress}
 							/>
 						))}
 					</View>
@@ -473,7 +476,7 @@ export default function HomeScreen() {
 										</View>
 										<Text weight="bold">{batch.variety_name}</Text>
 										<Text size="xs" tone="muted">
-											{`${batch.initial_count} plants`}
+											{t("home.plants_count", { n: String(batch.initial_count) })}
 										</Text>
 										<View
 											style={{
