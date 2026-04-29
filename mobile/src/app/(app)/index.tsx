@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Link, router, type Href } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AlertCard, type AlertSeverity } from "@/components/ui/alert-card";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -88,6 +89,7 @@ function getGreetingKey(hour: number): string {
 
 export default function HomeScreen() {
 	const { t, locale } = useT();
+	const insets = useSafeAreaInsets();
 
 	const userQ = useQuery({ queryKey: ["me"], queryFn: () => usersApi.me() });
 	const setupsQ = useQuery({
@@ -177,7 +179,7 @@ export default function HomeScreen() {
 		<GradientBackground>
 			<ScrollView
 				contentContainerStyle={{
-					paddingBottom: spacing.xxxl,
+					paddingBottom: insets.bottom + 96,
 					gap: spacing.md,
 				}}
 				style={{ flex: 1 }}
@@ -684,8 +686,7 @@ function QuickActionTile({
 			<Pressable
 				accessibilityRole="link"
 				style={({ pressed }) => ({
-					flex: 1,
-					minWidth: "30%",
+					width: "31%",
 					padding: spacing.md,
 					borderRadius: radii.lg,
 					backgroundColor: pressed ? colors.glassHover : colors.surfaceVariant,
