@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "expo-router";
+import { Link, type Href } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
 import { AlertCard, type AlertSeverity } from "@/components/ui/alert-card";
 import { Card } from "@/components/ui/card";
@@ -22,7 +22,8 @@ const TASKS_PROGRESS_MOCK = 0.67;
 const TASKS_DONE_MOCK = 8;
 const TASKS_TOTAL_MOCK = 12;
 
-const ASSUMED_DAYS_TO_HARVEST = 30;
+// TODO: source from crop guide (days_to_harvest_min/max) instead of a flat fallback.
+const FALLBACK_DAYS_TO_HARVEST = 30;
 
 interface ActivityItem {
 	id: string;
@@ -61,8 +62,8 @@ const ACTIVITY_MOCK: ActivityItem[] = [
 	{
 		id: "a4",
 		icon: "trending-up",
-		iconBg: "rgba(206, 147, 216, 0.15)",
-		iconColor: "#CE93D8",
+		iconBg: colors.salesAccentLight,
+		iconColor: colors.salesAccent,
 		title: "Sale recorded — ₱480 Pechay",
 		timeAgo: "2d ago",
 	},
@@ -164,7 +165,7 @@ export default function HomeScreen() {
 			const days = Math.floor(
 				(Date.now() - new Date(b.started_at).getTime()) / 86400000,
 			);
-			const daysLeft = Math.max(0, ASSUMED_DAYS_TO_HARVEST - days);
+			const daysLeft = Math.max(0, FALLBACK_DAYS_TO_HARVEST - days);
 			return { batch: b, daysLeft };
 		})
 		.sort((a, b) => a.daysLeft - b.daysLeft)
@@ -571,6 +572,7 @@ export default function HomeScreen() {
 							label={t("home.qa_new_batch")}
 							href="/batch/new"
 						/>
+						{/* TODO: route to a dedicated readings entry once the endpoint exists. */}
 						<QuickActionTile
 							icon="water"
 							iconBg={colors.infoLight}
@@ -587,15 +589,15 @@ export default function HomeScreen() {
 						/>
 						<QuickActionTile
 							icon="trending-up"
-							iconBg="rgba(206, 147, 216, 0.15)"
-							iconColor="#CE93D8"
+							iconBg={colors.salesAccentLight}
+							iconColor={colors.salesAccent}
 							label={t("home.qa_add_sale")}
 							href="/sale-new"
 						/>
 						<QuickActionTile
 							icon="cube"
-							iconBg="rgba(128, 222, 234, 0.15)"
-							iconColor="#80DEEA"
+							iconBg={colors.restockAccentLight}
+							iconColor={colors.restockAccent}
 							label={t("home.qa_restock")}
 							href="/inventory-new"
 						/>
@@ -672,12 +674,12 @@ function QuickActionTile({
 	iconBg: string;
 	iconColor: string;
 	label: string;
-	href: string;
+	href: Href;
 }) {
 	return (
-		<Link href={href as never} asChild>
+		<Link href={href} asChild>
 			<Pressable
-				accessibilityRole="button"
+				accessibilityRole="link"
 				style={({ pressed }) => ({
 					flex: 1,
 					minWidth: "30%",

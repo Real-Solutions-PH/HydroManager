@@ -34,6 +34,10 @@ export const colors = {
 	errorLight: "rgba(239, 83, 80, 0.15)",
 	info: "#42A5F5",
 	infoLight: "rgba(66, 165, 245, 0.15)",
+	salesAccent: "#CE93D8",
+	salesAccentLight: "rgba(206, 147, 216, 0.15)",
+	restockAccent: "#80DEEA",
+	restockAccentLight: "rgba(128, 222, 234, 0.15)",
 } as const;
 
 export const gradientStops = [
