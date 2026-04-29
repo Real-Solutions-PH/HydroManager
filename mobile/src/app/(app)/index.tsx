@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { Pressable, ScrollView, View } from "react-native";
+import { AlertCard, type AlertSeverity } from "@/components/ui/alert-card";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { ProgressRing } from "@/components/ui/progress-ring";
@@ -20,6 +21,62 @@ import { useT } from "@/lib/i18n";
 const TASKS_PROGRESS_MOCK = 0.67;
 const TASKS_DONE_MOCK = 8;
 const TASKS_TOTAL_MOCK = 12;
+
+const ASSUMED_DAYS_TO_HARVEST = 30;
+
+interface ActivityItem {
+	id: string;
+	icon: React.ComponentProps<typeof Ionicons>["name"];
+	iconBg: string;
+	iconColor: string;
+	title: string;
+	timeAgo: string;
+}
+
+const ACTIVITY_MOCK: ActivityItem[] = [
+	{
+		id: "a1",
+		icon: "checkmark-circle",
+		iconBg: colors.successLight,
+		iconColor: colors.primaryLight,
+		title: "pH/EC logged for DFT-A",
+		timeAgo: "2h ago",
+	},
+	{
+		id: "a2",
+		icon: "leaf",
+		iconBg: colors.infoLight,
+		iconColor: colors.info,
+		title: "Pechay Batch A-001 → Vegetative",
+		timeAgo: "5h ago",
+	},
+	{
+		id: "a3",
+		icon: "cube",
+		iconBg: colors.warningLight,
+		iconColor: colors.warning,
+		title: "Rockwool cubes restocked (50 pcs)",
+		timeAgo: "1d ago",
+	},
+	{
+		id: "a4",
+		icon: "trending-up",
+		iconBg: "rgba(206, 147, 216, 0.15)",
+		iconColor: "#CE93D8",
+		title: "Sale recorded — ₱480 Pechay",
+		timeAgo: "2d ago",
+	},
+];
+
+interface HomeAlert {
+	id: string;
+	severity: AlertSeverity;
+	icon: React.ComponentProps<typeof Ionicons>["name"];
+	title: string;
+	subtitle: string;
+	pillLabel?: string;
+	chevron?: boolean;
+}
 
 function getGreetingKey(hour: number): string {
 	if (hour < 12) return "home.greeting_morning";
@@ -56,9 +113,8 @@ export default function HomeScreen() {
 	const lowStock = (inventoryQ.data?.data ?? []).filter((i) => i.is_low_stock);
 	const harvestReady = (batchesQ.data?.data ?? []).filter(
 		(b) =>
-			Math.floor(
-				(Date.now() - new Date(b.started_at).getTime()) / 86400000,
-			) >= 25,
+			Math.floor((Date.now() - new Date(b.started_at).getTime()) / 86400000) >=
+			25,
 	);
 	const tasksPending = checklistQ.data?.count ?? 0;
 
@@ -66,6 +122,53 @@ export default function HomeScreen() {
 		locale === "tl" ? "fil-PH" : "en-US",
 		{ month: "long", day: "numeric", year: "numeric" },
 	);
+
+	const alerts: HomeAlert[] = [];
+	// Mock pH out-of-range alert until readings API surfaces here
+	alerts.push({
+		id: "ph-mock",
+		severity: "urgent",
+		icon: "warning",
+		title: "DFT-A pH Out of Range",
+		subtitle: "Current: 7.2 — Target: 5.5–6.5",
+		pillLabel: t("home.alert_severity_urgent"),
+	});
+	const firstLow = lowStock[0];
+	if (firstLow) {
+		alerts.push({
+			id: `low-${firstLow.id}`,
+			severity: "low",
+			icon: "cube",
+			title: `${firstLow.name} Running Low`,
+			subtitle: `${firstLow.current_stock} ${firstLow.unit} remaining — min: ${firstLow.low_stock_threshold}`,
+			pillLabel: t("home.alert_severity_low"),
+		});
+	}
+	const firstReady = harvestReady[0];
+	if (firstReady) {
+		const days = Math.floor(
+			(Date.now() - new Date(firstReady.started_at).getTime()) / 86400000,
+		);
+		alerts.push({
+			id: `ready-${firstReady.id}`,
+			severity: "info",
+			icon: "time",
+			title: `${firstReady.variety_name} Batch Ready to Check`,
+			subtitle: `Day ${days} — Harvest window: Day 25–35`,
+			chevron: true,
+		});
+	}
+
+	const upcomingHarvests = (batchesQ.data?.data ?? [])
+		.map((b) => {
+			const days = Math.floor(
+				(Date.now() - new Date(b.started_at).getTime()) / 86400000,
+			);
+			const daysLeft = Math.max(0, ASSUMED_DAYS_TO_HARVEST - days);
+			return { batch: b, daysLeft };
+		})
+		.sort((a, b) => a.daysLeft - b.daysLeft)
+		.slice(0, 3);
 
 	return (
 		<GradientBackground>
@@ -141,9 +244,7 @@ export default function HomeScreen() {
 									justifyContent: "center",
 								}}
 							>
-								<Text weight="bold">
-									{firstName.charAt(0).toUpperCase()}
-								</Text>
+								<Text weight="bold">{firstName.charAt(0).toUpperCase()}</Text>
 							</Pressable>
 						</Link>
 					</View>
@@ -169,11 +270,7 @@ export default function HomeScreen() {
 									justifyContent: "center",
 								}}
 							>
-								<Ionicons
-									name="leaf"
-									size={32}
-									color={colors.primaryLight}
-								/>
+								<Ionicons name="leaf" size={32} color={colors.primaryLight} />
 							</View>
 							<View style={{ flex: 1 }}>
 								<Text weight="bold" size="md">
@@ -238,11 +335,7 @@ export default function HomeScreen() {
 								}}
 							/>
 						</View>
-						<Text
-							size="sm"
-							tone="muted"
-							style={{ marginTop: spacing.xs }}
-						>
+						<Text size="sm" tone="muted" style={{ marginTop: spacing.xs }}>
 							{t("home.tasks_done_count", {
 								done: String(TASKS_DONE_MOCK),
 								total: String(TASKS_TOTAL_MOCK),
@@ -288,6 +381,232 @@ export default function HomeScreen() {
 						value={lowStock.length}
 						label={t("home.kpi_low_stock")}
 					/>
+				</View>
+
+				{/* Alerts */}
+				{alerts.length > 0 ? (
+					<View
+						style={{
+							paddingHorizontal: spacing.md,
+							gap: spacing.sm,
+						}}
+					>
+						<Text size="lg" weight="bold">
+							{t("home.alerts")}
+						</Text>
+						{alerts.map((a) => (
+							<AlertCard
+								key={a.id}
+								severity={a.severity}
+								icon={a.icon}
+								title={a.title}
+								subtitle={a.subtitle}
+								pillLabel={a.pillLabel}
+								chevron={a.chevron}
+							/>
+						))}
+					</View>
+				) : null}
+
+				{/* Upcoming Harvests */}
+				{upcomingHarvests.length > 0 ? (
+					<View style={{ gap: spacing.sm }}>
+						<View
+							style={{
+								flexDirection: "row",
+								alignItems: "center",
+								justifyContent: "space-between",
+								paddingHorizontal: spacing.md,
+							}}
+						>
+							<Text size="lg" weight="bold">
+								{t("home.upcoming_harvests")}
+							</Text>
+							<Link href="/setups" asChild>
+								<Pressable accessibilityRole="link">
+									<Text size="sm" tone="primary">
+										{t("home.see_all")}
+									</Text>
+								</Pressable>
+							</Link>
+						</View>
+						<ScrollView
+							horizontal
+							showsHorizontalScrollIndicator={false}
+							contentContainerStyle={{
+								paddingHorizontal: spacing.md,
+								gap: spacing.sm,
+							}}
+						>
+							{upcomingHarvests.map(({ batch, daysLeft }) => {
+								const urgent = daysLeft < 7;
+								return (
+									<View
+										key={batch.id}
+										style={{
+											width: 140,
+											padding: spacing.sm,
+											borderRadius: radii.lg,
+											backgroundColor: colors.surfaceVariant,
+											borderWidth: 1,
+											borderColor: colors.border,
+											alignItems: "center",
+											gap: spacing.xs,
+										}}
+									>
+										<View
+											style={{
+												width: 44,
+												height: 44,
+												borderRadius: radii.md,
+												backgroundColor: colors.successLight,
+												alignItems: "center",
+												justifyContent: "center",
+											}}
+										>
+											<Ionicons
+												name="leaf"
+												size={22}
+												color={colors.primaryLight}
+											/>
+										</View>
+										<Text weight="bold">{batch.variety_name}</Text>
+										<Text size="xs" tone="muted">
+											{`${batch.initial_count} plants`}
+										</Text>
+										<View
+											style={{
+												paddingHorizontal: spacing.sm,
+												paddingVertical: 4,
+												borderRadius: radii.full,
+												backgroundColor: urgent
+													? colors.errorLight
+													: colors.successLight,
+											}}
+										>
+											<Text
+												size="xs"
+												weight="bold"
+												style={{
+													color: urgent ? colors.error : colors.primaryLight,
+												}}
+											>
+												{t("home.days_left", {
+													n: String(daysLeft),
+												})}
+											</Text>
+										</View>
+									</View>
+								);
+							})}
+						</ScrollView>
+					</View>
+				) : null}
+
+				{/* Recent Activity */}
+				<View
+					style={{
+						paddingHorizontal: spacing.md,
+						gap: spacing.sm,
+					}}
+				>
+					<Text size="lg" weight="bold">
+						{t("home.recent_activity")}
+					</Text>
+					<Card>
+						{ACTIVITY_MOCK.map((a, idx) => (
+							<View
+								key={a.id}
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+									gap: spacing.sm,
+									paddingVertical: spacing.sm,
+									borderBottomWidth: idx === ACTIVITY_MOCK.length - 1 ? 0 : 1,
+									borderBottomColor: colors.borderLight,
+								}}
+							>
+								<View
+									style={{
+										width: 36,
+										height: 36,
+										borderRadius: radii.md,
+										backgroundColor: a.iconBg,
+										alignItems: "center",
+										justifyContent: "center",
+									}}
+								>
+									<Ionicons name={a.icon} size={18} color={a.iconColor} />
+								</View>
+								<Text style={{ flex: 1 }}>{a.title}</Text>
+								<Text size="xs" tone="muted">
+									{a.timeAgo}
+								</Text>
+							</View>
+						))}
+					</Card>
+				</View>
+
+				{/* Quick Actions */}
+				<View
+					style={{
+						paddingHorizontal: spacing.md,
+						gap: spacing.sm,
+					}}
+				>
+					<Text size="lg" weight="bold">
+						{t("home.quick_actions")}
+					</Text>
+					<View
+						style={{
+							flexDirection: "row",
+							flexWrap: "wrap",
+							gap: spacing.sm,
+						}}
+					>
+						<QuickActionTile
+							icon="add"
+							iconBg={colors.successLight}
+							iconColor={colors.primaryLight}
+							label={t("home.qa_new_batch")}
+							href="/batch/new"
+						/>
+						<QuickActionTile
+							icon="water"
+							iconBg={colors.infoLight}
+							iconColor={colors.info}
+							label={t("home.qa_log_reading")}
+							href="/checklist"
+						/>
+						<QuickActionTile
+							icon="book"
+							iconBg={colors.warningLight}
+							iconColor={colors.warning}
+							label={t("home.qa_crop_guide")}
+							href="/library/crops"
+						/>
+						<QuickActionTile
+							icon="trending-up"
+							iconBg="rgba(206, 147, 216, 0.15)"
+							iconColor="#CE93D8"
+							label={t("home.qa_add_sale")}
+							href="/sale-new"
+						/>
+						<QuickActionTile
+							icon="cube"
+							iconBg="rgba(128, 222, 234, 0.15)"
+							iconColor="#80DEEA"
+							label={t("home.qa_restock")}
+							href="/inventory-new"
+						/>
+						<QuickActionTile
+							icon="flash"
+							iconBg={colors.successLight}
+							iconColor={colors.primaryLight}
+							label={t("home.qa_tasks")}
+							href="/checklist"
+						/>
+					</View>
 				</View>
 			</ScrollView>
 		</GradientBackground>
@@ -339,5 +658,54 @@ function KpiTile({
 				{label}
 			</Text>
 		</View>
+	);
+}
+
+function QuickActionTile({
+	icon,
+	iconBg,
+	iconColor,
+	label,
+	href,
+}: {
+	icon: React.ComponentProps<typeof Ionicons>["name"];
+	iconBg: string;
+	iconColor: string;
+	label: string;
+	href: string;
+}) {
+	return (
+		<Link href={href as never} asChild>
+			<Pressable
+				accessibilityRole="button"
+				style={({ pressed }) => ({
+					flex: 1,
+					minWidth: "30%",
+					padding: spacing.md,
+					borderRadius: radii.lg,
+					backgroundColor: pressed ? colors.glassHover : colors.surfaceVariant,
+					borderWidth: 1,
+					borderColor: colors.border,
+					gap: spacing.xs,
+					alignItems: "center",
+				})}
+			>
+				<View
+					style={{
+						width: 36,
+						height: 36,
+						borderRadius: radii.md,
+						backgroundColor: iconBg,
+						alignItems: "center",
+						justifyContent: "center",
+					}}
+				>
+					<Ionicons name={icon} size={18} color={iconColor} />
+				</View>
+				<Text weight="semibold" size="sm">
+					{label}
+				</Text>
+			</Pressable>
+		</Link>
 	);
 }
