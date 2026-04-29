@@ -16,6 +16,7 @@ import {
 } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
 
+// TODO: replace with real data once checklist completion tracking lands.
 const TASKS_PROGRESS_MOCK = 0.67;
 const TASKS_DONE_MOCK = 8;
 const TASKS_TOTAL_MOCK = 12;
@@ -61,10 +62,10 @@ export default function HomeScreen() {
 	);
 	const tasksPending = checklistQ.data?.count ?? 0;
 
-	const dateLabel = new Intl.DateTimeFormat(
+	const dateLabel = new Date().toLocaleDateString(
 		locale === "tl" ? "fil-PH" : "en-US",
 		{ month: "long", day: "numeric", year: "numeric" },
-	).format(new Date());
+	);
 
 	return (
 		<GradientBackground>
@@ -112,7 +113,7 @@ export default function HomeScreen() {
 									size={20}
 									color={colors.text}
 								/>
-								{tasksPending + lowStock.length > 0 ? (
+								{lowStock.length + harvestReady.length > 0 ? (
 									<View
 										style={{
 											position: "absolute",
