@@ -10,6 +10,7 @@ import {
 	View,
 } from "react-native";
 import Svg, { Defs, LinearGradient, Path, Stop } from "react-native-svg";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
@@ -170,22 +171,14 @@ export default function SalesScreen() {
 						</Text>
 					</View>
 					<Link href="/sale-new" asChild>
-						<Pressable
-							style={({ pressed }) => ({
-								flexDirection: "row",
-								alignItems: "center",
-								gap: spacing.xxs,
-								backgroundColor: pressed
-									? colors.buttonSolidActive
-									: colors.buttonSolidBg,
-								paddingHorizontal: spacing.md,
-								paddingVertical: 10,
-								borderRadius: 999,
-							})}
-						>
-							<Ionicons name="add" size={18} color="#FFFFFF" />
-							<Text weight="semibold">Record</Text>
-						</Pressable>
+						<Button
+							size="sm"
+							label="Record"
+							leftIcon={
+								<Ionicons name="add" size={18} color="#FFFFFF" />
+							}
+							style={{ borderRadius: 999, flexShrink: 0 }}
+						/>
 					</Link>
 				</View>
 

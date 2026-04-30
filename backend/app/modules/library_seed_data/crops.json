@@ -46,12 +46,68 @@
       }
     ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 1, "description": "Sow 2 seeds per plug in pre-soaked rockwool.", "actions": ["Cover lightly", "Keep moist", "No nutrients yet"]},
-      {"stage": "Germination", "day_min": 2, "day_max": 4, "description": "Cotyledons emerge.", "actions": ["Move to bright light", "Keep at 22-25C"]},
-      {"stage": "Seedling", "day_min": 5, "day_max": 12, "description": "First true leaves appear.", "actions": ["Start EC 0.8", "12h light", "Pinch weaker seedling"]},
-      {"stage": "Transplant", "day_min": 13, "day_max": 14, "description": "Move to DFT/NFT channel when 3-4 true leaves.", "actions": ["EC 1.2", "Check pH 6.0-7.0"]},
-      {"stage": "Vegetative", "day_min": 15, "day_max": 28, "description": "Rapid leaf production.", "actions": ["EC 1.4-1.8", "Top up reservoir daily"]},
-      {"stage": "Harvest", "day_min": 25, "day_max": 35, "description": "Cut whole head at base.", "actions": ["Harvest AM", "Wash and pack within 1 hour"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 1,
+        "description": "Sow 2 seeds per plug in pre-soaked rockwool.",
+        "actions": [
+          "Cover lightly",
+          "Keep moist",
+          "No nutrients yet"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 2,
+        "day_max": 4,
+        "description": "Cotyledons emerge.",
+        "actions": [
+          "Move to bright light",
+          "Keep at 22-25C"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 5,
+        "day_max": 12,
+        "description": "First true leaves appear.",
+        "actions": [
+          "Start EC 0.8",
+          "12h light",
+          "Pinch weaker seedling"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 13,
+        "day_max": 14,
+        "description": "Move to DFT/NFT channel when 3-4 true leaves.",
+        "actions": [
+          "EC 1.2",
+          "Check pH 6.0-7.0"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 15,
+        "day_max": 28,
+        "description": "Rapid leaf production.",
+        "actions": [
+          "EC 1.4-1.8",
+          "Top up reservoir daily"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 25,
+        "day_max": 35,
+        "description": "Cut whole head at base.",
+        "actions": [
+          "Harvest AM",
+          "Wash and pack within 1 hour"
+        ]
+      }
     ]
   },
   {
@@ -100,12 +156,65 @@
       }
     ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 1, "description": "Sow on rockwool starter plug.", "actions": ["Pre-soak plug pH 5.5"]},
-      {"stage": "Germination", "day_min": 2, "day_max": 5, "description": "Cotyledons unfold.", "actions": ["Light 16h", "Mist daily"]},
-      {"stage": "Seedling", "day_min": 6, "day_max": 14, "description": "True leaves form.", "actions": ["EC 0.6", "Move to nursery channel"]},
-      {"stage": "Transplant", "day_min": 15, "day_max": 18, "description": "Move to main channel.", "actions": ["EC 1.2", "pH 5.8"]},
-      {"stage": "Vegetative", "day_min": 19, "day_max": 35, "description": "Heart begins to form.", "actions": ["EC 1.4-1.8", "Maintain temp"]},
-      {"stage": "Harvest", "day_min": 30, "day_max": 45, "description": "Heart firm, outer leaves crisp.", "actions": ["Cut at base", "Cold-chain immediately"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 1,
+        "description": "Sow on rockwool starter plug.",
+        "actions": [
+          "Pre-soak plug pH 5.5"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 2,
+        "day_max": 5,
+        "description": "Cotyledons unfold.",
+        "actions": [
+          "Light 16h",
+          "Mist daily"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 6,
+        "day_max": 14,
+        "description": "True leaves form.",
+        "actions": [
+          "EC 0.6",
+          "Move to nursery channel"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 15,
+        "day_max": 18,
+        "description": "Move to main channel.",
+        "actions": [
+          "EC 1.2",
+          "pH 5.8"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 19,
+        "day_max": 35,
+        "description": "Heart begins to form.",
+        "actions": [
+          "EC 1.4-1.8",
+          "Maintain temp"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 30,
+        "day_max": 45,
+        "description": "Heart firm, outer leaves crisp.",
+        "actions": [
+          "Cut at base",
+          "Cold-chain immediately"
+        ]
+      }
     ]
   },
   {
@@ -149,10 +258,43 @@
       }
     ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 1, "description": "Direct seed or stem cutting.", "actions": ["Soak seeds 12h"]},
-      {"stage": "Germination", "day_min": 2, "day_max": 5, "description": "Sprouts emerge.", "actions": ["Keep warm 25C+"]},
-      {"stage": "Vegetative", "day_min": 6, "day_max": 25, "description": "Stems elongate fast.", "actions": ["EC 1.6", "Top up daily"]},
-      {"stage": "Harvest", "day_min": 25, "day_max": 35, "description": "Cut stems at 20cm.", "actions": ["Leave 5cm stub for ratoon"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 1,
+        "description": "Direct seed or stem cutting.",
+        "actions": [
+          "Soak seeds 12h"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 2,
+        "day_max": 5,
+        "description": "Sprouts emerge.",
+        "actions": [
+          "Keep warm 25C+"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 6,
+        "day_max": 25,
+        "description": "Stems elongate fast.",
+        "actions": [
+          "EC 1.6",
+          "Top up daily"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 25,
+        "day_max": 35,
+        "description": "Cut stems at 20cm.",
+        "actions": [
+          "Leave 5cm stub for ratoon"
+        ]
+      }
     ]
   },
   {
@@ -201,12 +343,65 @@
       }
     ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 1, "description": "Sow 2-3 seeds per plug.", "actions": ["Surface sow", "Mist"]},
-      {"stage": "Germination", "day_min": 2, "day_max": 7, "description": "Cotyledons emerge.", "actions": ["Light 14h", "25C"]},
-      {"stage": "Seedling", "day_min": 8, "day_max": 18, "description": "True leaves develop.", "actions": ["EC 0.6", "Thin to 1 plant"]},
-      {"stage": "Transplant", "day_min": 19, "day_max": 21, "description": "Move to channel.", "actions": ["EC 1.0", "pH 5.8"]},
-      {"stage": "Vegetative", "day_min": 22, "day_max": 45, "description": "Bushing out.", "actions": ["Pinch top", "EC 1.4"]},
-      {"stage": "Harvest", "day_min": 30, "day_max": 60, "description": "Continuous harvest.", "actions": ["Cut stems above leaf node"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 1,
+        "description": "Sow 2-3 seeds per plug.",
+        "actions": [
+          "Surface sow",
+          "Mist"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 2,
+        "day_max": 7,
+        "description": "Cotyledons emerge.",
+        "actions": [
+          "Light 14h",
+          "25C"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 8,
+        "day_max": 18,
+        "description": "True leaves develop.",
+        "actions": [
+          "EC 0.6",
+          "Thin to 1 plant"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 19,
+        "day_max": 21,
+        "description": "Move to channel.",
+        "actions": [
+          "EC 1.0",
+          "pH 5.8"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 22,
+        "day_max": 45,
+        "description": "Bushing out.",
+        "actions": [
+          "Pinch top",
+          "EC 1.4"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 30,
+        "day_max": 60,
+        "description": "Continuous harvest.",
+        "actions": [
+          "Cut stems above leaf node"
+        ]
+      }
     ]
   },
   {
@@ -261,14 +456,86 @@
       }
     ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 2, "description": "Sow seed in rockwool plug.", "actions": ["Pre-soak", "Cover with vermiculite"]},
-      {"stage": "Germination", "day_min": 3, "day_max": 8, "description": "Cotyledons unfold.", "actions": ["25-28C", "Light 16h"]},
-      {"stage": "Seedling", "day_min": 9, "day_max": 25, "description": "True leaves develop.", "actions": ["EC 1.0", "Pot up if needed"]},
-      {"stage": "Transplant", "day_min": 26, "day_max": 30, "description": "Move to Dutch Bucket.", "actions": ["EC 1.8", "Stake"]},
-      {"stage": "Vegetative", "day_min": 31, "day_max": 50, "description": "Vine and leaf growth.", "actions": ["Train to twine", "Prune suckers"]},
-      {"stage": "Flowering", "day_min": 50, "day_max": 65, "description": "Trusses appear.", "actions": ["Hand-pollinate", "EC 2.5"]},
-      {"stage": "Fruit Set", "day_min": 65, "day_max": 80, "description": "Green fruit swells.", "actions": ["Maintain Ca/K", "EC 3.0"]},
-      {"stage": "Harvest", "day_min": 70, "day_max": 100, "description": "Continuous picking.", "actions": ["Pick when fully colored", "EC 2.8"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 2,
+        "description": "Sow seed in rockwool plug.",
+        "actions": [
+          "Pre-soak",
+          "Cover with vermiculite"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 3,
+        "day_max": 8,
+        "description": "Cotyledons unfold.",
+        "actions": [
+          "25-28C",
+          "Light 16h"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 9,
+        "day_max": 25,
+        "description": "True leaves develop.",
+        "actions": [
+          "EC 1.0",
+          "Pot up if needed"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 26,
+        "day_max": 30,
+        "description": "Move to Dutch Bucket.",
+        "actions": [
+          "EC 1.8",
+          "Stake"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 31,
+        "day_max": 50,
+        "description": "Vine and leaf growth.",
+        "actions": [
+          "Train to twine",
+          "Prune suckers"
+        ]
+      },
+      {
+        "stage": "Flowering",
+        "day_min": 50,
+        "day_max": 65,
+        "description": "Trusses appear.",
+        "actions": [
+          "Hand-pollinate",
+          "EC 2.5"
+        ]
+      },
+      {
+        "stage": "Fruit Set",
+        "day_min": 65,
+        "day_max": 80,
+        "description": "Green fruit swells.",
+        "actions": [
+          "Maintain Ca/K",
+          "EC 3.0"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 70,
+        "day_max": 100,
+        "description": "Continuous picking.",
+        "actions": [
+          "Pick when fully colored",
+          "EC 2.8"
+        ]
+      }
     ]
   },
   {
@@ -317,11 +584,53 @@
       }
     ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 2, "description": "Sow in damp sponges or rockwool.", "actions": ["Maintain 18-24C"]},
-      {"stage": "Germination", "day_min": 3, "day_max": 10, "description": "Cotyledons emerge.", "actions": ["Move to bright light"]},
-      {"stage": "Seedling", "day_min": 11, "day_max": 21, "description": "Develop 2-3 true leaves.", "actions": ["Transplant gently", "EC 0.6"]},
-      {"stage": "Vegetative", "day_min": 22, "day_max": 35, "description": "Aggressive leaf expansion.", "actions": ["EC 1.0", "Provide 14h light"]},
-      {"stage": "Harvest", "day_min": 28, "day_max": 40, "description": "Whole head mature.", "actions": ["Harvest before bolting"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 2,
+        "description": "Sow in damp sponges or rockwool.",
+        "actions": [
+          "Maintain 18-24C"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 3,
+        "day_max": 10,
+        "description": "Cotyledons emerge.",
+        "actions": [
+          "Move to bright light"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 11,
+        "day_max": 21,
+        "description": "Develop 2-3 true leaves.",
+        "actions": [
+          "Transplant gently",
+          "EC 0.6"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 22,
+        "day_max": 35,
+        "description": "Aggressive leaf expansion.",
+        "actions": [
+          "EC 1.0",
+          "Provide 14h light"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 28,
+        "day_max": 40,
+        "description": "Whole head mature.",
+        "actions": [
+          "Harvest before bolting"
+        ]
+      }
     ]
   },
   {
@@ -351,7 +660,7 @@
     "common_issues": "Flea beetles; bolting",
     "harvest_indicator": "Leaves 20-25cm",
     "image_key": "mustard_greens_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1576156765804-a8c52aae70bb?w=800",
     "source": "DA-ATI",
     "tips": [
       "Cut yellow-flowering stems immediately to delay bolting.",
@@ -365,11 +674,53 @@
       }
     ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 1, "description": "Sow seeds in rockwool.", "actions": ["Keep warm, dark"]},
-      {"stage": "Germination", "day_min": 2, "day_max": 7, "description": "Sprouts emerge.", "actions": ["Move to light source"]},
-      {"stage": "Seedling", "day_min": 8, "day_max": 21, "description": "True leaves appear.", "actions": ["EC 0.8", "Diluted nutrients"]},
-      {"stage": "Vegetative", "day_min": 22, "day_max": 40, "description": "Foliage production.", "actions": ["EC 1.4-1.8", "Monitor for bolting"]},
-      {"stage": "Harvest", "day_min": 30, "day_max": 40, "description": "Leaves 20-25cm.", "actions": ["Harvest outer leaves"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 1,
+        "description": "Sow seeds in rockwool.",
+        "actions": [
+          "Keep warm, dark"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 2,
+        "day_max": 7,
+        "description": "Sprouts emerge.",
+        "actions": [
+          "Move to light source"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 8,
+        "day_max": 21,
+        "description": "True leaves appear.",
+        "actions": [
+          "EC 0.8",
+          "Diluted nutrients"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 22,
+        "day_max": 40,
+        "description": "Foliage production.",
+        "actions": [
+          "EC 1.4-1.8",
+          "Monitor for bolting"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 30,
+        "day_max": 40,
+        "description": "Leaves 20-25cm.",
+        "actions": [
+          "Harvest outer leaves"
+        ]
+      }
     ]
   },
   {
@@ -413,12 +764,65 @@
       }
     ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 2, "description": "Sow seeds in warm medium.", "actions": ["Maintain 27C", "Keep moist"]},
-      {"stage": "Germination", "day_min": 3, "day_max": 21, "description": "Seedlings emerge.", "actions": ["Heat mat", "No nutrients yet"]},
-      {"stage": "Seedling", "day_min": 22, "day_max": 45, "description": "Leaves develop.", "actions": ["Transplant", "EC 1.0"]},
-      {"stage": "Vegetative", "day_min": 46, "day_max": 65, "description": "Stem and leaf growth.", "actions": ["EC 1.8", "14-18h light"]},
-      {"stage": "Flowering", "day_min": 66, "day_max": 80, "description": "Blossoms appear.", "actions": ["Manual pollination", "EC 2.6"]},
-      {"stage": "Harvest", "day_min": 80, "day_max": 110, "description": "Fruit reaches full color.", "actions": ["Cut stem with shears"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 2,
+        "description": "Sow seeds in warm medium.",
+        "actions": [
+          "Maintain 27C",
+          "Keep moist"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 3,
+        "day_max": 21,
+        "description": "Seedlings emerge.",
+        "actions": [
+          "Heat mat",
+          "No nutrients yet"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 22,
+        "day_max": 45,
+        "description": "Leaves develop.",
+        "actions": [
+          "Transplant",
+          "EC 1.0"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 46,
+        "day_max": 65,
+        "description": "Stem and leaf growth.",
+        "actions": [
+          "EC 1.8",
+          "14-18h light"
+        ]
+      },
+      {
+        "stage": "Flowering",
+        "day_min": 66,
+        "day_max": 80,
+        "description": "Blossoms appear.",
+        "actions": [
+          "Manual pollination",
+          "EC 2.6"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 80,
+        "day_max": 110,
+        "description": "Fruit reaches full color.",
+        "actions": [
+          "Cut stem with shears"
+        ]
+      }
     ]
   },
   {
@@ -467,12 +871,63 @@
       }
     ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 2, "description": "Sow in starter medium.", "actions": ["Warmth 21-35C"]},
-      {"stage": "Germination", "day_min": 3, "day_max": 10, "description": "Sprouts emerge.", "actions": ["Keep moist"]},
-      {"stage": "Seedling", "day_min": 11, "day_max": 21, "description": "True leaves form.", "actions": ["Transplant to main system", "EC 1.0"]},
-      {"stage": "Vegetative", "day_min": 22, "day_max": 40, "description": "Rapid vine growth.", "actions": ["Trellis support", "EC 1.7"]},
-      {"stage": "Flowering", "day_min": 41, "day_max": 50, "description": "Flowers bloom.", "actions": ["Pollinate if needed", "EC 2.2"]},
-      {"stage": "Harvest", "day_min": 50, "day_max": 70, "description": "Fruit 18-22cm.", "actions": ["Frequent harvesting"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 2,
+        "description": "Sow in starter medium.",
+        "actions": [
+          "Warmth 21-35C"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 3,
+        "day_max": 10,
+        "description": "Sprouts emerge.",
+        "actions": [
+          "Keep moist"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 11,
+        "day_max": 21,
+        "description": "True leaves form.",
+        "actions": [
+          "Transplant to main system",
+          "EC 1.0"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 22,
+        "day_max": 40,
+        "description": "Rapid vine growth.",
+        "actions": [
+          "Trellis support",
+          "EC 1.7"
+        ]
+      },
+      {
+        "stage": "Flowering",
+        "day_min": 41,
+        "day_max": 50,
+        "description": "Flowers bloom.",
+        "actions": [
+          "Pollinate if needed",
+          "EC 2.2"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 50,
+        "day_max": 70,
+        "description": "Fruit 18-22cm.",
+        "actions": [
+          "Frequent harvesting"
+        ]
+      }
     ]
   },
   {
@@ -501,7 +956,7 @@
     "local_price_php_per_kg_max": 1500.0,
     "common_issues": "Root rot; poor fruit set in heat",
     "harvest_indicator": "Full red color",
-    "image_key": null,
+    "image_key": "strawberry_crop.png",
     "image_url": "https://images.unsplash.com/photo-1543528176-61b239494933?w=800",
     "source": "DOST-PCAARRD",
     "tips": [
@@ -522,10 +977,45 @@
       }
     ],
     "growth_stages": [
-      {"stage": "Establishment", "day_min": 0, "day_max": 14, "description": "Plant certified disease-free plugs.", "actions": ["Wash roots", "Plant carefully"]},
-      {"stage": "Vegetative", "day_min": 15, "day_max": 45, "description": "Foliage and root growth.", "actions": ["EC 1.4", "Pinch early flowers"]},
-      {"stage": "Flowering", "day_min": 46, "day_max": 60, "description": "Flowers appear.", "actions": ["Manual pollination", "EC 1.8"]},
-      {"stage": "Harvest", "day_min": 90, "day_max": 120, "description": "Fruit fully red.", "actions": ["Harvest carefully"]}
+      {
+        "stage": "Establishment",
+        "day_min": 0,
+        "day_max": 14,
+        "description": "Plant certified disease-free plugs.",
+        "actions": [
+          "Wash roots",
+          "Plant carefully"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 15,
+        "day_max": 45,
+        "description": "Foliage and root growth.",
+        "actions": [
+          "EC 1.4",
+          "Pinch early flowers"
+        ]
+      },
+      {
+        "stage": "Flowering",
+        "day_min": 46,
+        "day_max": 60,
+        "description": "Flowers appear.",
+        "actions": [
+          "Manual pollination",
+          "EC 1.8"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 90,
+        "day_max": 120,
+        "description": "Fruit fully red.",
+        "actions": [
+          "Harvest carefully"
+        ]
+      }
     ]
   },
   {
@@ -555,7 +1045,7 @@
     "common_issues": "Pythium root rot; sensitive to high temperature",
     "harvest_indicator": "Leaves 10-15cm, cut-and-come-again",
     "image_key": "spinach_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1576156765804-a8c52aae70bb?w=800",
     "source": "Web validation",
     "tips": [
       "Keep nutrient solution cool (under 22C) to prevent Pythium root rot.",
@@ -569,11 +1059,53 @@
       }
     ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 2, "description": "Sow in rockwool.", "actions": ["Keep at 18-20C"]},
-      {"stage": "Germination", "day_min": 3, "day_max": 10, "description": "Cotyledons emerge.", "actions": ["Provide light"]},
-      {"stage": "Seedling", "day_min": 11, "day_max": 20, "description": "True leaves.", "actions": ["EC 0.8", "Transplant to system"]},
-      {"stage": "Vegetative", "day_min": 21, "day_max": 40, "description": "Leaf production.", "actions": ["EC 1.5-2.0", "Maintain cool temp"]},
-      {"stage": "Harvest", "day_min": 35, "day_max": 45, "description": "Leaves reach 10-15cm.", "actions": ["Cut outer leaves first"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 2,
+        "description": "Sow in rockwool.",
+        "actions": [
+          "Keep at 18-20C"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 3,
+        "day_max": 10,
+        "description": "Cotyledons emerge.",
+        "actions": [
+          "Provide light"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 11,
+        "day_max": 20,
+        "description": "True leaves.",
+        "actions": [
+          "EC 0.8",
+          "Transplant to system"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 21,
+        "day_max": 40,
+        "description": "Leaf production.",
+        "actions": [
+          "EC 1.5-2.0",
+          "Maintain cool temp"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 35,
+        "day_max": 45,
+        "description": "Leaves reach 10-15cm.",
+        "actions": [
+          "Cut outer leaves first"
+        ]
+      }
     ]
   },
   {
@@ -603,7 +1135,7 @@
     "common_issues": "Invasive root systems in shared channels",
     "harvest_indicator": "Frequent pruning of tips",
     "image_key": "mint_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1628556270448-4d4e4148e1b1?w=800",
     "source": "Web validation",
     "tips": [
       "Extremely fast growing and roots can easily clog NFT channels if not pruned.",
@@ -617,10 +1149,44 @@
       }
     ],
     "growth_stages": [
-      {"stage": "Propagation", "day_min": 0, "day_max": 7, "description": "Take stem cuttings.", "actions": ["Place in water until roots form"]},
-      {"stage": "Seedling", "day_min": 8, "day_max": 14, "description": "Roots establish.", "actions": ["Transplant to system", "EC 0.8"]},
-      {"stage": "Vegetative", "day_min": 15, "day_max": 40, "description": "Rapid growth.", "actions": ["EC 1.2-1.8", "Prune tips"]},
-      {"stage": "Harvest", "day_min": 30, "day_max": 60, "description": "Continuous harvest.", "actions": ["Cut stems regularly"]}
+      {
+        "stage": "Propagation",
+        "day_min": 0,
+        "day_max": 7,
+        "description": "Take stem cuttings.",
+        "actions": [
+          "Place in water until roots form"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 8,
+        "day_max": 14,
+        "description": "Roots establish.",
+        "actions": [
+          "Transplant to system",
+          "EC 0.8"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 15,
+        "day_max": 40,
+        "description": "Rapid growth.",
+        "actions": [
+          "EC 1.2-1.8",
+          "Prune tips"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 30,
+        "day_max": 60,
+        "description": "Continuous harvest.",
+        "actions": [
+          "Cut stems regularly"
+        ]
+      }
     ]
   },
   {
@@ -650,16 +1216,66 @@
     "common_issues": "Aphids; high temperatures cause bitterness",
     "harvest_indicator": "Leaves are large enough to eat",
     "image_key": "kale_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1524179091875-bf99a9a6af57?w=800",
     "source": "Web validation",
-    "tips": ["Use 'cut-and-come-again' harvesting.", "Tolerates wider EC range."],
-    "risks": [{"title": "Aphids", "description": "Small insects on underside of leaves.", "mitigation": "Use sticky traps or neem oil."}],
+    "tips": [
+      "Use 'cut-and-come-again' harvesting.",
+      "Tolerates wider EC range."
+    ],
+    "risks": [
+      {
+        "title": "Aphids",
+        "description": "Small insects on underside of leaves.",
+        "mitigation": "Use sticky traps or neem oil."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 2, "description": "Sow in rockwool.", "actions": ["Keep moist"]},
-      {"stage": "Germination", "day_min": 3, "day_max": 7, "description": "Sprouts emerge.", "actions": ["Provide light"]},
-      {"stage": "Seedling", "day_min": 8, "day_max": 21, "description": "True leaves form.", "actions": ["Transplant", "EC 1.0"]},
-      {"stage": "Vegetative", "day_min": 22, "day_max": 35, "description": "Rapid leaf growth.", "actions": ["EC 1.8-2.2"]},
-      {"stage": "Harvest", "day_min": 35, "day_max": 60, "description": "Harvest outer leaves.", "actions": ["Cut-and-come-again"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 2,
+        "description": "Sow in rockwool.",
+        "actions": [
+          "Keep moist"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 3,
+        "day_max": 7,
+        "description": "Sprouts emerge.",
+        "actions": [
+          "Provide light"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 8,
+        "day_max": 21,
+        "description": "True leaves form.",
+        "actions": [
+          "Transplant",
+          "EC 1.0"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 22,
+        "day_max": 35,
+        "description": "Rapid leaf growth.",
+        "actions": [
+          "EC 1.8-2.2"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 35,
+        "day_max": 60,
+        "description": "Harvest outer leaves.",
+        "actions": [
+          "Cut-and-come-again"
+        ]
+      }
     ]
   },
   {
@@ -691,14 +1307,63 @@
     "image_key": "bok_choy_crop.png",
     "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
     "source": "Web validation",
-    "tips": ["Sensitive to high light/heat causing bolting.", "Harvest whole head."],
-    "risks": [{"title": "Bolting", "description": "Premature flowering.", "mitigation": "Keep temps below 24C."}],
+    "tips": [
+      "Sensitive to high light/heat causing bolting.",
+      "Harvest whole head."
+    ],
+    "risks": [
+      {
+        "title": "Bolting",
+        "description": "Premature flowering.",
+        "mitigation": "Keep temps below 24C."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 2, "description": "Sow seeds.", "actions": ["Maintain moisture"]},
-      {"stage": "Germination", "day_min": 3, "day_max": 5, "description": "Cotyledons appear.", "actions": ["Light exposure"]},
-      {"stage": "Seedling", "day_min": 6, "day_max": 14, "description": "Develop leaves.", "actions": ["EC 1.0"]},
-      {"stage": "Vegetative", "day_min": 15, "day_max": 30, "description": "Head forms.", "actions": ["EC 1.8-2.2"]},
-      {"stage": "Harvest", "day_min": 30, "day_max": 45, "description": "Mature head.", "actions": ["Cut at base"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 2,
+        "description": "Sow seeds.",
+        "actions": [
+          "Maintain moisture"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 3,
+        "day_max": 5,
+        "description": "Cotyledons appear.",
+        "actions": [
+          "Light exposure"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 6,
+        "day_max": 14,
+        "description": "Develop leaves.",
+        "actions": [
+          "EC 1.0"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 15,
+        "day_max": 30,
+        "description": "Head forms.",
+        "actions": [
+          "EC 1.8-2.2"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 30,
+        "day_max": 45,
+        "description": "Mature head.",
+        "actions": [
+          "Cut at base"
+        ]
+      }
     ]
   },
   {
@@ -728,16 +1393,65 @@
     "common_issues": "Nutrient burn if EC too high",
     "harvest_indicator": "Leaves 5-10cm long",
     "image_key": "arugula_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800",
     "source": "Web validation",
-    "tips": ["Harvests very quickly in 3-4 weeks.", "Sensitive to high salt concentrations."],
-    "risks": [{"title": "Nutrient Burn", "description": "Yellowing/browning leaf tips.", "mitigation": "Keep EC below 1.4."}],
+    "tips": [
+      "Harvests very quickly in 3-4 weeks.",
+      "Sensitive to high salt concentrations."
+    ],
+    "risks": [
+      {
+        "title": "Nutrient Burn",
+        "description": "Yellowing/browning leaf tips.",
+        "mitigation": "Keep EC below 1.4."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 2, "description": "Sow lightly.", "actions": ["Keep moist"]},
-      {"stage": "Germination", "day_min": 3, "day_max": 5, "description": "Sprouts emerge rapidly.", "actions": ["Provide light"]},
-      {"stage": "Seedling", "day_min": 6, "day_max": 14, "description": "True leaves.", "actions": ["EC 0.8"]},
-      {"stage": "Vegetative", "day_min": 15, "day_max": 21, "description": "Leaf expansion.", "actions": ["EC 1.2"]},
-      {"stage": "Harvest", "day_min": 21, "day_max": 35, "description": "Harvest leaves.", "actions": ["Cut outer leaves"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 2,
+        "description": "Sow lightly.",
+        "actions": [
+          "Keep moist"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 3,
+        "day_max": 5,
+        "description": "Sprouts emerge rapidly.",
+        "actions": [
+          "Provide light"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 6,
+        "day_max": 14,
+        "description": "True leaves.",
+        "actions": [
+          "EC 0.8"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 15,
+        "day_max": 21,
+        "description": "Leaf expansion.",
+        "actions": [
+          "EC 1.2"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 21,
+        "day_max": 35,
+        "description": "Harvest leaves.",
+        "actions": [
+          "Cut outer leaves"
+        ]
+      }
     ]
   },
   {
@@ -767,16 +1481,65 @@
     "common_issues": "Early bolting; slow germination",
     "harvest_indicator": "Leaves 10-15cm long",
     "image_key": "cilantro_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?w=800",
     "source": "Web validation",
-    "tips": ["Crack seeds gently before planting.", "Use slow-bolt varieties."],
-    "risks": [{"title": "Bolting", "description": "Flowers early in heat.", "mitigation": "Keep temperatures cool."}],
+    "tips": [
+      "Crack seeds gently before planting.",
+      "Use slow-bolt varieties."
+    ],
+    "risks": [
+      {
+        "title": "Bolting",
+        "description": "Flowers early in heat.",
+        "mitigation": "Keep temperatures cool."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 1, "description": "Crack seeds.", "actions": ["Soak before sowing"]},
-      {"stage": "Germination", "day_min": 2, "day_max": 10, "description": "Slow to sprout.", "actions": ["Keep moist"]},
-      {"stage": "Seedling", "day_min": 11, "day_max": 20, "description": "True leaves.", "actions": ["EC 1.0"]},
-      {"stage": "Vegetative", "day_min": 21, "day_max": 35, "description": "Bushy growth.", "actions": ["EC 1.4-1.6"]},
-      {"stage": "Harvest", "day_min": 30, "day_max": 45, "description": "Ready to cut.", "actions": ["Harvest frequently"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 1,
+        "description": "Crack seeds.",
+        "actions": [
+          "Soak before sowing"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 2,
+        "day_max": 10,
+        "description": "Slow to sprout.",
+        "actions": [
+          "Keep moist"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 11,
+        "day_max": 20,
+        "description": "True leaves.",
+        "actions": [
+          "EC 1.0"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 21,
+        "day_max": 35,
+        "description": "Bushy growth.",
+        "actions": [
+          "EC 1.4-1.6"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 30,
+        "day_max": 45,
+        "description": "Ready to cut.",
+        "actions": [
+          "Harvest frequently"
+        ]
+      }
     ]
   },
   {
@@ -806,15 +1569,56 @@
     "common_issues": "Root rot from stagnant water",
     "harvest_indicator": "Stems 15cm long",
     "image_key": "oregano_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=800",
     "source": "Web validation",
-    "tips": ["Hardy and compact.", "Propagate from cuttings for faster results."],
-    "risks": [{"title": "Root Rot", "description": "Roots drown in stagnant water.", "mitigation": "Ensure good aeration."}],
+    "tips": [
+      "Hardy and compact.",
+      "Propagate from cuttings for faster results."
+    ],
+    "risks": [
+      {
+        "title": "Root Rot",
+        "description": "Roots drown in stagnant water.",
+        "mitigation": "Ensure good aeration."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Propagation", "day_min": 0, "day_max": 14, "description": "Cuttings or seeds.", "actions": ["Maintain moisture"]},
-      {"stage": "Seedling", "day_min": 15, "day_max": 25, "description": "Roots establish.", "actions": ["EC 1.2"]},
-      {"stage": "Vegetative", "day_min": 26, "day_max": 45, "description": "Leaves fill out.", "actions": ["EC 1.8-2.2"]},
-      {"stage": "Harvest", "day_min": 40, "day_max": 60, "description": "Cut stems.", "actions": ["Leave base to regrow"]}
+      {
+        "stage": "Propagation",
+        "day_min": 0,
+        "day_max": 14,
+        "description": "Cuttings or seeds.",
+        "actions": [
+          "Maintain moisture"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 15,
+        "day_max": 25,
+        "description": "Roots establish.",
+        "actions": [
+          "EC 1.2"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 26,
+        "day_max": 45,
+        "description": "Leaves fill out.",
+        "actions": [
+          "EC 1.8-2.2"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 40,
+        "day_max": 60,
+        "description": "Cut stems.",
+        "actions": [
+          "Leave base to regrow"
+        ]
+      }
     ]
   },
   {
@@ -844,15 +1648,56 @@
     "common_issues": "Root rot",
     "harvest_indicator": "Stems 10-15cm long",
     "image_key": "thyme_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1471193945509-9ad0617afabf?w=800",
     "source": "Web validation",
-    "tips": ["Prune regularly to prevent woody stems.", "Harvest before flowers open."],
-    "risks": [{"title": "Root Rot", "description": "Soggy roots.", "mitigation": "Avoid constant soaking if possible."}],
+    "tips": [
+      "Prune regularly to prevent woody stems.",
+      "Harvest before flowers open."
+    ],
+    "risks": [
+      {
+        "title": "Root Rot",
+        "description": "Soggy roots.",
+        "mitigation": "Avoid constant soaking if possible."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Propagation", "day_min": 0, "day_max": 14, "description": "Best from cuttings.", "actions": ["Keep moist"]},
-      {"stage": "Seedling", "day_min": 15, "day_max": 25, "description": "Roots establish.", "actions": ["EC 0.8"]},
-      {"stage": "Vegetative", "day_min": 26, "day_max": 45, "description": "Bushy growth.", "actions": ["EC 1.4"]},
-      {"stage": "Harvest", "day_min": 40, "day_max": 60, "description": "Continuous.", "actions": ["Prune frequently"]}
+      {
+        "stage": "Propagation",
+        "day_min": 0,
+        "day_max": 14,
+        "description": "Best from cuttings.",
+        "actions": [
+          "Keep moist"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 15,
+        "day_max": 25,
+        "description": "Roots establish.",
+        "actions": [
+          "EC 0.8"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 26,
+        "day_max": 45,
+        "description": "Bushy growth.",
+        "actions": [
+          "EC 1.4"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 40,
+        "day_max": 60,
+        "description": "Continuous.",
+        "actions": [
+          "Prune frequently"
+        ]
+      }
     ]
   },
   {
@@ -882,15 +1727,56 @@
     "common_issues": "Overcrowding in net cups",
     "harvest_indicator": "Leaves 15-20cm tall",
     "image_key": "chives_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1498579150354-977475b7ea0b?w=800",
     "source": "Web validation",
-    "tips": ["Trim back to 2-3cm above crown every few weeks.", "Very productive and easy."],
-    "risks": [{"title": "Overcrowding", "description": "Clumps grow too thick.", "mitigation": "Divide mature clumps occasionally."}],
+    "tips": [
+      "Trim back to 2-3cm above crown every few weeks.",
+      "Very productive and easy."
+    ],
+    "risks": [
+      {
+        "title": "Overcrowding",
+        "description": "Clumps grow too thick.",
+        "mitigation": "Divide mature clumps occasionally."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 7, "description": "Sow in clusters.", "actions": ["Keep moist"]},
-      {"stage": "Seedling", "day_min": 8, "day_max": 20, "description": "Grass-like shoots.", "actions": ["EC 1.2"]},
-      {"stage": "Vegetative", "day_min": 21, "day_max": 35, "description": "Leaves thicken and lengthen.", "actions": ["EC 2.0"]},
-      {"stage": "Harvest", "day_min": 30, "day_max": 40, "description": "Cut down.", "actions": ["Leave 3cm stubble"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 7,
+        "description": "Sow in clusters.",
+        "actions": [
+          "Keep moist"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 8,
+        "day_max": 20,
+        "description": "Grass-like shoots.",
+        "actions": [
+          "EC 1.2"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 21,
+        "day_max": 35,
+        "description": "Leaves thicken and lengthen.",
+        "actions": [
+          "EC 2.0"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 30,
+        "day_max": 40,
+        "description": "Cut down.",
+        "actions": [
+          "Leave 3cm stubble"
+        ]
+      }
     ]
   },
   {
@@ -920,16 +1806,67 @@
     "common_issues": "Spider mites; heavy fruit breaking branches",
     "harvest_indicator": "Skin is glossy and firm",
     "image_key": "eggplant_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1659958996891-ff3bcde6a8a0?w=800",
     "source": "Web validation",
-    "tips": ["Requires robust trellising.", "Manual pollination needed indoors."],
-    "risks": [{"title": "Branch Breakage", "description": "Fruits are heavy.", "mitigation": "Use stakes or cages."}],
+    "tips": [
+      "Requires robust trellising.",
+      "Manual pollination needed indoors."
+    ],
+    "risks": [
+      {
+        "title": "Branch Breakage",
+        "description": "Fruits are heavy.",
+        "mitigation": "Use stakes or cages."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 5, "description": "Sow in warm medium.", "actions": ["Keep at 25C"]},
-      {"stage": "Seedling", "day_min": 6, "day_max": 30, "description": "Develop strong stem.", "actions": ["EC 1.5", "Pot up"]},
-      {"stage": "Vegetative", "day_min": 31, "day_max": 60, "description": "Bush out.", "actions": ["EC 2.5", "Prune suckers"]},
-      {"stage": "Flowering", "day_min": 61, "day_max": 75, "description": "Purple flowers appear.", "actions": ["Hand pollinate"]},
-      {"stage": "Harvest", "day_min": 80, "day_max": 120, "description": "Fruit mature.", "actions": ["Cut with shears"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 5,
+        "description": "Sow in warm medium.",
+        "actions": [
+          "Keep at 25C"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 6,
+        "day_max": 30,
+        "description": "Develop strong stem.",
+        "actions": [
+          "EC 1.5",
+          "Pot up"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 31,
+        "day_max": 60,
+        "description": "Bush out.",
+        "actions": [
+          "EC 2.5",
+          "Prune suckers"
+        ]
+      },
+      {
+        "stage": "Flowering",
+        "day_min": 61,
+        "day_max": 75,
+        "description": "Purple flowers appear.",
+        "actions": [
+          "Hand pollinate"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 80,
+        "day_max": 120,
+        "description": "Fruit mature.",
+        "actions": [
+          "Cut with shears"
+        ]
+      }
     ]
   },
   {
@@ -959,16 +1896,66 @@
     "common_issues": "Powdery mildew; poor pollination",
     "harvest_indicator": "Fruit 15-20cm long",
     "image_key": "zucchini_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=800",
     "source": "Web validation",
-    "tips": ["Requires significant space.", "Must hand pollinate female flowers using male flowers."],
-    "risks": [{"title": "Powdery Mildew", "description": "White spots on massive leaves.", "mitigation": "Good airflow and prune old leaves."}],
+    "tips": [
+      "Requires significant space.",
+      "Must hand pollinate female flowers using male flowers."
+    ],
+    "risks": [
+      {
+        "title": "Powdery Mildew",
+        "description": "White spots on massive leaves.",
+        "mitigation": "Good airflow and prune old leaves."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 5, "description": "Sow seeds.", "actions": ["Keep warm"]},
-      {"stage": "Seedling", "day_min": 6, "day_max": 15, "description": "Rapid growth.", "actions": ["EC 1.2"]},
-      {"stage": "Vegetative", "day_min": 16, "day_max": 35, "description": "Massive leaves.", "actions": ["EC 1.8", "Space properly"]},
-      {"stage": "Flowering", "day_min": 36, "day_max": 45, "description": "Large yellow flowers.", "actions": ["Hand pollinate"]},
-      {"stage": "Harvest", "day_min": 45, "day_max": 60, "description": "Fruit swells rapidly.", "actions": ["Harvest daily"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 5,
+        "description": "Sow seeds.",
+        "actions": [
+          "Keep warm"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 6,
+        "day_max": 15,
+        "description": "Rapid growth.",
+        "actions": [
+          "EC 1.2"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 16,
+        "day_max": 35,
+        "description": "Massive leaves.",
+        "actions": [
+          "EC 1.8",
+          "Space properly"
+        ]
+      },
+      {
+        "stage": "Flowering",
+        "day_min": 36,
+        "day_max": 45,
+        "description": "Large yellow flowers.",
+        "actions": [
+          "Hand pollinate"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 45,
+        "day_max": 60,
+        "description": "Fruit swells rapidly.",
+        "actions": [
+          "Harvest daily"
+        ]
+      }
     ]
   },
   {
@@ -998,15 +1985,57 @@
     "common_issues": "Root rot if water is stagnant",
     "harvest_indicator": "Stems are 15cm long",
     "image_key": "watercress_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1601390143948-e5d2aab2d2d0?w=800",
     "source": "Web validation",
-    "tips": ["Highly oxygenated water is critical.", "Cut leaving stubble for regrowth."],
-    "risks": [{"title": "Stagnant Water", "description": "Causes root rot and attracts pests.", "mitigation": "Use strong air stones."}],
+    "tips": [
+      "Highly oxygenated water is critical.",
+      "Cut leaving stubble for regrowth."
+    ],
+    "risks": [
+      {
+        "title": "Stagnant Water",
+        "description": "Causes root rot and attracts pests.",
+        "mitigation": "Use strong air stones."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 5, "description": "Sow in very wet medium.", "actions": ["Keep waterlogged"]},
-      {"stage": "Seedling", "day_min": 6, "day_max": 15, "description": "Tiny shoots.", "actions": ["EC 0.6"]},
-      {"stage": "Vegetative", "day_min": 16, "day_max": 30, "description": "Rapid spread.", "actions": ["EC 1.2", "Ensure oxygen"]},
-      {"stage": "Harvest", "day_min": 30, "day_max": 60, "description": "Continuous.", "actions": ["Cut stems"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 5,
+        "description": "Sow in very wet medium.",
+        "actions": [
+          "Keep waterlogged"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 6,
+        "day_max": 15,
+        "description": "Tiny shoots.",
+        "actions": [
+          "EC 0.6"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 16,
+        "day_max": 30,
+        "description": "Rapid spread.",
+        "actions": [
+          "EC 1.2",
+          "Ensure oxygen"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 30,
+        "day_max": 60,
+        "description": "Continuous.",
+        "actions": [
+          "Cut stems"
+        ]
+      }
     ]
   },
   {
@@ -1036,15 +2065,56 @@
     "common_issues": "Root rot if water is too warm",
     "harvest_indicator": "Outer leaves are large enough",
     "image_key": "swiss_chard_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1525059696034-4967a8e1dca2?w=800",
     "source": "Web validation",
-    "tips": ["Harvest outer leaves for cut-and-come-again yield.", "Keep roots below 24C."],
-    "risks": [{"title": "Root Rot", "description": "High reservoir temps lead to rot.", "mitigation": "Keep water cool."}],
+    "tips": [
+      "Harvest outer leaves for cut-and-come-again yield.",
+      "Keep roots below 24C."
+    ],
+    "risks": [
+      {
+        "title": "Root Rot",
+        "description": "High reservoir temps lead to rot.",
+        "mitigation": "Keep water cool."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 2, "description": "Sow in rockwool.", "actions": ["Keep moist"]},
-      {"stage": "Germination", "day_min": 3, "day_max": 7, "description": "Sprouts emerge.", "actions": ["Provide light"]},
-      {"stage": "Vegetative", "day_min": 8, "day_max": 35, "description": "Rapid leaf expansion.", "actions": ["EC 1.8-2.3"]},
-      {"stage": "Harvest", "day_min": 35, "day_max": 60, "description": "Harvest outer leaves.", "actions": ["Cut-and-come-again"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 2,
+        "description": "Sow in rockwool.",
+        "actions": [
+          "Keep moist"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 3,
+        "day_max": 7,
+        "description": "Sprouts emerge.",
+        "actions": [
+          "Provide light"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 8,
+        "day_max": 35,
+        "description": "Rapid leaf expansion.",
+        "actions": [
+          "EC 1.8-2.3"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 35,
+        "day_max": 60,
+        "description": "Harvest outer leaves.",
+        "actions": [
+          "Cut-and-come-again"
+        ]
+      }
     ]
   },
   {
@@ -1074,14 +2144,47 @@
     "common_issues": "Crown rot; slow early growth",
     "harvest_indicator": "Stalks are thick and firm",
     "image_key": "celery_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1589927986089-35812388d1f4?w=800",
     "source": "Web validation",
-    "tips": ["Keep basal plate above waterline to avoid crown rot.", "Requires patience as it is a slow grower."],
-    "risks": [{"title": "Crown Rot", "description": "Base rots if submerged.", "mitigation": "Keep base dry."}],
+    "tips": [
+      "Keep basal plate above waterline to avoid crown rot.",
+      "Requires patience as it is a slow grower."
+    ],
+    "risks": [
+      {
+        "title": "Crown Rot",
+        "description": "Base rots if submerged.",
+        "mitigation": "Keep base dry."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Propagation", "day_min": 0, "day_max": 14, "description": "Start from seed or stalk.", "actions": ["Patience required"]},
-      {"stage": "Vegetative", "day_min": 15, "day_max": 90, "description": "Stalks thicken.", "actions": ["EC 1.8-2.4"]},
-      {"stage": "Harvest", "day_min": 90, "day_max": 150, "description": "Stalks mature.", "actions": ["Cut at base"]}
+      {
+        "stage": "Propagation",
+        "day_min": 0,
+        "day_max": 14,
+        "description": "Start from seed or stalk.",
+        "actions": [
+          "Patience required"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 15,
+        "day_max": 90,
+        "description": "Stalks thicken.",
+        "actions": [
+          "EC 1.8-2.4"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 90,
+        "day_max": 150,
+        "description": "Stalks mature.",
+        "actions": [
+          "Cut at base"
+        ]
+      }
     ]
   },
   {
@@ -1111,15 +2214,56 @@
     "common_issues": "Poor pollination without airflow",
     "harvest_indicator": "Pods are tender and seeds not bulging",
     "image_key": "green_beans_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1567375698348-5d9d5ae99de0?w=800",
     "source": "Web validation",
-    "tips": ["Topping young plants encourages bushier growth.", "Shake plants gently to aid pollination indoors."],
-    "risks": [{"title": "Poor Yield", "description": "Lack of pollination.", "mitigation": "Use fans or shake plants."}],
+    "tips": [
+      "Topping young plants encourages bushier growth.",
+      "Shake plants gently to aid pollination indoors."
+    ],
+    "risks": [
+      {
+        "title": "Poor Yield",
+        "description": "Lack of pollination.",
+        "mitigation": "Use fans or shake plants."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 5, "description": "Sow in media.", "actions": ["Keep warm"]},
-      {"stage": "Vegetative", "day_min": 6, "day_max": 35, "description": "Fast vine/bush growth.", "actions": ["EC 1.8"]},
-      {"stage": "Flowering", "day_min": 36, "day_max": 50, "description": "Flowers appear.", "actions": ["Aid pollination"]},
-      {"stage": "Harvest", "day_min": 50, "day_max": 80, "description": "Pods mature.", "actions": ["Harvest frequently"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 5,
+        "description": "Sow in media.",
+        "actions": [
+          "Keep warm"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 6,
+        "day_max": 35,
+        "description": "Fast vine/bush growth.",
+        "actions": [
+          "EC 1.8"
+        ]
+      },
+      {
+        "stage": "Flowering",
+        "day_min": 36,
+        "day_max": 50,
+        "description": "Flowers appear.",
+        "actions": [
+          "Aid pollination"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 50,
+        "day_max": 80,
+        "description": "Pods mature.",
+        "actions": [
+          "Harvest frequently"
+        ]
+      }
     ]
   },
   {
@@ -1149,15 +2293,57 @@
     "common_issues": "Aphids; blossom drop from heat/stress",
     "harvest_indicator": "Color change and firm flesh",
     "image_key": "chili_pepper_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1548013146-72479768bada?w=800",
     "source": "Web validation",
-    "tips": ["Needs high EC during fruiting for heat and yield.", "Use heat mat for germination."],
-    "risks": [{"title": "Blossom Drop", "description": "Flowers fall off without setting fruit.", "mitigation": "Ensure stable temp and hand pollinate."}],
+    "tips": [
+      "Needs high EC during fruiting for heat and yield.",
+      "Use heat mat for germination."
+    ],
+    "risks": [
+      {
+        "title": "Blossom Drop",
+        "description": "Flowers fall off without setting fruit.",
+        "mitigation": "Ensure stable temp and hand pollinate."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 14, "description": "Germination is slow.", "actions": ["Use heat mat"]},
-      {"stage": "Vegetative", "day_min": 15, "day_max": 50, "description": "Bush growth.", "actions": ["EC 2.0"]},
-      {"stage": "Flowering", "day_min": 51, "day_max": 70, "description": "Flowers appear.", "actions": ["EC 3.0", "Hand pollinate"]},
-      {"stage": "Harvest", "day_min": 70, "day_max": 100, "description": "Fruit colors up.", "actions": ["Harvest with shears"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 14,
+        "description": "Germination is slow.",
+        "actions": [
+          "Use heat mat"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 15,
+        "day_max": 50,
+        "description": "Bush growth.",
+        "actions": [
+          "EC 2.0"
+        ]
+      },
+      {
+        "stage": "Flowering",
+        "day_min": 51,
+        "day_max": 70,
+        "description": "Flowers appear.",
+        "actions": [
+          "EC 3.0",
+          "Hand pollinate"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 70,
+        "day_max": 100,
+        "description": "Fruit colors up.",
+        "actions": [
+          "Harvest with shears"
+        ]
+      }
     ]
   },
   {
@@ -1187,14 +2373,47 @@
     "common_issues": "Root rot from overwatering",
     "harvest_indicator": "Stems are 10-15cm",
     "image_key": "rosemary_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=800",
     "source": "Web validation",
-    "tips": ["Best started from cuttings.", "Prefers slightly drier roots; ensure excellent aeration."],
-    "risks": [{"title": "Root Rot", "description": "Roots drown easily.", "mitigation": "Avoid constant soaking."}],
+    "tips": [
+      "Best started from cuttings.",
+      "Prefers slightly drier roots; ensure excellent aeration."
+    ],
+    "risks": [
+      {
+        "title": "Root Rot",
+        "description": "Roots drown easily.",
+        "mitigation": "Avoid constant soaking."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Propagation", "day_min": 0, "day_max": 20, "description": "Root cuttings.", "actions": ["Keep humid but not wet"]},
-      {"stage": "Vegetative", "day_min": 21, "day_max": 40, "description": "Slow growth.", "actions": ["EC 1.4"]},
-      {"stage": "Harvest", "day_min": 40, "day_max": 70, "description": "Woody stems form.", "actions": ["Prune tips regularly"]}
+      {
+        "stage": "Propagation",
+        "day_min": 0,
+        "day_max": 20,
+        "description": "Root cuttings.",
+        "actions": [
+          "Keep humid but not wet"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 21,
+        "day_max": 40,
+        "description": "Slow growth.",
+        "actions": [
+          "EC 1.4"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 40,
+        "day_max": 70,
+        "description": "Woody stems form.",
+        "actions": [
+          "Prune tips regularly"
+        ]
+      }
     ]
   },
   {
@@ -1224,14 +2443,47 @@
     "common_issues": "Slow early growth",
     "harvest_indicator": "Leaves are large enough to pick",
     "image_key": "sage_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1543362906-acfc16c67564?w=800",
     "source": "Web validation",
-    "tips": ["Resilient but needs consistent nutrients.", "Harvest before flowering."],
-    "risks": [{"title": "Mildew", "description": "Fungal issues in high humidity.", "mitigation": "Ensure good airflow."}],
+    "tips": [
+      "Resilient but needs consistent nutrients.",
+      "Harvest before flowering."
+    ],
+    "risks": [
+      {
+        "title": "Mildew",
+        "description": "Fungal issues in high humidity.",
+        "mitigation": "Ensure good airflow."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 10, "description": "Start seeds or cuttings.", "actions": ["Keep moist"]},
-      {"stage": "Vegetative", "day_min": 11, "day_max": 40, "description": "Leaves develop.", "actions": ["EC 1.4"]},
-      {"stage": "Harvest", "day_min": 40, "day_max": 70, "description": "Continuous harvest.", "actions": ["Cut leaves as needed"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 10,
+        "description": "Start seeds or cuttings.",
+        "actions": [
+          "Keep moist"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 11,
+        "day_max": 40,
+        "description": "Leaves develop.",
+        "actions": [
+          "EC 1.4"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 40,
+        "day_max": 70,
+        "description": "Continuous harvest.",
+        "actions": [
+          "Cut leaves as needed"
+        ]
+      }
     ]
   },
   {
@@ -1261,14 +2513,47 @@
     "common_issues": "Slow seed germination",
     "harvest_indicator": "Stems are 10-15cm tall",
     "image_key": "parsley_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1591280063444-d3c514eb6e13?w=800",
     "source": "Web validation",
-    "tips": ["Very beginner-friendly.", "Responds well to cut-and-come-again."],
-    "risks": [{"title": "Slow germination", "description": "Seeds take up to 3 weeks.", "mitigation": "Soak seeds overnight."}],
+    "tips": [
+      "Very beginner-friendly.",
+      "Responds well to cut-and-come-again."
+    ],
+    "risks": [
+      {
+        "title": "Slow germination",
+        "description": "Seeds take up to 3 weeks.",
+        "mitigation": "Soak seeds overnight."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 14, "description": "Sow seeds.", "actions": ["Patience"]},
-      {"stage": "Vegetative", "day_min": 15, "day_max": 30, "description": "Rapid growth.", "actions": ["EC 1.4"]},
-      {"stage": "Harvest", "day_min": 30, "day_max": 50, "description": "Mature leaves.", "actions": ["Harvest outer stems"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 14,
+        "description": "Sow seeds.",
+        "actions": [
+          "Patience"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 15,
+        "day_max": 30,
+        "description": "Rapid growth.",
+        "actions": [
+          "EC 1.4"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 30,
+        "day_max": 50,
+        "description": "Mature leaves.",
+        "actions": [
+          "Harvest outer stems"
+        ]
+      }
     ]
   },
   {
@@ -1298,15 +2583,58 @@
     "common_issues": "Vines breaking under fruit weight; powdery mildew",
     "harvest_indicator": "Fruit slips easily from vine; sweet aroma",
     "image_key": "melon_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1571575173700-afb9492e6a50?w=800",
     "source": "Web validation",
-    "tips": ["Crucial to use slings to support fruit.", "Needs manual pollination."],
-    "risks": [{"title": "Vine Stress", "description": "Heavy fruit breaks vine.", "mitigation": "Use hammocks/slings for fruit."}],
+    "tips": [
+      "Crucial to use slings to support fruit.",
+      "Needs manual pollination."
+    ],
+    "risks": [
+      {
+        "title": "Vine Stress",
+        "description": "Heavy fruit breaks vine.",
+        "mitigation": "Use hammocks/slings for fruit."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 5, "description": "Sow in warm media.", "actions": ["Keep at 25C"]},
-      {"stage": "Vegetative", "day_min": 6, "day_max": 40, "description": "Vining.", "actions": ["EC 2.0", "Trellis vines"]},
-      {"stage": "Flowering", "day_min": 41, "day_max": 60, "description": "Flowers appear.", "actions": ["Hand pollinate", "EC 2.5"]},
-      {"stage": "Harvest", "day_min": 70, "day_max": 100, "description": "Fruit ripens.", "actions": ["EC 3.0 for sweetness"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 5,
+        "description": "Sow in warm media.",
+        "actions": [
+          "Keep at 25C"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 6,
+        "day_max": 40,
+        "description": "Vining.",
+        "actions": [
+          "EC 2.0",
+          "Trellis vines"
+        ]
+      },
+      {
+        "stage": "Flowering",
+        "day_min": 41,
+        "day_max": 60,
+        "description": "Flowers appear.",
+        "actions": [
+          "Hand pollinate",
+          "EC 2.5"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 70,
+        "day_max": 100,
+        "description": "Fruit ripens.",
+        "actions": [
+          "EC 3.0 for sweetness"
+        ]
+      }
     ]
   },
   {
@@ -1336,15 +2664,57 @@
     "common_issues": "Bolting in heat; aphids",
     "harvest_indicator": "Head is tight and green",
     "image_key": "broccoli_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?w=800",
     "source": "Web validation",
-    "tips": ["Heavy feeder, requires high EC.", "Keep temperatures low to avoid bitter bolting."],
-    "risks": [{"title": "Bolting", "description": "Premature flowering from heat.", "mitigation": "Keep ambient temps below 24C."}],
+    "tips": [
+      "Heavy feeder, requires high EC.",
+      "Keep temperatures low to avoid bitter bolting."
+    ],
+    "risks": [
+      {
+        "title": "Bolting",
+        "description": "Premature flowering from heat.",
+        "mitigation": "Keep ambient temps below 24C."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 5, "description": "Sow seeds.", "actions": ["Keep cool"]},
-      {"stage": "Vegetative", "day_min": 6, "day_max": 50, "description": "Large canopy grows.", "actions": ["EC 2.5", "Space plants"]},
-      {"stage": "Heading", "day_min": 51, "day_max": 75, "description": "Crown forms.", "actions": ["EC 3.5"]},
-      {"stage": "Harvest", "day_min": 60, "day_max": 90, "description": "Harvest main head.", "actions": ["Cut stalk"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 5,
+        "description": "Sow seeds.",
+        "actions": [
+          "Keep cool"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 6,
+        "day_max": 50,
+        "description": "Large canopy grows.",
+        "actions": [
+          "EC 2.5",
+          "Space plants"
+        ]
+      },
+      {
+        "stage": "Heading",
+        "day_min": 51,
+        "day_max": 75,
+        "description": "Crown forms.",
+        "actions": [
+          "EC 3.5"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 60,
+        "day_max": 90,
+        "description": "Harvest main head.",
+        "actions": [
+          "Cut stalk"
+        ]
+      }
     ]
   },
   {
@@ -1374,15 +2744,57 @@
     "common_issues": "Head cracking from uneven watering",
     "harvest_indicator": "Head is solid and firm to touch",
     "image_key": "cabbage_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?w=800",
     "source": "Web validation",
-    "tips": ["Requires significant space.", "Heavy feeder that depletes water quickly."],
-    "risks": [{"title": "Head Cracking", "description": "Sudden influx of water causes splitting.", "mitigation": "Keep EC and water levels very consistent."}],
+    "tips": [
+      "Requires significant space.",
+      "Heavy feeder that depletes water quickly."
+    ],
+    "risks": [
+      {
+        "title": "Head Cracking",
+        "description": "Sudden influx of water causes splitting.",
+        "mitigation": "Keep EC and water levels very consistent."
+      }
+    ],
     "growth_stages": [
-      {"stage": "Sowing", "day_min": 0, "day_max": 5, "description": "Sow seeds.", "actions": ["Keep cool"]},
-      {"stage": "Vegetative", "day_min": 6, "day_max": 60, "description": "Massive leaves.", "actions": ["EC 2.0", "Top up water often"]},
-      {"stage": "Heading", "day_min": 61, "day_max": 80, "description": "Head firms up.", "actions": ["EC 2.8"]},
-      {"stage": "Harvest", "day_min": 70, "day_max": 100, "description": "Head is solid.", "actions": ["Cut at base"]}
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 5,
+        "description": "Sow seeds.",
+        "actions": [
+          "Keep cool"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 6,
+        "day_max": 60,
+        "description": "Massive leaves.",
+        "actions": [
+          "EC 2.0",
+          "Top up water often"
+        ]
+      },
+      {
+        "stage": "Heading",
+        "day_min": 61,
+        "day_max": 80,
+        "description": "Head firms up.",
+        "actions": [
+          "EC 2.8"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 70,
+        "day_max": 100,
+        "description": "Head is solid.",
+        "actions": [
+          "Cut at base"
+        ]
+      }
     ]
   }
 ]

@@ -255,39 +255,138 @@ export default function HomeScreen() {
 					</View>
 				</View>
 
-				{/* Daily Check-in */}
+				{/* Welcome + Quick Actions */}
 				<View style={{ paddingHorizontal: spacing.md }}>
 					<Card>
-						<View
-							style={{
-								flexDirection: "row",
-								gap: spacing.sm,
-								alignItems: "center",
-							}}
-						>
+						<View style={{ gap: spacing.md }}>
+							{/* Welcome row */}
 							<View
 								style={{
-									width: 64,
-									height: 64,
-									borderRadius: radii.lg,
-									backgroundColor: colors.successLight,
+									flexDirection: "row",
+									gap: spacing.sm,
 									alignItems: "center",
-									justifyContent: "center",
 								}}
 							>
-								<Ionicons name="leaf" size={32} color={colors.primaryLight} />
+								<View
+									style={{
+										width: 56,
+										height: 56,
+										borderRadius: radii.lg,
+										backgroundColor: colors.successLight,
+										alignItems: "center",
+										justifyContent: "center",
+									}}
+								>
+									<Ionicons
+										name="leaf"
+										size={28}
+										color={colors.primaryLight}
+									/>
+								</View>
+								<View style={{ flex: 1 }}>
+									<Text weight="bold" size="md">
+										{`"${t("home.checkin_quote")}"`}
+									</Text>
+									<Text size="sm" tone="muted">
+										{t("home.checkin_summary", {
+											tasks: String(tasksPending),
+											harvests: String(harvestReady.length),
+											low: String(lowStock.length),
+										})}
+									</Text>
+								</View>
 							</View>
-							<View style={{ flex: 1 }}>
-								<Text weight="bold" size="md">
-									{`"${t("home.checkin_quote")}"`}
-								</Text>
-								<Text size="sm" tone="muted">
-									{t("home.checkin_summary", {
-										tasks: String(tasksPending),
-										harvests: String(harvestReady.length),
-										low: String(lowStock.length),
-									})}
-								</Text>
+
+							{/* Hero CTA: Log Reading */}
+							{/* TODO: route to a dedicated readings entry once the endpoint exists. */}
+							<Pressable
+								accessibilityRole="link"
+								accessibilityLabel={t("home.qa_log_reading")}
+								onPress={() => router.push("/checklist")}
+								style={({ pressed }) => ({
+									flexDirection: "row",
+									alignItems: "center",
+									gap: spacing.md,
+									padding: spacing.md,
+									borderRadius: radii.lg,
+									backgroundColor: pressed
+										? colors.glassHover
+										: colors.glass,
+									borderWidth: 1,
+									borderColor: colors.border,
+								})}
+							>
+								<View
+									style={{
+										width: 44,
+										height: 44,
+										borderRadius: radii.md,
+										backgroundColor: colors.infoLight,
+										alignItems: "center",
+										justifyContent: "center",
+									}}
+								>
+									<Ionicons name="water" size={22} color={colors.info} />
+								</View>
+								<View style={{ flex: 1, gap: 2 }}>
+									<Text weight="bold" size="md">
+										{t("home.qa_log_reading")}
+									</Text>
+									<Text size="sm" tone="muted">
+										{t("home.qa_log_reading_sub")}
+									</Text>
+								</View>
+								<Ionicons
+									name="chevron-forward"
+									size={20}
+									color={colors.textMuted}
+								/>
+							</Pressable>
+
+							{/* Secondary action chips */}
+							<View
+								style={{
+									flexDirection: "row",
+									flexWrap: "wrap",
+									gap: spacing.xs,
+								}}
+							>
+								<QuickActionChip
+									icon="add"
+									iconColor={colors.primaryLight}
+									label={t("home.qa_new_batch")}
+									href="/batch/new"
+								/>
+								<QuickActionChip
+									icon="trending-up"
+									iconColor={colors.salesAccent}
+									label={t("home.qa_add_sale")}
+									href="/sale-new"
+								/>
+								<QuickActionChip
+									icon="cube"
+									iconColor={colors.restockAccent}
+									label={t("home.qa_restock")}
+									href="/inventory-new"
+								/>
+								<QuickActionChip
+									icon="flash"
+									iconColor={colors.primaryLight}
+									label={t("home.qa_tasks")}
+									href="/checklist"
+								/>
+								<QuickActionChip
+									icon="book"
+									iconColor={colors.warning}
+									label={t("home.qa_crop_guide")}
+									href="/library/crops"
+								/>
+								<QuickActionChip
+									icon="library"
+									iconColor={colors.warning}
+									label={t("home.qa_library")}
+									href="/library"
+								/>
 							</View>
 						</View>
 					</Card>
@@ -553,107 +652,6 @@ export default function HomeScreen() {
 					</Card>
 				</View>
 
-				{/* Quick Actions */}
-				<View
-					style={{
-						paddingHorizontal: spacing.md,
-						gap: spacing.sm,
-					}}
-				>
-					<Text size="lg" weight="bold">
-						{t("home.quick_actions")}
-					</Text>
-
-					{/* TODO: route to a dedicated readings entry once the endpoint exists. */}
-					<Pressable
-						accessibilityRole="link"
-						accessibilityLabel={t("home.qa_log_reading")}
-						onPress={() => router.push("/checklist")}
-						style={({ pressed }) => ({
-							flexDirection: "row",
-							alignItems: "center",
-							gap: spacing.md,
-							padding: spacing.md,
-							borderRadius: radii.lg,
-							backgroundColor: pressed
-								? colors.glassHover
-								: colors.surfaceVariant,
-							borderWidth: 1,
-							borderColor: colors.border,
-						})}
-					>
-						<View
-							style={{
-								width: 48,
-								height: 48,
-								borderRadius: radii.md,
-								backgroundColor: colors.infoLight,
-								alignItems: "center",
-								justifyContent: "center",
-							}}
-						>
-							<Ionicons name="water" size={24} color={colors.info} />
-						</View>
-						<View style={{ flex: 1, gap: 2 }}>
-							<Text weight="bold" size="md">
-								{t("home.qa_log_reading")}
-							</Text>
-							<Text size="sm" tone="muted">
-								{t("home.qa_log_reading_sub")}
-							</Text>
-						</View>
-						<Ionicons
-							name="chevron-forward"
-							size={20}
-							color={colors.textMuted}
-						/>
-					</Pressable>
-
-					<View
-						style={{
-							flexDirection: "row",
-							flexWrap: "wrap",
-							gap: spacing.xs,
-						}}
-					>
-						<QuickActionChip
-							icon="add"
-							iconColor={colors.primaryLight}
-							label={t("home.qa_new_batch")}
-							href="/batch/new"
-						/>
-						<QuickActionChip
-							icon="trending-up"
-							iconColor={colors.salesAccent}
-							label={t("home.qa_add_sale")}
-							href="/sale-new"
-						/>
-						<QuickActionChip
-							icon="cube"
-							iconColor={colors.restockAccent}
-							label={t("home.qa_restock")}
-							href="/inventory-new"
-						/>
-						<QuickActionChip
-							icon="flash"
-							iconColor={colors.primaryLight}
-							label={t("home.qa_tasks")}
-							href="/checklist"
-						/>
-						<QuickActionChip
-							icon="book"
-							iconColor={colors.warning}
-							label={t("home.qa_crop_guide")}
-							href="/library/crops"
-						/>
-						<QuickActionChip
-							icon="library"
-							iconColor={colors.warning}
-							label={t("home.qa_library")}
-							href="/library"
-						/>
-					</View>
-				</View>
 			</ScrollView>
 		</GradientBackground>
 	);

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { useMemo, useState } from "react";
 import { FlatList, Image, Pressable, View } from "react-native";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
@@ -81,22 +82,12 @@ export default function SetupsScreen() {
 					My Setups
 				</Text>
 				<Link href="/setup/new" asChild>
-					<Pressable
-						style={({ pressed }) => ({
-							flexDirection: "row",
-							alignItems: "center",
-							gap: spacing.xxs,
-							backgroundColor: pressed
-								? colors.buttonSolidActive
-								: colors.buttonSolidBg,
-							paddingHorizontal: spacing.md,
-							paddingVertical: 10,
-							borderRadius: 999,
-						})}
-					>
-						<Ionicons name="add" size={18} color="#FFFFFF" />
-						<Text weight="semibold">Add</Text>
-					</Pressable>
+					<Button
+						size="sm"
+						label="Add"
+						leftIcon={<Ionicons name="add" size={18} color="#FFFFFF" />}
+						style={{ borderRadius: 999, flexShrink: 0 }}
+					/>
 				</Link>
 			</View>
 

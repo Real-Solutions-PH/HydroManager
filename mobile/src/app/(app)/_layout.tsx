@@ -1,7 +1,5 @@
 import { Redirect, Tabs, usePathname } from "expo-router";
 import {
-	BookOpen,
-	CheckSquare,
 	DollarSign,
 	Grid3x3,
 	Home,
@@ -29,10 +27,8 @@ const TAB_ITEMS: InteractiveMenuItem[] = [
 	{ key: "index", label: "Home", icon: Home },
 	{ key: "setups", label: "Setups", icon: Grid3x3 },
 	{ key: "seeds", label: "Seeds", icon: Sprout },
-	{ key: "checklist", label: "Tasks", icon: CheckSquare },
 	{ key: "inventory", label: "Inventory", icon: Package },
 	{ key: "sales", label: "Sales", icon: DollarSign },
-	{ key: "library", label: "Library", icon: BookOpen },
 ];
 
 export default function AppLayout() {
@@ -82,10 +78,10 @@ export default function AppLayout() {
 				<Tabs.Screen name="index" options={{ title: "Home" }} />
 				<Tabs.Screen name="setups" options={{ title: "Setups" }} />
 				<Tabs.Screen name="seeds" options={{ title: "Seeds" }} />
-				<Tabs.Screen name="checklist" options={{ title: "Tasks" }} />
+				<Tabs.Screen name="checklist" options={HIDDEN_TAB} />
 				<Tabs.Screen name="inventory" options={{ title: "Inventory" }} />
 				<Tabs.Screen name="sales" options={{ title: "Sales" }} />
-				<Tabs.Screen name="library" options={{ title: "Library" }} />
+				<Tabs.Screen name="library" options={HIDDEN_TAB} />
 				<Tabs.Screen name="settings" options={HIDDEN_TAB} />
 				<Tabs.Screen name="inventory-new" options={HIDDEN_TAB} />
 				<Tabs.Screen name="inventory/[id]" options={HIDDEN_TAB} />
