@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
 	Alert,
@@ -17,6 +16,7 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 import { useAuth } from "@/hooks/useAuth";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { paymongoApi, usersApi } from "@/lib/hydro-api";
@@ -30,6 +30,7 @@ export default function SettingsScreen() {
 	const setLocale = useI18n((s) => s.setLocale);
 	const { logout } = useAuth();
 	const qc = useQueryClient();
+	const goBack = useBack();
 
 	const me = useQuery({ queryKey: ["me"], queryFn: () => usersApi.me() });
 
@@ -99,7 +100,7 @@ export default function SettingsScreen() {
 						marginBottom: spacing.md,
 					}}
 				>
-					<Pressable onPress={() => router.back()}>
+					<Pressable onPress={goBack}>
 						<Ionicons name="arrow-back" size={24} color={colors.text} />
 					</Pressable>
 					<Text size="xxl" weight="bold">
@@ -235,10 +236,7 @@ export default function SettingsScreen() {
 						padding: spacing.lg,
 					}}
 				>
-					<Card
-						variant="outlined"
-						style={{ backgroundColor: colors.bgMid }}
-					>
+					<Card variant="outlined" style={{ backgroundColor: colors.bgMid }}>
 						<Text size="lg" weight="bold" style={{ marginBottom: spacing.sm }}>
 							{t("settings.edit_profile")}
 						</Text>

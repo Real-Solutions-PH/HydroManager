@@ -1,0 +1,205 @@
+[
+  {
+    "name": "Powdery Mildew",
+    "kind": "disease",
+    "affected_crops": ["Cucumber", "Bell Pepper", "Tomato", "Basil"],
+    "symptoms": [
+      "White powdery patches on leaf surface",
+      "Yellowing and curling of older leaves",
+      "Reduced fruit set"
+    ],
+    "causes": [
+      "High humidity at night with cool temperatures",
+      "Poor air circulation between plants",
+      "Wet leaf surfaces for extended periods"
+    ],
+    "prevention": [
+      "Maintain >40% spacing between plants",
+      "Run a circulation fan during night hours",
+      "Avoid wetting leaves when topping up reservoirs"
+    ],
+    "treatment": [
+      "Spray potassium bicarbonate (5g/L) every 5 days",
+      "Apply diluted milk spray (1:9 with water) weekly",
+      "Remove and destroy heavily infected leaves"
+    ],
+    "severity": "medium",
+    "image_url": "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=800",
+    "image_key": null,
+    "source": "Plantix, DA-BPI"
+  },
+  {
+    "name": "Spider Mites",
+    "kind": "pest",
+    "affected_crops": ["Cucumber", "Tomato", "Eggplant", "Strawberry"],
+    "symptoms": [
+      "Tiny yellow stippling on upper leaf surface",
+      "Fine webbing under leaves",
+      "Bronzing and leaf drop in heavy infestations"
+    ],
+    "causes": [
+      "Hot dry conditions (>28C, <50% humidity)",
+      "Dust accumulation on foliage",
+      "Stressed plants from inconsistent watering"
+    ],
+    "prevention": [
+      "Maintain humidity 60% in fruiting crops",
+      "Hose down foliage weekly to dislodge mites",
+      "Inspect new plants in quarantine before adding to mainline"
+    ],
+    "treatment": [
+      "Release predatory mite Phytoseiulus persimilis",
+      "Spray neem oil (5ml/L) at dusk every 5 days for 3 cycles",
+      "Insecticidal soap targeting leaf undersides"
+    ],
+    "severity": "high",
+    "image_url": "https://images.unsplash.com/photo-1599598425947-5301bcd91229?w=800",
+    "image_key": null,
+    "source": "IPM-CRSP, Real Solutions PH field notes"
+  },
+  {
+    "name": "Aphids",
+    "kind": "pest",
+    "affected_crops": ["Lettuce", "Pechay", "Bell Pepper", "Mustasa"],
+    "symptoms": [
+      "Clusters of green, black, or grey insects on new growth",
+      "Sticky honeydew on leaves",
+      "Distorted and curled new shoots"
+    ],
+    "causes": [
+      "Untreated incoming seedlings",
+      "Excess nitrogen feeding lush soft growth",
+      "Lack of natural predators in indoor systems"
+    ],
+    "prevention": [
+      "Yellow sticky traps every 2 sqm",
+      "Quarantine new transplants for 5 days",
+      "Avoid over-fertilization with nitrogen"
+    ],
+    "treatment": [
+      "Release ladybugs or lacewing larvae",
+      "Spray insecticidal soap on infested clusters",
+      "Strong water spray to dislodge colonies (lettuce only)"
+    ],
+    "severity": "medium",
+    "image_url": "https://images.unsplash.com/photo-1602211844066-d3bb556e983b?w=800",
+    "image_key": null,
+    "source": "DA-BPI"
+  },
+  {
+    "name": "Pythium Root Rot",
+    "kind": "disease",
+    "affected_crops": ["Lettuce", "Basil", "Pechay", "Strawberry"],
+    "symptoms": [
+      "Brown slimy roots instead of healthy white",
+      "Sudden wilting in midday despite full reservoir",
+      "Stunted growth and yellow lower leaves"
+    ],
+    "causes": [
+      "Reservoir water above 24C",
+      "Low dissolved oxygen",
+      "Contaminated tools or media"
+    ],
+    "prevention": [
+      "Chill reservoir to <22C with shade or water chiller",
+      "Add air stones and adequate aeration",
+      "Sanitize channels with 1% H2O2 between batches"
+    ],
+    "treatment": [
+      "Add 35% hydrogen peroxide at 1ml/L weekly",
+      "Trim affected roots, transplant to clean channel",
+      "Inoculate with Trichoderma harzianum biocontrol"
+    ],
+    "severity": "high",
+    "image_url": "https://images.unsplash.com/photo-1598170845058-c2cd23ee2d29?w=800",
+    "image_key": null,
+    "source": "Cornell CALS hydroponics extension"
+  },
+  {
+    "name": "Calcium Deficiency (Tip Burn / BER)",
+    "kind": "deficiency",
+    "affected_crops": ["Lettuce", "Tomato", "Bell Pepper", "Strawberry"],
+    "symptoms": [
+      "Brown crispy tips on young leaves (tip burn)",
+      "Sunken black spot at fruit base (blossom-end rot)",
+      "Stunted new growth"
+    ],
+    "causes": [
+      "EC too high blocking Ca uptake",
+      "Humidity too low slowing transpiration",
+      "Inconsistent watering on Dutch Bucket"
+    ],
+    "prevention": [
+      "Cap EC per crop stage chart",
+      "Maintain humidity 55-70%",
+      "Add Cal-Mag supplement weekly during fruiting"
+    ],
+    "treatment": [
+      "Spray 0.5% calcium nitrate foliar at dusk",
+      "Lower EC by 0.3 and add Cal-Mag",
+      "Improve airflow with circulation fans"
+    ],
+    "severity": "medium",
+    "image_url": "https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=800",
+    "image_key": null,
+    "source": "DOST-PCAARRD nutrient guide"
+  },
+  {
+    "name": "Whitefly",
+    "kind": "pest",
+    "affected_crops": ["Tomato", "Bell Pepper", "Eggplant", "Cucumber"],
+    "symptoms": [
+      "Tiny white moth-like insects fly up when leaves disturbed",
+      "Yellow stippling and sticky honeydew on leaves",
+      "Sooty mold on lower foliage"
+    ],
+    "causes": [
+      "Untreated nursery stock",
+      "Open vents without insect screen",
+      "Warm dry greenhouse conditions"
+    ],
+    "prevention": [
+      "Install 50-mesh insect screens on vents",
+      "Yellow sticky traps to monitor",
+      "Reflective mulch under fruiting plants"
+    ],
+    "treatment": [
+      "Release Encarsia formosa parasitic wasp",
+      "Insecticidal soap or neem oil at 5-day intervals",
+      "Vacuum adults early morning when sluggish"
+    ],
+    "severity": "high",
+    "image_url": "https://images.unsplash.com/photo-1572441713132-51c75654db73?w=800",
+    "image_key": null,
+    "source": "IPM-CRSP, Plantix"
+  },
+  {
+    "name": "Fusarium Wilt",
+    "kind": "disease",
+    "affected_crops": ["Basil", "Tomato", "Cucumber"],
+    "symptoms": [
+      "Sudden one-sided wilting of leaves",
+      "Brown vascular streaks inside stems",
+      "Plant collapses within days"
+    ],
+    "causes": [
+      "Soilborne fungal spores entering reservoir",
+      "Reused contaminated rockwool or media",
+      "Water temperature above 26C"
+    ],
+    "prevention": [
+      "Use new sterile media per batch",
+      "Choose Fusarium-resistant cultivars",
+      "Keep reservoir below 24C"
+    ],
+    "treatment": [
+      "Remove and destroy infected plants immediately",
+      "Sanitize entire system with 1% bleach then rinse 3x",
+      "Inoculate clean system with Trichoderma"
+    ],
+    "severity": "high",
+    "image_url": "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=800",
+    "image_key": null,
+    "source": "Cornell CALS"
+  }
+]

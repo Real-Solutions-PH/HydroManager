@@ -17,10 +17,21 @@ def get_multi(
     include_archived: bool = False,
     skip: int = 0,
     limit: int = 100,
-) -> tuple[list[Setup], int]:
+) -> tuple[list[tuple[Setup, str | None]], int]:
     count_q = select(func.count()).select_from(Setup)
+    photo_subq = (
+        select(SetupPhoto.storage_url)
+        .where(SetupPhoto.setup_id == Setup.id)
+        .order_by(col(SetupPhoto.uploaded_at).desc())
+        .limit(1)
+        .correlate(Setup)
+        .scalar_subquery()
+    )
     list_q = (
-        select(Setup).order_by(col(Setup.created_at).desc()).offset(skip).limit(limit)
+        select(Setup, photo_subq)
+        .order_by(col(Setup.created_at).desc())
+        .offset(skip)
+        .limit(limit)
     )
     if owner_id is not None:
         count_q = count_q.where(Setup.owner_id == owner_id)
@@ -30,7 +41,7 @@ def get_multi(
         list_q = list_q.where(Setup.archived_at.is_(None))  # type: ignore
     count = session.exec(count_q).one()
     rows = session.exec(list_q).all()
-    return list(rows), count
+    return [(setup, url) for setup, url in rows], count
 
 
 def create(*, session: Session, setup: Setup, slot_codes: list[str]) -> Setup:

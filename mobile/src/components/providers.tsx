@@ -1,3 +1,4 @@
+import { PortalHost } from "@rn-primitives/portal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -38,6 +39,7 @@ export function Providers({ children }: ProvidersProps) {
 				<QueryClientProvider client={queryClient}>
 					<AppInitializer />
 					{children}
+					<PortalHost />
 					<Toaster />
 				</QueryClientProvider>
 			</SafeAreaProvider>

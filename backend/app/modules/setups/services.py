@@ -2,13 +2,19 @@ import uuid
 from datetime import datetime, timezone
 
 from fastapi import HTTPException
-from sqlmodel import Session
+from sqlmodel import Session, col, select
 
 from app.modules.hydro_common.quota import enforce_setup_limit
 from app.modules.iam.users.models import User
 from app.modules.setups import repo as setups_repo
-from app.modules.setups.models import Setup, SetupPhoto
-from app.modules.setups.schema import SetupCreate, SetupPhotoCreate, SetupUpdate
+from app.modules.setups.models import Setup, SetupPhoto, SetupSlot
+from app.modules.setups.schema import (
+    SetupCreate,
+    SetupPhotoCreate,
+    SetupType,
+    SetupUpdate,
+    SlotStatus,
+)
 
 
 def _default_slot_codes(prefix: str, count: int) -> list[str]:
@@ -38,7 +44,7 @@ def list_setups(
     include_archived: bool = False,
     skip: int = 0,
     limit: int = 100,
-) -> tuple[list[Setup], int]:
+) -> tuple[list[tuple[Setup, str | None]], int]:
     owner_id = None if current_user.is_superuser else current_user.id
     return setups_repo.get_multi(
         session=session,
@@ -73,6 +79,56 @@ def create_setup(
     return setups_repo.create(session=session, setup=db, slot_codes=slot_codes)
 
 
+def _resize_slots(
+    *, session: Session, setup: Setup, new_count: int, type_value: str
+) -> None:
+    if new_count == setup.slot_count:
+        return
+    slots_q = (
+        select(SetupSlot)
+        .where(SetupSlot.setup_id == setup.id)
+        .order_by(col(SetupSlot.position_index).asc())
+    )
+    slots = list(session.exec(slots_q).all())
+    if new_count > setup.slot_count:
+        prefix = _prefix_for(type_value)
+        for idx in range(setup.slot_count, new_count):
+            session.add(
+                SetupSlot(
+                    setup_id=setup.id,
+                    slot_code=f"{prefix}-{idx + 1:03d}",
+                    position_index=idx,
+                )
+            )
+    else:
+        to_remove = slots[new_count:]
+        for slot in to_remove:
+            if slot.batch_id is not None or slot.status != SlotStatus.EMPTY:
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        "Cannot shrink: trailing slots are occupied. "
+                        "Archive batches first."
+                    ),
+                )
+        for slot in to_remove:
+            session.delete(slot)
+
+
+def _rename_slot_codes(
+    *, session: Session, setup_id: uuid.UUID, type_value: str
+) -> None:
+    prefix = _prefix_for(type_value)
+    slots_q = (
+        select(SetupSlot)
+        .where(SetupSlot.setup_id == setup_id)
+        .order_by(col(SetupSlot.position_index).asc())
+    )
+    for slot in session.exec(slots_q).all():
+        slot.slot_code = f"{prefix}-{slot.position_index + 1:03d}"
+        session.add(slot)
+
+
 def update_setup(
     *,
     session: Session,
@@ -83,9 +139,30 @@ def update_setup(
     setup = get_setup(
         session=session, current_user=current_user, setup_id=setup_id
     )
-    return setups_repo.update(
-        session=session, setup=setup, update_data=data.model_dump(exclude_unset=True)
+    payload = data.model_dump(exclude_unset=True)
+    new_type = payload.get("type")
+    new_slot_count = payload.pop("slot_count", None)
+    type_for_codes = (
+        new_type.value if isinstance(new_type, SetupType)
+        else new_type if new_type
+        else setup.type.value
     )
+    if new_slot_count is not None:
+        _resize_slots(
+            session=session,
+            setup=setup,
+            new_count=new_slot_count,
+            type_value=type_for_codes,
+        )
+        payload["slot_count"] = new_slot_count
+    if new_type is not None:
+        _rename_slot_codes(
+            session=session, setup_id=setup.id, type_value=type_for_codes
+        )
+    elif new_slot_count is not None and new_slot_count > setup.slot_count:
+        # new slots already named with current prefix; nothing extra
+        pass
+    return setups_repo.update(session=session, setup=setup, update_data=payload)
 
 
 def archive_setup(
@@ -107,6 +184,10 @@ def delete_setup(
     setup = get_setup(
         session=session, current_user=current_user, setup_id=setup_id
     )
+    if setup.archived_at is None:
+        raise HTTPException(
+            status_code=400, detail="Archive setup before deleting"
+        )
     setups_repo.delete(session=session, setup=setup)
 
 

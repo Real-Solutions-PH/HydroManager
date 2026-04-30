@@ -94,7 +94,11 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER: EmailStr
     FIRST_SUPERUSER_PASSWORD: str
 
+    # Library seed data
+    LIBRARY_SEED_FORCE_REFRESH: bool = True
+
     MINIO_ENDPOINT: str = "http://minio:9000"
+    MINIO_PUBLIC_ENDPOINT: str | None = None
     MINIO_ROOT_USER: str = "minioadmin"
     MINIO_ROOT_PASSWORD: str = "minioadmin"
     MINIO_REGION: str = "us-east-1"

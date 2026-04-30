@@ -34,6 +34,10 @@ export const colors = {
 	errorLight: "rgba(239, 83, 80, 0.15)",
 	info: "#42A5F5",
 	infoLight: "rgba(66, 165, 245, 0.15)",
+	salesAccent: "#CE93D8",
+	salesAccentLight: "rgba(206, 147, 216, 0.15)",
+	restockAccent: "#80DEEA",
+	restockAccentLight: "rgba(128, 222, 234, 0.15)",
 } as const;
 
 export const gradientStops = [
@@ -75,6 +79,18 @@ export const inventoryCategoryMeta = {
 	equipment: { color: "#CE93D8", icon: "construct" },
 	packaging: { color: "#80DEEA", icon: "cube" },
 	other: { color: "rgba(255, 255, 255, 0.5)", icon: "ellipsis-horizontal" },
+} as const;
+
+export const produceStatusMeta = {
+	ready: { color: "#66BB6A", icon: "checkmark-circle", label: "Ready" },
+	reserved: { color: "#FFB74D", icon: "time", label: "Reserved" },
+	sold: { color: "rgba(255, 255, 255, 0.5)", icon: "cash", label: "Sold" },
+} as const;
+
+export const expiryStatusMeta = {
+	ok: { color: "#66BB6A", icon: "checkmark-circle", label: "OK" },
+	warning: { color: "#FFB74D", icon: "warning", label: "EXPIRES SOON" },
+	expired: { color: "#EF5350", icon: "alert-circle", label: "EXPIRED" },
 } as const;
 
 export const spacing = {

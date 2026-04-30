@@ -1,11 +1,12 @@
-import { Redirect, Tabs } from "expo-router";
+import { Redirect, Tabs, usePathname } from "expo-router";
 import {
-	CheckSquare,
 	DollarSign,
 	Grid3x3,
 	Home,
 	Package,
+	Sprout,
 } from "lucide-react-native";
+import { useEffect } from "react";
 import { View } from "react-native";
 import { AIChatFab } from "@/components/ai-chat";
 import { OfflineBanner } from "@/components/offline-banner";
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/interactive-menu";
 import { colors } from "@/constants/theme";
 import { useAuthStore } from "@/stores/auth-store";
+import { useNavHistoryStore } from "@/stores/nav-history-store";
 
 const HIDDEN_TAB = {
 	href: null,
@@ -24,13 +26,19 @@ const HIDDEN_TAB = {
 const TAB_ITEMS: InteractiveMenuItem[] = [
 	{ key: "index", label: "Home", icon: Home },
 	{ key: "setups", label: "Setups", icon: Grid3x3 },
-	{ key: "checklist", label: "Tasks", icon: CheckSquare },
+	{ key: "seeds", label: "Seeds", icon: Sprout },
 	{ key: "inventory", label: "Inventory", icon: Package },
 	{ key: "sales", label: "Sales", icon: DollarSign },
 ];
 
 export default function AppLayout() {
 	const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+	const pathname = usePathname();
+	const pushNav = useNavHistoryStore((s) => s.push);
+
+	useEffect(() => {
+		if (pathname) pushNav(pathname);
+	}, [pathname, pushNav]);
 
 	if (!isAuthenticated) return <Redirect href="/login" />;
 
@@ -69,12 +77,16 @@ export default function AppLayout() {
 			>
 				<Tabs.Screen name="index" options={{ title: "Home" }} />
 				<Tabs.Screen name="setups" options={{ title: "Setups" }} />
-				<Tabs.Screen name="checklist" options={{ title: "Tasks" }} />
+				<Tabs.Screen name="seeds" options={{ title: "Seeds" }} />
+				<Tabs.Screen name="checklist" options={HIDDEN_TAB} />
 				<Tabs.Screen name="inventory" options={{ title: "Inventory" }} />
 				<Tabs.Screen name="sales" options={{ title: "Sales" }} />
-				<Tabs.Screen name="crops" options={HIDDEN_TAB} />
+				<Tabs.Screen name="library" options={HIDDEN_TAB} />
 				<Tabs.Screen name="settings" options={HIDDEN_TAB} />
 				<Tabs.Screen name="inventory-new" options={HIDDEN_TAB} />
+				<Tabs.Screen name="inventory/[id]" options={HIDDEN_TAB} />
+				<Tabs.Screen name="produce-new" options={HIDDEN_TAB} />
+				<Tabs.Screen name="produce/[id]" options={HIDDEN_TAB} />
 				<Tabs.Screen name="sale-new" options={HIDDEN_TAB} />
 				<Tabs.Screen name="setup" options={HIDDEN_TAB} />
 				<Tabs.Screen name="batch" options={HIDDEN_TAB} />
