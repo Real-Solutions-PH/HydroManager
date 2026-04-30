@@ -1,7 +1,7 @@
 import axios, { type AxiosInstance } from "axios";
-import Constants from "expo-constants";
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
+import { config } from "@/lib/config";
 
 const ACCESS_TOKEN_KEY = "access_token";
 
@@ -23,10 +23,7 @@ const webStorage = {
 	},
 };
 
-export const API_URL =
-	process.env.EXPO_PUBLIC_API_URL ??
-	(Constants.expoConfig?.extra?.apiUrl as string | undefined) ??
-	"http://localhost:8000";
+export const API_URL = config.apiUrl;
 
 export async function getAccessToken(): Promise<string | null> {
 	try {
