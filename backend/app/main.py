@@ -1,3 +1,4 @@
+import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -24,9 +25,12 @@ if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
     sentry_sdk.init(dsn=str(settings.SENTRY_DSN), enable_tracing=True)
 
 
+IS_SERVERLESS = bool(os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    if settings.ENVIRONMENT == "local":
+    if not IS_SERVERLESS and settings.ENVIRONMENT == "local":
         ensure_bucket(settings.MINIO_DEFAULT_BUCKET)
         with Session(engine) as session:
             crops_repo.seed_if_empty(session=session)
