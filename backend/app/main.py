@@ -11,6 +11,7 @@ from app.api import v1_router
 from app.core.config import settings
 from app.core.db import engine
 from app.core.storage import ensure_bucket
+from app.logger import app_logger
 from app.modules.crops import repo as crops_repo
 from app.modules.library_guides import repo as guides_repo
 from app.modules.library_pests import repo as pests_repo
@@ -26,13 +27,20 @@ if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    ensure_bucket(settings.MINIO_DEFAULT_BUCKET)
-    if settings.OCR_ENABLED:
-        ensure_bucket(settings.OCR_BUCKET)
+    try:
+        ensure_bucket(settings.MINIO_DEFAULT_BUCKET)
+        if settings.OCR_ENABLED:
+            ensure_bucket(settings.OCR_BUCKET)
+    except Exception as exc:
+        app_logger.warning("Object storage unavailable, skipping bucket setup: %s", exc)
     with Session(engine) as session:
-        crops_repo.seed_if_empty(session=session)
-        guides_repo.seed_if_empty(session=session)
-        pests_repo.seed_if_empty(session=session)
+        try:
+            app_logger.info("Running seeding script")
+            crops_repo.seed_if_empty(session=session)
+            guides_repo.seed_if_empty(session=session)
+            pests_repo.seed_if_empty(session=session)
+        except Exception as e:
+            app_logger.warning("Seeding scripts didn't run properly")
     yield
 
 

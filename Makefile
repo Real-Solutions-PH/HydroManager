@@ -30,7 +30,10 @@ ps: ## List running containers
 # ---------------------------------------------------------------------------
 # Backend
 # ---------------------------------------------------------------------------
-.PHONY: backend-shell backend-lint backend-format backend-test backend-migrate backend-downgrade backend-revision backend-prestart
+.PHONY: backend-dev backend-shell backend-lint backend-format backend-test backend-migrate backend-downgrade backend-revision backend-prestart
+
+backend-dev: ## Run backend via uvicorn with hot-reload (host=0.0.0.0 port=8000)
+	cd backend && uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 backend-shell: ## Open a bash shell in the backend container
 	docker compose exec backend bash
@@ -54,7 +57,7 @@ backend-revision: ## Create a new Alembic migration (usage: make backend-revisio
 	cd backend && uv run alembic revision --autogenerate -m "$(MSG)"
 
 backend-prestart: ## Run prestart script (healthcheck + migrations + initial data)
-	cd backend && bash scripts/prestart.sh
+	cd backend && uv run bash scripts/prestart.sh
 
 # ---------------------------------------------------------------------------
 # Frontend
