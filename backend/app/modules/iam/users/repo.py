@@ -1,7 +1,7 @@
 import uuid
 from typing import Any
 
-from sqlmodel import Session, col, delete, func, select
+from sqlmodel import Session, col, func, select
 
 from app.core.security import verify_password
 from app.modules.iam.users.models import User
@@ -50,10 +50,6 @@ def delete_user(*, session: Session, user: User) -> None:
 
 
 def delete_user_cascade(*, session: Session, user: User) -> None:
-    from app.modules.items.models import Item
-
-    statement = delete(Item).where(col(Item.owner_id) == user.id)
-    session.exec(statement)
     session.delete(user)
     session.commit()
 

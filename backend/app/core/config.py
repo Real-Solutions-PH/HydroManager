@@ -104,10 +104,7 @@ class Settings(BaseSettings):
     MINIO_REGION: str = "us-east-1"
     MINIO_DEFAULT_BUCKET: str = "app-uploads"
 
-    # AI Module
-    AI_ENABLED: bool = False
-
-    # LLM Providers
+    # LLM Providers (used by hydro_ai)
     NEBIUS_API_KEY: str | None = None
     NEBIUS_BASE_URL: str = "https://api.studio.nebius.com/v1/"
     NEBIUS_MODEL: str = "meta-llama/Meta-Llama-3.1-70B-Instruct"
@@ -117,25 +114,6 @@ class Settings(BaseSettings):
     OPENROUTER_MODEL: str = "meta-llama/llama-3.1-70b-instruct"
 
     DEFAULT_LLM_PROVIDER: str = "nebius"
-
-    # Tools
-    BRAVE_API_KEY: str | None = None
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def brave_search_enabled(self) -> bool:
-        return bool(self.BRAVE_API_KEY)
-    # OCR Module
-    OCR_ENABLED: bool = False
-    OCR_DEFAULT_PROVIDER: str = "rapidocr"  # rapidocr | easyocr | granite
-    OCR_MAX_FILE_SIZE_MB: int = 10
-    OCR_ALLOWED_MIME_TYPES: str = "image/png,image/jpeg,image/tiff,application/pdf"
-    OCR_BUCKET: str = "ocr-documents"
-
-    @computed_field  # type: ignore[prop-decorator]
-    @property
-    def ocr_allowed_mime_list(self) -> list[str]:
-        return [m.strip() for m in self.OCR_ALLOWED_MIME_TYPES.split(",") if m.strip()]
 
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
         if value == "changethis":

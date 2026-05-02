@@ -1,14 +1,10 @@
 import uuid
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime
-from sqlmodel import Field, Relationship
+from sqlmodel import Field
 
 from app.modules.iam.users.schema import UserBase
-
-if TYPE_CHECKING:
-    from app.modules.items.models import Item
 
 
 def _utcnow() -> datetime:
@@ -22,4 +18,3 @@ class User(UserBase, table=True):
         default_factory=_utcnow,
         sa_type=DateTime(timezone=True),  # type: ignore
     )
-    items: list["Item"] = Relationship(back_populates="owner", cascade_delete=True)

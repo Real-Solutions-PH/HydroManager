@@ -20,7 +20,6 @@ def init_db(session: Session) -> None:
     from app.modules.iam.users import repo as user_repo
     from app.modules.iam.users.models import User
     from app.modules.iam.users.schema import UserCreate
-    from app.modules.items.models import Item  # noqa: F401  resolve User.items mapper
 
     # Tables are managed by Alembic migrations.
     user = session.exec(
@@ -40,10 +39,3 @@ def init_db(session: Session) -> None:
     seed_roles(session)
     seed_permissions(session)
     seed_tenants(session)
-
-    if settings.AI_ENABLED:
-        from app.modules.ai.agents.seed import seed_agents
-        from app.modules.ai.tools.seed import seed_tools
-
-        seed_agents(session)
-        seed_tools(session)

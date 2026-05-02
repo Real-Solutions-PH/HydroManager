@@ -25,7 +25,7 @@ def analyze(data: VisionOnboardRequest) -> VisionOnboardResponse:
             confidence=0.0,
         )
     try:
-        from app.modules.ai.llm import get_chat_model
+        from app.modules.hydro_ai.llm import get_chat_model
         llm = get_chat_model()
         msg = [
             ("system", VISION_SYSTEM),

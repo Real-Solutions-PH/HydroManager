@@ -59,7 +59,7 @@ def chat(
     )
 
     try:
-        from app.modules.ai.llm import get_chat_model
+        from app.modules.hydro_ai.llm import get_chat_model
     except Exception as e:
         raise HTTPException(
             status_code=503, detail=f"AI backend unavailable: {e}"

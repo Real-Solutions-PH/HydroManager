@@ -27,8 +27,6 @@ if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     ensure_bucket(settings.MINIO_DEFAULT_BUCKET)
-    if settings.OCR_ENABLED:
-        ensure_bucket(settings.OCR_BUCKET)
     with Session(engine) as session:
         crops_repo.seed_if_empty(session=session)
         guides_repo.seed_if_empty(session=session)
@@ -54,8 +52,3 @@ if settings.all_cors_origins:
     )
 
 app.include_router(v1_router, prefix=settings.API_V1_STR)
-
-if settings.AI_ENABLED:
-    from app.modules.ai.copilotkit_setup import setup_copilotkit
-
-    setup_copilotkit(app)
