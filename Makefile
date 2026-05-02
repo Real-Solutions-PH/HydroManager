@@ -83,6 +83,26 @@ frontend-test-ui: ## Run Playwright tests with UI
 	cd frontend && bunx playwright test --ui
 
 # ---------------------------------------------------------------------------
+# Mobile (Expo / EAS)
+# ---------------------------------------------------------------------------
+.PHONY: mobile-build mobile-build-ios mobile-build-android mobile-build-ios-preview mobile-build-android-preview mobile-build-ios-prod mobile-build-android-prod
+PROFILE ?= preview
+
+mobile-build: mobile-build-ios mobile-build-android ## Local EAS build iOS + Android (PROFILE=preview default)
+
+mobile-build-ios: ## Local EAS build iOS (override: PROFILE=production|preview|development)
+	cd mobile && bunx eas-cli build --local --platform ios --profile $(PROFILE)
+
+mobile-build-android: ## Local EAS build Android (override: PROFILE=production|preview|development)
+	cd mobile && bunx eas-cli build --local --platform android --profile $(PROFILE)
+
+mobile-build-ios-prod: ## Local EAS production build iOS
+	cd mobile && bunx eas-cli build --local --platform ios --profile production
+
+mobile-build-android-prod: ## Local EAS production build Android
+	cd mobile && bunx eas-cli build --local --platform android --profile production
+
+# ---------------------------------------------------------------------------
 # Dependencies
 # ---------------------------------------------------------------------------
 .PHONY: install install-backend install-frontend
