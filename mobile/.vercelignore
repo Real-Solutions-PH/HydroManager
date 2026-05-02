@@ -1,0 +1,9 @@
+node_modules
+.expo
+ios
+android
+*.apk
+*.aab
+build-*.apk
+dist
+.env*

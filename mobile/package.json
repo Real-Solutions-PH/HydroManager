@@ -8,6 +8,7 @@
 		"android": "expo start --android",
 		"ios": "expo start --ios",
 		"web": "expo start --web",
+		"web:export": "expo export --platform web",
 		"lint": "biome check --write --unsafe --no-errors-on-unmatched --files-ignore-unknown=true ./",
 		"generate-client": "openapi-ts",
 		"typecheck": "tsc --noEmit"

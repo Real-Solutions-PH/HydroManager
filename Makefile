@@ -85,10 +85,19 @@ frontend-test-ui: ## Run Playwright tests with UI
 # ---------------------------------------------------------------------------
 # Mobile (Expo / EAS)
 # ---------------------------------------------------------------------------
-.PHONY: mobile-build mobile-build-ios mobile-build-android mobile-build-ios-preview mobile-build-android-preview mobile-build-ios-prod mobile-build-android-prod
+.PHONY: mobile-build mobile-build-ios mobile-build-android mobile-build-ios-preview mobile-build-android-preview mobile-build-ios-prod mobile-build-android-prod mobile-web-export mobile-web-deploy mobile-web-deploy-prod
 PROFILE ?= preview
 
 mobile-build: mobile-build-ios mobile-build-android ## Local EAS build iOS + Android (PROFILE=preview default)
+
+mobile-web-export: ## Export Expo web bundle to mobile/dist
+	cd mobile && bun run web:export
+
+mobile-web-deploy: ## Deploy mobile web preview to Vercel
+	cd mobile && bunx vercel --yes
+
+mobile-web-deploy-prod: ## Deploy mobile web production to Vercel
+	cd mobile && bunx vercel --prod --yes
 
 mobile-build-ios: ## Local EAS build iOS (override: PROFILE=production|preview|development)
 	cd mobile && bunx eas-cli build --local --platform ios --profile $(PROFILE)
