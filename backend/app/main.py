@@ -26,11 +26,12 @@ if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    ensure_bucket(settings.MINIO_DEFAULT_BUCKET)
-    with Session(engine) as session:
-        crops_repo.seed_if_empty(session=session)
-        guides_repo.seed_if_empty(session=session)
-        pests_repo.seed_if_empty(session=session)
+    if settings.ENVIRONMENT == "local":
+        ensure_bucket(settings.MINIO_DEFAULT_BUCKET)
+        with Session(engine) as session:
+            crops_repo.seed_if_empty(session=session)
+            guides_repo.seed_if_empty(session=session)
+            pests_repo.seed_if_empty(session=session)
     yield
 
 
