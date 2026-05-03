@@ -1,11 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { BookOpen, Bug, type LucideIcon, Sprout } from "lucide-react-native";
-import { ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 
 type Section = {
 	href: "/library/crops" | "/library/guides" | "/library/pests";
@@ -43,6 +44,7 @@ const SECTIONS: Section[] = [
 ];
 
 export default function LibraryIndex() {
+	const goBack = useBack();
 	return (
 		<GradientBackground>
 			<ScrollView
@@ -52,13 +54,25 @@ export default function LibraryIndex() {
 					gap: spacing.sm,
 				}}
 			>
-				<View style={{ marginBottom: spacing.xs }}>
-					<Text size="xxl" weight="bold">
-						Library
-					</Text>
-					<Text size="sm" tone="muted">
-						Reference material for owners and staff.
-					</Text>
+				<View
+					style={{
+						flexDirection: "row",
+						alignItems: "center",
+						gap: spacing.sm,
+						marginBottom: spacing.xs,
+					}}
+				>
+					<Pressable onPress={goBack} hitSlop={8}>
+						<Ionicons name="chevron-back" size={26} color={colors.text} />
+					</Pressable>
+					<View style={{ flex: 1 }}>
+						<Text size="xxl" weight="bold">
+							Library
+						</Text>
+						<Text size="sm" tone="muted">
+							Reference material for owners and staff.
+						</Text>
+					</View>
 				</View>
 				{SECTIONS.map((s) => (
 					<Link key={s.href} href={s.href} asChild>

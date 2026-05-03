@@ -209,6 +209,28 @@ export default function HomeScreen() {
 							paddingTop: spacing.lg,
 						}}
 					>
+						<Link href="/library" asChild>
+							<Pressable
+								accessibilityLabel={t("home.qa_library")}
+								accessibilityRole="button"
+								style={{
+									width: 44,
+									height: 44,
+									borderRadius: radii.full,
+									backgroundColor: colors.glass,
+									borderWidth: 1,
+									borderColor: colors.border,
+									alignItems: "center",
+									justifyContent: "center",
+								}}
+							>
+								<Ionicons
+									name="library-outline"
+									size={20}
+									color={colors.text}
+								/>
+							</Pressable>
+						</Link>
 						<Link href="/checklist" asChild>
 							<Pressable
 								accessibilityLabel={t("home.a11y_notifications")}
@@ -360,12 +382,6 @@ export default function HomeScreen() {
 						iconColor={colors.warning}
 						label={t("home.qa_crop_guide")}
 						href="/library/crops"
-					/>
-					<QuickActionChip
-						icon="library"
-						iconColor={colors.warning}
-						label={t("home.qa_library")}
-						href="/library"
 					/>
 				</ScrollView>
 
