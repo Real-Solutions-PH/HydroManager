@@ -456,6 +456,32 @@ function BatchCard({
 									</Text>
 								</View>
 							) : null}
+							{readyToAdvance && nextStage ? (
+								<View
+									style={{
+										flexDirection: "row",
+										alignItems: "center",
+										gap: 4,
+										paddingHorizontal: 8,
+										paddingVertical: 2,
+										borderRadius: 6,
+										backgroundColor: colors.warningLight,
+									}}
+								>
+									<Ionicons
+										name="flash"
+										size={10}
+										color={colors.warning}
+									/>
+									<Text
+										size="xs"
+										weight="bold"
+										style={{ color: colors.warning, letterSpacing: 0.5 }}
+									>
+										READY → {STAGE_LABEL[nextStage].toUpperCase()}
+									</Text>
+								</View>
+							) : null}
 						</View>
 						<View
 							style={{
