@@ -346,14 +346,14 @@ export default function InventoryDetailScreen() {
 					</Field>
 					<Field label="Low stock threshold">
 						<Input
-							keyboardType="numeric"
+							keyboardType="decimal-pad"
 							value={threshold}
 							onChangeText={setThreshold}
 						/>
 					</Field>
 					<Field label="Unit cost (₱)">
 						<Input
-							keyboardType="numeric"
+							keyboardType="decimal-pad"
 							value={unitCost}
 							onChangeText={setUnitCost}
 							placeholder="0.00"

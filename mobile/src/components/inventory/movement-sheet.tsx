@@ -211,7 +211,7 @@ export function InventoryMovementSheet({ item, onClose, defaultType }: Props) {
 					<Card>
 						<Field label="Quantity">
 							<Input
-								keyboardType="numeric"
+								keyboardType="decimal-pad"
 								value={qty}
 								onChangeText={setQty}
 								placeholder="0"
@@ -220,7 +220,7 @@ export function InventoryMovementSheet({ item, onClose, defaultType }: Props) {
 						{type === "restock" ? (
 							<Field label="Cost (₱, optional)">
 								<Input
-									keyboardType="numeric"
+									keyboardType="decimal-pad"
 									value={cost}
 									onChangeText={setCost}
 									placeholder="0.00"

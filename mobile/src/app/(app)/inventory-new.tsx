@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { router } from "expo-router";
 import { useState } from "react";
 import { Alert, Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
@@ -74,7 +73,7 @@ export default function NewInventoryItemScreen() {
 		},
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: ["inventory"] });
-			router.back();
+			goBack();
 		},
 		onError: (e: Error) => Alert.alert("Error", e.message),
 	});
@@ -186,7 +185,7 @@ export default function NewInventoryItemScreen() {
 						<View style={{ flex: 1 }}>
 							<Field label="Current Stock">
 								<Input
-									keyboardType="numeric"
+									keyboardType="decimal-pad"
 									value={stock}
 									onChangeText={setStock}
 								/>
@@ -195,7 +194,7 @@ export default function NewInventoryItemScreen() {
 						<View style={{ flex: 1 }}>
 							<Field label="Low Threshold">
 								<Input
-									keyboardType="numeric"
+									keyboardType="decimal-pad"
 									value={threshold}
 									onChangeText={setThreshold}
 								/>
@@ -230,14 +229,14 @@ export default function NewInventoryItemScreen() {
 						</View>
 						{costMode === "unit" ? (
 							<Input
-								keyboardType="numeric"
+								keyboardType="decimal-pad"
 								placeholder="0.00"
 								value={unitCost}
 								onChangeText={setUnitCost}
 							/>
 						) : (
 							<Input
-								keyboardType="numeric"
+								keyboardType="decimal-pad"
 								placeholder="0.00"
 								value={totalCost}
 								onChangeText={setTotalCost}
