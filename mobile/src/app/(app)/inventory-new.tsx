@@ -35,23 +35,43 @@ export default function NewInventoryItemScreen() {
 	const [unit, setUnit] = useState<InventoryUnit>("grams");
 	const [stock, setStock] = useState("0");
 	const [threshold, setThreshold] = useState("0");
+	const [costMode, setCostMode] = useState<"unit" | "total">("unit");
 	const [unitCost, setUnitCost] = useState("");
+	const [totalCost, setTotalCost] = useState("");
 	const [expiry, setExpiry] = useState<string | null>(null);
 	const [notes, setNotes] = useState("");
 
+	const stockNum = Number.parseFloat(stock) || 0;
+	const unitCostNum = Number.parseFloat(unitCost);
+	const totalCostNum = Number.parseFloat(totalCost);
+	const derivedUnitCost =
+		costMode === "total" && stockNum > 0 && Number.isFinite(totalCostNum)
+			? totalCostNum / stockNum
+			: null;
+	const derivedTotalCost =
+		costMode === "unit" && stockNum > 0 && Number.isFinite(unitCostNum)
+			? unitCostNum * stockNum
+			: null;
+
 	const create = useMutation({
-		mutationFn: () =>
-			inventoryApi.create({
+		mutationFn: () => {
+			let resolvedUnitCost: number | null = null;
+			if (costMode === "unit") {
+				resolvedUnitCost = unitCost.trim().length > 0 ? unitCostNum : null;
+			} else if (totalCost.trim().length > 0 && stockNum > 0) {
+				resolvedUnitCost = totalCostNum / stockNum;
+			}
+			return inventoryApi.create({
 				name: name.trim(),
 				category,
 				unit,
-				current_stock: Number.parseFloat(stock) || 0,
+				current_stock: stockNum,
 				low_stock_threshold: Number.parseFloat(threshold) || 0,
-				unit_cost:
-					unitCost.trim().length > 0 ? Number.parseFloat(unitCost) : null,
+				unit_cost: resolvedUnitCost,
 				expiry_date: expiry,
 				notes: notes.trim() || undefined,
-			}),
+			});
+		},
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: ["inventory"] });
 			router.back();
@@ -183,13 +203,61 @@ export default function NewInventoryItemScreen() {
 						</View>
 					</View>
 
-					<Field label="Unit Cost (₱, optional)">
-						<Input
-							keyboardType="numeric"
-							placeholder="0.00"
-							value={unitCost}
-							onChangeText={setUnitCost}
-						/>
+					<Field
+						label={
+							costMode === "unit"
+								? "Unit Cost (₱, optional)"
+								: "Total Cost (₱, optional)"
+						}
+					>
+						<View
+							style={{
+								flexDirection: "row",
+								gap: spacing.xs,
+								marginBottom: spacing.xs,
+							}}
+						>
+							<Chip
+								label="Unit cost"
+								active={costMode === "unit"}
+								onPress={() => setCostMode("unit")}
+							/>
+							<Chip
+								label="Total cost"
+								active={costMode === "total"}
+								onPress={() => setCostMode("total")}
+							/>
+						</View>
+						{costMode === "unit" ? (
+							<Input
+								keyboardType="numeric"
+								placeholder="0.00"
+								value={unitCost}
+								onChangeText={setUnitCost}
+							/>
+						) : (
+							<Input
+								keyboardType="numeric"
+								placeholder="0.00"
+								value={totalCost}
+								onChangeText={setTotalCost}
+							/>
+						)}
+						{derivedUnitCost !== null ? (
+							<Text size="xs" tone="subtle" style={{ marginTop: 4 }}>
+								≈ ₱{derivedUnitCost.toFixed(2)} per {unit.replace(/s$/, "")}
+							</Text>
+						) : null}
+						{derivedTotalCost !== null ? (
+							<Text size="xs" tone="subtle" style={{ marginTop: 4 }}>
+								Total: ₱{derivedTotalCost.toFixed(2)} for {stockNum} {unit}
+							</Text>
+						) : null}
+						{costMode === "total" && stockNum <= 0 ? (
+							<Text size="xs" tone="subtle" style={{ marginTop: 4 }}>
+								Set current stock to compute unit cost.
+							</Text>
+						) : null}
 					</Field>
 
 					<Field label="Expiry Date">
