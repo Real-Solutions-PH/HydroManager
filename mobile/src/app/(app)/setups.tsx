@@ -6,6 +6,7 @@ import { FlatList, Image, Pressable, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { Text } from "@/components/ui/text";
 import { colors, spacing, systemTypes } from "@/constants/theme";
 import { batchesApi, type Setup, setupsApi } from "@/lib/hydro-api";
@@ -23,6 +24,7 @@ const SETUP_LABEL: Record<Setup["type"], string> = {
 
 export default function SetupsScreen() {
 	const [filter, setFilter] = useState<Filter>("All");
+	const tabBarClearance = useTabBarClearance();
 
 	const setupsQ = useQuery({
 		queryKey: ["setups", "all-with-archived"],
@@ -158,7 +160,7 @@ export default function SetupsScreen() {
 				}}
 				contentContainerStyle={{
 					padding: spacing.md,
-					paddingBottom: spacing.xxxl,
+					paddingBottom: tabBarClearance,
 					gap: spacing.md,
 				}}
 				ListEmptyComponent={

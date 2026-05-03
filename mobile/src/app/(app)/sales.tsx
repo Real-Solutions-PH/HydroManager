@@ -13,6 +13,7 @@ import Svg, { Defs, LinearGradient, Path, Stop } from "react-native-svg";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
 import { useCustomToast } from "@/hooks/useCustomToast";
@@ -50,6 +51,7 @@ export default function SalesScreen() {
 	const qc = useQueryClient();
 	const me = useQuery({ queryKey: ["me"], queryFn: () => usersApi.me() });
 	const [period, setPeriod] = useState<Period>("month");
+	const tabBarClearance = useTabBarClearance();
 
 	const sales = useQuery({
 		queryKey: ["sales"],
@@ -159,7 +161,7 @@ export default function SalesScreen() {
 		<GradientBackground>
 			<ScrollView
 				contentContainerStyle={{
-					paddingBottom: spacing.xxxl,
+					paddingBottom: tabBarClearance,
 					paddingHorizontal: spacing.md,
 					gap: spacing.md,
 				}}

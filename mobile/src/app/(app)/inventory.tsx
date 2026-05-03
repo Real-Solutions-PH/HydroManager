@@ -7,6 +7,7 @@ import { InventoryMovementSheet } from "@/components/inventory/movement-sheet";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
 import {
@@ -53,6 +54,7 @@ export default function InventoryScreen() {
 		"all",
 	);
 	const [movementItem, setMovementItem] = useState<InventoryItem | null>(null);
+	const tabBarClearance = useTabBarClearance();
 
 	const inventory = useQuery({
 		queryKey: ["inventory", category, nearExpiryOnly],
@@ -197,7 +199,11 @@ export default function InventoryScreen() {
 				keyExtractor={(it) => it.id}
 				refreshing={isRefetching}
 				onRefresh={refetch}
-				contentContainerStyle={{ padding: spacing.md, gap: 10 }}
+				contentContainerStyle={{
+					padding: spacing.md,
+					paddingBottom: tabBarClearance,
+					gap: 10,
+				}}
 				ListEmptyComponent={
 					isLoading ? (
 						<Text tone="muted">Loading...</Text>

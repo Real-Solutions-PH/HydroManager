@@ -28,6 +28,13 @@ export interface InteractiveMenuProps {
 const DEFAULT_ACCENT = colors.accent;
 const ICON_SIZE = 22;
 const ANIM_MS = 220;
+const MENU_HEIGHT = 84;
+const MENU_BREATHING = spacing.md;
+
+export function useTabBarClearance() {
+	const insets = useSafeAreaInsets();
+	return insets.bottom + spacing.sm * 2 + MENU_HEIGHT + MENU_BREATHING;
+}
 
 interface MenuItemProps {
 	item: InteractiveMenuItem;
