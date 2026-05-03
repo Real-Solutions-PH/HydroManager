@@ -90,17 +90,16 @@ def record_movement(
         session=session, current_user=current_user, item_id=item_id
     )
     if data.movement_type == MovementType.restock:
-        delta = data.quantity
+        item.current_stock = max(item.current_stock + data.quantity, 0)
     elif data.movement_type == MovementType.consume:
         if data.quantity > item.current_stock:
             raise HTTPException(
                 status_code=400,
                 detail=f"Only {item.current_stock} {item.unit.value} available",
             )
-        delta = -data.quantity
+        item.current_stock = max(item.current_stock - data.quantity, 0)
     else:
-        delta = data.quantity
-    item.current_stock = max(item.current_stock + delta, 0)
+        item.current_stock = max(data.quantity, 0)
     session.add(item)
     movement = InventoryMovement(
         item_id=item.id,

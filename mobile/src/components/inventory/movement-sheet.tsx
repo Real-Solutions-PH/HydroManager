@@ -44,12 +44,19 @@ export function InventoryMovementSheet({ item, onClose, defaultType }: Props) {
 
 	useEffect(() => {
 		if (item) {
-			setType(defaultType ?? "restock");
-			setQty("1");
+			const t = defaultType ?? "restock";
+			setType(t);
+			setQty(t === "adjust" ? String(item.current_stock) : "1");
 			setCost("");
 			setNotes("");
 		}
 	}, [item, defaultType]);
+
+	useEffect(() => {
+		if (item && type === "adjust") {
+			setQty(String(item.current_stock));
+		}
+	}, [type, item]);
 
 	const mutation = useMutation({
 		mutationFn: () => {
@@ -108,7 +115,8 @@ export function InventoryMovementSheet({ item, onClose, defaultType }: Props) {
 		]);
 	};
 
-	const valid = Number.parseFloat(qty) > 0;
+	const qtyNum = Number.parseFloat(qty);
+	const valid = type === "adjust" ? qtyNum >= 0 && !Number.isNaN(qtyNum) : qtyNum > 0;
 	const busy = mutation.isPending || deleteMutation.isPending;
 
 	return (
@@ -209,7 +217,8 @@ export function InventoryMovementSheet({ item, onClose, defaultType }: Props) {
 					</View>
 
 					<Card>
-						<Field label="Quantity">
+						<Field label={type === "adjust" ? "New stock" : "Quantity"}>
+
 							<Input
 								keyboardType="decimal-pad"
 								value={qty}
