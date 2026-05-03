@@ -1,9 +1,18 @@
+from sqlalchemy.pool import NullPool
 from sqlmodel import Session, create_engine, select
 
 from app.core.config import settings
 from app.core.security import get_password_hash
 
-engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
+# Serverless (Vercel) friendly pooling: NullPool opens a fresh connection
+# per checkout and disposes on close, so we never hoard Supabase pooler
+# slots across warm Lambda instances. Pair with Supabase transaction-mode
+# pooler (port 6543) for best throughput.
+engine = create_engine(
+    str(settings.SQLALCHEMY_DATABASE_URI),
+    poolclass=NullPool,
+    pool_pre_ping=True,
+)
 
 
 # Ensure every module-level SQLModel is imported (via app.db.models) before
