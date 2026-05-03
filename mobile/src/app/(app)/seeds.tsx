@@ -55,6 +55,20 @@ const STAGE_LABEL: Record<Milestone, string> = {
 	Failed: "Failed",
 };
 
+const STAGE_COLORS: Record<Milestone, { fg: string; bg: string }> = {
+	Sowed: { fg: "#A1887F", bg: "rgba(161, 136, 127, 0.18)" },
+	Germinated: { fg: "#AED581", bg: "rgba(174, 213, 129, 0.18)" },
+	SeedLeaves: { fg: "#9CCC65", bg: "rgba(156, 204, 101, 0.18)" },
+	TrueLeaves: { fg: "#66BB6A", bg: "rgba(102, 187, 106, 0.18)" },
+	Transplanted: { fg: "#42A5F5", bg: "rgba(66, 165, 245, 0.18)" },
+	Vegetative: { fg: "#26A69A", bg: "rgba(38, 166, 154, 0.18)" },
+	Flowering: { fg: "#CE93D8", bg: "rgba(206, 147, 216, 0.18)" },
+	FruitSet: { fg: "#FFB74D", bg: "rgba(255, 183, 77, 0.18)" },
+	HarvestReady: { fg: "#EF5350", bg: "rgba(239, 83, 80, 0.18)" },
+	Harvested: { fg: "rgba(255,255,255,0.6)", bg: "rgba(255,255,255,0.08)" },
+	Failed: { fg: "#EF5350", bg: "rgba(239, 83, 80, 0.18)" },
+};
+
 const LEAFY_STAGES: Milestone[] = [
 	"Sowed",
 	"Germinated",
@@ -520,37 +534,50 @@ function BatchCard({
 							</Text>
 						</View>
 					</View>
-					<View style={{ alignItems: "flex-end", gap: 4 }}>
-						{topRightDays !== null ? (
+					<View
+						style={{
+							flexDirection: "row",
+							alignItems: "center",
+							gap: 4,
+						}}
+					>
+						{nextStage && daysToNextPhase !== null ? (
 							<View
 								style={{
-									flexDirection: "row",
 									alignItems: "center",
-									gap: 4,
+									paddingHorizontal: 10,
+									paddingVertical: 4,
+									borderRadius: 999,
+									backgroundColor: STAGE_COLORS[nextStage].bg,
+									borderWidth: 1,
+									borderColor: STAGE_COLORS[nextStage].fg + "40",
 								}}
 							>
 								<Text
-									size="sm"
+									size="xs"
 									weight="bold"
+									numberOfLines={1}
 									style={{
-										color: harvestSoon ? colors.error : colors.primaryLight,
+										color: STAGE_COLORS[nextStage].fg,
+										letterSpacing: 0.3,
 									}}
 								>
-									{topRightDays}d
+									{STAGE_LABEL[nextStage].toUpperCase()}
 								</Text>
-								<Ionicons
-									name={isExpanded ? "chevron-up" : "chevron-down"}
-									size={14}
-									color={colors.textMuted}
-								/>
+								<Text
+									size="xs"
+									weight="bold"
+									style={{ color: STAGE_COLORS[nextStage].fg }}
+								>
+									~{daysToNextPhase}d
+								</Text>
 							</View>
-						) : (
-							<Ionicons
-								name={isExpanded ? "chevron-up" : "chevron-down"}
-								size={16}
-								color={colors.textMuted}
-							/>
-						)}
+						) : null}
+						<Ionicons
+							name={isExpanded ? "chevron-up" : "chevron-down"}
+							size={14}
+							color={colors.textMuted}
+						/>
 					</View>
 				</View>
 
@@ -741,6 +768,26 @@ function BatchCard({
 								</Pressable>
 							) : null}
 						</View>
+						{guide ? (
+							<Pressable
+								onPress={() => router.push(`/library/crops/${guide.id}`)}
+								style={({ pressed }) => ({
+									flex: 1,
+									flexDirection: "row",
+									alignItems: "center",
+									justifyContent: "center",
+									gap: 6,
+									paddingVertical: 12,
+									borderRadius: 12,
+									borderWidth: 1,
+									borderColor: colors.border,
+									backgroundColor: pressed ? colors.glassHover : "transparent",
+								})}
+							>
+								<Ionicons name="book-outline" size={16} color={colors.text} />
+								<Text weight="semibold">Guide</Text>
+							</Pressable>
+						) : null}
 						<Pressable
 							onPress={() => router.push(`/batch/${batch.id}?edit=1`)}
 							style={({ pressed }) => ({
