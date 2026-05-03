@@ -344,6 +344,7 @@ export const batchesApi = {
 	async update(
 		id: string,
 		data: {
+			setup_id?: string;
 			variety_name?: string;
 			crop_guide_id?: string | null;
 			notes?: string | null;

@@ -143,8 +143,40 @@ def update_batch(
     batch = get_batch(
         session=session, current_user=current_user, batch_id=batch_id
     )
+    update_data = data.model_dump(exclude_unset=True)
+    new_setup_id = update_data.get("setup_id")
+    if new_setup_id is not None and new_setup_id != batch.setup_id:
+        if batch.archived_at is not None:
+            raise HTTPException(
+                status_code=400, detail="Cannot move archived batch to another setup"
+            )
+        new_setup = setups_repo.get_by_id(session=session, setup_id=new_setup_id)
+        if new_setup is None:
+            raise HTTPException(status_code=404, detail="Setup not found")
+        if not current_user.is_superuser and new_setup.owner_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not enough permissions")
+        if new_setup.archived_at is not None:
+            raise HTTPException(status_code=400, detail="Setup is archived")
+        slots_needed = batch.slots_used or 0
+        if slots_needed > 0:
+            empty_slots = _get_empty_slots(
+                session=session, setup_id=new_setup.id, count=slots_needed
+            )
+            if len(empty_slots) < slots_needed:
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        f"Not enough empty slots in target setup: "
+                        f"need {slots_needed}, have {len(empty_slots)}"
+                    ),
+                )
+            _free_slots_for_batch(session=session, batch_id=batch.id)
+            for slot in empty_slots:
+                slot.batch_id = batch.id
+                slot.status = SlotStatus.PLANTED
+                session.add(slot)
     return batches_repo.update(
-        session=session, batch=batch, update_data=data.model_dump(exclude_unset=True)
+        session=session, batch=batch, update_data=update_data
     )
 
 

@@ -40,6 +40,7 @@ class BatchCreate(SQLModel):
 
 
 class BatchUpdate(SQLModel):
+    setup_id: uuid.UUID | None = None
     variety_name: str | None = Field(default=None, min_length=1, max_length=120)
     crop_guide_id: uuid.UUID | None = None
     notes: str | None = Field(default=None, max_length=1000)

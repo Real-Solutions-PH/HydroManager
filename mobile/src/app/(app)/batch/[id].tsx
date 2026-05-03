@@ -11,7 +11,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { colors, spacing, systemTypes } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import {
 	batchesApi,
@@ -84,10 +84,22 @@ export default function BatchDetailScreen() {
 		}
 	}, [batch.data]);
 
+	const [editSetupId, setEditSetupId] = useState<string>("");
 	const [editVariety, setEditVariety] = useState("");
 	const [editCropId, setEditCropId] = useState<string | null>(null);
 	const [editStartDate, setEditStartDate] = useState<string | null>(null);
 	const [editNotes, setEditNotes] = useState("");
+
+	const setupsQ = useQuery({
+		queryKey: ["setups"],
+		queryFn: () => setupsApi.list(),
+	});
+
+	const editSetupQ = useQuery({
+		queryKey: ["setup", editSetupId],
+		queryFn: () => setupsApi.get(editSetupId),
+		enabled: !!editSetupId && editSetupId !== batch.data?.setup_id,
+	});
 
 	const cropsQ = useQuery({
 		queryKey: ["crops"],
@@ -106,6 +118,7 @@ export default function BatchDetailScreen() {
 
 	useEffect(() => {
 		if (batch.data) {
+			setEditSetupId(batch.data.setup_id);
 			setEditVariety(batch.data.variety_name);
 			setEditCropId(batch.data.crop_guide_id);
 			setEditStartDate(isoDateOnly(batch.data.started_at));
@@ -116,6 +129,10 @@ export default function BatchDetailScreen() {
 	const updateBatch = useMutation({
 		mutationFn: () =>
 			batchesApi.update(batchId, {
+				setup_id:
+					editSetupId && editSetupId !== batch.data?.setup_id
+						? editSetupId
+						: undefined,
 				variety_name: editVariety.trim(),
 				crop_guide_id: editCropId,
 				notes: editNotes.trim() || null,
@@ -126,6 +143,7 @@ export default function BatchDetailScreen() {
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: ["batch", batchId] });
 			qc.invalidateQueries({ queryKey: ["batches"] });
+			qc.invalidateQueries({ queryKey: ["setup"] });
 			Alert.alert("Saved", "Batch updated.");
 		},
 		onError: (e: Error) => Alert.alert("Update failed", e.message),
@@ -365,6 +383,71 @@ export default function BatchDetailScreen() {
 					<Text size="lg" weight="bold" style={{ marginBottom: spacing.xs }}>
 						Edit Batch
 					</Text>
+					<Label>SETUP</Label>
+					<View
+						style={{
+							flexDirection: "row",
+							flexWrap: "wrap",
+							gap: spacing.xs,
+						}}
+					>
+						{(setupsQ.data?.data ?? []).map((s) => {
+							const active = editSetupId === s.id;
+							const c = systemTypes[s.type];
+							return (
+								<Pressable
+									key={s.id}
+									onPress={() => setEditSetupId(s.id)}
+									style={{
+										flexDirection: "row",
+										alignItems: "center",
+										gap: 6,
+										paddingHorizontal: spacing.sm,
+										paddingVertical: spacing.xs,
+										borderRadius: 12,
+										borderWidth: 1,
+										borderColor: active ? c.color : colors.border,
+										backgroundColor: active ? c.bg : "transparent",
+									}}
+								>
+									<Ionicons
+										name={c.icon as never}
+										size={14}
+										color={active ? c.color : colors.textMuted}
+									/>
+									<Text
+										size="sm"
+										weight="semibold"
+										style={{ color: active ? c.color : colors.text }}
+									>
+										{s.name}
+									</Text>
+								</Pressable>
+							);
+						})}
+					</View>
+					{editSetupId && editSetupId !== b.setup_id ? (() => {
+						const targetEmpty =
+							editSetupQ.data?.slots.filter(
+								(s) => s.status === "empty" && !s.batch_id,
+							).length ?? 0;
+						const need = b.slots_used ?? 0;
+						const short = need > 0 && targetEmpty < need;
+						return (
+							<Text
+								size="xs"
+								style={{
+									marginTop: 6,
+									color: short ? colors.error : colors.textMuted,
+								}}
+							>
+								{need > 0
+									? `Need ${need} empty slots · ${targetEmpty} available in target`
+									: "Moving to different setup"}
+							</Text>
+						);
+					})() : null}
+					<View style={{ height: spacing.sm }} />
 					<Label>VARIETY NAME</Label>
 					<Input value={editVariety} onChangeText={setEditVariety} />
 					<View style={{ height: spacing.sm }} />
