@@ -8,6 +8,7 @@ import {
 	type PestKind,
 } from "@/lib/hydro-api";
 import { PAGE_SIZE } from "@/lib/paginate";
+import { QK } from "@/lib/query-config";
 
 const STALE = 1000 * 60 * 30;
 
@@ -16,7 +17,7 @@ export function useCrops(
 	category?: "leafy" | "herb" | "fruiting" | "other",
 ) {
 	return useInfiniteQuery({
-		queryKey: ["library", "crops", query ?? "", category ?? ""],
+		queryKey: QK.library.crops.list(query, category),
 		queryFn: ({ pageParam = 0 }) =>
 			cropsApi.list(query || undefined, category, {
 				skip: pageParam,
@@ -33,7 +34,7 @@ export function useCrops(
 
 export function useCrop(id: string | undefined) {
 	return useQuery({
-		queryKey: ["library", "crops", "detail", id],
+		queryKey: QK.library.crops.detail(id),
 		queryFn: () => cropsApi.get(id as string),
 		enabled: !!id,
 		staleTime: STALE,
@@ -42,7 +43,7 @@ export function useCrop(id: string | undefined) {
 
 export function useGuides(query?: string, category?: GuideCategory) {
 	return useInfiniteQuery({
-		queryKey: ["library", "guides", query ?? "", category ?? ""],
+		queryKey: QK.library.guides.list(query, category),
 		queryFn: ({ pageParam = 0 }) =>
 			libraryApi.guides.list(query || undefined, category, {
 				skip: pageParam,
@@ -59,7 +60,7 @@ export function useGuides(query?: string, category?: GuideCategory) {
 
 export function useGuide(id: string | undefined) {
 	return useQuery({
-		queryKey: ["library", "guides", "detail", id],
+		queryKey: QK.library.guides.detail(id),
 		queryFn: () => libraryApi.guides.get(id as string),
 		enabled: !!id,
 		staleTime: STALE,
@@ -68,7 +69,7 @@ export function useGuide(id: string | undefined) {
 
 export function usePests(query?: string, kind?: PestKind) {
 	return useInfiniteQuery({
-		queryKey: ["library", "pests", query ?? "", kind ?? ""],
+		queryKey: QK.library.pests.list(query, kind),
 		queryFn: ({ pageParam = 0 }) =>
 			libraryApi.pests.list(query || undefined, kind, {
 				skip: pageParam,
@@ -85,7 +86,7 @@ export function usePests(query?: string, kind?: PestKind) {
 
 export function usePest(id: string | undefined) {
 	return useQuery({
-		queryKey: ["library", "pests", "detail", id],
+		queryKey: QK.library.pests.detail(id),
 		queryFn: () => libraryApi.pests.get(id as string),
 		enabled: !!id,
 		staleTime: STALE,
@@ -94,7 +95,7 @@ export function usePest(id: string | undefined) {
 
 export function useCropStats() {
 	return useQuery({
-		queryKey: ["library", "crops", "stats"],
+		queryKey: QK.library.crops.stats(),
 		queryFn: () => cropsApi.stats(),
 		staleTime: 1000 * 60 * 5,
 	});
@@ -108,7 +109,12 @@ export function useClimateNormals(args: {
 }) {
 	const { lat, lon, month, provider } = args;
 	return useQuery({
-		queryKey: ["climate", "normals", lat, lon, month, provider ?? "open_meteo"],
+		queryKey: QK.climate.normals({
+			lat,
+			lon,
+			month,
+			provider: provider ?? "open_meteo",
+		}),
 		queryFn: () =>
 			climateApi.normals({
 				lat: lat as number,

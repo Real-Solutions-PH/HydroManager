@@ -52,7 +52,7 @@ export function Providers({ children }: ProvidersProps) {
 					persistOptions={{
 						persister,
 						maxAge: ONE_DAY,
-						buster: "v2",
+						buster: "v3",
 					}}
 				>
 					<AppInitializer />
