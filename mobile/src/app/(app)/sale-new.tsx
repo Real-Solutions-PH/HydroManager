@@ -120,8 +120,9 @@ export default function NewSaleScreen() {
 	const [bulkOpen, setBulkOpen] = useState(false);
 
 	const readyProduce = useQuery({
-		queryKey: ["produce", "ready"],
+		queryKey: QK.produce.list({ status: "ready" }),
 		queryFn: () => produceApi.list({ status: "ready" }),
+		staleTime: STALE.produce,
 	});
 	const readyList = readyProduce.data?.data ?? [];
 
@@ -245,9 +246,8 @@ export default function NewSaleScreen() {
 			});
 		},
 		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: ["sales"] });
-			qc.invalidateQueries({ queryKey: ["sales-dashboard"] });
-			qc.invalidateQueries({ queryKey: ["produce"] });
+			qc.invalidateQueries({ queryKey: QK.sales.all });
+			qc.invalidateQueries({ queryKey: QK.produce.all });
 			router.back();
 		},
 		onError: (err) => toast.error(handleError(err)),

@@ -93,17 +93,17 @@ export default function HomeScreen() {
 	const insets = useSafeAreaInsets();
 
 	const userQ = useQuery({
-		queryKey: ["me"],
+		queryKey: QK.me(),
 		queryFn: () => usersApi.me(),
 		staleTime: STALE.me,
 	});
 	const setupsQ = useQuery({
-		queryKey: ["setups"],
+		queryKey: QK.setups.list(),
 		queryFn: () => setupsApi.list(),
 		staleTime: STALE.setups,
 	});
 	const batchesQ = useQuery({
-		queryKey: ["batches"],
+		queryKey: QK.batches.list(),
 		queryFn: () => batchesApi.list(),
 		staleTime: STALE.batches,
 	});
@@ -113,7 +113,7 @@ export default function HomeScreen() {
 		staleTime: STALE.inventory,
 	});
 	const checklistQ = useQuery({
-		queryKey: ["checklist"],
+		queryKey: QK.checklist(),
 		queryFn: () => checklistApi.list(),
 		staleTime: STALE.checklist,
 	});

@@ -14,7 +14,7 @@ import { Text } from "@/components/ui/text";
 import { colors, spacing, systemTypes } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { batchesApi, cropsApi, setupsApi } from "@/lib/hydro-api";
-import { STALE } from "@/lib/query-config";
+import { QK, STALE } from "@/lib/query-config";
 
 function todayIso(): string {
 	const d = new Date();
@@ -29,12 +29,12 @@ export default function NewBatchScreen() {
 	const qc = useQueryClient();
 	const goBack = useBack();
 	const setups = useQuery({
-		queryKey: ["setups"],
+		queryKey: QK.setups.list(),
 		queryFn: () => setupsApi.list(),
 		staleTime: STALE.setups,
 	});
 	const crops = useQuery({
-		queryKey: ["crops"],
+		queryKey: QK.crops(),
 		queryFn: () => cropsApi.list(),
 		staleTime: STALE.crops,
 	});
@@ -48,7 +48,7 @@ export default function NewBatchScreen() {
 	const [notes, setNotes] = useState("");
 
 	const selectedSetup = useQuery({
-		queryKey: ["setup", setupId],
+		queryKey: QK.setups.detail(setupId),
 		queryFn: () => setupsApi.get(setupId),
 		enabled: !!setupId,
 	});
@@ -90,8 +90,8 @@ export default function NewBatchScreen() {
 					: undefined,
 			}),
 		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: ["batches"] });
-			qc.invalidateQueries({ queryKey: ["setup", setupId] });
+			qc.invalidateQueries({ queryKey: QK.batches.all });
+			qc.invalidateQueries({ queryKey: QK.setups.detail(setupId) });
 			goBack();
 		},
 		onError: (e: Error) => Alert.alert("Error", e.message),

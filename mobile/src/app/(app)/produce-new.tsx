@@ -12,6 +12,7 @@ import { colors, spacing } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { batchesApi, produceApi } from "@/lib/hydro-api";
+import { QK, STALE } from "@/lib/query-config";
 import { handleError } from "@/lib/utils";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -34,8 +35,9 @@ export default function NewProduceScreen() {
 	const [notes, setNotes] = useState("");
 
 	const batches = useQuery({
-		queryKey: ["batches"],
+		queryKey: QK.batches.list(),
 		queryFn: () => batchesApi.list(),
+		staleTime: STALE.batches,
 	});
 
 	const create = useMutation({
@@ -58,8 +60,8 @@ export default function NewProduceScreen() {
 		},
 		onSuccess: () => {
 			toast.success("Produce added");
-			qc.invalidateQueries({ queryKey: ["produce"] });
-			qc.invalidateQueries({ queryKey: ["sales-dashboard"] });
+			qc.invalidateQueries({ queryKey: QK.produce.all });
+			qc.invalidateQueries({ queryKey: QK.sales.dashboard() });
 			router.back();
 		},
 		onError: (err) => Alert.alert("Error", handleError(err)),

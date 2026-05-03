@@ -10,6 +10,7 @@ import { Text } from "@/components/ui/text";
 import { colors, spacing, systemTypes } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { type Batch, batchesApi, setupsApi } from "@/lib/hydro-api";
+import { QK } from "@/lib/query-config";
 import { formatDateOnly } from "@/lib/utils";
 
 const BATCH_PALETTE = [
@@ -30,12 +31,12 @@ export default function SetupDetailScreen() {
 	const goBack = useBack();
 
 	const setup = useQuery({
-		queryKey: ["setup", setupId],
+		queryKey: QK.setups.detail(setupId),
 		queryFn: () => setupsApi.get(setupId),
 		enabled: !!setupId,
 	});
 	const batches = useQuery({
-		queryKey: ["batches", { setup_id: setupId, all: true }],
+		queryKey: QK.batches.list({ setupId, includeArchived: true }),
 		queryFn: () =>
 			batchesApi.list({ setup_id: setupId, include_archived: true }),
 		enabled: !!setupId,
@@ -44,14 +45,13 @@ export default function SetupDetailScreen() {
 	const archive = useMutation({
 		mutationFn: () => setupsApi.archive(setupId),
 		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: ["setups"] });
-			qc.invalidateQueries({ queryKey: ["setup", setupId] });
+			qc.invalidateQueries({ queryKey: QK.setups.all });
 		},
 	});
 	const del = useMutation({
 		mutationFn: () => setupsApi.delete(setupId),
 		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: ["setups"] });
+			qc.invalidateQueries({ queryKey: QK.setups.all });
 			router.back();
 		},
 		onError: (e: Error) => Alert.alert("Delete failed", e.message),

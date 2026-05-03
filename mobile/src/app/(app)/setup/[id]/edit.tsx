@@ -12,6 +12,7 @@ import { Text } from "@/components/ui/text";
 import { colors, spacing, systemTypes } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { photosApi, type SetupType, setupsApi } from "@/lib/hydro-api";
+import { QK } from "@/lib/query-config";
 
 const TYPES: SetupType[] = ["DFT", "NFT", "DutchBucket", "Kratky", "SNAP"];
 
@@ -22,7 +23,7 @@ export default function EditSetupScreen() {
 	const goBack = useBack();
 
 	const setup = useQuery({
-		queryKey: ["setup", setupId],
+		queryKey: QK.setups.detail(setupId),
 		queryFn: () => setupsApi.get(setupId),
 		enabled: !!setupId,
 	});
@@ -57,8 +58,7 @@ export default function EditSetupScreen() {
 			const mime = asset.mimeType ?? "image/jpeg";
 			const up = await photosApi.upload("setup", asset.uri, mime);
 			await setupsApi.addPhoto(setupId, up.url);
-			qc.invalidateQueries({ queryKey: ["setup", setupId] });
-			qc.invalidateQueries({ queryKey: ["setups"] });
+			qc.invalidateQueries({ queryKey: QK.setups.all });
 			setPhotoPreview(up.url);
 		} catch (e) {
 			setPhotoPreview(null);
@@ -91,8 +91,7 @@ export default function EditSetupScreen() {
 			});
 		},
 		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: ["setup", setupId] });
-			qc.invalidateQueries({ queryKey: ["setups"] });
+			qc.invalidateQueries({ queryKey: QK.setups.all });
 			router.back();
 		},
 		onError: (e: Error) => Alert.alert("Update failed", e.message),

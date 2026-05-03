@@ -18,6 +18,7 @@ import {
 import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { type ProduceStatus, produceApi } from "@/lib/hydro-api";
+import { QK } from "@/lib/query-config";
 import { formatPHP, handleError } from "@/lib/utils";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -30,12 +31,12 @@ export default function ProduceDetailScreen() {
 	const goBack = useBack();
 
 	const item = useQuery({
-		queryKey: ["produce", id],
+		queryKey: QK.produce.detail(id),
 		queryFn: () => produceApi.get(id),
 		enabled: !!id,
 	});
 	const movements = useQuery({
-		queryKey: ["produce-movements", id],
+		queryKey: QK.produce.movements(id),
 		queryFn: () => produceApi.movements(id),
 		enabled: !!id,
 	});
@@ -79,9 +80,8 @@ export default function ProduceDetailScreen() {
 		},
 		onSuccess: () => {
 			toast.success("Saved");
-			qc.invalidateQueries({ queryKey: ["produce"] });
-			qc.invalidateQueries({ queryKey: ["produce", id] });
-			qc.invalidateQueries({ queryKey: ["sales-dashboard"] });
+			qc.invalidateQueries({ queryKey: QK.produce.all });
+			qc.invalidateQueries({ queryKey: QK.sales.dashboard() });
 		},
 		onError: (err) => toast.error(handleError(err)),
 	});
@@ -90,8 +90,8 @@ export default function ProduceDetailScreen() {
 		mutationFn: () => produceApi.delete(id),
 		onSuccess: () => {
 			toast.success("Deleted");
-			qc.invalidateQueries({ queryKey: ["produce"] });
-			qc.invalidateQueries({ queryKey: ["sales-dashboard"] });
+			qc.invalidateQueries({ queryKey: QK.produce.all });
+			qc.invalidateQueries({ queryKey: QK.sales.dashboard() });
 			router.back();
 		},
 		onError: (err) => toast.error(handleError(err)),

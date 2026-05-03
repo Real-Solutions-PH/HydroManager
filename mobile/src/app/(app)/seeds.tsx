@@ -42,7 +42,7 @@ import {
 	setupsApi,
 } from "@/lib/hydro-api";
 import { flattenPages, getNextSkip, PAGE_SIZE } from "@/lib/paginate";
-import { STALE } from "@/lib/query-config";
+import { QK, STALE } from "@/lib/query-config";
 import { formatDateOnly } from "@/lib/utils";
 
 const FILTERS = ["All", "Active", "Harvest-Ready", "Archived"] as const;
@@ -133,12 +133,16 @@ export default function SeedsScreen() {
 	} | null>(null);
 
 	const setupsQ = useQuery({
-		queryKey: ["setups", "all-with-archived"],
+		queryKey: QK.setups.list({ includeArchived: true }),
 		queryFn: () => setupsApi.list(true, { limit: 1000 }),
 		staleTime: STALE.setups,
 	});
 	const batchesQ = useInfiniteQuery({
-		queryKey: ["batches", "all-with-archived", "paged"],
+		queryKey: [
+			...QK.batches.lists(),
+			"paged",
+			{ includeArchived: true },
+		],
 		queryFn: ({ pageParam = 0 }) =>
 			batchesApi.list({
 				include_archived: true,
@@ -150,7 +154,7 @@ export default function SeedsScreen() {
 		staleTime: STALE.batches,
 	});
 	const cropsQ = useQuery({
-		queryKey: ["crops"],
+		queryKey: QK.crops(),
 		queryFn: () => cropsApi.list(undefined, undefined, { limit: 1000 }),
 		staleTime: STALE.crops,
 	});
@@ -215,7 +219,7 @@ export default function SeedsScreen() {
 
 	const detailsQ = useQueries({
 		queries: batches.map((b) => ({
-			queryKey: ["batch", b.id],
+			queryKey: QK.batches.detail(b.id),
 			queryFn: () => batchesApi.get(b.id),
 			staleTime: 30_000,
 		})),
@@ -922,9 +926,7 @@ function AdvanceStageDialog({
 			});
 		},
 		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: ["batches"] });
-			if (target)
-				qc.invalidateQueries({ queryKey: ["batch", target.batch.id] });
+			qc.invalidateQueries({ queryKey: QK.batches.all });
 			setCount("");
 			onClose();
 		},

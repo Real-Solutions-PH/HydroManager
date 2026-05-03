@@ -78,7 +78,11 @@ export default function InventoryScreen() {
 	});
 
 	const produce = useInfiniteQuery({
-		queryKey: ["produce", produceStatus, nearExpiryOnly],
+		queryKey: [
+			...QK.produce.lists(),
+			"paged",
+			{ status: produceStatus, nearExpiry: nearExpiryOnly },
+		],
 		queryFn: ({ pageParam = 0 }) =>
 			produceApi.list({
 				status: produceStatus,

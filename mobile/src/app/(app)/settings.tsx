@@ -21,7 +21,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { paymongoApi, usersApi } from "@/lib/hydro-api";
 import { useI18n, useT } from "@/lib/i18n";
-import { STALE } from "@/lib/query-config";
+import { QK, STALE } from "@/lib/query-config";
 import { formatPHP, handleError } from "@/lib/utils";
 
 export default function SettingsScreen() {
@@ -34,7 +34,7 @@ export default function SettingsScreen() {
 	const goBack = useBack();
 
 	const me = useQuery({
-		queryKey: ["me"],
+		queryKey: QK.me(),
 		queryFn: () => usersApi.me(),
 		staleTime: STALE.me,
 	});
@@ -49,13 +49,13 @@ export default function SettingsScreen() {
 	const saveLocale = useMutation({
 		mutationFn: (l: "en" | "tl") =>
 			usersApi.updateMe({ locale: l }).catch(() => undefined),
-		onSuccess: () => qc.invalidateQueries({ queryKey: ["me"] }),
+		onSuccess: () => qc.invalidateQueries({ queryKey: QK.me() }),
 	});
 
 	const saveName = useMutation({
 		mutationFn: (name: string) => usersApi.updateMe({ full_name: name }),
 		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: ["me"] });
+			qc.invalidateQueries({ queryKey: QK.me() });
 			toast.success("Profile updated");
 			setEditOpen(false);
 		},

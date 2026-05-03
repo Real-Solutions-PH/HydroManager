@@ -14,6 +14,7 @@ import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
 import { hydroAiApi } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
+import { QK } from "@/lib/query-config";
 import { handleError } from "@/lib/utils";
 
 interface Msg {
@@ -32,7 +33,7 @@ export function AIChatFab() {
 	const [open, setOpen] = useState(false);
 	const qc = useQueryClient();
 	const quota = useQuery({
-		queryKey: ["ai-quota"],
+		queryKey: QK.aiQuota(),
 		queryFn: () => hydroAiApi.quota(),
 		enabled: open,
 	});
@@ -53,7 +54,7 @@ export function AIChatFab() {
 					citations: r.citations,
 				},
 			]);
-			qc.invalidateQueries({ queryKey: ["ai-quota"] });
+			qc.invalidateQueries({ queryKey: QK.aiQuota() });
 		},
 		onError: (err) => {
 			setMsgs((prev) => [
@@ -64,7 +65,7 @@ export function AIChatFab() {
 					content: `Error: ${handleError(err)}`,
 				},
 			]);
-			qc.invalidateQueries({ queryKey: ["ai-quota"] });
+			qc.invalidateQueries({ queryKey: QK.aiQuota() });
 		},
 	});
 

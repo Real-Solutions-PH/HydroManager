@@ -11,6 +11,7 @@ import { Text } from "@/components/ui/text";
 import { colors, spacing, systemTypes } from "@/constants/theme";
 import { batchesApi, type Setup, setupsApi } from "@/lib/hydro-api";
 import { flattenPages, getNextSkip, PAGE_SIZE } from "@/lib/paginate";
+import { QK, STALE } from "@/lib/query-config";
 
 const FILTERS = ["All", "Active", "Archived"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -28,15 +29,21 @@ export default function SetupsScreen() {
 	const tabBarClearance = useTabBarClearance();
 
 	const setupsQ = useInfiniteQuery({
-		queryKey: ["setups", "all-with-archived", "paged"],
+		queryKey: [
+			...QK.setups.lists(),
+			"paged",
+			{ includeArchived: true },
+		],
 		queryFn: ({ pageParam = 0 }) =>
 			setupsApi.list(true, { skip: pageParam, limit: PAGE_SIZE }),
 		initialPageParam: 0,
 		getNextPageParam: getNextSkip<Setup>,
+		staleTime: STALE.setups,
 	});
 	const batchesQ = useQuery({
-		queryKey: ["batches", "all"],
+		queryKey: QK.batches.list({ includeArchived: false }),
 		queryFn: () => batchesApi.list({ include_archived: false, limit: 1000 }),
+		staleTime: STALE.batches,
 	});
 
 	const all = flattenPages(setupsQ.data);

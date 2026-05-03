@@ -20,7 +20,7 @@ import {
 	type Milestone,
 	setupsApi,
 } from "@/lib/hydro-api";
-import { STALE } from "@/lib/query-config";
+import { QK, STALE } from "@/lib/query-config";
 
 function isoDateOnly(s: string | null | undefined): string | null {
 	if (!s) return null;
@@ -36,7 +36,7 @@ export default function BatchDetailScreen() {
 	const goBack = useBack();
 
 	const batch = useQuery({
-		queryKey: ["batch", batchId],
+		queryKey: QK.batches.detail(batchId),
 		queryFn: () => batchesApi.get(batchId),
 		enabled: !!batchId,
 	});
@@ -65,8 +65,7 @@ export default function BatchDetailScreen() {
 				notes: notes.trim() || undefined,
 			}),
 		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: ["batch", batchId] });
-			qc.invalidateQueries({ queryKey: ["batches"] });
+			qc.invalidateQueries({ queryKey: QK.batches.all });
 			setCnt("");
 			setNotes("");
 		},
@@ -92,18 +91,19 @@ export default function BatchDetailScreen() {
 	const [editNotes, setEditNotes] = useState("");
 
 	const setupsQ = useQuery({
-		queryKey: ["setups"],
+		queryKey: QK.setups.list(),
 		queryFn: () => setupsApi.list(),
+		staleTime: STALE.setups,
 	});
 
 	const editSetupQ = useQuery({
-		queryKey: ["setup", editSetupId],
+		queryKey: QK.setups.detail(editSetupId),
 		queryFn: () => setupsApi.get(editSetupId),
 		enabled: !!editSetupId && editSetupId !== batch.data?.setup_id,
 	});
 
 	const cropsQ = useQuery({
-		queryKey: ["crops"],
+		queryKey: QK.crops(),
 		queryFn: () => cropsApi.list(),
 		staleTime: STALE.crops,
 	});
@@ -143,16 +143,15 @@ export default function BatchDetailScreen() {
 					: undefined,
 			}),
 		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: ["batch", batchId] });
-			qc.invalidateQueries({ queryKey: ["batches"] });
-			qc.invalidateQueries({ queryKey: ["setup"] });
+			qc.invalidateQueries({ queryKey: QK.batches.all });
+			qc.invalidateQueries({ queryKey: QK.setups.all });
 			Alert.alert("Saved", "Batch updated.");
 		},
 		onError: (e: Error) => Alert.alert("Update failed", e.message),
 	});
 
 	const setupQ = useQuery({
-		queryKey: ["setup", batch.data?.setup_id],
+		queryKey: QK.setups.detail(batch.data?.setup_id ?? ""),
 		queryFn: () => setupsApi.get(batch.data?.setup_id ?? ""),
 		enabled: !!batch.data?.setup_id,
 	});
@@ -167,9 +166,8 @@ export default function BatchDetailScreen() {
 				seeds_per_slot: Number.parseInt(allocSeeds, 10) || 0,
 			}),
 		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: ["batch", batchId] });
-			qc.invalidateQueries({ queryKey: ["batches"] });
-			qc.invalidateQueries({ queryKey: ["setup"] });
+			qc.invalidateQueries({ queryKey: QK.batches.all });
+			qc.invalidateQueries({ queryKey: QK.setups.all });
 			setAllocSlots("");
 		},
 		onError: (e: Error) => Alert.alert("Allocate failed", e.message),
@@ -178,8 +176,8 @@ export default function BatchDetailScreen() {
 	const del = useMutation({
 		mutationFn: () => batchesApi.delete(batchId),
 		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: ["batches"] });
-			qc.invalidateQueries({ queryKey: ["setup"] });
+			qc.invalidateQueries({ queryKey: QK.batches.all });
+			qc.invalidateQueries({ queryKey: QK.setups.all });
 			router.back();
 		},
 		onError: (e: Error) => Alert.alert("Delete failed", e.message),
@@ -192,7 +190,7 @@ export default function BatchDetailScreen() {
 				count: Number.parseInt(hc, 10) || 0,
 			}),
 		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: ["batch", batchId] });
+			qc.invalidateQueries({ queryKey: QK.batches.all });
 			setHw("");
 			setHc("");
 			Alert.alert("Saved", "Harvest recorded.");

@@ -17,6 +17,7 @@ import {
 	type SetupType,
 	setupsApi,
 } from "@/lib/hydro-api";
+import { QK } from "@/lib/query-config";
 
 const TYPES: SetupType[] = ["DFT", "NFT", "DutchBucket", "Kratky", "SNAP"];
 
@@ -100,7 +101,7 @@ export default function NewSetupScreen() {
 			return setup;
 		},
 		onSuccess: (setup) => {
-			qc.invalidateQueries({ queryKey: ["setups"] });
+			qc.invalidateQueries({ queryKey: QK.setups.all });
 			router.replace(`/setup/${setup.id}`);
 		},
 		onError: (e: Error) => Alert.alert("Error", e.message),

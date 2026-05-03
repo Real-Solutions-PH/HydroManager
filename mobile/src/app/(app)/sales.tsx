@@ -61,7 +61,7 @@ export default function SalesScreen() {
 	const toast = useCustomToast();
 	const qc = useQueryClient();
 	const me = useQuery({
-		queryKey: ["me"],
+		queryKey: QK.me(),
 		queryFn: () => usersApi.me(),
 		staleTime: STALE.me,
 	});
@@ -69,11 +69,11 @@ export default function SalesScreen() {
 	const tabBarClearance = useTabBarClearance();
 
 	const sales = useQuery({
-		queryKey: ["sales"],
+		queryKey: QK.sales.list(),
 		queryFn: () => salesApi.list(),
 	});
 	const dashboard = useQuery({
-		queryKey: ["sales-dashboard"],
+		queryKey: QK.sales.dashboard(),
 		queryFn: () => salesApi.dashboard(),
 		staleTime: STALE.salesDashboard,
 	});
@@ -87,8 +87,7 @@ export default function SalesScreen() {
 		mutationFn: (id: string) => salesApi.delete(id),
 		onSuccess: () => {
 			toast.success("Sale deleted");
-			qc.invalidateQueries({ queryKey: ["sales"] });
-			qc.invalidateQueries({ queryKey: ["sales-dashboard"] });
+			qc.invalidateQueries({ queryKey: QK.sales.all });
 		},
 		onError: (err) => toast.error(handleError(err)),
 	});
