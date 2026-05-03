@@ -17,3 +17,6 @@ yarn-error.*
 expo-env.d.ts
 android/
 ios/
+build-*.apk
+*.apk
+*.aab
