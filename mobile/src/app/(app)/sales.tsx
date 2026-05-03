@@ -9,7 +9,7 @@ import {
 	useWindowDimensions,
 	View,
 } from "react-native";
-import Svg, { Defs, LinearGradient, Path, Stop } from "react-native-svg";
+import Svg, { Circle, Defs, G, LinearGradient, Path, Stop } from "react-native-svg";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -18,6 +18,7 @@ import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import {
+	type InventoryCategory,
 	inventoryApi,
 	type Sale,
 	type SaleChannel,
@@ -36,6 +37,15 @@ const CROP_COLORS = [
 	"#CE93D8",
 	colors.textMuted,
 ];
+
+const CATEGORY_META: Record<InventoryCategory, { label: string; color: string }> = {
+	seeds: { label: "Seeds", color: colors.primaryLight },
+	media: { label: "Media", color: colors.info },
+	nutrients: { label: "Nutrients", color: colors.warning },
+	equipment: { label: "Equipment", color: "#CE93D8" },
+	packaging: { label: "Packaging", color: colors.success },
+	other: { label: "Other", color: colors.textMuted },
+};
 
 const CHANNEL_META: Record<SaleChannel, { label: string; color: string }> = {
 	market: { label: "Kadiwa", color: colors.primaryLight },
@@ -147,6 +157,19 @@ export default function SalesScreen() {
 		0,
 	);
 
+	const expenseByCategory = useMemo(() => {
+		const items = inventory.data?.data ?? [];
+		const totals = new Map<InventoryCategory, number>();
+		for (const it of items) {
+			const value = (it.unit_cost ?? 0) * it.current_stock;
+			if (value <= 0) continue;
+			totals.set(it.category, (totals.get(it.category) ?? 0) + value);
+		}
+		return Array.from(totals.entries())
+			.map(([category, value]) => ({ category, value }))
+			.sort((a, b) => b.value - a.value);
+	}, [inventory.data]);
+
 	const topCrops = d?.top_crops ?? [];
 	const topCropsMax = topCrops.reduce((m, c) => Math.max(m, c.revenue), 0);
 
@@ -229,6 +252,19 @@ export default function SalesScreen() {
 						subtitle="Inventory on hand"
 					/>
 				</View>
+
+				<Card>
+					<Text size="lg" weight="bold">
+						Expense by Category
+					</Text>
+					<Text size="sm" tone="muted" style={{ marginTop: 2 }}>
+						Inventory cost composition
+					</Text>
+					<ExpensePieChart
+						slices={expenseByCategory}
+						total={totalExpense}
+					/>
+				</Card>
 
 				<Card>
 					<Text size="lg" weight="bold">
@@ -676,6 +712,126 @@ function RecentSaleCard({
 				</View>
 			</View>
 		</Card>
+	);
+}
+
+function ExpensePieChart({
+	slices,
+	total,
+}: {
+	slices: { category: InventoryCategory; value: number }[];
+	total: number;
+}) {
+	const size = 160;
+	const radius = size / 2;
+	const stroke = 28;
+	const innerR = radius - stroke / 2;
+	const cx = radius;
+	const cy = radius;
+
+	if (total <= 0 || slices.length === 0) {
+		return (
+			<View
+				style={{
+					height: size,
+					alignItems: "center",
+					justifyContent: "center",
+					marginTop: spacing.sm,
+				}}
+			>
+				<Text tone="muted" size="sm">
+					No inventory expenses yet
+				</Text>
+			</View>
+		);
+	}
+
+	let cumulative = 0;
+	const arcs = slices.map((s) => {
+		const fraction = s.value / total;
+		const start = cumulative;
+		cumulative += fraction;
+		return { ...s, fraction, start, end: cumulative };
+	});
+
+	return (
+		<View
+			style={{
+				flexDirection: "row",
+				alignItems: "center",
+				gap: spacing.md,
+				marginTop: spacing.sm,
+			}}
+		>
+			<Svg width={size} height={size}>
+				<G rotation={-90} originX={cx} originY={cy}>
+					{arcs.length === 1 ? (
+						<Circle
+							cx={cx}
+							cy={cy}
+							r={innerR}
+							stroke={CATEGORY_META[arcs[0].category].color}
+							strokeWidth={stroke}
+							fill="none"
+						/>
+					) : (
+						arcs.map((a) => {
+							const meta = CATEGORY_META[a.category];
+							const startAngle = a.start * 2 * Math.PI;
+							const endAngle = a.end * 2 * Math.PI;
+							const x1 = cx + innerR * Math.cos(startAngle);
+							const y1 = cy + innerR * Math.sin(startAngle);
+							const x2 = cx + innerR * Math.cos(endAngle);
+							const y2 = cy + innerR * Math.sin(endAngle);
+							const largeArc = a.fraction > 0.5 ? 1 : 0;
+							const d = `M ${x1} ${y1} A ${innerR} ${innerR} 0 ${largeArc} 1 ${x2} ${y2}`;
+							return (
+								<Path
+									key={a.category}
+									d={d}
+									stroke={meta.color}
+									strokeWidth={stroke}
+									fill="none"
+								/>
+							);
+						})
+					)}
+				</G>
+			</Svg>
+			<View style={{ flex: 1, gap: spacing.xs }}>
+				{arcs.map((a) => {
+					const meta = CATEGORY_META[a.category];
+					return (
+						<View
+							key={a.category}
+							style={{
+								flexDirection: "row",
+								alignItems: "center",
+								gap: spacing.xs,
+							}}
+						>
+							<View
+								style={{
+									width: 10,
+									height: 10,
+									borderRadius: 5,
+									backgroundColor: meta.color,
+								}}
+							/>
+							<Text size="sm" style={{ flex: 1 }}>
+								{meta.label}
+							</Text>
+							<Text size="sm" weight="semibold">
+								{formatPHP(a.value, 0)}
+							</Text>
+							<Text size="xs" tone="muted" style={{ width: 36, textAlign: "right" }}>
+								{(a.fraction * 100).toFixed(0)}%
+							</Text>
+						</View>
+					);
+				})}
+			</View>
+		</View>
 	);
 }
 
