@@ -2796,5 +2796,1063 @@
         ]
       }
     ]
+  },
+  {
+    "name_en": "Chinese Kale (Kailaan)",
+    "name_tl": "Kailan",
+    "category": "leafy",
+    "recommended_setups": "DFT,NFT,Kratky",
+    "ph_min": 5.8,
+    "ph_max": 6.5,
+    "ec_min": 1.8,
+    "ec_max": 2.4,
+    "days_to_harvest_min": 50,
+    "days_to_harvest_max": 70,
+    "typical_yield_grams": 220.0,
+    "sunlight_hours": "10-14",
+    "growlight_hours": "12-16",
+    "temperature_day_c": "18-24",
+    "temperature_night_c": "10-18",
+    "water_temp_c": "18-22",
+    "humidity_pct": "55-70",
+    "ec_seedling": 1.0,
+    "ec_vegetative": 1.8,
+    "ec_mature": 2.2,
+    "ec_fruiting": null,
+    "local_price_php_per_kg_min": 150.0,
+    "local_price_php_per_kg_max": 350.0,
+    "common_issues": "Bolting in heat; flea beetles; clubroot",
+    "harvest_indicator": "Stems pencil-thick, first flower buds appear",
+    "image_key": "chinese_kale_crop.png",
+    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "source": "Plant.Garden, Epic Gardening, Web validation",
+    "tips": [
+      "Harvest when first flower buds form for tenderest stems.",
+      "Cut central stem first then side shoots regrow for second harvest.",
+      "Variety Karillo (Rijk Zwaan) tolerates Philippine lowland heat better than imports."
+    ],
+    "risks": [
+      {
+        "title": "Bolting",
+        "description": "Premature flowering above 26C produces tough fibrous stems.",
+        "mitigation": "Keep solution below 22C; harvest at first bud sign; provide 30% shade cloth."
+      },
+      {
+        "title": "Flea beetles",
+        "description": "Tiny holes peppering young leaves.",
+        "mitigation": "Floating row cover early stage; yellow sticky traps; neem oil weekly."
+      }
+    ],
+    "growth_stages": [
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 2,
+        "description": "Sow 2 seeds per rockwool plug.",
+        "actions": [
+          "Pre-soak plug pH 5.8",
+          "Cover lightly"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 3,
+        "day_max": 7,
+        "description": "Cotyledons emerge.",
+        "actions": [
+          "Light 14h",
+          "Keep 20-24C"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 8,
+        "day_max": 18,
+        "description": "True leaves develop.",
+        "actions": [
+          "EC 1.0",
+          "Thin to 1 plant"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 19,
+        "day_max": 21,
+        "description": "Move to channel when 4 true leaves.",
+        "actions": [
+          "EC 1.6",
+          "pH 6.0"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 22,
+        "day_max": 50,
+        "description": "Stem elongation, leaf production.",
+        "actions": [
+          "EC 1.8-2.2",
+          "Maintain cool reservoir"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 50,
+        "day_max": 70,
+        "description": "Stems pencil-thick, buds visible.",
+        "actions": [
+          "Cut main stem 5cm above crown",
+          "Allow side shoots to regrow"
+        ]
+      }
+    ]
+  },
+  {
+    "name_en": "Tomato (Plum)",
+    "name_tl": "Kamatis (Plum)",
+    "category": "fruiting",
+    "recommended_setups": "DutchBucket",
+    "ph_min": 5.8,
+    "ph_max": 6.5,
+    "ec_min": 2.2,
+    "ec_max": 3.5,
+    "days_to_harvest_min": 75,
+    "days_to_harvest_max": 95,
+    "typical_yield_grams": 2500.0,
+    "sunlight_hours": "12-14",
+    "growlight_hours": "14-18",
+    "temperature_day_c": "22-28",
+    "temperature_night_c": "16-20",
+    "water_temp_c": "20-24",
+    "humidity_pct": "60-70",
+    "ec_seedling": 1.0,
+    "ec_vegetative": 2.0,
+    "ec_mature": 2.8,
+    "ec_fruiting": 3.2,
+    "local_price_php_per_kg_min": 80.0,
+    "local_price_php_per_kg_max": 180.0,
+    "common_issues": "BER; cracking on irregular watering; whitefly",
+    "harvest_indicator": "Fruit fully red, oblong, firm",
+    "image_key": "plum_tomato_crop.png",
+    "image_url": "https://images.unsplash.com/photo-1546470427-e5380b6e9b9e?w=800",
+    "source": "Rijk Zwaan Solarino datasheet, NoSoilSolutions, Web validation",
+    "tips": [
+      "Plum/paste varieties (e.g. Solarino, San Marzano) have less water content — ideal for sauces.",
+      "Maintain steady irrigation to prevent radial cracking.",
+      "Drop EC by 0.3 during ripening to concentrate sugars."
+    ],
+    "risks": [
+      {
+        "title": "Blossom-end rot (BER)",
+        "description": "Plum types especially susceptible due to elongated fruit shape and Ca uptake bottleneck.",
+        "mitigation": "Stable EC, weekly Cal-Mag supplement, keep humidity 60-70%."
+      },
+      {
+        "title": "Fruit cracking",
+        "description": "Concentric or radial cracks from sudden EC/water swings.",
+        "mitigation": "Keep fertigation cycles consistent; avoid drought-then-flood pattern."
+      }
+    ],
+    "growth_stages": [
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 2,
+        "description": "Sow seed in rockwool plug.",
+        "actions": [
+          "Pre-soak",
+          "Cover with vermiculite"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 3,
+        "day_max": 8,
+        "description": "Cotyledons unfold.",
+        "actions": [
+          "25-28C",
+          "Light 16h"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 9,
+        "day_max": 25,
+        "description": "True leaves develop.",
+        "actions": [
+          "EC 1.0",
+          "Pot up if needed"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 26,
+        "day_max": 30,
+        "description": "Move to Dutch Bucket.",
+        "actions": [
+          "EC 2.0",
+          "Stake and trellis"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 31,
+        "day_max": 50,
+        "description": "Vine and leaf growth.",
+        "actions": [
+          "Train to single leader",
+          "Prune suckers weekly"
+        ]
+      },
+      {
+        "stage": "Flowering",
+        "day_min": 50,
+        "day_max": 65,
+        "description": "Trusses appear.",
+        "actions": [
+          "Hand-pollinate by shaking trusses AM",
+          "EC 2.6"
+        ]
+      },
+      {
+        "stage": "Fruit Set",
+        "day_min": 65,
+        "day_max": 80,
+        "description": "Oblong fruit forms.",
+        "actions": [
+          "Maintain Ca/K balance",
+          "EC 3.0"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 75,
+        "day_max": 95,
+        "description": "Fruit fully colored.",
+        "actions": [
+          "Pick at full red",
+          "EC 2.8"
+        ]
+      }
+    ]
+  },
+  {
+    "name_en": "Sweet Italian Pepper",
+    "name_tl": "Matamis na Sili (Italyano)",
+    "category": "fruiting",
+    "recommended_setups": "DutchBucket",
+    "ph_min": 5.5,
+    "ph_max": 6.5,
+    "ec_min": 2.0,
+    "ec_max": 2.8,
+    "days_to_harvest_min": 70,
+    "days_to_harvest_max": 90,
+    "typical_yield_grams": 1500.0,
+    "sunlight_hours": "12-14",
+    "growlight_hours": "14-18",
+    "temperature_day_c": "22-28",
+    "temperature_night_c": "18-22",
+    "water_temp_c": "20-24",
+    "humidity_pct": "60-75",
+    "ec_seedling": 1.0,
+    "ec_vegetative": 1.8,
+    "ec_mature": 2.4,
+    "ec_fruiting": 2.6,
+    "local_price_php_per_kg_min": 200.0,
+    "local_price_php_per_kg_max": 450.0,
+    "common_issues": "BER; aphids; thin fruit walls if low Ca",
+    "harvest_indicator": "Long horn-shape (15-20cm), fully red/yellow, glossy",
+    "image_key": "sweet_italian_pepper_crop.png",
+    "image_url": "https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?w=800",
+    "source": "Rijk Zwaan Palermo datasheet, IGWorks, NoSoilSolutions",
+    "tips": [
+      "Palermo-type horns ripen faster than blocky bell peppers — earlier red color = sweeter flavor.",
+      "Bag clusters with insect mesh during flowering to keep clean fruit.",
+      "Pinch first king flower to build stronger bush."
+    ],
+    "risks": [
+      {
+        "title": "Blossom-end rot",
+        "description": "Elongated fruit prone to Ca starvation at distal tip.",
+        "mitigation": "Stable EC, weekly Cal-Mag, humidity 60-75%, even fertigation."
+      },
+      {
+        "title": "Aphid colonies",
+        "description": "Curling new growth, sticky honeydew, sooty mold.",
+        "mitigation": "Yellow sticky traps; release ladybugs; spray insecticidal soap."
+      }
+    ],
+    "growth_stages": [
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 2,
+        "description": "Sow in pre-soaked rockwool.",
+        "actions": [
+          "Maintain 27C",
+          "Keep moist"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 3,
+        "day_max": 14,
+        "description": "Slow emergence.",
+        "actions": [
+          "Heat mat",
+          "No nutrients yet"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 15,
+        "day_max": 35,
+        "description": "True leaves develop.",
+        "actions": [
+          "EC 1.0",
+          "16h light"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 36,
+        "day_max": 40,
+        "description": "Move to Dutch Bucket.",
+        "actions": [
+          "EC 1.8",
+          "Stake"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 41,
+        "day_max": 55,
+        "description": "Bush forms.",
+        "actions": [
+          "Pinch king flower",
+          "EC 2.0"
+        ]
+      },
+      {
+        "stage": "Flowering",
+        "day_min": 55,
+        "day_max": 70,
+        "description": "White blossoms appear.",
+        "actions": [
+          "Tap blooms AM to pollinate",
+          "EC 2.4"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 70,
+        "day_max": 90,
+        "description": "Long horns turn red/yellow.",
+        "actions": [
+          "Cut stem with shears",
+          "Pick every 2-3 days"
+        ]
+      }
+    ]
+  },
+  {
+    "name_en": "Lettuce (Oakleaf)",
+    "name_tl": "Letsugas (Oakleaf)",
+    "category": "leafy",
+    "recommended_setups": "DFT,NFT,Kratky",
+    "ph_min": 5.5,
+    "ph_max": 6.2,
+    "ec_min": 0.8,
+    "ec_max": 1.6,
+    "days_to_harvest_min": 28,
+    "days_to_harvest_max": 45,
+    "typical_yield_grams": 160.0,
+    "sunlight_hours": "10-14",
+    "growlight_hours": "14-16",
+    "temperature_day_c": "18-24",
+    "temperature_night_c": "12-18",
+    "water_temp_c": "18-22",
+    "humidity_pct": "55-65",
+    "ec_seedling": 0.6,
+    "ec_vegetative": 1.0,
+    "ec_mature": 1.4,
+    "ec_fruiting": null,
+    "local_price_php_per_kg_min": 250.0,
+    "local_price_php_per_kg_max": 500.0,
+    "common_issues": "Tip burn; bolting in heat; loose leaf bruising",
+    "harvest_indicator": "Loose rosette, lobed leaves 15-20cm",
+    "image_key": "oakleaf_lettuce_crop.png",
+    "image_url": "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=800",
+    "source": "Rijk Zwaan Lalique, Howard Resh, Produce Grower",
+    "tips": [
+      "Oakleaf types (e.g. Lalique RZ) hold longer at maturity than romaine — flexible harvest window.",
+      "Cut-and-come-again works well — outer leaves regrow 2-3 cycles.",
+      "Lobed leaves trap water — boost airflow to avoid mildew."
+    ],
+    "risks": [
+      {
+        "title": "Tip burn",
+        "description": "Brown leaf edges from local Ca shortage.",
+        "mitigation": "Cap EC at 1.6; keep humidity above 55%; move air across canopy."
+      },
+      {
+        "title": "Bolting",
+        "description": "Stem elongates and leaves turn bitter above 26C.",
+        "mitigation": "Hold day temp under 24C; choose bolt-resistant cultivars."
+      }
+    ],
+    "growth_stages": [
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 1,
+        "description": "Sow on pre-soaked rockwool.",
+        "actions": [
+          "pH 5.5",
+          "Light cover"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 2,
+        "day_max": 5,
+        "description": "Cotyledons unfold.",
+        "actions": [
+          "Light 16h",
+          "Mist daily"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 6,
+        "day_max": 14,
+        "description": "True leaves form.",
+        "actions": [
+          "EC 0.6",
+          "Nursery channel"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 15,
+        "day_max": 18,
+        "description": "Move to main channel.",
+        "actions": [
+          "EC 1.0",
+          "pH 5.8"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 19,
+        "day_max": 35,
+        "description": "Rosette expands.",
+        "actions": [
+          "EC 1.2-1.4",
+          "Hold temp <24C"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 28,
+        "day_max": 45,
+        "description": "Lobed leaves full size.",
+        "actions": [
+          "Cut at base",
+          "Or pluck outer leaves"
+        ]
+      }
+    ]
+  },
+  {
+    "name_en": "Lettuce (Batavia)",
+    "name_tl": "Letsugas (Batavia)",
+    "category": "leafy",
+    "recommended_setups": "DFT,NFT,Kratky",
+    "ph_min": 5.5,
+    "ph_max": 6.2,
+    "ec_min": 1.0,
+    "ec_max": 1.8,
+    "days_to_harvest_min": 35,
+    "days_to_harvest_max": 50,
+    "typical_yield_grams": 250.0,
+    "sunlight_hours": "10-14",
+    "growlight_hours": "14-16",
+    "temperature_day_c": "20-26",
+    "temperature_night_c": "14-20",
+    "water_temp_c": "18-22",
+    "humidity_pct": "55-70",
+    "ec_seedling": 0.6,
+    "ec_vegetative": 1.2,
+    "ec_mature": 1.6,
+    "ec_fruiting": null,
+    "local_price_php_per_kg_min": 220.0,
+    "local_price_php_per_kg_max": 450.0,
+    "common_issues": "Tip burn; pythium in warm reservoir",
+    "harvest_indicator": "Loose semi-head, crinkled leaves 20-25cm",
+    "image_key": "batavia_lettuce_crop.png",
+    "image_url": "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=800",
+    "source": "Rijk Zwaan Hydrolique, Howard Resh, ResearchGate",
+    "tips": [
+      "Batavia (summer crisp) tolerates higher temperatures than butterhead — best lettuce for tropical hydroponics.",
+      "Hydrolique RZ bred specifically for hydroponic year-round in lowland heat.",
+      "Crinkled leaves give better shelf-life — bag whole heads dry."
+    ],
+    "risks": [
+      {
+        "title": "Tip burn",
+        "description": "Inner leaf edges brown from rapid growth.",
+        "mitigation": "EC <1.8; humidity 55-70%; constant fan over canopy."
+      },
+      {
+        "title": "Pythium root rot",
+        "description": "Brown slimy roots when reservoir >24C.",
+        "mitigation": "Chill solution to <22C; sanitize between batches; weekly H2O2 1ml/L."
+      }
+    ],
+    "growth_stages": [
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 1,
+        "description": "Sow on rockwool.",
+        "actions": [
+          "Pre-soak pH 5.5"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 2,
+        "day_max": 5,
+        "description": "Cotyledons emerge.",
+        "actions": [
+          "16h light"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 6,
+        "day_max": 16,
+        "description": "True leaves form.",
+        "actions": [
+          "EC 0.6",
+          "Nursery channel"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 17,
+        "day_max": 20,
+        "description": "Move to main channel.",
+        "actions": [
+          "EC 1.2",
+          "pH 5.8"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 21,
+        "day_max": 40,
+        "description": "Semi-head forms.",
+        "actions": [
+          "EC 1.4-1.6",
+          "Maintain cool root zone"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 35,
+        "day_max": 50,
+        "description": "Crinkled head firm.",
+        "actions": [
+          "Cut at base AM",
+          "Cold-chain immediately"
+        ]
+      }
+    ]
+  },
+  {
+    "name_en": "Lettuce (Lollo)",
+    "name_tl": "Letsugas (Lollo)",
+    "category": "leafy",
+    "recommended_setups": "DFT,NFT,Kratky",
+    "ph_min": 5.5,
+    "ph_max": 6.2,
+    "ec_min": 0.8,
+    "ec_max": 1.6,
+    "days_to_harvest_min": 30,
+    "days_to_harvest_max": 45,
+    "typical_yield_grams": 180.0,
+    "sunlight_hours": "10-14",
+    "growlight_hours": "14-16",
+    "temperature_day_c": "18-24",
+    "temperature_night_c": "12-18",
+    "water_temp_c": "18-22",
+    "humidity_pct": "55-65",
+    "ec_seedling": 0.6,
+    "ec_vegetative": 1.0,
+    "ec_mature": 1.4,
+    "ec_fruiting": null,
+    "local_price_php_per_kg_min": 280.0,
+    "local_price_php_per_kg_max": 550.0,
+    "common_issues": "Tip burn; bolting; aphids hide in frills",
+    "harvest_indicator": "Frilly rosette 20cm, dense ruffles",
+    "image_key": "lollo_lettuce_crop.png",
+    "image_url": "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=800",
+    "source": "Rijk Zwaan Limambo/Tourbillon, Johnny's Selected Seeds, Howard Resh",
+    "tips": [
+      "Lollo Bionda (green) and Lollo Rossa (red) are visual upgrades for salad mixes — premium price.",
+      "Frilly leaves trap aphids — inspect undersides weekly.",
+      "Tourbillon RZ stays compact under 28C, ideal for Manila climate."
+    ],
+    "risks": [
+      {
+        "title": "Tip burn",
+        "description": "Browning inside frills from Ca shortfall.",
+        "mitigation": "EC <1.6; humidity 55-65%; airflow over canopy."
+      },
+      {
+        "title": "Aphid hiding",
+        "description": "Frills shelter aphid colonies invisible from above.",
+        "mitigation": "Weekly underside inspection; release ladybugs; neem oil at first sign."
+      }
+    ],
+    "growth_stages": [
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 1,
+        "description": "Sow on rockwool.",
+        "actions": [
+          "Pre-soak pH 5.5"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 2,
+        "day_max": 5,
+        "description": "Cotyledons emerge.",
+        "actions": [
+          "Light 16h"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 6,
+        "day_max": 14,
+        "description": "True leaves form.",
+        "actions": [
+          "EC 0.6",
+          "Nursery channel"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 15,
+        "day_max": 18,
+        "description": "Move to main channel.",
+        "actions": [
+          "EC 1.0",
+          "pH 5.8"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 19,
+        "day_max": 35,
+        "description": "Frilly rosette expands.",
+        "actions": [
+          "EC 1.2-1.4",
+          "Keep day temp <24C"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 30,
+        "day_max": 45,
+        "description": "Dense frilly head.",
+        "actions": [
+          "Cut at base",
+          "Pack loose to avoid crushing frills"
+        ]
+      }
+    ]
+  },
+  {
+    "name_en": "Cantaloupe",
+    "name_tl": "Milon",
+    "category": "fruiting",
+    "recommended_setups": "DutchBucket",
+    "ph_min": 5.8,
+    "ph_max": 6.5,
+    "ec_min": 2.0,
+    "ec_max": 3.0,
+    "days_to_harvest_min": 75,
+    "days_to_harvest_max": 110,
+    "typical_yield_grams": 1800.0,
+    "sunlight_hours": "12-14",
+    "growlight_hours": "14-16",
+    "temperature_day_c": "24-30",
+    "temperature_night_c": "18-22",
+    "water_temp_c": "20-25",
+    "humidity_pct": "55-70",
+    "ec_seedling": 1.2,
+    "ec_vegetative": 2.0,
+    "ec_mature": 2.4,
+    "ec_fruiting": 2.8,
+    "local_price_php_per_kg_min": 80.0,
+    "local_price_php_per_kg_max": 200.0,
+    "common_issues": "Powdery mildew; vine breakage; poor netting from EC swings",
+    "harvest_indicator": "Full slip from vine, sweet aroma, raised tan netting on rind",
+    "image_key": "cantaloupe_crop.png",
+    "image_url": "https://images.unsplash.com/photo-1571575173700-afb9492e6a50?w=800",
+    "source": "Rijk Zwaan melon catalog, Dealzer, Agri Farming, NatureTech",
+    "tips": [
+      "Cantaloupe distinct from generic melon — netted rind, orange flesh, slip-free harvest signal.",
+      "Maintain even fertigation during fruit sizing or netting will be patchy.",
+      "Bump EC to 2.8 last 2 weeks for sugar (Brix) build-up.",
+      "Hammock or sling each fruit at golf-ball size — vines snap under weight."
+    ],
+    "risks": [
+      {
+        "title": "Powdery mildew",
+        "description": "White dust on large leaves during humid spells.",
+        "mitigation": "Airflow; prune lower leaves; potassium bicarbonate or sulfur spray weekly."
+      },
+      {
+        "title": "Hollow heart / poor pollination",
+        "description": "Indoor plants get few bees, fruit aborts or hollow-centered.",
+        "mitigation": "Hand-pollinate male to female flowers AM with brush; keep humidity 55-70%."
+      },
+      {
+        "title": "Vine breakage",
+        "description": "Heavy fruit (1-2kg) snaps unsupported vines.",
+        "mitigation": "Mesh slings clipped to overhead trellis line as soon as fruit forms."
+      }
+    ],
+    "growth_stages": [
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 4,
+        "description": "Sow in warm rockwool or coco plug.",
+        "actions": [
+          "Maintain 25-28C",
+          "Pre-soak medium"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 5,
+        "day_max": 10,
+        "description": "Cotyledons emerge.",
+        "actions": [
+          "Heat mat",
+          "Light 14h"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 11,
+        "day_max": 25,
+        "description": "True leaves form.",
+        "actions": [
+          "EC 1.2",
+          "Pot up if needed"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 26,
+        "day_max": 30,
+        "description": "Move to Dutch Bucket.",
+        "actions": [
+          "EC 2.0",
+          "Set up overhead trellis"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 31,
+        "day_max": 50,
+        "description": "Vine elongation.",
+        "actions": [
+          "Train single leader",
+          "Prune lateral suckers below fruit zone"
+        ]
+      },
+      {
+        "stage": "Flowering",
+        "day_min": 50,
+        "day_max": 65,
+        "description": "Yellow male and female flowers appear.",
+        "actions": [
+          "Hand-pollinate AM",
+          "EC 2.4"
+        ]
+      },
+      {
+        "stage": "Fruit Set",
+        "day_min": 65,
+        "day_max": 90,
+        "description": "Fruit sizes up, netting forms.",
+        "actions": [
+          "Sling each fruit",
+          "EC 2.6",
+          "Limit to 2-4 fruit per plant"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 75,
+        "day_max": 110,
+        "description": "Full slip stage — fruit detaches with light pull.",
+        "actions": [
+          "EC 2.8 final 2 weeks",
+          "Cure 2-3 days at room temp before refrigerating"
+        ]
+      }
+    ]
+  },
+  {
+    "name_en": "Lettuce (Salanova/Multileaf)",
+    "name_tl": "Letsugas (Salanova)",
+    "category": "leafy",
+    "recommended_setups": "DFT,NFT,Kratky",
+    "ph_min": 5.5,
+    "ph_max": 6.2,
+    "ec_min": 0.8,
+    "ec_max": 1.6,
+    "days_to_harvest_min": 28,
+    "days_to_harvest_max": 42,
+    "typical_yield_grams": 170.0,
+    "sunlight_hours": "10-14",
+    "growlight_hours": "14-16",
+    "temperature_day_c": "18-24",
+    "temperature_night_c": "12-18",
+    "water_temp_c": "18-22",
+    "humidity_pct": "55-65",
+    "ec_seedling": 0.6,
+    "ec_vegetative": 1.0,
+    "ec_mature": 1.4,
+    "ec_fruiting": null,
+    "local_price_php_per_kg_min": 350.0,
+    "local_price_php_per_kg_max": 700.0,
+    "common_issues": "Tip burn at high EC; aphids in dense rosette",
+    "harvest_indicator": "One cut at base releases 40-50 uniform baby leaves",
+    "image_key": "salanova_lettuce_crop.png",
+    "image_url": "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=800",
+    "source": "Rijk Zwaan Salanova/Tourbillon, Johnny's Salanova catalog",
+    "tips": [
+      "Salanova/Multileaf bred so single basal cut yields ready-to-pack baby-leaf mix — labor saver vs hand-picking.",
+      "Tourbillon RZ Crispy and Lalique-line Sweet types both fit Salanova workflow.",
+      "Premium price point at restaurants — focus on uniform head size for plating."
+    ],
+    "risks": [
+      {
+        "title": "Tip burn",
+        "description": "Inner leaf browning from Ca shortfall.",
+        "mitigation": "EC <1.6; humidity 55-65%; constant airflow over canopy."
+      },
+      {
+        "title": "Aphids hidden in rosette",
+        "description": "Dense overlapping leaves shelter colonies.",
+        "mitigation": "Weekly inspection of rosette base; release ladybugs; neem oil on first sign."
+      }
+    ],
+    "growth_stages": [
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 1,
+        "description": "Sow on rockwool plug.",
+        "actions": [
+          "Pre-soak pH 5.5"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 2,
+        "day_max": 5,
+        "description": "Cotyledons emerge.",
+        "actions": [
+          "Light 16h"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 6,
+        "day_max": 14,
+        "description": "True leaves form.",
+        "actions": [
+          "EC 0.6",
+          "Nursery channel"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 15,
+        "day_max": 18,
+        "description": "Move to main channel.",
+        "actions": [
+          "EC 1.0",
+          "pH 5.8"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 19,
+        "day_max": 32,
+        "description": "Multileaf rosette fills out uniformly.",
+        "actions": [
+          "EC 1.2-1.4",
+          "Hold day temp <24C"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 28,
+        "day_max": 42,
+        "description": "Single basal cut releases 40-50 baby leaves.",
+        "actions": [
+          "Cut once at base",
+          "Pack as ready-to-eat mix"
+        ]
+      }
+    ]
+  },
+  {
+    "name_en": "Smooth Okra",
+    "name_tl": "Okra (Makinis)",
+    "category": "fruiting",
+    "recommended_setups": "DutchBucket",
+    "ph_min": 6.0,
+    "ph_max": 6.5,
+    "ec_min": 2.0,
+    "ec_max": 2.4,
+    "days_to_harvest_min": 50,
+    "days_to_harvest_max": 65,
+    "typical_yield_grams": 1500.0,
+    "sunlight_hours": "12-14",
+    "growlight_hours": "14-16",
+    "temperature_day_c": "24-32",
+    "temperature_night_c": "18-24",
+    "water_temp_c": "22-26",
+    "humidity_pct": "55-75",
+    "ec_seedling": 1.0,
+    "ec_vegetative": 1.8,
+    "ec_mature": 2.2,
+    "ec_fruiting": 2.4,
+    "local_price_php_per_kg_min": 60.0,
+    "local_price_php_per_kg_max": 140.0,
+    "common_issues": "Pods turn fibrous if over-mature; aphids; fruit borer",
+    "harvest_indicator": "Pods 6-9cm long, snap easily, smooth glossy skin",
+    "image_key": "smooth_okra_crop.png",
+    "image_url": "https://images.unsplash.com/photo-1664478549196-e6cb37db5cd1?w=800",
+    "source": "DA-BPI, GrowByCity Philippines, Hydroforia, Oklahoma State Extension",
+    "tips": [
+      "Smooth-pod cultivars (e.g. Smooth Green, Clemson Smooth) lack spines on pods and stems — easier handling, less skin irritation than spiny types.",
+      "Harvest every 1-2 days at 6-9cm — pods turn woody fast above 10cm.",
+      "Soak seeds 12-24h before sowing to break hard seed coat.",
+      "Self-pollinating; no hand-pollination needed but bees boost set indoors."
+    ],
+    "risks": [
+      {
+        "title": "Fibrous overripe pods",
+        "description": "Pods harden into inedible fiber if missed even by 1-2 days.",
+        "mitigation": "Daily harvest checks; remove oversized pods to keep plant productive."
+      },
+      {
+        "title": "Aphids and whitefly",
+        "description": "Sap-suckers on tender new growth and pod undersides.",
+        "mitigation": "Yellow sticky traps; spray insecticidal soap weekly; release ladybugs."
+      },
+      {
+        "title": "Fruit borer (Earias)",
+        "description": "Larvae tunnel into pods leaving exit holes.",
+        "mitigation": "Insect mesh exclusion; pheromone traps; remove infested pods immediately."
+      }
+    ],
+    "growth_stages": [
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 3,
+        "description": "Soak seeds 12-24h then sow in warm rockwool or coco plug.",
+        "actions": [
+          "Pre-soak seeds",
+          "Maintain 25-30C"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 4,
+        "day_max": 10,
+        "description": "Cotyledons emerge.",
+        "actions": [
+          "Heat mat",
+          "Light 14h"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 11,
+        "day_max": 25,
+        "description": "True leaves develop, taproot lengthens.",
+        "actions": [
+          "EC 1.0",
+          "Pot up if needed"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 26,
+        "day_max": 30,
+        "description": "Move to Dutch Bucket once 4-5 true leaves.",
+        "actions": [
+          "EC 1.8",
+          "Stake immediately"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 31,
+        "day_max": 45,
+        "description": "Stem thickens, leaves expand.",
+        "actions": [
+          "EC 2.0",
+          "Hold day temp 26-30C"
+        ]
+      },
+      {
+        "stage": "Flowering",
+        "day_min": 40,
+        "day_max": 50,
+        "description": "Yellow hibiscus-like flowers appear.",
+        "actions": [
+          "EC 2.2",
+          "Self-pollinating"
+        ]
+      },
+      {
+        "stage": "Fruit Set",
+        "day_min": 45,
+        "day_max": 55,
+        "description": "Pods form 5-6 days after flowering.",
+        "actions": [
+          "EC 2.4",
+          "Track pod size daily"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 50,
+        "day_max": 65,
+        "description": "Continuous harvest every 1-2 days.",
+        "actions": [
+          "Cut pods at 6-9cm with shears",
+          "Wear gloves even with smooth varieties — leaves still mildly irritating"
+        ]
+      }
+    ]
   }
 ]
