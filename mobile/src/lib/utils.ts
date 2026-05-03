@@ -54,6 +54,25 @@ export function capitalize(s: string): string {
 	return s.length === 0 ? s : s[0].toUpperCase() + s.slice(1);
 }
 
+export function formatDateOnly(
+	iso: string | null | undefined,
+	options: Intl.DateTimeFormatOptions = {
+		year: "numeric",
+		month: "short",
+		day: "2-digit",
+	},
+): string {
+	if (!iso) return "";
+	const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+	if (!m) return "";
+	const d = new Date(
+		Number.parseInt(m[1], 10),
+		Number.parseInt(m[2], 10) - 1,
+		Number.parseInt(m[3], 10),
+	);
+	return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString(undefined, options);
+}
+
 export function formatPHP(
 	n: number | null | undefined,
 	fractionDigits = 2,

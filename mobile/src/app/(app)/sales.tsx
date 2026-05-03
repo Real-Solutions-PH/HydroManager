@@ -17,6 +17,7 @@ import { Text } from "@/components/ui/text";
 import { colors, spacing } from "@/constants/theme";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import {
+	inventoryApi,
 	type Sale,
 	type SaleChannel,
 	salesApi,
@@ -57,6 +58,10 @@ export default function SalesScreen() {
 	const dashboard = useQuery({
 		queryKey: ["sales-dashboard"],
 		queryFn: () => salesApi.dashboard(),
+	});
+	const inventory = useQuery({
+		queryKey: ["inventory-items"],
+		queryFn: () => inventoryApi.list(),
 	});
 
 	const del = useMutation({
@@ -135,6 +140,11 @@ export default function SalesScreen() {
 				: (d?.net_ytd ?? 0);
 	const margin = gross > 0 ? (net / gross) * 100 : 0;
 
+	const totalExpense = (inventory.data?.data ?? []).reduce(
+		(s, it) => s + (it.unit_cost ?? 0) * it.current_stock,
+		0,
+	);
+
 	const topCrops = d?.top_crops ?? [];
 	const topCropsMax = topCrops.reduce((m, c) => Math.max(m, c.revenue), 0);
 
@@ -205,6 +215,16 @@ export default function SalesScreen() {
 						icon="cash-outline"
 						iconColor={colors.primaryLight}
 						subtitle={`${formatPHP(net, 0)} profit`}
+					/>
+				</View>
+
+				<View style={{ flexDirection: "row", gap: spacing.sm }}>
+					<KpiCard
+						label="TOTAL EXPENSE"
+						value={formatPHP(totalExpense, 0)}
+						icon="cube-outline"
+						iconColor={colors.warning}
+						subtitle="Inventory on hand"
 					/>
 				</View>
 

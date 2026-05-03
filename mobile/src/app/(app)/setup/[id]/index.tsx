@@ -10,6 +10,7 @@ import { Text } from "@/components/ui/text";
 import { colors, spacing, systemTypes } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { type Batch, batchesApi, setupsApi } from "@/lib/hydro-api";
+import { formatDateOnly } from "@/lib/utils";
 
 const BATCH_PALETTE = [
 	"#34D399",
@@ -476,7 +477,7 @@ function BatchRow({
 									? `${batch.slots_used} slots × ${batch.seeds_per_slot} seeds · `
 									: ""}
 								{batch.initial_count} units · started{" "}
-								{new Date(batch.started_at).toLocaleDateString()}
+								{formatDateOnly(batch.started_at)}
 							</Text>
 						</View>
 						{legacy && batch.legacy ? (

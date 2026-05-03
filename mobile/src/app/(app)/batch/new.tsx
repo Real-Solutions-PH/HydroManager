@@ -83,7 +83,7 @@ export default function NewBatchScreen() {
 				crop_guide_id: cropId,
 				notes: notes.trim() || undefined,
 				started_at: startDate
-					? new Date(`${startDate}T00:00:00`).toISOString()
+					? `${startDate}T00:00:00.000Z`
 					: undefined,
 			}),
 		onSuccess: (b) => {
