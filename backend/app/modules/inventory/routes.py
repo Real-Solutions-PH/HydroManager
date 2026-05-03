@@ -1,8 +1,9 @@
 import uuid
-from datetime import date
+from datetime import date, datetime
 from typing import Any
 
 from fastapi import APIRouter
+from sqlalchemy import func
 from sqlmodel import col, select
 
 from app.modules.iam.deps import CurrentUser
@@ -38,26 +39,51 @@ def _compute_expiry(item) -> tuple[ExpiryStatus, int | None]:
     return ExpiryStatus.ok, days
 
 
-def _to_public(item, *, session=None) -> InventoryItemPublic:
+def _to_public(
+    item, *, last_restocked_at: datetime | None = None
+) -> InventoryItemPublic:
     pub = InventoryItemPublic.model_validate(item, from_attributes=True)
     pub.is_low_stock = (
         item.low_stock_threshold is not None
         and item.current_stock <= item.low_stock_threshold
     )
     pub.expiry_status, pub.days_until_expiry = _compute_expiry(item)
-    if session is not None:
-        q = (
-            select(InventoryMovement.occurred_at)
-            .where(
-                InventoryMovement.item_id == item.id,
-                InventoryMovement.movement_type == MovementType.restock,
-            )
-            .order_by(col(InventoryMovement.occurred_at).desc())
-            .limit(1)
-        )
-        row = session.exec(q).first()
-        pub.last_restocked_at = row if row else None
+    pub.last_restocked_at = last_restocked_at
     return pub
+
+
+def _last_restocked_map(
+    session, item_ids: list[uuid.UUID]
+) -> dict[uuid.UUID, datetime]:
+    if not item_ids:
+        return {}
+    q = (
+        select(
+            InventoryMovement.item_id,
+            func.max(InventoryMovement.occurred_at),
+        )
+        .where(
+            col(InventoryMovement.item_id).in_(item_ids),
+            InventoryMovement.movement_type == MovementType.restock,
+        )
+        .group_by(InventoryMovement.item_id)
+    )
+    return {row[0]: row[1] for row in session.exec(q).all()}
+
+
+def _last_restocked_for(session, item_id: uuid.UUID) -> datetime | None:
+    q = (
+        select(InventoryMovement.occurred_at)
+        .where(
+            InventoryMovement.item_id == item_id,
+            InventoryMovement.movement_type == MovementType.restock,
+        )
+        .order_by(col(InventoryMovement.occurred_at).desc())
+        .limit(1)
+    )
+    return session.exec(q).first()
+
+
 
 
 @router.get("/items", response_model=InventoryItemsPublic)
@@ -75,8 +101,12 @@ def list_items(
         skip=skip,
         limit=limit,
     )
+    restock_map = _last_restocked_map(session, [r.id for r in rows])
     return InventoryItemsPublic(
-        data=[_to_public(r, session=session) for r in rows], count=count
+        data=[
+            _to_public(r, last_restocked_at=restock_map.get(r.id)) for r in rows
+        ],
+        count=count,
     )
 
 
@@ -87,7 +117,9 @@ def create_item(
     item = inv_service.create_item(
         session=session, current_user=current_user, data=data
     )
-    return _to_public(item, session=session)
+    return _to_public(
+        item, last_restocked_at=_last_restocked_for(session, item.id)
+    )
 
 
 @router.get("/items/{id}", response_model=InventoryItemPublic)
@@ -97,7 +129,9 @@ def read_item(
     item = inv_service.get_item(
         session=session, current_user=current_user, item_id=id
     )
-    return _to_public(item, session=session)
+    return _to_public(
+        item, last_restocked_at=_last_restocked_for(session, item.id)
+    )
 
 
 @router.put("/items/{id}", response_model=InventoryItemPublic)
@@ -111,7 +145,9 @@ def update_item(
     item = inv_service.update_item(
         session=session, current_user=current_user, item_id=id, data=data
     )
-    return _to_public(item, session=session)
+    return _to_public(
+        item, last_restocked_at=_last_restocked_for(session, item.id)
+    )
 
 
 @router.delete("/items/{id}")
