@@ -1,11 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Alert, Pressable, ScrollView, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
+import { DatePicker } from "@/components/ui/date-picker";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
@@ -13,10 +15,16 @@ import { colors, spacing } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import {
 	batchesApi,
+	cropsApi,
 	MILESTONE_ORDER,
 	type Milestone,
 	setupsApi,
 } from "@/lib/hydro-api";
+
+function isoDateOnly(s: string | null | undefined): string | null {
+	if (!s) return null;
+	return s.slice(0, 10);
+}
 
 const ALL_TARGETS: Milestone[] = [...MILESTONE_ORDER, "Failed"];
 
@@ -59,10 +67,64 @@ export default function BatchDetailScreen() {
 	const [allocSlots, setAllocSlots] = useState("");
 	const [allocSeeds, setAllocSeeds] = useState("1");
 
+	useEffect(() => {
+		if (batch.data && !batch.data.legacy) {
+			setAllocSlots(String(batch.data.slots_used ?? ""));
+			setAllocSeeds(String(batch.data.seeds_per_slot ?? "1"));
+		}
+	}, [batch.data]);
+
+	const [editVariety, setEditVariety] = useState("");
+	const [editCropId, setEditCropId] = useState<string | null>(null);
+	const [editStartDate, setEditStartDate] = useState<string | null>(null);
+	const [editNotes, setEditNotes] = useState("");
+
+	const cropsQ = useQuery({
+		queryKey: ["crops"],
+		queryFn: () => cropsApi.list(),
+	});
+
+	const cropOptions: ComboboxOption[] = useMemo(
+		() =>
+			(cropsQ.data?.data ?? []).map((c) => ({
+				value: c.id,
+				label: c.name_en,
+				subtitle: c.name_tl || c.category,
+			})),
+		[cropsQ.data],
+	);
+
+	useEffect(() => {
+		if (batch.data) {
+			setEditVariety(batch.data.variety_name);
+			setEditCropId(batch.data.crop_guide_id);
+			setEditStartDate(isoDateOnly(batch.data.started_at));
+			setEditNotes(batch.data.notes ?? "");
+		}
+	}, [batch.data]);
+
+	const updateBatch = useMutation({
+		mutationFn: () =>
+			batchesApi.update(batchId, {
+				variety_name: editVariety.trim(),
+				crop_guide_id: editCropId,
+				notes: editNotes.trim() || null,
+				started_at: editStartDate
+					? new Date(`${editStartDate}T00:00:00`).toISOString()
+					: undefined,
+			}),
+		onSuccess: () => {
+			qc.invalidateQueries({ queryKey: ["batch", batchId] });
+			qc.invalidateQueries({ queryKey: ["batches"] });
+			Alert.alert("Saved", "Batch updated.");
+		},
+		onError: (e: Error) => Alert.alert("Update failed", e.message),
+	});
+
 	const setupQ = useQuery({
 		queryKey: ["setup", batch.data?.setup_id],
 		queryFn: () => setupsApi.get(batch.data?.setup_id ?? ""),
-		enabled: !!batch.data?.setup_id && batch.data?.legacy === true,
+		enabled: !!batch.data?.setup_id,
 	});
 	const emptySlots =
 		setupQ.data?.slots.filter((s) => s.status === "empty" && !s.batch_id)
@@ -209,13 +271,14 @@ export default function BatchDetailScreen() {
 					</Pressable>
 				</View>
 
-				{b.legacy ? (
-					<Card>
+				<Card>
+					{b.legacy ? (
 						<View
 							style={{
 								flexDirection: "row",
 								alignItems: "center",
 								gap: spacing.xs,
+								marginBottom: spacing.sm,
 							}}
 						>
 							<Badge
@@ -228,40 +291,117 @@ export default function BatchDetailScreen() {
 								No slot allocation. Assign slots to track.
 							</Text>
 						</View>
-						<View style={{ height: spacing.sm }} />
-						<Label>SLOTS USED</Label>
-						<Input
-							keyboardType="numeric"
-							value={allocSlots}
-							onChangeText={setAllocSlots}
-							placeholder={`Up to ${emptySlots} empty`}
-						/>
-						<Text size="xs" tone="muted" style={{ marginTop: 4 }}>
-							{emptySlots} empty slots in setup
+					) : (
+						<Text
+							size="lg"
+							weight="bold"
+							style={{ marginBottom: spacing.xs }}
+						>
+							Slots & Seeds
 						</Text>
-						<View style={{ height: spacing.sm }} />
-						<Label>SEEDS PER SLOT</Label>
-						<Input
-							keyboardType="numeric"
-							value={allocSeeds}
-							onChangeText={setAllocSeeds}
-						/>
-						<View style={{ height: spacing.md }} />
-						<Button
-							label="Allocate Slots"
-							isLoading={allocate.isPending}
-							isDisabled={
-								Number.parseInt(allocSlots, 10) <= 0 ||
-								Number.parseInt(allocSlots, 10) > emptySlots ||
-								Number.parseInt(allocSeeds, 10) <= 0 ||
-								allocate.isPending
-							}
-							onPress={() => allocate.mutate()}
-						/>
-					</Card>
-				) : null}
+					)}
+					{(() => {
+						const currentSlots = b.slots_used ?? 0;
+						const newSlots = Number.parseInt(allocSlots, 10) || 0;
+						const delta = newSlots - currentSlots;
+						const maxAllowed = currentSlots + emptySlots;
+						const hasTransitions = b.recent_transitions.length > 0;
+						return (
+							<>
+								<Label>SLOTS USED</Label>
+								<Input
+									keyboardType="numeric"
+									value={allocSlots}
+									onChangeText={setAllocSlots}
+									placeholder={`Up to ${maxAllowed}`}
+								/>
+								<Text size="xs" tone="muted" style={{ marginTop: 4 }}>
+									{b.legacy
+										? `${emptySlots} empty slots in setup`
+										: `Current: ${currentSlots} · ${emptySlots} empty in setup · max ${maxAllowed}`}
+								</Text>
+								<View style={{ height: spacing.sm }} />
+								<Label>SEEDS PER SLOT</Label>
+								<Input
+									keyboardType="numeric"
+									value={allocSeeds}
+									onChangeText={setAllocSeeds}
+								/>
+								{hasTransitions && !b.legacy ? (
+									<Text size="xs" tone="muted" style={{ marginTop: 4 }}>
+										Transitions recorded — initial count will not change.
+									</Text>
+								) : null}
+								<View style={{ height: spacing.md }} />
+								<Button
+									label={b.legacy ? "Allocate Slots" : "Update Slots & Seeds"}
+									isLoading={allocate.isPending}
+									isDisabled={
+										newSlots <= 0 ||
+										newSlots > maxAllowed ||
+										Number.parseInt(allocSeeds, 10) <= 0 ||
+										allocate.isPending ||
+										(!b.legacy &&
+											delta === 0 &&
+											Number.parseInt(allocSeeds, 10) ===
+												(b.seeds_per_slot ?? 0))
+									}
+									onPress={() => allocate.mutate()}
+								/>
+							</>
+						);
+					})()}
+				</Card>
 
-				{b.legacy ? <View style={{ height: 20 }} /> : null}
+				<View style={{ height: 20 }} />
+
+				<Card>
+					<Text size="lg" weight="bold" style={{ marginBottom: spacing.xs }}>
+						Edit Batch
+					</Text>
+					<Label>VARIETY NAME</Label>
+					<Input value={editVariety} onChangeText={setEditVariety} />
+					<View style={{ height: spacing.sm }} />
+					<Label>CROP GUIDE</Label>
+					<Combobox
+						value={editCropId}
+						onValueChange={(v, opt) => {
+							setEditCropId(v);
+							if (opt && !editVariety.trim()) setEditVariety(opt.label);
+						}}
+						options={cropOptions}
+						placeholder="Pick a crop"
+						searchPlaceholder="Search crops..."
+						emptyMessage={
+							cropsQ.isLoading ? "Loading crops..." : "No crops found"
+						}
+						allowClear
+					/>
+					<View style={{ height: spacing.sm }} />
+					<Label>START DATE</Label>
+					<DatePicker
+						value={editStartDate}
+						onChange={setEditStartDate}
+						placeholder="Today"
+					/>
+					<View style={{ height: spacing.sm }} />
+					<Label>NOTES</Label>
+					<Input
+						value={editNotes}
+						onChangeText={setEditNotes}
+						placeholder="Optional"
+						multiline
+					/>
+					<View style={{ height: spacing.md }} />
+					<Button
+						label="Save Changes"
+						isLoading={updateBatch.isPending}
+						isDisabled={editVariety.trim().length === 0}
+						onPress={() => updateBatch.mutate()}
+					/>
+				</Card>
+
+				<View style={{ height: 20 }} />
 
 				<Card>
 					<Text

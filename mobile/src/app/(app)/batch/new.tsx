@@ -1,16 +1,27 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Alert, Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
+import { DatePicker } from "@/components/ui/date-picker";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
+import { SlotMeter } from "@/components/ui/slot-meter";
 import { Text } from "@/components/ui/text";
 import { colors, spacing, systemTypes } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { batchesApi, cropsApi, setupsApi } from "@/lib/hydro-api";
+
+function todayIso(): string {
+	const d = new Date();
+	const y = d.getFullYear();
+	const m = String(d.getMonth() + 1).padStart(2, "0");
+	const day = String(d.getDate()).padStart(2, "0");
+	return `${y}-${m}-${day}`;
+}
 
 export default function NewBatchScreen() {
 	const { setup: setupParam } = useLocalSearchParams<{ setup?: string }>();
@@ -26,8 +37,9 @@ export default function NewBatchScreen() {
 	});
 
 	const [setupId, setSetupId] = useState(setupParam ?? "");
-	const [variety, setVariety] = useState("");
 	const [cropId, setCropId] = useState<string | null>(null);
+	const [variety, setVariety] = useState("");
+	const [startDate, setStartDate] = useState<string | null>(todayIso());
 	const [slotsUsed, setSlotsUsed] = useState("4");
 	const [seedsPerSlot, setSeedsPerSlot] = useState("1");
 	const [notes, setNotes] = useState("");
@@ -44,6 +56,22 @@ export default function NewBatchScreen() {
 	const slotsUsedNum = Number.parseInt(slotsUsed, 10) || 0;
 	const seedsPerSlotNum = Number.parseInt(seedsPerSlot, 10) || 0;
 	const totalSeeds = slotsUsedNum * seedsPerSlotNum;
+	const overCapacity = setupId.length > 0 && slotsUsedNum > emptySlots;
+
+	const cropOptions: ComboboxOption[] = useMemo(
+		() =>
+			(crops.data?.data ?? []).map((c) => ({
+				value: c.id,
+				label: c.name_en,
+				subtitle: c.name_tl || c.category,
+			})),
+		[crops.data],
+	);
+
+	const selectedCrop = useMemo(
+		() => (crops.data?.data ?? []).find((c) => c.id === cropId) ?? null,
+		[crops.data, cropId],
+	);
 
 	const create = useMutation({
 		mutationFn: () =>
@@ -54,6 +82,9 @@ export default function NewBatchScreen() {
 				seeds_per_slot: seedsPerSlotNum,
 				crop_guide_id: cropId,
 				notes: notes.trim() || undefined,
+				started_at: startDate
+					? new Date(`${startDate}T00:00:00`).toISOString()
+					: undefined,
 			}),
 		onSuccess: (b) => {
 			qc.invalidateQueries({ queryKey: ["batches"] });
@@ -68,7 +99,7 @@ export default function NewBatchScreen() {
 		variety.trim().length > 0 &&
 		slotsUsedNum > 0 &&
 		seedsPerSlotNum > 0 &&
-		slotsUsedNum <= emptySlots;
+		!overCapacity;
 
 	return (
 		<GradientBackground>
@@ -77,6 +108,7 @@ export default function NewBatchScreen() {
 					padding: spacing.md,
 					paddingBottom: spacing.xxxl,
 				}}
+				keyboardShouldPersistTaps="handled"
 			>
 				<View
 					style={{
@@ -145,7 +177,31 @@ export default function NewBatchScreen() {
 						) : null}
 					</Field>
 
-					<Field label="Variety">
+					<Field label="Variety (Crop)">
+						<Combobox
+							value={cropId}
+							onValueChange={(v, opt) => {
+								setCropId(v);
+								setVariety(opt?.label ?? "");
+							}}
+							options={cropOptions}
+							placeholder="Pick a crop"
+							searchPlaceholder="Search crops..."
+							emptyMessage={
+								crops.isLoading ? "Loading crops..." : "No crops found"
+							}
+							allowClear
+						/>
+						{selectedCrop ? (
+							<Text size="xs" tone="muted" style={{ marginTop: 6 }}>
+								Crop guide: {selectedCrop.name_en} ·{" "}
+								{selectedCrop.days_to_harvest_min}-
+								{selectedCrop.days_to_harvest_max} days to harvest
+							</Text>
+						) : null}
+					</Field>
+
+					<Field label="Variety Name">
 						<Input
 							placeholder="e.g. Pechay Black Behi"
 							value={variety}
@@ -153,25 +209,15 @@ export default function NewBatchScreen() {
 						/>
 					</Field>
 
-					<Field label="Crop Guide (optional)">
-						<View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
-							<CropChip
-								label="None"
-								active={cropId === null}
-								onPress={() => setCropId(null)}
-							/>
-							{(crops.data?.data ?? []).map((c) => (
-								<CropChip
-									key={c.id}
-									label={c.name_en}
-									active={cropId === c.id}
-									onPress={() => {
-										setCropId(c.id);
-										if (!variety) setVariety(c.name_en);
-									}}
-								/>
-							))}
-						</View>
+					<Field label="Start Date">
+						<DatePicker
+							value={startDate}
+							onChange={setStartDate}
+							placeholder="Today"
+						/>
+						<Text size="xs" tone="muted" style={{ marginTop: 4 }}>
+							Defaults to today if left blank.
+						</Text>
 					</Field>
 
 					<Field label="Slots Used">
@@ -179,11 +225,16 @@ export default function NewBatchScreen() {
 							keyboardType="numeric"
 							value={slotsUsed}
 							onChangeText={setSlotsUsed}
+							invalid={overCapacity}
 						/>
 						{setupId ? (
-							<Text size="xs" tone="muted" style={{ marginTop: 4 }}>
-								{emptySlots} empty slots available
-							</Text>
+							<View style={{ marginTop: 8 }}>
+								<SlotMeter
+									used={slotsUsedNum}
+									free={emptySlots}
+									label="Slot usage"
+								/>
+							</View>
 						) : null}
 					</Field>
 
@@ -245,37 +296,5 @@ function Field({
 			</Text>
 			{children}
 		</View>
-	);
-}
-
-function CropChip({
-	label,
-	active,
-	onPress,
-}: {
-	label: string;
-	active: boolean;
-	onPress: () => void;
-}) {
-	return (
-		<Pressable
-			onPress={onPress}
-			style={{
-				paddingHorizontal: 10,
-				paddingVertical: 5,
-				borderRadius: 999,
-				borderWidth: 1,
-				borderColor: active ? colors.primaryLight : colors.border,
-				backgroundColor: active ? `${colors.primaryLight}26` : "transparent",
-			}}
-		>
-			<Text
-				size="xs"
-				weight="semibold"
-				style={{ color: active ? colors.primaryLight : colors.text }}
-			>
-				{label}
-			</Text>
-		</Pressable>
 	);
 }

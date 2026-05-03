@@ -317,10 +317,43 @@ function MaterialRow({
 						</Text>
 					</View>
 				</View>
-				<Text size="xs" tone="muted" style={{ marginTop: spacing.xs }}>
-					Min {item.low_stock_threshold} {item.unit} · long-press to record
-					movement
-				</Text>
+				<View
+					style={{
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "space-between",
+						marginTop: spacing.xs,
+						gap: spacing.xs,
+					}}
+				>
+					<Text size="xs" tone="muted" style={{ flex: 1 }}>
+						Min {item.low_stock_threshold} {item.unit} · long-press to record
+						movement
+					</Text>
+					<Pressable
+						onPress={(e) => {
+							e.stopPropagation?.();
+							router.push(`/inventory/${item.id}`);
+						}}
+						hitSlop={8}
+						style={({ pressed }) => ({
+							flexDirection: "row",
+							alignItems: "center",
+							gap: 4,
+							paddingHorizontal: 10,
+							paddingVertical: 6,
+							borderRadius: 8,
+							borderWidth: 1,
+							borderColor: colors.border,
+							backgroundColor: pressed ? colors.glassHover : "transparent",
+						})}
+					>
+						<Ionicons name="create-outline" size={14} color={colors.text} />
+						<Text size="xs" weight="semibold">
+							Edit
+						</Text>
+					</Pressable>
+				</View>
 			</Pressable>
 		</Card>
 	);

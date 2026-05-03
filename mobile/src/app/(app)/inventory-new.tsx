@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Alert, Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { DatePicker } from "@/components/ui/date-picker";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
@@ -35,15 +36,12 @@ export default function NewInventoryItemScreen() {
 	const [stock, setStock] = useState("0");
 	const [threshold, setThreshold] = useState("0");
 	const [unitCost, setUnitCost] = useState("");
-	const [expiry, setExpiry] = useState("");
+	const [expiry, setExpiry] = useState<string | null>(null);
 	const [notes, setNotes] = useState("");
 
 	const create = useMutation({
-		mutationFn: () => {
-			const expiryValid =
-				expiry.length === 0 || /^\d{4}-\d{2}-\d{2}$/.test(expiry);
-			if (!expiryValid) throw new Error("Expiry date must be YYYY-MM-DD");
-			return inventoryApi.create({
+		mutationFn: () =>
+			inventoryApi.create({
 				name: name.trim(),
 				category,
 				unit,
@@ -51,10 +49,9 @@ export default function NewInventoryItemScreen() {
 				low_stock_threshold: Number.parseFloat(threshold) || 0,
 				unit_cost:
 					unitCost.trim().length > 0 ? Number.parseFloat(unitCost) : null,
-				expiry_date: expiry.trim().length > 0 ? expiry.trim() : null,
+				expiry_date: expiry,
 				notes: notes.trim() || undefined,
-			});
-		},
+			}),
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: ["inventory"] });
 			router.back();
@@ -195,12 +192,12 @@ export default function NewInventoryItemScreen() {
 						/>
 					</Field>
 
-					<Field label="Expiry Date (YYYY-MM-DD)">
-						<Input
-							placeholder="2026-12-31"
+					<Field label="Expiry Date">
+						<DatePicker
 							value={expiry}
-							onChangeText={setExpiry}
-							autoCapitalize="none"
+							onChange={setExpiry}
+							placeholder="No expiry"
+							allowClear
 						/>
 					</Field>
 

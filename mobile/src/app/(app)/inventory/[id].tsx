@@ -7,6 +7,7 @@ import { InventoryMovementSheet } from "@/components/inventory/movement-sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { DatePicker } from "@/components/ui/date-picker";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
@@ -18,10 +19,23 @@ import {
 } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
-import { inventoryApi, type MovementType } from "@/lib/hydro-api";
+import {
+	type InventoryCategory,
+	type InventoryUnit,
+	inventoryApi,
+	type MovementType,
+} from "@/lib/hydro-api";
 import { formatPHP, handleError } from "@/lib/utils";
 
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const CATEGORIES: InventoryCategory[] = [
+	"seeds",
+	"media",
+	"nutrients",
+	"equipment",
+	"packaging",
+	"other",
+];
+const UNITS: InventoryUnit[] = ["grams", "pieces", "liters", "milliliters"];
 
 export default function InventoryDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
@@ -41,37 +55,40 @@ export default function InventoryDetailScreen() {
 	});
 
 	const [name, setName] = useState("");
+	const [category, setCategory] = useState<InventoryCategory>("seeds");
+	const [unit, setUnit] = useState<InventoryUnit>("grams");
 	const [threshold, setThreshold] = useState("0");
 	const [unitCost, setUnitCost] = useState("");
-	const [expiry, setExpiry] = useState("");
+	const [expiry, setExpiry] = useState<string | null>(null);
 	const [notes, setNotes] = useState("");
 	const [movementType, setMovementType] = useState<MovementType | null>(null);
 
 	useEffect(() => {
 		if (item.data) {
 			setName(item.data.name);
+			setCategory(item.data.category);
+			setUnit(item.data.unit);
 			setThreshold(String(item.data.low_stock_threshold ?? 0));
 			setUnitCost(
 				item.data.unit_cost !== null ? String(item.data.unit_cost) : "",
 			);
-			setExpiry(item.data.expiry_date ?? "");
+			setExpiry(item.data.expiry_date);
 			setNotes(item.data.notes ?? "");
 		}
 	}, [item.data]);
 
 	const update = useMutation({
-		mutationFn: () => {
-			const expiryValid = expiry.length === 0 || DATE_RE.test(expiry);
-			if (!expiryValid) throw new Error("Expiry date must be YYYY-MM-DD");
-			return inventoryApi.update(id, {
+		mutationFn: () =>
+			inventoryApi.update(id, {
 				name: name.trim(),
+				category,
+				unit,
 				low_stock_threshold: Number.parseFloat(threshold) || 0,
 				unit_cost:
 					unitCost.trim().length > 0 ? Number.parseFloat(unitCost) : null,
-				expiry_date: expiry.trim().length > 0 ? expiry.trim() : null,
+				expiry_date: expiry,
 				notes: notes.trim() || undefined,
-			});
-		},
+			}),
 		onSuccess: () => {
 			toast.success("Saved");
 			qc.invalidateQueries({ queryKey: ["inventory"] });
@@ -240,6 +257,93 @@ export default function InventoryDetailScreen() {
 					<Field label="Name">
 						<Input value={name} onChangeText={setName} />
 					</Field>
+					<Field label="Category">
+						<View
+							style={{
+								flexDirection: "row",
+								flexWrap: "wrap",
+								gap: spacing.xs,
+							}}
+						>
+							{CATEGORIES.map((c) => {
+								const m = inventoryCategoryMeta[c];
+								const active = category === c;
+								return (
+									<Pressable
+										key={c}
+										onPress={() => setCategory(c)}
+										style={{
+											flexDirection: "row",
+											alignItems: "center",
+											gap: 6,
+											paddingHorizontal: spacing.sm,
+											paddingVertical: spacing.xs,
+											borderRadius: 12,
+											borderWidth: 1,
+											borderColor: active ? m.color : colors.border,
+											backgroundColor: active
+												? `${m.color}26`
+												: "transparent",
+										}}
+									>
+										<Ionicons
+											name={m.icon as never}
+											size={14}
+											color={active ? m.color : colors.textMuted}
+										/>
+										<Text
+											size="sm"
+											weight="semibold"
+											style={{ color: active ? m.color : colors.text }}
+										>
+											{c}
+										</Text>
+									</Pressable>
+								);
+							})}
+						</View>
+					</Field>
+					<Field label="Unit">
+						<View
+							style={{
+								flexDirection: "row",
+								flexWrap: "wrap",
+								gap: spacing.xs,
+							}}
+						>
+							{UNITS.map((u) => {
+								const active = unit === u;
+								return (
+									<Pressable
+										key={u}
+										onPress={() => setUnit(u)}
+										style={{
+											paddingHorizontal: spacing.sm,
+											paddingVertical: 6,
+											borderRadius: 999,
+											borderWidth: 1,
+											borderColor: active
+												? colors.primaryLight
+												: colors.border,
+											backgroundColor: active
+												? `${colors.primaryLight}26`
+												: "transparent",
+										}}
+									>
+										<Text
+											size="sm"
+											weight="semibold"
+											style={{
+												color: active ? colors.primaryLight : colors.text,
+											}}
+										>
+											{u}
+										</Text>
+									</Pressable>
+								);
+							})}
+						</View>
+					</Field>
 					<Field label="Low stock threshold">
 						<Input
 							keyboardType="numeric"
@@ -255,12 +359,12 @@ export default function InventoryDetailScreen() {
 							placeholder="0.00"
 						/>
 					</Field>
-					<Field label="Expiry date (YYYY-MM-DD)">
-						<Input
+					<Field label="Expiry date">
+						<DatePicker
 							value={expiry}
-							onChangeText={setExpiry}
-							placeholder="2026-12-31"
-							autoCapitalize="none"
+							onChange={setExpiry}
+							placeholder="No expiry"
+							allowClear
 						/>
 					</Field>
 					<Field label="Notes">

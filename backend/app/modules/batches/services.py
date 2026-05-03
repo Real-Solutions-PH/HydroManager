@@ -2,10 +2,15 @@ import uuid
 from datetime import datetime, timezone
 
 from fastapi import HTTPException
-from sqlmodel import Session, col, select
+from sqlmodel import Session, col, func, select
 
 from app.modules.batches import repo as batches_repo
-from app.modules.batches.models import Batch, BatchHarvest, BatchTransition
+from app.modules.batches.models import (
+    Batch,
+    BatchHarvest,
+    BatchStateCount,
+    BatchTransition,
+)
 from app.modules.batches.schema import (
     BatchCreate,
     BatchHarvestCreate,
@@ -154,36 +159,73 @@ def allocate_slots(
     batch = get_batch(
         session=session, current_user=current_user, batch_id=batch_id
     )
-    if batch.slots_used is not None:
-        raise HTTPException(
-            status_code=400, detail="Batch already has slot allocation"
-        )
     if batch.archived_at is not None:
         raise HTTPException(
             status_code=400, detail="Cannot allocate slots for archived batch"
         )
-    empty_slots = _get_empty_slots(
-        session=session, setup_id=batch.setup_id, count=slots_used
-    )
-    if len(empty_slots) < slots_used:
-        raise HTTPException(
-            status_code=400,
-            detail=(
-                f"Not enough empty slots: need {slots_used}, "
-                f"have {len(empty_slots)}"
-            ),
+    current_slots = batch.slots_used or 0
+    delta = slots_used - current_slots
+    if delta > 0:
+        empty_slots = _get_empty_slots(
+            session=session, setup_id=batch.setup_id, count=delta
         )
-    for slot in empty_slots:
-        slot.batch_id = batch.id
-        slot.status = SlotStatus.PLANTED
-        session.add(slot)
+        if len(empty_slots) < delta:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"Not enough empty slots: need {delta} more, "
+                    f"have {len(empty_slots)}"
+                ),
+            )
+        for slot in empty_slots:
+            slot.batch_id = batch.id
+            slot.status = SlotStatus.PLANTED
+            session.add(slot)
+    elif delta < 0:
+        to_free = (
+            select(SetupSlot)
+            .where(SetupSlot.batch_id == batch.id)
+            .order_by(col(SetupSlot.position_index).desc())
+            .limit(-delta)
+        )
+        for slot in session.exec(to_free).all():
+            slot.batch_id = None
+            slot.status = SlotStatus.EMPTY
+            session.add(slot)
+    update_data: dict = {
+        "slots_used": slots_used,
+        "seeds_per_slot": seeds_per_slot,
+    }
+    has_transitions = (
+        session.exec(
+            select(func.count())
+            .select_from(BatchTransition)
+            .where(BatchTransition.batch_id == batch.id)
+        ).one()
+        > 0
+    )
+    if not has_transitions:
+        new_initial = slots_used * seeds_per_slot
+        update_data["initial_count"] = new_initial
+        sowed = batches_repo.get_state_count(
+            session=session, batch_id=batch.id, milestone=Milestone.Sowed
+        )
+        if sowed is not None:
+            sowed.count = new_initial
+            sowed.updated_at = datetime.now(timezone.utc)
+            session.add(sowed)
+        else:
+            session.add(
+                BatchStateCount(
+                    batch_id=batch.id,
+                    milestone_code=Milestone.Sowed,
+                    count=new_initial,
+                )
+            )
     return batches_repo.update(
         session=session,
         batch=batch,
-        update_data={
-            "slots_used": slots_used,
-            "seeds_per_slot": seeds_per_slot,
-        },
+        update_data=update_data,
     )
 
 

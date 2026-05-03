@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 from enum import Enum
 
 from sqlmodel import Field, SQLModel
@@ -27,6 +27,12 @@ class MovementType(str, Enum):
     adjust = "adjust"
 
 
+class ExpiryStatus(str, Enum):
+    ok = "ok"
+    warning = "warning"
+    expired = "expired"
+
+
 class InventoryItemBase(SQLModel):
     name: str = Field(min_length=1, max_length=120)
     category: InventoryCategory
@@ -34,6 +40,7 @@ class InventoryItemBase(SQLModel):
     current_stock: float = Field(ge=0, default=0)
     low_stock_threshold: float = Field(ge=0, default=0)
     unit_cost: float | None = Field(default=None, ge=0)
+    expiry_date: date | None = None
     notes: str | None = Field(default=None, max_length=500)
 
 
@@ -47,6 +54,7 @@ class InventoryItemUpdate(SQLModel):
     unit: InventoryUnit | None = None
     low_stock_threshold: float | None = Field(default=None, ge=0)
     unit_cost: float | None = Field(default=None, ge=0)
+    expiry_date: date | None = None
     notes: str | None = Field(default=None, max_length=500)
 
 
@@ -55,6 +63,9 @@ class InventoryItemPublic(InventoryItemBase):
     owner_id: uuid.UUID
     created_at: datetime
     is_low_stock: bool = False
+    expiry_status: ExpiryStatus = ExpiryStatus.ok
+    days_until_expiry: int | None = None
+    last_restocked_at: datetime | None = None
 
 
 class InventoryItemsPublic(SQLModel):

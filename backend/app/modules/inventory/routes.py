@@ -1,11 +1,15 @@
 import uuid
+from datetime import date
 from typing import Any
 
 from fastapi import APIRouter
+from sqlmodel import col, select
 
 from app.modules.iam.deps import CurrentUser
 from app.modules.inventory import services as inv_service
+from app.modules.inventory.models import InventoryMovement
 from app.modules.inventory.schema import (
+    ExpiryStatus,
     InventoryCategory,
     InventoryItemCreate,
     InventoryItemPublic,
@@ -13,19 +17,46 @@ from app.modules.inventory.schema import (
     InventoryItemUpdate,
     MovementCreate,
     MovementPublic,
+    MovementType,
 )
 from app.shared.deps import SessionDep
 from app.shared.schema import Message
 
 router = APIRouter(prefix="/inventory", tags=["inventory"])
 
+EXPIRY_WARNING_DAYS = 7
 
-def _to_public(item) -> InventoryItemPublic:
+
+def _compute_expiry(item) -> tuple[ExpiryStatus, int | None]:
+    if item.expiry_date is None:
+        return ExpiryStatus.ok, None
+    days = (item.expiry_date - date.today()).days
+    if days < 0:
+        return ExpiryStatus.expired, days
+    if days <= EXPIRY_WARNING_DAYS:
+        return ExpiryStatus.warning, days
+    return ExpiryStatus.ok, days
+
+
+def _to_public(item, *, session=None) -> InventoryItemPublic:
     pub = InventoryItemPublic.model_validate(item, from_attributes=True)
     pub.is_low_stock = (
         item.low_stock_threshold is not None
         and item.current_stock <= item.low_stock_threshold
     )
+    pub.expiry_status, pub.days_until_expiry = _compute_expiry(item)
+    if session is not None:
+        q = (
+            select(InventoryMovement.occurred_at)
+            .where(
+                InventoryMovement.item_id == item.id,
+                InventoryMovement.movement_type == MovementType.restock,
+            )
+            .order_by(col(InventoryMovement.occurred_at).desc())
+            .limit(1)
+        )
+        row = session.exec(q).first()
+        pub.last_restocked_at = row if row else None
     return pub
 
 
@@ -44,7 +75,9 @@ def list_items(
         skip=skip,
         limit=limit,
     )
-    return InventoryItemsPublic(data=[_to_public(r) for r in rows], count=count)
+    return InventoryItemsPublic(
+        data=[_to_public(r, session=session) for r in rows], count=count
+    )
 
 
 @router.post("/items", response_model=InventoryItemPublic)
@@ -54,7 +87,7 @@ def create_item(
     item = inv_service.create_item(
         session=session, current_user=current_user, data=data
     )
-    return _to_public(item)
+    return _to_public(item, session=session)
 
 
 @router.get("/items/{id}", response_model=InventoryItemPublic)
@@ -64,7 +97,7 @@ def read_item(
     item = inv_service.get_item(
         session=session, current_user=current_user, item_id=id
     )
-    return _to_public(item)
+    return _to_public(item, session=session)
 
 
 @router.put("/items/{id}", response_model=InventoryItemPublic)
@@ -78,7 +111,7 @@ def update_item(
     item = inv_service.update_item(
         session=session, current_user=current_user, item_id=id, data=data
     )
-    return _to_public(item)
+    return _to_public(item, session=session)
 
 
 @router.delete("/items/{id}")

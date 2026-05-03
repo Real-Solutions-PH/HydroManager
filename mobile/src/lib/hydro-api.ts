@@ -336,8 +336,21 @@ export const batchesApi = {
 		seeds_per_slot: number;
 		crop_guide_id?: string | null;
 		notes?: string;
+		started_at?: string;
 	}): Promise<Batch> {
 		const r = await api.post(`${V1}/batches/`, data);
+		return r.data;
+	},
+	async update(
+		id: string,
+		data: {
+			variety_name?: string;
+			crop_guide_id?: string | null;
+			notes?: string | null;
+			started_at?: string | null;
+		},
+	): Promise<Batch> {
+		const r = await api.put(`${V1}/batches/${id}`, data);
 		return r.data;
 	},
 	async transition(
@@ -409,13 +422,15 @@ export const inventoryApi = {
 		id: string,
 		data: {
 			name?: string;
+			category?: InventoryCategory;
+			unit?: InventoryUnit;
 			low_stock_threshold?: number;
 			unit_cost?: number | null;
 			expiry_date?: string | null;
 			notes?: string;
 		},
 	): Promise<InventoryItem> {
-		const r = await api.patch(`${V1}/inventory/items/${id}`, data);
+		const r = await api.put(`${V1}/inventory/items/${id}`, data);
 		return r.data;
 	},
 	async movement(

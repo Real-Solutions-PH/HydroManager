@@ -59,6 +59,9 @@ backend-revision: ## Create a new Alembic migration (usage: make backend-revisio
 backend-prestart: ## Run prestart script (healthcheck + migrations + initial data)
 	cd backend && uv run bash scripts/prestart.sh
 
+backend-dev:
+	cd backend && uv run uvicorn app.main:app --reload
+
 # ---------------------------------------------------------------------------
 # Frontend
 # ---------------------------------------------------------------------------

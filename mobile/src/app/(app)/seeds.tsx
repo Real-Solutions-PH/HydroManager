@@ -556,10 +556,13 @@ function BatchCard({
 							<Text weight="semibold">Advance Stage</Text>
 						</Pressable>
 						<Pressable
-							onPress={() => router.push(`/batch/${batch.id}`)}
+							onPress={() => router.push(`/batch/${batch.id}?edit=1`)}
 							style={({ pressed }) => ({
 								flex: 1,
+								flexDirection: "row",
 								alignItems: "center",
+								justifyContent: "center",
+								gap: 6,
 								paddingVertical: 12,
 								borderRadius: 12,
 								borderWidth: 1,
@@ -567,7 +570,8 @@ function BatchCard({
 								backgroundColor: pressed ? colors.glassHover : "transparent",
 							})}
 						>
-							<Text weight="semibold">Log Note</Text>
+							<Ionicons name="create-outline" size={16} color={colors.text} />
+							<Text weight="semibold">Edit</Text>
 						</Pressable>
 					</View>
 				</View>
