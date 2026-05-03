@@ -17,7 +17,7 @@ import {
 	usersApi,
 } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
-import { STALE } from "@/lib/query-config";
+import { QK, STALE } from "@/lib/query-config";
 
 // TODO: replace with real data once checklist completion tracking lands.
 const TASKS_PROGRESS_MOCK = 0.67;
@@ -108,7 +108,7 @@ export default function HomeScreen() {
 		staleTime: STALE.batches,
 	});
 	const inventoryQ = useQuery({
-		queryKey: ["inventory"],
+		queryKey: QK.inventory.list(),
 		queryFn: () => inventoryApi.list(),
 		staleTime: STALE.inventory,
 	});

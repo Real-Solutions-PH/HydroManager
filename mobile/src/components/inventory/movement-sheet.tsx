@@ -20,6 +20,7 @@ import {
 	inventoryApi,
 	type MovementType,
 } from "@/lib/hydro-api";
+import { QK } from "@/lib/query-config";
 import { handleError } from "@/lib/utils";
 
 interface Props {
@@ -73,9 +74,7 @@ export function InventoryMovementSheet({ item, onClose, defaultType }: Props) {
 		},
 		onSuccess: () => {
 			toast.success("Movement recorded");
-			qc.invalidateQueries({ queryKey: ["inventory"] });
-			if (item)
-				qc.invalidateQueries({ queryKey: ["inventory-movements", item.id] });
+			qc.invalidateQueries({ queryKey: QK.inventory.all });
 			onClose();
 		},
 		onError: (err) => toast.error(handleError(err)),
@@ -88,9 +87,7 @@ export function InventoryMovementSheet({ item, onClose, defaultType }: Props) {
 		},
 		onSuccess: () => {
 			toast.success("Item deleted");
-			qc.invalidateQueries({ queryKey: ["inventory"] });
-			if (item)
-				qc.invalidateQueries({ queryKey: ["inventory-movements", item.id] });
+			qc.invalidateQueries({ queryKey: QK.inventory.all });
 			onClose();
 		},
 		onError: (err) => toast.error(handleError(err)),

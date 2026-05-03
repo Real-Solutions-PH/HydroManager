@@ -25,6 +25,7 @@ import {
 	inventoryApi,
 	type MovementType,
 } from "@/lib/hydro-api";
+import { QK } from "@/lib/query-config";
 import { formatPHP, handleError } from "@/lib/utils";
 
 const CATEGORIES: InventoryCategory[] = [
@@ -44,12 +45,12 @@ export default function InventoryDetailScreen() {
 	const goBack = useBack();
 
 	const item = useQuery({
-		queryKey: ["inventory", id],
+		queryKey: QK.inventory.detail(id),
 		queryFn: () => inventoryApi.get(id),
 		enabled: !!id,
 	});
 	const movements = useQuery({
-		queryKey: ["inventory-movements", id],
+		queryKey: QK.inventory.movements(id),
 		queryFn: () => inventoryApi.movements(id),
 		enabled: !!id,
 	});
@@ -91,8 +92,7 @@ export default function InventoryDetailScreen() {
 			}),
 		onSuccess: () => {
 			toast.success("Saved");
-			qc.invalidateQueries({ queryKey: ["inventory"] });
-			qc.invalidateQueries({ queryKey: ["inventory", id] });
+			qc.invalidateQueries({ queryKey: QK.inventory.all });
 		},
 		onError: (err) => toast.error(handleError(err)),
 	});
@@ -101,7 +101,7 @@ export default function InventoryDetailScreen() {
 		mutationFn: () => inventoryApi.delete(id),
 		onSuccess: () => {
 			toast.success("Deleted");
-			qc.invalidateQueries({ queryKey: ["inventory"] });
+			qc.invalidateQueries({ queryKey: QK.inventory.all });
 			router.back();
 		},
 		onError: (err) => toast.error(handleError(err)),

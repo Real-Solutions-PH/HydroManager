@@ -23,6 +23,7 @@ import {
 	salesApi,
 } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
+import { QK, STALE } from "@/lib/query-config";
 import { formatPHP, handleError } from "@/lib/utils";
 
 const CHANNELS: SaleChannel[] = [
@@ -125,8 +126,9 @@ export default function NewSaleScreen() {
 	const readyList = readyProduce.data?.data ?? [];
 
 	const inventory = useQuery({
-		queryKey: ["inventory", "all"],
+		queryKey: QK.inventory.list(),
 		queryFn: () => inventoryApi.list(),
+		staleTime: STALE.inventory,
 	});
 	const inventoryList = inventory.data?.data ?? [];
 

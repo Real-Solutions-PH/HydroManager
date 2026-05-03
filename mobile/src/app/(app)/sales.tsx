@@ -26,7 +26,7 @@ import {
 	usersApi,
 } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
-import { STALE } from "@/lib/query-config";
+import { QK, STALE } from "@/lib/query-config";
 import { formatPHP, handleError } from "@/lib/utils";
 
 type Period = "month" | "90d" | "ytd";
@@ -78,7 +78,7 @@ export default function SalesScreen() {
 		staleTime: STALE.salesDashboard,
 	});
 	const inventory = useQuery({
-		queryKey: ["inventory-items"],
+		queryKey: QK.inventory.list(),
 		queryFn: () => inventoryApi.list(),
 		staleTime: STALE.inventory,
 	});

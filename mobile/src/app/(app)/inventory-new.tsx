@@ -15,6 +15,7 @@ import {
 	type InventoryUnit,
 	inventoryApi,
 } from "@/lib/hydro-api";
+import { QK } from "@/lib/query-config";
 
 const CATEGORIES: InventoryCategory[] = [
 	"seeds",
@@ -72,7 +73,7 @@ export default function NewInventoryItemScreen() {
 			});
 		},
 		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: ["inventory"] });
+			qc.invalidateQueries({ queryKey: QK.inventory.all });
 			goBack();
 		},
 		onError: (e: Error) => Alert.alert("Error", e.message),

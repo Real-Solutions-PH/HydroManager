@@ -26,6 +26,7 @@ import {
 	produceApi,
 } from "@/lib/hydro-api";
 import { flattenPages, getNextSkip, PAGE_SIZE } from "@/lib/paginate";
+import { QK, STALE } from "@/lib/query-config";
 import { capitalize } from "@/lib/utils";
 
 const CATEGORIES: InventoryCategory[] = [
@@ -58,7 +59,11 @@ export default function InventoryScreen() {
 	const tabBarClearance = useTabBarClearance();
 
 	const inventory = useInfiniteQuery({
-		queryKey: ["inventory", category, nearExpiryOnly],
+		queryKey: [
+			...QK.inventory.lists(),
+			"paged",
+			{ category: category ?? undefined, nearExpiry: nearExpiryOnly },
+		],
 		queryFn: ({ pageParam = 0 }) =>
 			inventoryApi.list({
 				category: category ?? undefined,
@@ -69,6 +74,7 @@ export default function InventoryScreen() {
 		initialPageParam: 0,
 		getNextPageParam: getNextSkip<InventoryItem>,
 		enabled: tab === "materials",
+		staleTime: STALE.inventory,
 	});
 
 	const produce = useInfiniteQuery({
