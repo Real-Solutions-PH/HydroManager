@@ -350,7 +350,7 @@ function CropDetail({
 
 				<HarvestHighlight text={crop.harvest_indicator} />
 
-				<Section title="General Info">
+				<Section title="General Info" icon="information-circle">
 					<View style={{ gap: spacing.md }}>
 						{meters.map((m) => (
 							<MeterRow
@@ -375,13 +375,14 @@ function CropDetail({
 				crop.ec_vegetative != null ||
 				crop.ec_mature != null ||
 				crop.ec_fruiting != null ? (
-					<Section title="EC by Stage">
-						<StatGrid
-							stats={[
+					<Section title="EC by Stage" icon="flask">
+						<EcStageGrid
+							stages={[
 								{
 									label: "Seedling",
 									value:
 										crop.ec_seedling != null ? String(crop.ec_seedling) : null,
+									icon: "leaf-outline",
 								},
 								{
 									label: "Vegetative",
@@ -389,15 +390,18 @@ function CropDetail({
 										crop.ec_vegetative != null
 											? String(crop.ec_vegetative)
 											: null,
+									icon: "leaf",
 								},
 								{
 									label: "Mature",
 									value: crop.ec_mature != null ? String(crop.ec_mature) : null,
+									icon: "flower-outline",
 								},
 								{
 									label: "Fruiting",
 									value:
 										crop.ec_fruiting != null ? String(crop.ec_fruiting) : null,
+									icon: "nutrition",
 								},
 							]}
 						/>
@@ -405,51 +409,116 @@ function CropDetail({
 				) : null}
 
 				{crop.growth_stages?.length ? (
-					<Section title="Crop Guide">
-						<View style={{ gap: spacing.sm }}>
-							{crop.growth_stages.map((stage, i) => (
-								<Card
-									key={`${stage.stage}-${stage.day_min}`}
-									variant="outlined"
-								>
+					<Section title="Crop Guide" icon="git-branch">
+						<View>
+							{crop.growth_stages.map((stage, i) => {
+								const isLast = i === crop.growth_stages!.length - 1;
+								return (
 									<View
-										style={{
-											flexDirection: "row",
-											justifyContent: "space-between",
-											marginBottom: 4,
-										}}
+										key={`${stage.stage}-${stage.day_min}`}
+										style={{ flexDirection: "row" }}
 									>
-										<Text size="md" weight="semibold">
-											{i + 1}. {stage.stage}
-										</Text>
-										<Text size="xs" tone="muted">
-											Day {stage.day_min}-{stage.day_max}
-										</Text>
-									</View>
-									<Text size="sm" tone="subtle">
-										{stage.description}
-									</Text>
-									{stage.actions?.length ? (
-										<View style={{ marginTop: spacing.xs, gap: 2 }}>
-											{stage.actions.map((a) => (
+										<View
+											style={{
+												width: 32,
+												alignItems: "center",
+												paddingTop: 6,
+											}}
+										>
+											<View
+												style={{
+													width: 24,
+													height: 24,
+													borderRadius: 12,
+													backgroundColor: colors.primary,
+													borderWidth: 2,
+													borderColor: colors.primaryDeep,
+													alignItems: "center",
+													justifyContent: "center",
+												}}
+											>
 												<Text
-													key={`${stage.stage}-action-${a}`}
 													size="xs"
-													tone="muted"
+													weight="bold"
+													style={{ color: colors.text }}
 												>
-													• {a}
+													{i + 1}
 												</Text>
-											))}
+											</View>
+											{!isLast ? (
+												<View
+													style={{
+														flex: 1,
+														width: 2,
+														backgroundColor: colors.primaryDark,
+														marginTop: 4,
+														opacity: 0.6,
+													}}
+												/>
+											) : null}
 										</View>
-									) : null}
-								</Card>
-							))}
+										<View
+											style={{
+												flex: 1,
+												paddingLeft: spacing.sm,
+												paddingBottom: isLast ? 0 : spacing.md,
+											}}
+										>
+											<View
+												style={{
+													alignSelf: "flex-start",
+													backgroundColor: colors.successLight,
+													borderWidth: 1,
+													borderColor: colors.primary,
+													borderRadius: radii.full,
+													paddingHorizontal: spacing.sm,
+													paddingVertical: 2,
+													marginBottom: spacing.xs,
+												}}
+											>
+												<Text
+													size="sm"
+													weight="bold"
+													style={{ color: colors.primaryLight }}
+												>
+													Day {stage.day_min}–{stage.day_max}
+												</Text>
+											</View>
+											<Card variant="outlined">
+												<Text
+													size="md"
+													weight="semibold"
+													style={{ marginBottom: 4 }}
+												>
+													{stage.stage}
+												</Text>
+												<Text size="sm" tone="subtle">
+													{stage.description}
+												</Text>
+												{stage.actions?.length ? (
+													<View style={{ marginTop: spacing.xs, gap: 2 }}>
+														{stage.actions.map((a) => (
+															<Text
+																key={`${stage.stage}-action-${a}`}
+																size="xs"
+																tone="muted"
+															>
+																• {a}
+															</Text>
+														))}
+													</View>
+												) : null}
+											</Card>
+										</View>
+									</View>
+								);
+							})}
 						</View>
 					</Section>
 				) : null}
 
 				{crop.tips?.length ? (
-					<Section title="Tips">
+					<Section title="Tips" icon="bulb" iconColor={colors.warning}>
 						<Card variant="outlined">
 							<View style={{ gap: spacing.xs }}>
 								{crop.tips.map((tip) => (
@@ -475,7 +544,7 @@ function CropDetail({
 				) : null}
 
 				{crop.risks?.length ? (
-					<Section title="Risks & Mitigation">
+					<Section title="Risks & Mitigation" icon="warning" iconColor={colors.warning}>
 						<View style={{ gap: spacing.sm }}>
 							{crop.risks.map((risk) => (
 								<Card key={`risk-${risk.title}`} variant="outlined">
@@ -514,16 +583,35 @@ function CropDetail({
 
 function Section({
 	title,
+	icon,
+	iconColor,
 	children,
 }: {
 	title: string;
+	icon?: keyof typeof Ionicons.glyphMap;
+	iconColor?: string;
 	children: React.ReactNode;
 }) {
 	return (
 		<View style={{ gap: spacing.xs }}>
-			<Text size="lg" weight="semibold">
-				{title}
-			</Text>
+			<View
+				style={{
+					flexDirection: "row",
+					alignItems: "center",
+					gap: spacing.xs,
+				}}
+			>
+				{icon ? (
+					<Ionicons
+						name={icon}
+						size={20}
+						color={iconColor ?? colors.primaryLight}
+					/>
+				) : null}
+				<Text size="lg" weight="semibold">
+					{title}
+				</Text>
+			</View>
 			{children}
 		</View>
 	);
@@ -801,6 +889,68 @@ function HeroHeader({
 					})}
 				</View>
 			) : null}
+		</View>
+	);
+}
+
+function EcStageGrid({
+	stages,
+}: {
+	stages: {
+		label: string;
+		value: string | null | undefined;
+		icon: keyof typeof Ionicons.glyphMap;
+	}[];
+}) {
+	const visible = stages.filter((s) => s.value);
+	return (
+		<View style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.sm }}>
+			{visible.map((s) => (
+				<Card
+					key={s.label}
+					variant="outlined"
+					style={{
+						flexGrow: 1,
+						flexBasis: "47%",
+						minWidth: 130,
+						gap: spacing.xs,
+					}}
+				>
+					<View
+						style={{
+							flexDirection: "row",
+							alignItems: "center",
+							gap: spacing.xs,
+						}}
+					>
+						<View
+							style={{
+								width: 32,
+								height: 32,
+								borderRadius: radii.full,
+								backgroundColor: colors.successLight,
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+						>
+							<Ionicons name={s.icon} size={18} color={colors.primaryLight} />
+						</View>
+						<Text
+							size="xs"
+							tone="muted"
+							style={{ textTransform: "uppercase", letterSpacing: 0.5 }}
+						>
+							{s.label}
+						</Text>
+					</View>
+					<Text size="xl" weight="bold">
+						{s.value}
+					</Text>
+					<Text size="xs" tone="muted">
+						EC mS/cm
+					</Text>
+				</Card>
+			))}
 		</View>
 	);
 }
