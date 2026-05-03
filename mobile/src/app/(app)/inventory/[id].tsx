@@ -406,10 +406,17 @@ export default function InventoryDetailScreen() {
 									</View>
 									<Text
 										weight="bold"
-										tone={m.movement_type === "consume" ? "error" : "success"}
+										tone={
+											m.movement_type === "consume"
+												? "error"
+												: m.movement_type === "adjust"
+													? "default"
+													: "success"
+										}
 									>
-										{m.movement_type === "consume" ? "-" : "+"}
-										{m.quantity}
+										{m.movement_type === "adjust"
+											? `= ${m.quantity}`
+											: `${m.movement_type === "consume" ? "-" : "+"}${m.quantity}`}
 									</Text>
 								</View>
 								{m.notes ? (

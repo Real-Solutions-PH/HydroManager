@@ -75,7 +75,7 @@ class InventoryItemsPublic(SQLModel):
 
 class MovementCreate(SQLModel):
     movement_type: MovementType
-    quantity: float = Field(gt=0)
+    quantity: float = Field(ge=0)
     cost_total: float | None = Field(default=None, ge=0)
     related_batch_id: uuid.UUID | None = None
     notes: str | None = Field(default=None, max_length=500)
