@@ -45,6 +45,16 @@ export default function BatchDetailScreen() {
 	const [cnt, setCnt] = useState("");
 	const [notes, setNotes] = useState("");
 
+	useEffect(() => {
+		if (to === "Failed") return;
+		const fromIdx = MILESTONE_ORDER.indexOf(from);
+		const toIdx = MILESTONE_ORDER.indexOf(to);
+		if (toIdx <= fromIdx) {
+			const next = MILESTONE_ORDER[fromIdx + 1];
+			if (next) setTo(next);
+		}
+	}, [from, to]);
+
 	const transition = useMutation({
 		mutationFn: () =>
 			batchesApi.transition(batchId, {
@@ -110,7 +120,7 @@ export default function BatchDetailScreen() {
 				crop_guide_id: editCropId,
 				notes: editNotes.trim() || null,
 				started_at: editStartDate
-					? new Date(`${editStartDate}T00:00:00`).toISOString()
+					? `${editStartDate}T00:00:00.000Z`
 					: undefined,
 			}),
 		onSuccess: () => {
@@ -292,11 +302,7 @@ export default function BatchDetailScreen() {
 							</Text>
 						</View>
 					) : (
-						<Text
-							size="lg"
-							weight="bold"
-							style={{ marginBottom: spacing.xs }}
-						>
+						<Text size="lg" weight="bold" style={{ marginBottom: spacing.xs }}>
 							Slots & Seeds
 						</Text>
 					)}
@@ -504,9 +510,13 @@ export default function BatchDetailScreen() {
 							const active = to === m;
 							const err = m === "Failed";
 							const col = err ? colors.error : colors.primaryLight;
+							const fromIdx = MILESTONE_ORDER.indexOf(from);
+							const toIdx = MILESTONE_ORDER.indexOf(m);
+							const disabled = !err && toIdx >= 0 && toIdx <= fromIdx;
 							return (
 								<Pressable
 									key={m}
+									disabled={disabled}
 									onPress={() => setTo(m)}
 									style={{
 										paddingHorizontal: spacing.xs,
@@ -515,6 +525,7 @@ export default function BatchDetailScreen() {
 										borderWidth: 1,
 										borderColor: active ? col : colors.border,
 										backgroundColor: active ? `${col}26` : "transparent",
+										opacity: disabled ? 0.35 : 1,
 									}}
 								>
 									<Text
@@ -530,12 +541,39 @@ export default function BatchDetailScreen() {
 					</View>
 
 					<Label>{`COUNT (max ${available})`}</Label>
-					<Input
-						keyboardType="numeric"
-						value={cnt}
-						onChangeText={setCnt}
-						placeholder={`How many ${from} → ${to}?`}
-					/>
+					<View
+						style={{
+							flexDirection: "row",
+							alignItems: "stretch",
+							gap: spacing.xs,
+						}}
+					>
+						<View style={{ flex: 1 }}>
+							<Input
+								keyboardType="numeric"
+								value={cnt}
+								onChangeText={setCnt}
+								placeholder={`How many ${from} → ${to}?`}
+							/>
+						</View>
+						<Pressable
+							onPress={() => setCnt(String(available))}
+							disabled={available <= 0}
+							style={({ pressed }) => ({
+								paddingHorizontal: spacing.md,
+								justifyContent: "center",
+								borderRadius: 12,
+								borderWidth: 1,
+								borderColor: colors.border,
+								backgroundColor: pressed ? colors.glassHover : colors.glass,
+								opacity: available <= 0 ? 0.4 : 1,
+							})}
+						>
+							<Text size="sm" weight="semibold">
+								All
+							</Text>
+						</Pressable>
+					</View>
 
 					<View style={{ height: 12 }} />
 					<Label>NOTES</Label>

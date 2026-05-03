@@ -1,10 +1,26 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import {
+	useMutation,
+	useQueries,
+	useQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
 import { router } from "expo-router";
-import { useMemo, useState } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import {
+	Alert,
+	Image,
+	KeyboardAvoidingView,
+	Modal,
+	Platform,
+	Pressable,
+	ScrollView,
+	View,
+} from "react-native";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { Input } from "@/components/ui/input";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
 import { colors, spacing, systemTypes } from "@/constants/theme";
@@ -12,6 +28,7 @@ import {
 	type Batch,
 	type BatchDetail,
 	batchesApi,
+	type CropGrowthStage,
 	type CropGuide,
 	cropsApi,
 	MILESTONE_ORDER,
@@ -19,6 +36,7 @@ import {
 	type Setup,
 	setupsApi,
 } from "@/lib/hydro-api";
+import { formatDateOnly } from "@/lib/utils";
 
 const FILTERS = ["All", "Active", "Harvest-Ready", "Archived"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -57,10 +75,40 @@ const FRUITING_STAGES: Milestone[] = [
 	"HarvestReady",
 ];
 
+const MILESTONE_TO_GUIDE_STAGE: Partial<Record<Milestone, string[]>> = {
+	Sowed: ["Sowing"],
+	Germinated: ["Germination"],
+	SeedLeaves: ["Seedling"],
+	TrueLeaves: ["Seedling"],
+	Transplanted: ["Transplant"],
+	Vegetative: ["Vegetative"],
+	Flowering: ["Flowering"],
+	FruitSet: ["Fruit Set"],
+	HarvestReady: ["Harvest"],
+};
+
+function findGuideStage(
+	guide: CropGuide | undefined,
+	milestone: Milestone | null,
+): CropGrowthStage | null {
+	if (!guide?.growth_stages || !milestone) return null;
+	const names = MILESTONE_TO_GUIDE_STAGE[milestone];
+	if (!names) return null;
+	for (const s of guide.growth_stages) {
+		if (names.includes(s.stage)) return s;
+	}
+	return null;
+}
+
 export default function SeedsScreen() {
 	const [filter, setFilter] = useState<Filter>("All");
 	const [query, setQuery] = useState("");
 	const [expanded, setExpanded] = useState<string | null>(null);
+	const [advanceTarget, setAdvanceTarget] = useState<{
+		batch: Batch;
+		detail?: BatchDetail;
+		guide?: CropGuide;
+	} | null>(null);
 
 	const setupsQ = useQuery({
 		queryKey: ["setups", "all-with-archived"],
@@ -90,6 +138,30 @@ export default function SeedsScreen() {
 		for (const c of crops) m.set(c.id, c);
 		return m;
 	}, [crops]);
+
+	const cropByName = useMemo(() => {
+		const m = new Map<string, CropGuide>();
+		for (const c of crops) {
+			if (c.name_en) m.set(c.name_en.toLowerCase(), c);
+			if (c.name_tl) m.set(c.name_tl.toLowerCase(), c);
+		}
+		return m;
+	}, [crops]);
+
+	const resolveGuide = (b: Batch): CropGuide | undefined => {
+		if (b.crop_guide_id) {
+			const g = cropById.get(b.crop_guide_id);
+			if (g) return g;
+		}
+		const v = b.variety_name?.toLowerCase().trim();
+		if (!v) return undefined;
+		const direct = cropByName.get(v);
+		if (direct) return direct;
+		for (const [k, g] of cropByName) {
+			if (v.includes(k) || k.includes(v)) return g;
+		}
+		return undefined;
+	};
 
 	const codeByBatch = useMemo(
 		() => buildBatchCodes(batches, setups),
@@ -224,26 +296,36 @@ export default function SeedsScreen() {
 						</Text>
 					</View>
 				) : (
-					visible.map((b) => (
-						<BatchCard
-							key={b.id}
-							batch={b}
-							code={codeByBatch.get(b.id) ?? "—"}
-							setup={setupById.get(b.setup_id)}
-							guide={
-								b.crop_guide_id ? cropById.get(b.crop_guide_id) : undefined
-							}
-							detail={detailById.get(b.id)}
-							isExpanded={expanded === b.id}
-							onToggle={() =>
-								setExpanded((cur) => (cur === b.id ? null : b.id))
-							}
-						/>
-					))
+					visible.map((b) => {
+						const guide = resolveGuide(b);
+						const detail = detailById.get(b.id);
+						return (
+							<BatchCard
+								key={b.id}
+								batch={b}
+								code={codeByBatch.get(b.id) ?? "—"}
+								setup={setupById.get(b.setup_id)}
+								guide={guide}
+								detail={detail}
+								isExpanded={expanded === b.id}
+								onToggle={() =>
+									setExpanded((cur) => (cur === b.id ? null : b.id))
+								}
+								onAutoAdvance={() =>
+									setAdvanceTarget({ batch: b, detail, guide })
+								}
+							/>
+						);
+					})
 				)}
 
 				<TipCard />
 			</ScrollView>
+
+			<AdvanceStageDialog
+				target={advanceTarget}
+				onClose={() => setAdvanceTarget(null)}
+			/>
 		</GradientBackground>
 	);
 }
@@ -256,6 +338,7 @@ function BatchCard({
 	detail,
 	isExpanded,
 	onToggle,
+	onAutoAdvance,
 }: {
 	batch: Batch;
 	code: string;
@@ -264,6 +347,7 @@ function BatchCard({
 	detail?: BatchDetail;
 	isExpanded: boolean;
 	onToggle: () => void;
+	onAutoAdvance: () => void;
 }) {
 	const setupColor = setup ? systemTypes[setup.type] : null;
 	const day = Math.max(
@@ -306,6 +390,16 @@ function BatchCard({
 		? `Day ${guide.days_to_harvest_min}–${guide.days_to_harvest_max}`
 		: null;
 
+	const guideStage = findGuideStage(guide, currentStage);
+	const daysToNextPhase =
+		guideStage && nextStage ? Math.max(0, guideStage.day_max - day) : null;
+	const readyToAdvance =
+		nextStage !== null &&
+		daysToNextPhase !== null &&
+		daysToNextPhase === 0 &&
+		(stateCounts.find((s) => s.milestone_code === currentStage)?.count ?? 0) >
+			0;
+
 	const harvestSoon = daysToHarvest !== null && daysToHarvest <= 7;
 	const showHarvestBadge = harvestCount > 0 || harvestSoon;
 
@@ -319,6 +413,7 @@ function BatchCard({
 						gap: spacing.sm,
 					}}
 				>
+					<CropImage url={guide?.image_url ?? null} />
 					<View style={{ flex: 1 }}>
 						<View
 							style={{
@@ -510,7 +605,7 @@ function BatchCard({
 					<View style={{ flexDirection: "row", flexWrap: "wrap" }}>
 						<DetailCell
 							label="STARTED"
-							value={new Date(batch.started_at).toLocaleDateString(undefined, {
+							value={formatDateOnly(batch.started_at, {
 								month: "short",
 								day: "numeric",
 								year: "numeric",
@@ -534,6 +629,43 @@ function BatchCard({
 							value={daysToHarvest !== null ? `~${daysToHarvest} days` : "—"}
 						/>
 					</View>
+
+					{nextStage ? (
+						<View
+							style={{
+								flexDirection: "row",
+								alignItems: "center",
+								gap: spacing.xs,
+								padding: spacing.sm,
+								borderRadius: 12,
+								backgroundColor: readyToAdvance
+									? colors.warningLight
+									: colors.successLight,
+							}}
+						>
+							<Ionicons
+								name={readyToAdvance ? "alert-circle" : "time-outline"}
+								size={18}
+								color={readyToAdvance ? colors.warning : colors.primaryLight}
+							/>
+							<Text size="sm" style={{ flex: 1 }}>
+								{readyToAdvance ? (
+									<>
+										<Text weight="bold">Ready to advance</Text> to{" "}
+										{STAGE_LABEL[nextStage]}.
+									</>
+								) : daysToNextPhase !== null ? (
+									<>
+										<Text weight="bold">~{daysToNextPhase}d</Text> to{" "}
+										{STAGE_LABEL[nextStage]}.
+									</>
+								) : (
+									<>Next phase: {STAGE_LABEL[nextStage]}.</>
+								)}
+							</Text>
+						</View>
+					) : null}
+
 					<View
 						style={{
 							flexDirection: "row",
@@ -541,20 +673,43 @@ function BatchCard({
 							marginTop: spacing.xs,
 						}}
 					>
-						<Pressable
-							onPress={() => router.push(`/batch/${batch.id}`)}
-							style={({ pressed }) => ({
-								flex: 2,
-								alignItems: "center",
-								paddingVertical: 12,
-								borderRadius: 12,
-								backgroundColor: pressed
-									? colors.buttonSolidActive
-									: colors.buttonSolidBg,
-							})}
-						>
-							<Text weight="semibold">Advance Stage</Text>
-						</Pressable>
+						<View style={{ flex: 2, position: "relative" }}>
+							<Pressable
+								onPress={() => router.push(`/batch/${batch.id}`)}
+								style={({ pressed }) => ({
+									alignItems: "center",
+									paddingVertical: 12,
+									borderRadius: 12,
+									backgroundColor: pressed
+										? colors.buttonSolidActive
+										: colors.buttonSolidBg,
+								})}
+							>
+								<Text weight="semibold">Advance Stage</Text>
+							</Pressable>
+							{readyToAdvance ? (
+								<Pressable
+									onPress={onAutoAdvance}
+									hitSlop={8}
+									style={({ pressed }) => ({
+										position: "absolute",
+										top: -6,
+										right: -6,
+										width: 22,
+										height: 22,
+										borderRadius: 999,
+										backgroundColor: pressed ? colors.warning : colors.warning,
+										borderWidth: 2,
+										borderColor: colors.bg,
+										alignItems: "center",
+										justifyContent: "center",
+										opacity: pressed ? 0.8 : 1,
+									})}
+								>
+									<Ionicons name="flash" size={12} color={colors.bg} />
+								</Pressable>
+							) : null}
+						</View>
 						<Pressable
 							onPress={() => router.push(`/batch/${batch.id}?edit=1`)}
 							style={({ pressed }) => ({
@@ -577,6 +732,215 @@ function BatchCard({
 				</View>
 			) : null}
 		</Card>
+	);
+}
+
+function CropImage({ url }: { url: string | null }) {
+	const [errored, setErrored] = useState(false);
+	const showImg = !!url && !errored;
+	return (
+		<View
+			style={{
+				width: 56,
+				height: 56,
+				borderRadius: 12,
+				backgroundColor: colors.glass,
+				alignItems: "center",
+				justifyContent: "center",
+				overflow: "hidden",
+			}}
+		>
+			{showImg ? (
+				<Image
+					source={{ uri: url ?? "" }}
+					style={{ width: 56, height: 56 }}
+					onError={() => setErrored(true)}
+				/>
+			) : (
+				<Ionicons name="leaf" size={26} color={colors.primaryLight} />
+			)}
+		</View>
+	);
+}
+
+function AdvanceStageDialog({
+	target,
+	onClose,
+}: {
+	target: { batch: Batch; detail?: BatchDetail; guide?: CropGuide } | null;
+	onClose: () => void;
+}) {
+	const qc = useQueryClient();
+	const stateCounts = target?.detail?.state_counts ?? [];
+	const isFruiting = stateCounts.some(
+		(s) =>
+			(s.milestone_code === "Flowering" || s.milestone_code === "FruitSet") &&
+			s.count > 0,
+	);
+	const stages = isFruiting ? FRUITING_STAGES : LEAFY_STAGES;
+	const currentStage = computeCurrentStage(stateCounts);
+	const currentIdx = currentStage ? stages.indexOf(currentStage) : -1;
+	const nextStage =
+		currentIdx >= 0 && currentIdx < stages.length - 1
+			? stages[currentIdx + 1]
+			: null;
+	const currentCount =
+		stateCounts.find((s) => s.milestone_code === currentStage)?.count ?? 0;
+
+	const [count, setCount] = useState("");
+	const open = target !== null;
+
+	useEffect(() => {
+		if (open) setCount(currentCount > 0 ? String(currentCount) : "");
+	}, [open, currentCount]);
+
+	const transition = useMutation({
+		mutationFn: () => {
+			if (!target || !currentStage || !nextStage)
+				throw new Error("No advance possible");
+			return batchesApi.transition(target.batch.id, {
+				from_milestone: currentStage,
+				to_milestone: nextStage,
+				count: Number.parseInt(count, 10) || 0,
+			});
+		},
+		onSuccess: () => {
+			qc.invalidateQueries({ queryKey: ["batches"] });
+			if (target)
+				qc.invalidateQueries({ queryKey: ["batch", target.batch.id] });
+			setCount("");
+			onClose();
+		},
+		onError: (e: Error) => Alert.alert("Error", e.message),
+	});
+
+	const close = () => {
+		setCount("");
+		onClose();
+	};
+
+	const n = Number.parseInt(count, 10) || 0;
+	const valid = !!currentStage && !!nextStage && n > 0 && n <= currentCount;
+
+	return (
+		<Modal
+			visible={open}
+			transparent
+			animationType="slide"
+			onRequestClose={close}
+		>
+			<Pressable
+				style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)" }}
+				onPress={close}
+			/>
+			<KeyboardAvoidingView
+				behavior={Platform.OS === "ios" ? "padding" : undefined}
+				style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}
+			>
+				<View
+					style={{
+						backgroundColor: colors.bg,
+						borderTopLeftRadius: 24,
+						borderTopRightRadius: 24,
+						padding: spacing.md,
+						paddingBottom: spacing.xxl,
+						borderTopWidth: 1,
+						borderColor: colors.border,
+						gap: spacing.sm,
+					}}
+				>
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "space-between",
+							alignItems: "center",
+						}}
+					>
+						<Text size="lg" weight="bold">
+							Advance to next phase
+						</Text>
+						<Pressable onPress={close} hitSlop={10}>
+							<Ionicons name="close" size={24} color={colors.text} />
+						</Pressable>
+					</View>
+
+					{currentStage && nextStage ? (
+						<View
+							style={{
+								flexDirection: "row",
+								alignItems: "center",
+								gap: spacing.xs,
+							}}
+						>
+							<View
+								style={{
+									paddingHorizontal: 10,
+									paddingVertical: 4,
+									borderRadius: 999,
+									backgroundColor: colors.glass,
+								}}
+							>
+								<Text size="sm" weight="semibold">
+									{STAGE_LABEL[currentStage]}
+								</Text>
+							</View>
+							<Ionicons
+								name="arrow-forward"
+								size={16}
+								color={colors.textMuted}
+							/>
+							<View
+								style={{
+									paddingHorizontal: 10,
+									paddingVertical: 4,
+									borderRadius: 999,
+									backgroundColor: colors.successLight,
+								}}
+							>
+								<Text
+									size="sm"
+									weight="semibold"
+									style={{ color: colors.primaryLight }}
+								>
+									{STAGE_LABEL[nextStage]}
+								</Text>
+							</View>
+						</View>
+					) : (
+						<Text tone="muted">No next phase available.</Text>
+					)}
+
+					<Text size="sm" tone="muted">
+						{currentCount} seed{currentCount === 1 ? "" : "s"} currently in{" "}
+						{currentStage ? STAGE_LABEL[currentStage] : "—"}.
+					</Text>
+
+					<View style={{ gap: 6 }}>
+						<Text
+							size="xs"
+							weight="semibold"
+							tone="subtle"
+							style={{ textTransform: "uppercase", letterSpacing: 0.5 }}
+						>
+							Seeds to advance
+						</Text>
+						<Input
+							keyboardType="numeric"
+							value={count}
+							onChangeText={setCount}
+							placeholder={String(currentCount)}
+						/>
+					</View>
+
+					<Button
+						label={valid ? `Advance ${n} seed${n === 1 ? "" : "s"}` : "Advance"}
+						isLoading={transition.isPending}
+						isDisabled={!valid || transition.isPending}
+						onPress={() => transition.mutate()}
+					/>
+				</View>
+			</KeyboardAvoidingView>
+		</Modal>
 	);
 }
 

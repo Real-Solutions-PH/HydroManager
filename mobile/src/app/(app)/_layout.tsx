@@ -8,7 +8,6 @@ import {
 } from "lucide-react-native";
 import { useEffect } from "react";
 import { View } from "react-native";
-import { AIChatFab } from "@/components/ai-chat";
 import { OfflineBanner } from "@/components/offline-banner";
 import {
 	InteractiveMenu,
@@ -91,7 +90,6 @@ export default function AppLayout() {
 				<Tabs.Screen name="setup" options={HIDDEN_TAB} />
 				<Tabs.Screen name="batch" options={HIDDEN_TAB} />
 			</Tabs>
-			<AIChatFab />
 		</View>
 	);
 }
