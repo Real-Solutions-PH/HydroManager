@@ -477,7 +477,7 @@ function CropDetail({
 												}}
 											>
 												<Text
-													size="sm"
+													size="md"
 													weight="bold"
 													style={{ color: colors.primaryLight }}
 												>
@@ -486,13 +486,13 @@ function CropDetail({
 											</View>
 											<Card variant="outlined">
 												<Text
-													size="md"
+													size="lg"
 													weight="semibold"
 													style={{ marginBottom: 4 }}
 												>
 													{stage.stage}
 												</Text>
-												<Text size="sm" tone="subtle">
+												<Text size="md" tone="subtle">
 													{stage.description}
 												</Text>
 												{stage.actions?.length ? (
@@ -500,7 +500,7 @@ function CropDetail({
 														{stage.actions.map((a) => (
 															<Text
 																key={`${stage.stage}-action-${a}`}
-																size="xs"
+																size="sm"
 																tone="muted"
 															>
 																• {a}
@@ -527,13 +527,13 @@ function CropDetail({
 										style={{ flexDirection: "row", gap: spacing.xs }}
 									>
 										<Text
-											size="md"
+											size="lg"
 											weight="bold"
 											style={{ color: colors.primaryLight }}
 										>
 											•
 										</Text>
-										<Text size="sm" tone="subtle" style={{ flex: 1 }}>
+										<Text size="md" tone="subtle" style={{ flex: 1 }}>
 											{tip}
 										</Text>
 									</View>
@@ -549,17 +549,17 @@ function CropDetail({
 							{crop.risks.map((risk) => (
 								<Card key={`risk-${risk.title}`} variant="outlined">
 									<Text
-										size="md"
+										size="lg"
 										weight="semibold"
 										style={{ color: colors.warning }}
 									>
 										{risk.title}
 									</Text>
-									<Text size="sm" tone="subtle" style={{ marginTop: 4 }}>
+									<Text size="md" tone="subtle" style={{ marginTop: 4 }}>
 										{risk.description}
 									</Text>
 									<Text
-										size="xs"
+										size="sm"
 										tone="muted"
 										style={{ marginTop: spacing.xs, fontStyle: "italic" }}
 									>
