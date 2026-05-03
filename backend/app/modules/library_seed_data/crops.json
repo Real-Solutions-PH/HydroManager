@@ -4160,7 +4160,7 @@
   },
   {
     "name_en": "Tomato (Slicer)",
-    "name_tl": "Kamatis (Pang-hiwa)",
+    "name_tl": "Kamatis (Normal)",
     "category": "fruiting",
     "recommended_setups": "DutchBucket",
     "ph_min": 5.8,
@@ -4352,7 +4352,7 @@
     "common_issues": "Tip burn at high EC; bolting above 26C; bottom rot in saturated media; aphids in upright cone",
     "harvest_indicator": "Tall upright cone-shaped head 25-30cm, dark green outer leaves, firm crisp heart, 200-300g whole-head weight",
     "image_key": "olmetie_lettuce_crop.png",
-    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/romaine-lettuce.jpeg",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/lettuce-olmetie.jpeg",
     "source": "Rijk Zwaan Olmetie RZ datasheet, Cravo greenhouse trial notes, Web validation",
     "tips": [
       "Olmetie RZ is a tall single-cut Cos/romaine type bred for hydroponics — uniform upright heads ideal for whole-head packs.",
