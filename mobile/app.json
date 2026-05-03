@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "FastAPI Mobile",
-    "slug": "fastapi-mobile",
-    "version": "0.0.0",
+    "name": "Hydro Manager",
+    "slug": "hydro-manager",
+    "version": "0.1.0",
     "orientation": "portrait",
-    "scheme": "fastapimobile",
+    "scheme": "hydromanager",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -39,8 +39,9 @@
         "root": "./src/app"
       },
       "eas": {
-        "projectId": "7b52e11f-4af5-41c0-aee7-64d1f31401cb"
+        "projectId": "a5a28829-fa04-43f8-826a-c9af5b46e876"
       }
-    }
+    },
+    "owner": "real_solutions_ph"
   }
 }
