@@ -400,8 +400,13 @@ function BatchCard({
 		(stateCounts.find((s) => s.milestone_code === currentStage)?.count ?? 0) >
 			0;
 
-	const harvestSoon = daysToHarvest !== null && daysToHarvest <= 7;
+	const harvestSoon =
+		nextStage === "HarvestReady" &&
+		daysToNextPhase !== null &&
+		daysToNextPhase <= 7;
 	const showHarvestBadge = harvestCount > 0 || harvestSoon;
+	const topRightDays =
+		nextStage === "HarvestReady" ? daysToNextPhase : daysToHarvest;
 
 	return (
 		<Card>
@@ -516,7 +521,7 @@ function BatchCard({
 						</View>
 					</View>
 					<View style={{ alignItems: "flex-end", gap: 4 }}>
-						{daysToHarvest !== null ? (
+						{topRightDays !== null ? (
 							<View
 								style={{
 									flexDirection: "row",
@@ -531,7 +536,7 @@ function BatchCard({
 										color: harvestSoon ? colors.error : colors.primaryLight,
 									}}
 								>
-									{daysToHarvest}d
+									{topRightDays}d
 								</Text>
 								<Ionicons
 									name={isExpanded ? "chevron-up" : "chevron-down"}
@@ -652,7 +657,7 @@ function BatchCard({
 						/>
 						<DetailCell
 							label="DAYS TO HARVEST"
-							value={daysToHarvest !== null ? `~${daysToHarvest} days` : "—"}
+							value={topRightDays !== null ? `~${topRightDays} days` : "—"}
 						/>
 					</View>
 
