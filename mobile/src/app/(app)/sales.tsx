@@ -121,6 +121,19 @@ export default function SalesScreen() {
 		return { list, total };
 	}, [d]);
 
+	const expenseByCategory = useMemo(() => {
+		const items = inventory.data?.data ?? [];
+		const totals = new Map<InventoryCategory, number>();
+		for (const it of items) {
+			const value = (it.unit_cost ?? 0) * it.current_stock;
+			if (value <= 0) continue;
+			totals.set(it.category, (totals.get(it.category) ?? 0) + value);
+		}
+		return Array.from(totals.entries())
+			.map(([category, value]) => ({ category, value }))
+			.sort((a, b) => b.value - a.value);
+	}, [inventory.data]);
+
 	if (!me.data)
 		return (
 			<GradientBackground>
@@ -156,19 +169,6 @@ export default function SalesScreen() {
 		(s, it) => s + (it.unit_cost ?? 0) * it.current_stock,
 		0,
 	);
-
-	const expenseByCategory = useMemo(() => {
-		const items = inventory.data?.data ?? [];
-		const totals = new Map<InventoryCategory, number>();
-		for (const it of items) {
-			const value = (it.unit_cost ?? 0) * it.current_stock;
-			if (value <= 0) continue;
-			totals.set(it.category, (totals.get(it.category) ?? 0) + value);
-		}
-		return Array.from(totals.entries())
-			.map(([category, value]) => ({ category, value }))
-			.sort((a, b) => b.value - a.value);
-	}, [inventory.data]);
 
 	const topCrops = d?.top_crops ?? [];
 	const topCropsMax = topCrops.reduce((m, c) => Math.max(m, c.revenue), 0);
