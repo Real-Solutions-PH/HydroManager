@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { FlatList, Image, Pressable, View } from "react-native";
+import { ActivityIndicator, FlatList, Image, Pressable, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -11,6 +11,7 @@ import { colors, spacing } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { usePests } from "@/hooks/use-library";
 import type { LibraryPest, PestKind, PestSeverity } from "@/lib/hydro-api";
+import { flattenPages } from "@/lib/paginate";
 import { capitalize } from "@/lib/utils";
 
 const KINDS: PestKind[] = ["pest", "disease", "deficiency"];
@@ -32,7 +33,9 @@ export default function PestsListScreen() {
 	const goBack = useBack();
 	const [query, setQuery] = useState("");
 	const [kind, setKind] = useState<PestKind | null>(null);
-	const { data, isLoading } = usePests(query, kind ?? undefined);
+	const pestsQ = usePests(query, kind ?? undefined);
+	const { isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = pestsQ;
+	const pests = flattenPages(pestsQ.data);
 
 	return (
 		<GradientBackground>
@@ -82,8 +85,19 @@ export default function PestsListScreen() {
 				</View>
 			</View>
 			<FlatList
-				data={data?.data ?? []}
+				data={pests}
 				keyExtractor={(p) => p.id}
+				onEndReached={() => {
+					if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+				}}
+				onEndReachedThreshold={0.4}
+				ListFooterComponent={
+					isFetchingNextPage ? (
+						<View style={{ paddingVertical: spacing.md }}>
+							<ActivityIndicator color={colors.textMuted} />
+						</View>
+					) : null
+				}
 				contentContainerStyle={{
 					padding: spacing.md,
 					paddingBottom: spacing.jumbo * 2,

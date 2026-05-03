@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { FlatList, Image, Pressable, View } from "react-native";
+import { ActivityIndicator, FlatList, Image, Pressable, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -13,6 +13,7 @@ import { useBack } from "@/hooks/use-back";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { useClimateNormals, useCrops } from "@/hooks/use-library";
 import type { ClimateNormals, CropGuide } from "@/lib/hydro-api";
+import { flattenPages } from "@/lib/paginate";
 import { capitalize } from "@/lib/utils";
 
 const CATEGORIES = ["leafy", "herb", "fruiting", "other"] as const;
@@ -182,18 +183,19 @@ export default function CropsListScreen() {
 		month,
 	});
 
-	const { data, isLoading } = useCrops(query, category ?? undefined);
+	const cropsQ = useCrops(query, category ?? undefined);
+	const { isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = cropsQ;
 
 	useEffect(() => {
 		if (envFilterOn && !coords && geoStatus === "idle") refreshGeo();
 	}, [envFilterOn, coords, geoStatus, refreshGeo]);
 
 	const crops = useMemo(() => {
-		const base = data?.data ?? [];
+		const base = flattenPages(cropsQ.data);
 		const filtered =
 			envFilterOn && env ? base.filter((c) => cropMatchesEnv(c, env)) : base;
 		return sortCrops(filtered, sort);
-	}, [data, envFilterOn, env, sort]);
+	}, [cropsQ.data, envFilterOn, env, sort]);
 
 	return (
 		<GradientBackground>
@@ -320,6 +322,17 @@ export default function CropsListScreen() {
 			<FlatList
 				data={crops}
 				keyExtractor={(c) => c.id}
+				onEndReached={() => {
+					if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+				}}
+				onEndReachedThreshold={0.4}
+				ListFooterComponent={
+					isFetchingNextPage ? (
+						<View style={{ paddingVertical: spacing.md }}>
+							<ActivityIndicator color={colors.textMuted} />
+						</View>
+					) : null
+				}
 				contentContainerStyle={{
 					padding: spacing.md,
 					paddingBottom: spacing.jumbo * 2,

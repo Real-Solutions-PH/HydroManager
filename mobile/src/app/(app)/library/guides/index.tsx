@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { FlatList, Image, Pressable, View } from "react-native";
+import { ActivityIndicator, FlatList, Image, Pressable, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -11,6 +11,7 @@ import { colors, spacing } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useGuides } from "@/hooks/use-library";
 import type { GuideCategory, LibraryGuide } from "@/lib/hydro-api";
+import { flattenPages } from "@/lib/paginate";
 import { capitalize } from "@/lib/utils";
 
 const CATEGORIES: GuideCategory[] = [
@@ -36,7 +37,9 @@ export default function GuidesListScreen() {
 	const goBack = useBack();
 	const [query, setQuery] = useState("");
 	const [category, setCategory] = useState<GuideCategory | null>(null);
-	const { data, isLoading } = useGuides(query, category ?? undefined);
+	const guidesQ = useGuides(query, category ?? undefined);
+	const { isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = guidesQ;
+	const guides = flattenPages(guidesQ.data);
 
 	return (
 		<GradientBackground>
@@ -86,8 +89,19 @@ export default function GuidesListScreen() {
 				</View>
 			</View>
 			<FlatList
-				data={data?.data ?? []}
+				data={guides}
 				keyExtractor={(g) => g.id}
+				onEndReached={() => {
+					if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+				}}
+				onEndReachedThreshold={0.4}
+				ListFooterComponent={
+					isFetchingNextPage ? (
+						<View style={{ paddingVertical: spacing.md }}>
+							<ActivityIndicator color={colors.textMuted} />
+						</View>
+					) : null
+				}
 				contentContainerStyle={{
 					padding: spacing.md,
 					paddingBottom: spacing.jumbo * 2,

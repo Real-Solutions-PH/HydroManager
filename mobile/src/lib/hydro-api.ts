@@ -264,15 +264,22 @@ export interface LibraryPest {
 	source: string | null;
 }
 
-interface Paged<T> {
+export interface Paged<T> {
 	data: T[];
 	count: number;
 }
 
 export const setupsApi = {
-	async list(includeArchived = false): Promise<Paged<Setup>> {
+	async list(
+		includeArchived = false,
+		params?: { skip?: number; limit?: number },
+	): Promise<Paged<Setup>> {
 		const r = await api.get(`${V1}/setups/`, {
-			params: { include_archived: includeArchived },
+			params: {
+				include_archived: includeArchived,
+				skip: params?.skip,
+				limit: params?.limit,
+			},
 		});
 		return r.data;
 	},
@@ -321,6 +328,8 @@ export const batchesApi = {
 	async list(params?: {
 		setup_id?: string;
 		include_archived?: boolean;
+		skip?: number;
+		limit?: number;
 	}): Promise<Paged<Batch>> {
 		const r = await api.get(`${V1}/batches/`, { params });
 		return r.data;
@@ -393,11 +402,15 @@ export const inventoryApi = {
 	async list(params?: {
 		category?: InventoryCategory;
 		near_expiry?: boolean;
+		skip?: number;
+		limit?: number;
 	}): Promise<Paged<InventoryItem>> {
 		const r = await api.get(`${V1}/inventory/items`, {
 			params: {
 				category: params?.category,
 				near_expiry: params?.near_expiry ? true : undefined,
+				skip: params?.skip,
+				limit: params?.limit,
 			},
 		});
 		return r.data;
@@ -459,12 +472,16 @@ export const produceApi = {
 	async list(params?: {
 		status?: ProduceStatus | "all";
 		near_expiry?: boolean;
+		skip?: number;
+		limit?: number;
 	}): Promise<Paged<Produce>> {
 		const r = await api.get(`${V1}/produce/`, {
 			params: {
 				status:
 					params?.status && params.status !== "all" ? params.status : undefined,
 				near_expiry: params?.near_expiry ? true : undefined,
+				skip: params?.skip,
+				limit: params?.limit,
 			},
 		});
 		return r.data;
@@ -539,9 +556,10 @@ export const cropsApi = {
 	async list(
 		query?: string,
 		category?: "leafy" | "herb" | "fruiting" | "other",
+		params?: { skip?: number; limit?: number },
 	): Promise<Paged<CropGuide>> {
 		const r = await api.get(`${V1}/crops/`, {
-			params: { query, category },
+			params: { query, category, skip: params?.skip, limit: params?.limit },
 		});
 		return r.data;
 	},
@@ -592,9 +610,10 @@ export const libraryApi = {
 		async list(
 			query?: string,
 			category?: GuideCategory,
+			params?: { skip?: number; limit?: number },
 		): Promise<Paged<LibraryGuide>> {
 			const r = await api.get(`${V1}/library/guides/`, {
-				params: { query, category },
+				params: { query, category, skip: params?.skip, limit: params?.limit },
 			});
 			return r.data;
 		},
@@ -604,9 +623,13 @@ export const libraryApi = {
 		},
 	},
 	pests: {
-		async list(query?: string, kind?: PestKind): Promise<Paged<LibraryPest>> {
+		async list(
+			query?: string,
+			kind?: PestKind,
+			params?: { skip?: number; limit?: number },
+		): Promise<Paged<LibraryPest>> {
 			const r = await api.get(`${V1}/library/pests/`, {
-				params: { query, kind },
+				params: { query, kind, skip: params?.skip, limit: params?.limit },
 			});
 			return r.data;
 		},

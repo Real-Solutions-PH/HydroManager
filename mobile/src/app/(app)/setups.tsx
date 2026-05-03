@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { useMemo, useState } from "react";
-import { FlatList, Image, Pressable, View } from "react-native";
+import { ActivityIndicator, FlatList, Image, Pressable, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -10,6 +10,7 @@ import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { Text } from "@/components/ui/text";
 import { colors, spacing, systemTypes } from "@/constants/theme";
 import { batchesApi, type Setup, setupsApi } from "@/lib/hydro-api";
+import { flattenPages, getNextSkip, PAGE_SIZE } from "@/lib/paginate";
 
 const FILTERS = ["All", "Active", "Archived"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -26,16 +27,19 @@ export default function SetupsScreen() {
 	const [filter, setFilter] = useState<Filter>("All");
 	const tabBarClearance = useTabBarClearance();
 
-	const setupsQ = useQuery({
-		queryKey: ["setups", "all-with-archived"],
-		queryFn: () => setupsApi.list(true),
+	const setupsQ = useInfiniteQuery({
+		queryKey: ["setups", "all-with-archived", "paged"],
+		queryFn: ({ pageParam = 0 }) =>
+			setupsApi.list(true, { skip: pageParam, limit: PAGE_SIZE }),
+		initialPageParam: 0,
+		getNextPageParam: getNextSkip<Setup>,
 	});
 	const batchesQ = useQuery({
 		queryKey: ["batches", "all"],
-		queryFn: () => batchesApi.list({ include_archived: false }),
+		queryFn: () => batchesApi.list({ include_archived: false, limit: 1000 }),
 	});
 
-	const all = setupsQ.data?.data ?? [];
+	const all = flattenPages(setupsQ.data);
 	const batches = batchesQ.data?.data ?? [];
 
 	const bySetup = useMemo(() => {
@@ -158,6 +162,18 @@ export default function SetupsScreen() {
 					setupsQ.refetch();
 					batchesQ.refetch();
 				}}
+				onEndReached={() => {
+					if (setupsQ.hasNextPage && !setupsQ.isFetchingNextPage)
+						setupsQ.fetchNextPage();
+				}}
+				onEndReachedThreshold={0.4}
+				ListFooterComponent={
+					setupsQ.isFetchingNextPage ? (
+						<View style={{ paddingVertical: spacing.md }}>
+							<ActivityIndicator color={colors.textMuted} />
+						</View>
+					) : null
+				}
 				contentContainerStyle={{
 					padding: spacing.md,
 					paddingBottom: tabBarClearance,

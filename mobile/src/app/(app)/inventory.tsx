@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { Link, router } from "expo-router";
 import { useState } from "react";
-import { FlatList, Pressable, View } from "react-native";
+import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
 import { InventoryMovementSheet } from "@/components/inventory/movement-sheet";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -25,6 +25,7 @@ import {
 	type ProduceStatus,
 	produceApi,
 } from "@/lib/hydro-api";
+import { flattenPages, getNextSkip, PAGE_SIZE } from "@/lib/paginate";
 import { capitalize } from "@/lib/utils";
 
 const CATEGORIES: InventoryCategory[] = [
@@ -56,40 +57,50 @@ export default function InventoryScreen() {
 	const [movementItem, setMovementItem] = useState<InventoryItem | null>(null);
 	const tabBarClearance = useTabBarClearance();
 
-	const inventory = useQuery({
+	const inventory = useInfiniteQuery({
 		queryKey: ["inventory", category, nearExpiryOnly],
-		queryFn: () =>
+		queryFn: ({ pageParam = 0 }) =>
 			inventoryApi.list({
 				category: category ?? undefined,
 				near_expiry: nearExpiryOnly,
+				skip: pageParam,
+				limit: PAGE_SIZE,
 			}),
+		initialPageParam: 0,
+		getNextPageParam: getNextSkip<InventoryItem>,
 		enabled: tab === "materials",
 	});
 
-	const produce = useQuery({
+	const produce = useInfiniteQuery({
 		queryKey: ["produce", produceStatus, nearExpiryOnly],
-		queryFn: () =>
+		queryFn: ({ pageParam = 0 }) =>
 			produceApi.list({
 				status: produceStatus,
 				near_expiry: nearExpiryOnly,
+				skip: pageParam,
+				limit: PAGE_SIZE,
 			}),
+		initialPageParam: 0,
+		getNextPageParam: getNextSkip<Produce>,
 		enabled: tab === "produce",
 	});
 
 	const items =
 		tab === "materials"
-			? (inventory.data?.data ?? []).filter((it) =>
+			? flattenPages(inventory.data).filter((it) =>
 					query ? it.name.toLowerCase().includes(query.toLowerCase()) : true,
 				)
-			: (produce.data?.data ?? []).filter((it) =>
+			: flattenPages(produce.data).filter((it) =>
 					query ? it.name.toLowerCase().includes(query.toLowerCase()) : true,
 				);
 
-	const isLoading =
-		tab === "materials" ? inventory.isLoading : produce.isLoading;
-	const isRefetching =
-		tab === "materials" ? inventory.isRefetching : produce.isRefetching;
-	const refetch = tab === "materials" ? inventory.refetch : produce.refetch;
+	const active = tab === "materials" ? inventory : produce;
+	const isLoading = active.isLoading;
+	const isRefetching = active.isRefetching;
+	const refetch = active.refetch;
+	const onEndReached = () => {
+		if (active.hasNextPage && !active.isFetchingNextPage) active.fetchNextPage();
+	};
 
 	return (
 		<GradientBackground>
@@ -199,6 +210,15 @@ export default function InventoryScreen() {
 				keyExtractor={(it) => it.id}
 				refreshing={isRefetching}
 				onRefresh={refetch}
+				onEndReached={onEndReached}
+				onEndReachedThreshold={0.4}
+				ListFooterComponent={
+					active.isFetchingNextPage ? (
+						<View style={{ paddingVertical: spacing.md }}>
+							<ActivityIndicator color={colors.textMuted} />
+						</View>
+					) : null
+				}
 				contentContainerStyle={{
 					padding: spacing.md,
 					paddingBottom: tabBarClearance,
