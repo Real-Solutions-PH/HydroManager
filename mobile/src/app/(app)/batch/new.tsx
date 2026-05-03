@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { Alert, Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
@@ -86,10 +86,10 @@ export default function NewBatchScreen() {
 					? `${startDate}T00:00:00.000Z`
 					: undefined,
 			}),
-		onSuccess: (b) => {
+		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: ["batches"] });
 			qc.invalidateQueries({ queryKey: ["setup", setupId] });
-			router.replace(`/batch/${b.id}`);
+			goBack();
 		},
 		onError: (e: Error) => Alert.alert("Error", e.message),
 	});
