@@ -12,6 +12,7 @@ from app.api import v1_router
 from app.core.config import settings
 from app.core.db import engine
 from app.core.storage import ensure_bucket
+from app.logger import app_logger
 from app.modules.crops import repo as crops_repo
 from app.modules.library_guides import repo as guides_repo
 from app.modules.library_pests import repo as pests_repo
@@ -30,12 +31,20 @@ IS_SERVERLESS = bool(os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    if not IS_SERVERLESS and settings.ENVIRONMENT == "local":
+    try:
         ensure_bucket(settings.MINIO_DEFAULT_BUCKET)
-        with Session(engine) as session:
+        if settings.OCR_ENABLED:
+            ensure_bucket(settings.OCR_BUCKET)
+    except Exception as exc:
+        app_logger.warning("Object storage unavailable, skipping bucket setup: %s", exc)
+    with Session(engine) as session:
+        try:
+            app_logger.info("Running seeding script")
             crops_repo.seed_if_empty(session=session)
             guides_repo.seed_if_empty(session=session)
             pests_repo.seed_if_empty(session=session)
+        except Exception as e:
+            app_logger.warning("Seeding scripts didn't run properly")
     yield
 
 
