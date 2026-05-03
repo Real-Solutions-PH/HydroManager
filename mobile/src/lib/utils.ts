@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { config } from "@/lib/config";
 
 export function cn(...inputs: ClassValue[]): string {
 	return twMerge(clsx(inputs));
@@ -38,12 +39,28 @@ export const confirmPasswordRules = (
 };
 
 export function handleError(err: unknown): string {
-	if (err && typeof err === "object" && "response" in err) {
-		const resp = (err as { response?: { data?: { detail?: unknown } } })
-			.response;
-		const detail = resp?.data?.detail;
-		if (typeof detail === "string") return detail;
-		if (Array.isArray(detail) && detail[0]?.msg) return String(detail[0].msg);
+	if (err && typeof err === "object") {
+		const e = err as {
+			response?: { data?: { detail?: unknown }; status?: number };
+			request?: unknown;
+			code?: string;
+			message?: string;
+		};
+
+		if (e.response) {
+			const detail = e.response.data?.detail;
+			if (typeof detail === "string") return detail;
+			if (Array.isArray(detail) && detail[0]?.msg) return String(detail[0].msg);
+			return `Server error (${e.response.status ?? "unknown"})`;
+		}
+
+		if (e.request || e.code === "ERR_NETWORK" || e.message === "Network Error") {
+			return `Cannot reach server at ${config.apiUrl}. Check your internet, the server status, or that the app was rebuilt after changing EXPO_PUBLIC_API_URL.`;
+		}
+
+		if (e.code === "ECONNABORTED") {
+			return `Request to ${config.apiUrl} timed out. Server slow or unreachable.`;
+		}
 	}
 	if (err instanceof Error) return err.message;
 	if (typeof err === "string") return err;
