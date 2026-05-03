@@ -1,8 +1,7 @@
 import uuid
 
-from sqlmodel import Session, col, delete, func, or_, select
+from sqlmodel import Session, col, func, or_, select
 
-from app.core.config import settings
 from app.modules.crops.models import CropGuide
 from app.modules.library_seed_data import load_seed_json
 
@@ -42,15 +41,33 @@ def get_multi(
 def seed_if_empty(*, session: Session) -> int:
     from app.modules.crops.stats_repo import recompute_stats
 
-    existing = session.exec(select(func.count()).select_from(CropGuide)).one()
-    if existing > 0 and not settings.LIBRARY_SEED_FORCE_REFRESH:
-        return 0
-    if existing > 0:
-        session.exec(delete(CropGuide))
-        session.commit()
     rows = load_seed_json("crops.json")
-    for row in rows:
-        session.add(CropGuide(**row))
-    session.commit()
-    recompute_stats(session=session)
-    return len(rows)
+    if not rows:
+        return 0
+    existing = {
+        c.name_en: c for c in session.exec(select(CropGuide)).all()
+    }
+    changed = 0
+    try:
+        for row in rows:
+            key = row.get("name_en")
+            current = existing.get(key) if key else None
+            if current is None:
+                session.add(CropGuide(**row))
+                changed += 1
+            else:
+                dirty = False
+                for field, value in row.items():
+                    if getattr(current, field, None) != value:
+                        setattr(current, field, value)
+                        dirty = True
+                if dirty:
+                    session.add(current)
+                    changed += 1
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    if changed:
+        recompute_stats(session=session)
+    return changed

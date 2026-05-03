@@ -1,8 +1,7 @@
 import uuid
 
-from sqlmodel import Session, col, delete, func, select
+from sqlmodel import Session, col, func, select
 
-from app.core.config import settings
 from app.modules.library_pests.models import LibraryPest
 from app.modules.library_seed_data import load_seed_json
 
@@ -40,14 +39,31 @@ def get_multi(
 
 
 def seed_if_empty(*, session: Session) -> int:
-    existing = session.exec(select(func.count()).select_from(LibraryPest)).one()
-    if existing > 0 and not settings.LIBRARY_SEED_FORCE_REFRESH:
-        return 0
-    if existing > 0:
-        session.exec(delete(LibraryPest))
-        session.commit()
     rows = load_seed_json("pests.json")
-    for row in rows:
-        session.add(LibraryPest(**row))
-    session.commit()
-    return len(rows)
+    if not rows:
+        return 0
+    existing = {
+        p.name: p for p in session.exec(select(LibraryPest)).all()
+    }
+    changed = 0
+    try:
+        for row in rows:
+            key = row.get("name")
+            current = existing.get(key) if key else None
+            if current is None:
+                session.add(LibraryPest(**row))
+                changed += 1
+            else:
+                dirty = False
+                for field, value in row.items():
+                    if getattr(current, field, None) != value:
+                        setattr(current, field, value)
+                        dirty = True
+                if dirty:
+                    session.add(current)
+                    changed += 1
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    return changed

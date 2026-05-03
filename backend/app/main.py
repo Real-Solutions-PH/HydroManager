@@ -43,8 +43,9 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
             crops_repo.seed_if_empty(session=session)
             guides_repo.seed_if_empty(session=session)
             pests_repo.seed_if_empty(session=session)
-        except Exception as e:
-            app_logger.warning("Seeding scripts didn't run properly")
+        except Exception:
+            session.rollback()
+            app_logger.exception("Seeding scripts didn't run properly")
     yield
 
 
