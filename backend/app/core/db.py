@@ -12,6 +12,7 @@ engine = create_engine(
     str(settings.SQLALCHEMY_DATABASE_URI),
     poolclass=NullPool,
     pool_pre_ping=True,
+    connect_args={"prepare_threshold": None},
 )
 
 
