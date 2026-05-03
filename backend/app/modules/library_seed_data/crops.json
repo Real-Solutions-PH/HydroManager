@@ -23,89 +23,181 @@
     "ec_fruiting": null,
     "local_price_php_per_kg_min": 60.0,
     "local_price_php_per_kg_max": 120.0,
-    "common_issues": "Bolting in heat; tip burn from Ca deficiency",
-    "harvest_indicator": "Leaves ~15cm, firm heads",
+    "common_issues": "Bolting (heat >28C, long days, water stress); tip burn (Ca translocation failure under high VPD/fast growth); downy mildew (Hyaloperonospora, RH>90%); black rot (Xanthomonas, V-shaped lesions); Alternaria leaf spot; Pythium/Phytophthora root rot (warm reservoir, low DO); Erwinia/Pectobacterium soft rot; damping-off at seedling stage; diamondback moth (windowpane then holes); flea beetle shot-hole; aphids (virus vectors); cabbage looper, webworm, whitefly, thrips, leaf miner; nitrate accumulation; Ca-Mg-K antagonism; Mg deficiency; B deficiency (cracked petioles); Fe lockout from pH drift; algae in channels; heat-induced bitterness; uneven sizing from poor flow; root mat blocking NFT.",
+    "harvest_indicator": "Ready 25-35 DAT; 8-12 fully expanded true leaves; rosette 20-25cm tall, 18-22cm wide; whole-plant fresh weight 150-300 g; petioles thick, crisp, pale green-white; deep green turgid leaves, no yellowing or tip burn; no flower stalk; harvest 5-7 AM.",
     "image_key": "pechay_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/pechay.jpeg",
     "source": "DA-BPI, Kai farm calibration",
     "tips": [
-      "Soak seeds in warm water for 4-6 hours to speed germination.",
-      "Keep nutrient solution below 24C to avoid bolting.",
-      "Harvest in the early morning for best leaf turgor."
+      "Sow 3-5mm deep in pre-soaked rockwool or peat plugs at 22-25C; expect 80-95% germination in 2-4 days under continuous moisture and 50-70% humidity.",
+      "Provide seedlings 14-16 hours of light at 150-200 umol/m2/s PPFD starting on day 2 to prevent leggy hypocotyls; keep root-zone temperature at 20-24C.",
+      "Begin nutrient feeding at EC 0.6-0.8 mS/cm (pH 5.8-6.2) once cotyledons fully open, then ramp to EC 1.2 by transplant to harden tissue against tip burn.",
+      "Transplant at 14-18 days when 2-3 true leaves have formed and roots protrude 2-3cm from the plug; spacing 15-20cm in NFT/DFT channels (about 25-30 plants/m2).",
+      "Maintain vegetative EC 1.4-1.8 mS/cm with a Ca:K ratio near 1:1.2 and supplemental Ca(NO3)2 at 150-180 ppm Ca to suppress inner-leaf tip burn common in PH lowland heat.",
+      "Hold dissolved oxygen above 6 mg/L and reservoir temperature below 26C; use chillers, shaded reservoirs, or night-only top-ups to prevent Pythium.",
+      "Target air temperature 18-24C day / 15-20C night; sustained >28C triggers bolting and bitter flavor, so deploy 30-50% shade net and evaporative cooling during dry season (March-May).",
+      "Run airflow at 0.3-0.5 m/s across the canopy with VPD 0.8-1.2 kPa to dampen downy mildew and improve calcium transpiration flow.",
+      "Scout twice weekly for diamondback moth (Plutella xylostella), flea beetle, and aphids; deploy yellow sticky traps at canopy height and rotate Bacillus thuringiensis kurstaki with spinosad to delay resistance.",
+      "Flush the system with plain pH-adjusted water (EC <= 0.4) for 24-48 hours before harvest to reduce nitrate accumulation, which is high in fast-grown Brassicas.",
+      "Harvest whole plant at 25-35 DAT in early morning (5-7 AM) when leaves are turgid and field heat is lowest; cut at the crown with sanitized blades to avoid Erwinia soft rot entry.",
+      "Pre-cool harvested heads to 2-4C within 1 hour and store at 0-2C with 95-98% RH for 14-21 days shelf life; never store with ethylene producers (tomato, banana) to avoid yellowing."
     ],
     "risks": [
       {
-        "title": "Bolting (premature flowering)",
-        "description": "Heat above 28C triggers seed-stalk formation, leaves turn bitter.",
-        "mitigation": "Use shade cloth, run growlights only 10-12h, choose heat-tolerant variety like Black Behi."
+        "title": "Premature bolting",
+        "description": "Sustained temperatures above 28C combined with long photoperiods or moisture stress trigger reproductive transition, causing elongated stems, small bitter leaves, and flower stalk emergence. Symptoms include sudden vertical stem extension, narrowing of new leaves, and loss of crisp midrib texture.",
+        "mitigation": "Schedule cropping cycles to avoid March-May peak heat or use 30-50% shade net plus reservoir chilling to keep root-zone <= 24C. Select bolt-resistant cultivars such as Black Behi, Hybrid Black Summer, or Joi Choi F1 bred for tropical lowland conditions."
       },
       {
         "title": "Tip burn",
-        "description": "Calcium deficiency caused by inconsistent transpiration.",
-        "mitigation": "Maintain EC <= 2.0, keep humidity 60-70%, ensure constant air movement."
+        "description": "Localized calcium deficiency in rapidly expanding inner leaves causes necrotic browning along leaf margins even when nutrient solution Ca is adequate, because transpiration cannot deliver Ca to enclosed tissues. It typically appears 7-14 days before harvest under high light, low humidity, or fast EC growth.",
+        "mitigation": "Maintain 150-180 ppm Ca, keep VPD 0.8-1.2 kPa, and run gentle horizontal airflow across the inner canopy to drive Ca-bearing transpiration. Apply foliar 0.3% CaCl2 weekly during the last 14 days and avoid EC spikes >2.0."
+      },
+      {
+        "title": "Downy mildew (Hyaloperonospora parasitica)",
+        "description": "Cool, humid mornings (>90% RH for >6 hr) allow oomycete sporulation, producing yellow angular lesions on the upper leaf surface with grey-violet sporangia underneath. Severe infections cause leaf collapse and unmarketable heads within 5-7 days.",
+        "mitigation": "Maintain RH 60-75%, increase canopy airflow to 0.3-0.5 m/s, and remove infected leaves immediately into sealed bags. Rotate preventive sprays of copper hydroxide (1.5 g/L) with Bacillus subtilis QST 713 or potassium phosphonate at 7-day intervals during wet season."
+      },
+      {
+        "title": "Diamondback moth and flea beetle",
+        "description": "Plutella xylostella larvae create characteristic windowpane feeding then irregular holes, while flea beetles produce shot-hole damage on young leaves, both reducing marketable yield drastically. Populations explode in dry, warm Philippine conditions with overlapping cabbage crops nearby.",
+        "mitigation": "Enclose systems with 32-mesh insect netting, deploy yellow sticky traps at 1 per 4 m2, and rotate Bt kurstaki (1 g/L), spinosad (0.4 ml/L), and emamectin benzoate weekly to prevent resistance. Maintain a sanitation buffer free of cruciferous weeds (mustard, radish, wild bok choy) within 10 m."
+      },
+      {
+        "title": "Pythium root rot",
+        "description": "Pythium aphanidermatum thrives when reservoir temperature exceeds 26C and DO drops below 5 mg/L, attacking root tips and producing brown, slimy, sloughing roots with rapid above-ground wilting under high light. Plants collapse within 48-72 hours of symptom onset.",
+        "mitigation": "Chill nutrient solution to 20-24C, maintain DO >= 6 mg/L via air stones or venturi injection, and dose hydrogen peroxide at 30-50 ppm or ionic copper-silver as a preventive. Sanitize channels between cycles with 1-2% sodium hypochlorite followed by thorough rinse."
+      },
+      {
+        "title": "Nutrient imbalance (N excess and Ca-Mg antagonism)",
+        "description": "Over-reliance on ammoniacal N or excess K suppresses Ca and Mg uptake, causing interveinal chlorosis on older leaves, soft floppy growth, and elevated nitrate residues exceeding food-safety thresholds. Misreadings occur because EC remains in range while individual ion ratios drift.",
+        "mitigation": "Use >= 80% nitrate-N formulation, maintain K:Ca:Mg molar ratio near 1.2:1:0.4, and refresh reservoir fully every 10-14 days rather than topping up indefinitely. Run lab or ion-selective testing monthly and adjust stock A/B ratios accordingly."
+      },
+      {
+        "title": "Heat stress and wilting",
+        "description": "Midday canopy temperature >32C with PPFD >500 umol/m2/s causes stomatal closure, transpiration collapse, and visible flagging of outer leaves; chronic exposure reduces head weight by 30-50%. Flavor turns bitter due to glucosinolate accumulation.",
+        "mitigation": "Install 30-50% white shade net, mist intermittently to drop leaf temperature 3-5C, and time peak growth periods to cooler months (November-February in Luzon lowlands). Elevate growing surfaces and insulate reservoirs to limit conductive heat gain."
       }
     ],
     "growth_stages": [
       {
-        "stage": "Sowing",
+        "stage": "Imbibition and Germination",
         "day_min": 0,
-        "day_max": 1,
-        "description": "Sow 2 seeds per plug in pre-soaked rockwool.",
+        "day_max": 3,
+        "description": "Seeds absorb water, activate amylases, and rupture the seed coat as the radicle emerges. The hypocotyl hook begins to lift cotyledons; uniform moisture and temperature are critical to synchronize the cohort.",
         "actions": [
-          "Cover lightly",
-          "Keep moist",
-          "No nutrients yet"
+          "Pre-soak rockwool/peat plugs in pH 5.8 water (EC 0.4)",
+          "Sow 1-2 seeds per plug, 3-5mm deep",
+          "Hold 22-25C ambient and 24C root zone",
+          "Maintain 90-100% humidity with humidity dome",
+          "Keep in darkness or low light <50 umol/m2/s",
+          "Avoid any nutrient solution until cotyledons emerge",
+          "Inspect daily for damping-off; remove failed plugs"
         ]
       },
       {
-        "stage": "Germination",
-        "day_min": 2,
-        "day_max": 4,
-        "description": "Cotyledons emerge.",
+        "stage": "Cotyledon stage",
+        "day_min": 3,
+        "day_max": 7,
+        "description": "Cotyledons fully open and turn green as photosynthesis begins; primary root extends 2-4cm. Seedlings are highly sensitive to overwatering and low light, which causes etiolation.",
         "actions": [
-          "Move to bright light",
-          "Keep at 22-25C"
+          "Begin 14-16 h photoperiod at 150-200 umol/m2/s PPFD",
+          "Reduce humidity to 65-75% by venting dome",
+          "Start nutrient feed at EC 0.6-0.8, pH 5.8-6.2",
+          "Maintain 20-23C day / 17-19C night",
+          "Provide gentle airflow (0.2 m/s) to strengthen stems",
+          "Thin to 1 seedling per plug if doubled",
+          "Check root zone temperature <= 24C"
         ]
       },
       {
-        "stage": "Seedling",
-        "day_min": 5,
-        "day_max": 12,
-        "description": "First true leaves appear.",
-        "actions": [
-          "Start EC 0.8",
-          "12h light",
-          "Pinch weaker seedling"
-        ]
-      },
-      {
-        "stage": "Transplant",
-        "day_min": 13,
+        "stage": "True leaf development",
+        "day_min": 7,
         "day_max": 14,
-        "description": "Move to DFT/NFT channel when 3-4 true leaves.",
+        "description": "First and second true leaves expand and the plant transitions to autotrophic growth. Root system branches out of the plug; stem thickens in preparation for transplant.",
         "actions": [
-          "EC 1.2",
-          "Check pH 6.0-7.0"
+          "Increase PPFD to 200-250 umol/m2/s",
+          "Ramp EC to 1.0-1.2 mS/cm",
+          "Hold pH 5.8-6.2, adjusting daily",
+          "Maintain root-zone DO >6 mg/L",
+          "Confirm root protrusion 2-3cm before transplant",
+          "Harden seedlings with airflow 0.3 m/s for 2 days pre-transplant",
+          "Scout for early aphid/flea beetle activity"
         ]
       },
       {
-        "stage": "Vegetative",
-        "day_min": 15,
-        "day_max": 28,
-        "description": "Rapid leaf production.",
+        "stage": "Transplant and establishment",
+        "day_min": 14,
+        "day_max": 20,
+        "description": "Seedlings move into NFT/DFT channels or Kratky containers; roots adjust to flowing solution and new pH/EC environment. Brief transplant shock may cause leaf droop for 24-48 hours.",
         "actions": [
-          "EC 1.4-1.8",
-          "Top up reservoir daily"
+          "Transplant at 2-3 true leaf stage, spacing 15-20cm",
+          "Set NFT flow 1-2 L/min per channel; DFT depth 3-5cm",
+          "Run EC 1.2-1.4, pH 5.8-6.2",
+          "Shade 30% for first 3 days post-transplant",
+          "Maintain 20-24C day / 16-19C night",
+          "Keep reservoir <= 24C, DO >= 6 mg/L",
+          "Verify all roots contact solution film"
         ]
       },
       {
-        "stage": "Harvest",
-        "day_min": 25,
+        "stage": "Active vegetative growth",
+        "day_min": 20,
+        "day_max": 30,
+        "description": "Rapid leaf production and biomass accumulation; rosette diameter doubles weekly under good conditions. Highest nutrient and water demand of the cycle.",
+        "actions": [
+          "Raise EC to 1.4-1.8 mS/cm",
+          "Maintain pH 5.8-6.2 (drift checks 2x/day)",
+          "Provide 14-16 h light at 250-350 umol/m2/s",
+          "Hold VPD 0.8-1.2 kPa for steady transpiration",
+          "Increase airflow to 0.3-0.5 m/s",
+          "Foliar Ca (0.3% CaCl2) weekly to prevent tip burn",
+          "Begin biweekly Bt or spinosad rotations for DBM"
+        ]
+      },
+      {
+        "stage": "Head and rosette filling",
+        "day_min": 30,
         "day_max": 35,
-        "description": "Cut whole head at base.",
+        "description": "Inner leaves cup and thicken the petiole bases; fresh weight accumulates fastest in this window. Calcium translocation to inner leaves is the main physiological bottleneck.",
         "actions": [
-          "Harvest AM",
-          "Wash and pack within 1 hour"
+          "Hold EC 1.6-1.8, do not exceed 2.0",
+          "Maintain Ca 150-180 ppm, K:Ca near 1.2:1",
+          "Keep canopy temp <= 26C; deploy shade if needed",
+          "Sustain horizontal airflow over inner canopy",
+          "Reservoir refresh if running >10 days",
+          "Remove any necrotic outer leaves promptly",
+          "Final pest scout 5 days before harvest"
+        ]
+      },
+      {
+        "stage": "Pre-harvest conditioning",
+        "day_min": 33,
+        "day_max": 35,
+        "description": "Plant reaches marketable size (150-300 g, 20-25cm tall); nitrate flushing improves food safety and shelf life. Tissue firms slightly as growth slows.",
+        "actions": [
+          "Switch to plain pH-adjusted water (EC <= 0.4) for 24-48 h",
+          "Maintain light and airflow as before",
+          "Withhold any pesticide application (PHI compliance)",
+          "Confirm 8-12 fully expanded leaves",
+          "Inspect for tip burn, pest damage, soft rot",
+          "Pre-cool harvest tools and crates to 4C",
+          "Schedule harvest for early morning"
+        ]
+      },
+      {
+        "stage": "Harvest and post-harvest",
+        "day_min": 35,
+        "day_max": 35,
+        "description": "Whole-plant cut at the crown; rapid field heat removal preserves turgor and chlorophyll. Tissue continues respiring, so cold chain integrity determines shelf life.",
+        "actions": [
+          "Harvest 5-7 AM at peak turgidity",
+          "Cut at crown with sanitized stainless blade",
+          "Pre-cool to 2-4C within 1 hour (hydrocool or forced air)",
+          "Store 0-2C, 95-98% RH",
+          "Pack in vented crates, max 2-3 layers",
+          "Avoid co-storage with ethylene producers",
+          "Target market within 7-14 days for premium quality"
         ]
       }
     ]
@@ -134,85 +226,176 @@
     "ec_fruiting": null,
     "local_price_php_per_kg_min": 180.0,
     "local_price_php_per_kg_max": 350.0,
-    "common_issues": "Tip burn; bolting above 27C",
-    "harvest_indicator": "Tight inner heart forms",
+    "common_issues": "Tip burn: low Ca translocation from high RH/low airflow/high EC. Bolting: temp >24C, long days, water stress. Bitterness: heat stress, over-maturity, EC spikes. Bottom rot (Sclerotinia/Rhizoctonia): wet crowns, dense canopy. Downy mildew (Bremia): cool wet nights, RH>90%, leaf wetness >4h. Pythium root rot: solution >24C, DO<5 mg/L. Fusarium wilt race 1: warm root zone, infected seed. Damping-off: wet plugs, cold media. Aphids (Nasonovia) hidden in heads. Leafminer (Liriomyza) serpentine mines. Thrips silvering and virus vector. Whitefly with sooty mold. Fungus gnats chewing roots. Spider mites stippling. Slugs ragged holes. LTBV/LMV viruses aphid/seed-borne mottling. N=pale older leaves; Ca=tip burn; Mg=interveinal old leaves; Fe=interveinal new leaves at pH>6.3; B=cracked midribs/hollow stem; Mo=marginal scorch. EC drift, pH crash from nitrification, algae in channels, root browning from low DO.",
+    "harvest_indicator": "Ready 28-40 DAT (42-55 DAS); head 20-30 cm tall, base 10-15 cm; whole-head 250-450 g; 18-26 leaves with 6-10 cupped inner leaves; gentle squeeze yields slight resistance; no seed-stalk at core; no bitterness in midrib; cut 5-7 AM; cool to 1-2C within 30 min.",
     "image_key": "lettuce_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/romaine-lettuce.jpeg",
     "source": "DOST-PCAARRD",
     "tips": [
-      "Use white reflective surfaces around channels to drop solution temp 2-3C.",
-      "Keep root zone dark; algae stresses plants and competes for nutrients."
+      "Pre-chill romaine seed at 4-5C for 24-48 hours before sowing to break thermo-dormancy, since germination drops sharply above 25C media temperature.",
+      "Sow pelleted seed into pre-soaked phenolic foam or rockwool plugs at pH 5.5-5.8, hold media at 18-22C, and germinate under low light (100-150 umol/m2/s) until cotyledons fully expand on day 2-3.",
+      "Run seedlings at EC 0.8-1.2 mS/cm for the first 10-14 days, then transplant to NFT/DFT channels at the 3-4 true-leaf stage (day 14-18) when roots emerge cleanly from the plug bottom.",
+      "Ramp nutrient EC stepwise: 1.2 at transplant, 1.6 by week 2 in channels, and 1.8-2.2 mS/cm during head-fill, never exceeding 2.4 in PH lowland heat to avoid osmotic-driven tip burn.",
+      "Hold solution pH at 5.6-6.0 (target 5.8); romaine Ca and Mg uptake drops sharply above 6.3 and Fe/Mn lock out below 5.4.",
+      "Keep root-zone solution temperature at 18-22C using a chiller or insulated/shaded reservoir; above 25C dissolved oxygen falls below 6 mg/L and Pythium pressure rises sharply.",
+      "Target a Daily Light Integral of 14-17 mol/m2/day (roughly 250-350 umol/m2/s for 14-16 h); under PH midday sun use 40-50% shade cloth to cap PPFD near 600 umol/m2/s and prevent bolting.",
+      "Maintain canopy air at 18-24C day / 15-18C night with VPD 0.8-1.2 kPa and continuous gentle airflow (0.3-0.5 m/s) to drive Ca-bearing transpiration into inner heads.",
+      "For PH lowland conditions choose bolt- and heat-tolerant cos cultivars: Jericho (Israeli desert-bred), Coastal Star, Sun Valley, and Parris Island Cos; avoid butterhead-leaning romaines below 800 m elevation.",
+      "Pre-harvest cool by dropping reservoir EC to 1.4 mS/cm and lowering canopy temperature (early-AM harvest) to raise leaf turgor, sugar, and shelf life.",
+      "Harvest at 28-40 days after transplant (42-55 DAS) when heads reach 250-450 g and inner leaves are firm but not yet elongating into a seed stalk; cut whole-head at the base with a clean blade.",
+      "Post-harvest, hydro-cool or force-air cool to 1-2C within 30 minutes, store at 0-2C and 95-98% RH; romaine holds 14-21 days when cooled fast, under 5 days if field heat is retained."
     ],
     "risks": [
       {
-        "title": "Tip burn",
-        "description": "Calcium not reaching young leaves due to high EC or low humidity.",
-        "mitigation": "Cap EC at 1.8, raise humidity above 55%, add Cal-Mag if symptoms persist."
+        "title": "Tip burn (Ca translocation failure)",
+        "description": "Necrotic margins on the youngest inner leaves caused by localized Ca deficiency in fast-expanding tissue, not by solution Ca shortage. It is driven by low transpiration into the inner head (high humidity, still air, dark interiors) and by rapid growth from high EC, high N, or high light.",
+        "mitigation": "Maintain VPD 0.8-1.2 kPa with horizontal airflow fans directed across the canopy, cap EC at 1.8-2.0 during head-fill, and ensure Ca at 160-200 ppm with a Ca:K ratio near 1:1.2. In high-risk weeks, run a small overhead fan blowing into the head center for 2-3 hours midday to force inner-leaf transpiration."
       },
       {
-        "title": "Pythium root rot",
-        "description": "Brown slimy roots in warm water above 24C.",
-        "mitigation": "Chill reservoir to <22C, add hydrogen peroxide 1ml/L weekly, sanitize between batches."
+        "title": "Bolting / premature seed stalk",
+        "description": "Romaine bolts when mean daily temperature exceeds 24C for several days, especially under long photoperiods and water stress, producing bitter latex and elongated cores. Once the apical meristem switches to reproductive growth the crop is unsalvageable.",
+        "mitigation": "Use bolt-tolerant cultivars (Jericho, Coastal Star, Sun Valley), keep reservoir at 18-22C and canopy under 26C with shade cloth, and shorten cycle to 28-32 DAT in hot months. Avoid EC swings and never let the channel run dry."
+      },
+      {
+        "title": "Bottom rot (Sclerotinia / Rhizoctonia)",
+        "description": "Water-soaked brown lesions on the lower leaves and crown, often with white cottony mycelium and black sclerotia, collapsing the head from below. Favored by dense canopies, prolonged leaf wetness, and contact between lower leaves and wet media or channels.",
+        "mitigation": "Maintain channel slope (1:30-1:50) so no standing water pools at the crown, space heads at 18-22 cm to keep canopy open, and remove any infected plant plus surrounding plugs immediately. Sanitize channels between cycles with 1-2% hydrogen peroxide or 200 ppm peracetic acid."
+      },
+      {
+        "title": "Downy mildew (Bremia lactucae)",
+        "description": "Pale yellow angular spots on upper leaf surfaces with white-to-grey downy sporulation underneath, spreading rapidly in cool nights with leaf wetness above 4 hours. Spores are airborne and races shift, defeating single-gene resistance quickly.",
+        "mitigation": "Grow Bremia-resistant cultivars carrying current Bl IR genes (check seed catalog for Bl 16-37 coverage), keep RH below 85% at night with ventilation or dehumidification, and avoid overhead irrigation. Preventive sprays of Bacillus subtilis QST 713 or potassium bicarbonate weekly during cool, wet weeks."
+      },
+      {
+        "title": "Pythium root rot (P. aphanidermatum, P. dissotocum)",
+        "description": "Brown, sloughing roots with loss of root cortex, wilting at midday despite full reservoirs, and stunted heads. Triggered by warm solution (above 24C), low dissolved oxygen (under 5 mg/L), and organic debris in the system.",
+        "mitigation": "Chill solution to 18-22C, maintain DO above 6 mg/L with air stones or venturi injectors, and dose 30-50 ppm hydrogen peroxide or 0.5-1.0 ppm ozone-equivalent continuously. Filter return flow through 100-mesh and flush channels between crops."
+      },
+      {
+        "title": "Aphids and leafminers (Nasonovia, Liriomyza)",
+        "description": "Aphids colonize the head interior where they are unreachable by sprays and contaminate harvested product, while Liriomyza larvae mine serpentine tunnels through leaves rendering them unmarketable. Both vector secondary problems including viruses and sooty mold.",
+        "mitigation": "Screen greenhouse intakes with 50-mesh insect netting, scout with yellow sticky traps weekly, and release Aphidius colemani at 0.5-1 per m2 at first detection. For leafminer use Diglyphus isaea or rotate spinosad and abamectin observing PHI."
+      },
+      {
+        "title": "Bitterness from heat or over-maturity",
+        "description": "Romaine accumulates sesquiterpene lactones (lactucin, lactucopicrin) in the latex when stressed by heat above 28C, water deficit, or harvest past physiological maturity. Bitterness is irreversible after harvest and downgrades the crop.",
+        "mitigation": "Harvest within 3-5 days of reaching target weight, cut in the cool early morning, and avoid letting EC spike or reservoirs warm during the final week. Maintain steady irrigation and shade during heat waves above 30C ambient."
       }
     ],
     "growth_stages": [
       {
-        "stage": "Sowing",
+        "stage": "Imbibition and germination",
         "day_min": 0,
-        "day_max": 1,
-        "description": "Sow on rockwool starter plug.",
+        "day_max": 3,
+        "description": "Seed takes up water and gibberellin signaling triggers radicle emergence; romaine germinates best at 18-22C and is thermo-inhibited above 25C. Look for radicle protrusion by 36-48 hours and cotyledon greening by day 3.",
         "actions": [
-          "Pre-soak plug pH 5.5"
+          "Pre-soak rockwool/phenolic plugs in pH 5.8, EC 0.5 mS/cm Ca-nitrate solution for 1 hour",
+          "Sow pelleted seed 3-4 mm deep, one per cell, and cover tray with humidity dome",
+          "Hold media at 18-22C; pre-chill seed at 5C for 24 h if ambient is hot",
+          "Keep RH at 90-95% until radicle visible",
+          "Provide 100-150 umol/m2/s light or diffuse daylight from day 1 to prevent stretch",
+          "Do not feed beyond pre-soak nutrients during this stage"
         ]
       },
       {
-        "stage": "Germination",
-        "day_min": 2,
-        "day_max": 5,
-        "description": "Cotyledons unfold.",
+        "stage": "Cotyledon to first true leaf",
+        "day_min": 3,
+        "day_max": 8,
+        "description": "Cotyledons fully expand and the first true leaf initiates as the seedling shifts from seed reserves to autotrophic growth. Watch for uniform greening, straight hypocotyls, and roots reaching the lower third of the plug.",
         "actions": [
-          "Light 16h",
-          "Mist daily"
+          "Remove humidity dome at day 3-4 to harden seedlings",
+          "Begin feeding at EC 0.8 mS/cm, pH 5.6-5.8 with full lettuce formulation (N 150, K 200, Ca 160, Mg 45 ppm)",
+          "Light 150-200 umol/m2/s for 14-16 h",
+          "Air temp 20-22C day, 16-18C night",
+          "Water from below to keep cotyledons dry and prevent damping-off",
+          "Maintain airflow with a small fan to thicken stems"
         ]
       },
       {
-        "stage": "Seedling",
-        "day_min": 6,
+        "stage": "Seedling / 2-3 true leaves",
+        "day_min": 8,
         "day_max": 14,
-        "description": "True leaves form.",
+        "description": "Root system colonizes the plug and leaf area expands rapidly; this is the photosynthetic ramp-up phase. Inspect for white healthy roots emerging at the plug base and reject any leggy or yellow seedlings.",
         "actions": [
-          "EC 0.6",
-          "Move to nursery channel"
+          "Raise EC to 1.0-1.2 mS/cm, hold pH 5.8",
+          "Increase PPFD to 200-250 umol/m2/s, DLI 12-14 mol/m2/day",
+          "Day 22-24C / night 16-18C, RH 65-75%",
+          "Apply preventive Bacillus subtilis or Trichoderma drench to plug",
+          "Grade seedlings; cull runts before transplant",
+          "Begin scouting for fungus gnats and aphids with sticky cards"
         ]
       },
       {
-        "stage": "Transplant",
-        "day_min": 15,
-        "day_max": 18,
-        "description": "Move to main channel.",
+        "stage": "Transplant and establishment",
+        "day_min": 14,
+        "day_max": 21,
+        "description": "Roots transition from plug to channel solution; the plant briefly slows growth while new roots adapt to flowing nutrient film or static aerated reservoir. Watch for root extension into the channel within 48-72 hours and erect new leaves emerging from the crown.",
         "actions": [
-          "EC 1.2",
-          "pH 5.8"
+          "Transplant at 3-4 true leaves with roots clearly emerging from plug",
+          "Channel EC 1.2-1.4 mS/cm, pH 5.8, solution temp 18-22C",
+          "NFT flow 1-2 L/min per channel, film 2-3 mm; DFT depth 3-5 cm with continuous aeration; Kratky leave 2-3 cm air gap below netcup",
+          "Spacing 18-22 cm between plants, 25-30 cm rows",
+          "Maintain DO above 6 mg/L; air-stone DFT/Kratky reservoirs",
+          "Shade newly transplanted seedlings 30% for first 2 days",
+          "Verify channel slope and no pooling at plant base"
         ]
       },
       {
-        "stage": "Vegetative",
-        "day_min": 19,
-        "day_max": 35,
-        "description": "Heart begins to form.",
+        "stage": "Vegetative / rosette expansion",
+        "day_min": 21,
+        "day_max": 32,
+        "description": "Rapid leaf production and rosette diameter expansion; canopy closes between plants and biomass accumulation peaks. Look for symmetric rosette, deep green color, and 8-14 expanded leaves.",
         "actions": [
-          "EC 1.4-1.8",
-          "Maintain temp"
+          "Step EC to 1.6-1.8 mS/cm, pH 5.6-6.0",
+          "DLI 14-17 mol/m2/day; cap PPFD at 500-600 umol/m2/s with 40-50% shade in PH midday",
+          "Day 20-24C, night 15-18C, VPD 0.8-1.2 kPa",
+          "Run horizontal airflow fans 0.3-0.5 m/s over canopy to reduce tip burn",
+          "Top up reservoir daily; full nutrient change every 7-10 days or when EC drift exceeds 0.4",
+          "Scout twice weekly for Bremia, aphids, and leafminers",
+          "Maintain DO above 6 mg/L and root-zone temp under 22C"
         ]
       },
       {
-        "stage": "Harvest",
-        "day_min": 30,
-        "day_max": 45,
-        "description": "Heart firm, outer leaves crisp.",
+        "stage": "Heading / cupping",
+        "day_min": 32,
+        "day_max": 42,
+        "description": "Inner leaves begin to fold upright and form the characteristic upright cos head; this is the highest tip-burn-risk window. Look for tightening of central leaves and base diameter reaching 10-14 cm.",
         "actions": [
-          "Cut at base",
-          "Cold-chain immediately"
+          "Hold EC 1.8-2.0 mS/cm; do not exceed 2.2 in hot weeks",
+          "Maintain Ca 160-200 ppm, Ca:K ratio near 1:1.2, B 0.3-0.5 ppm",
+          "Direct gentle airflow into head centers 2-3 h midday to force inner-leaf transpiration",
+          "Keep night RH below 85% to limit Bremia and Sclerotinia",
+          "Solution temp 18-22C; DO above 6 mg/L",
+          "Remove any lower leaves touching channel surface",
+          "Stop foliar sprays 7 days pre-harvest"
+        ]
+      },
+      {
+        "stage": "Pre-harvest finishing",
+        "day_min": 42,
+        "day_max": 50,
+        "description": "Head reaches target size and dry matter, sugars accumulate, and any further growth risks bolting or bitterness. Check head firmness with light hand pressure and look for tight, upright inner leaves with no seed-stalk elongation.",
+        "actions": [
+          "Drop EC to 1.4-1.6 mS/cm for 3-5 days to reduce nitrate and improve flavor",
+          "Shade to 50% and target canopy under 24C",
+          "Withhold any pesticide within label PHI",
+          "Confirm head weight 250-450 g and base diameter 10-15 cm",
+          "Schedule harvest at 5-7 AM when leaves are most turgid",
+          "Sanitize knives and harvest crates with 200 ppm chlorine or peroxyacetic acid"
+        ]
+      },
+      {
+        "stage": "Harvest and post-harvest",
+        "day_min": 45,
+        "day_max": 55,
+        "description": "Whole-head cut at the base and immediate cooling locks in quality; field heat above 20C halves shelf life. Look for crisp upright leaves, no slimy base, and no latex browning at the cut.",
+        "actions": [
+          "Cut at the crown with a single clean stroke; trim 1-2 outer wrapper leaves",
+          "Hydro-cool or force-air cool to 1-2C within 30 minutes",
+          "Store at 0-2C, 95-98% RH, ethylene-free",
+          "Pack in vented crates; avoid stacking pressure on heads",
+          "Target shelf life 14-21 days when cold chain is maintained",
+          "Sanitize and flush channels with 1-2% H2O2 before next cycle"
         ]
       }
     ]
@@ -241,58 +424,178 @@
     "ec_fruiting": null,
     "local_price_php_per_kg_min": 40.0,
     "local_price_php_per_kg_max": 80.0,
-    "common_issues": "Leaf miners; yellowing from N deficiency",
-    "harvest_indicator": "Stems 20cm, cut-and-come-again",
+    "common_issues": "White rust (Albugo) white pustules on leaf underside; airflow + copper/metalaxyl. Leaf miner serpentine tunnels; spinosad, sticky traps, 32-mesh net. Flea beetle shotholes; neem + insect net. Pythium root rot from warm stagnant solution; airstones, nutrient temp <28C, H2O2 30 ppm. Hollow pithy stem from late harvest or low boron; cut by day 28, hold B 0.3-0.5 ppm. Leggy etiolated growth under low light; DLI >= 12, thin to 25-35 plants/m2. N-deficient yellowing of older leaves after ratoon; top up Ca(NO3)2+KNO3, NO3-N >= 180 ppm. Bolting in long photoperiod or heat; harvest before bud, shade 30% in dry season. Fe/Mn lockout above pH 6.8; daily pH check. Tip burn from Ca deficiency under high EC and low transpiration; Ca 150-180 ppm with airflow. Aphid/whitefly clusters on shoot tips; yellow traps, insecticidal soap. Damping-off at germination from saturated cool plugs.",
+    "harvest_indicator": "First cut 28-30 days from sow (24-26 from transplant); ratoon cuts every 14-21 days. Stems 25-35 cm with 6+ internodes, diameter 4-6 mm, before flower buds. Cut 3-5 cm above crown leaving 2 nodes. Harvest 5-8 AM for max turgor. Plant yield 80-150 g per cut.",
     "image_key": "kangkong_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1640958900805-3052a3d56d20?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/kangkong.jpeg",
     "source": "DA-BPI",
     "tips": [
-      "Cut 5cm above the crown to enable 3-4 ratoon harvests per planting.",
-      "Higher N tolerance than other leafy greens — bump nutrient strength when leaves pale."
+      "Lightly nick or rub seeds against 220-grit sandpaper, then soak in 30-35C clean water for 18-24 hours (change water at 12 h) to lift germination from ~50% to >85%.",
+      "Hold media (rockwool/coco/peat plug) at 25-32C with constant moisture; radicle emerges in 2-4 days, true leaves by day 7. Below 22C germination stalls; above 35C causes seedling damping-off.",
+      "Use the upland/dryland type (narrow-leaf, erect) for NFT, DFT, and Kratky; reserve the aquatic/broadleaf type for deep-water raft systems where stems can sprawl on the water surface.",
+      "Practice cut-and-come-again: 4-6 successive cuts at 14-21 day intervals from one sowing, cutting 3-5 cm above the crown leaving 2 nodes for regrowth. Total productive cycle 60-90 days before lignification forces replant.",
+      "EC ramp: seedlings 0.6-0.8, vegetative 1.4-1.8, pre-harvest 1.6-2.0 mS/cm; after each ratoon cut drop EC by 0.2 for 48 h to favor soft regrowth, then ramp back. Keep N:K near 1.5:1.",
+      "Maintain pH 5.8-6.5; kangkong tolerates slight alkalinity (up to 7.0) better than lettuce but Fe/Mn lockout begins above 6.8. Check pH twice daily in shallow Kratky reservoirs.",
+      "Ratooning protocol: after cutting, immediately top up reservoir, foliar-mist Ca(NO3)2 at 0.5 g/L, and resume full EC within 24 h. Each successive ratoon yields ~80% of the previous; cull when stems exceed 8 mm or turn hollow.",
+      "Sow-to-first-harvest in PH lowland conditions: 24-30 days for upland type, 28-35 days for aquatic. Stagger weekly sowings for continuous supply.",
+      "Thrives at 25-35C ambient and tolerates 38C with adequate root-zone cooling (<28C nutrient temp); above 32C nutrient temp, DO drops below 5 mg/L, so add airstones or shade reservoir with 30% net.",
+      "Propagate by stem cuttings: take 15-20 cm cuttings with 3-4 nodes, strip lower leaves, direct-stick into net pots with rockwool collar; roots emerge in 4-6 days at 28C, shaving 10-14 days off cycle (dominant PH commercial practice).",
+      "Provide DLI >= 12 mol/m2/day; under PH dry-season sun (March-May) use 30% shade cloth to prevent leaf scorch and bolting. Indoor LED 200-250 umol/m2/s for 14-16 h photoperiod.",
+      "Scout twice weekly for leaf miner (Liriomyza), flea beetle, aphids, and whitefly; deploy yellow sticky traps and rotate neem oil 0.5%, spinosad, and Bt for lepidopteran larvae. Avoid systemic neonics within 14 days of harvest."
     ],
     "risks": [
       {
-        "title": "Leaf miner damage",
-        "description": "Serpentine white trails on leaves.",
-        "mitigation": "Yellow sticky traps every 2 sqm; spray neem oil at first sign."
+        "title": "White rust (Albugo ipomoeae)",
+        "description": "Chalky white blister-like pustules on leaf undersides with chlorotic yellow spots above; spreads rapidly under high humidity (>85%) and leaf wetness. Severe infection defoliates plants within 7-10 days and renders the crop unmarketable.",
+        "mitigation": "Increase canopy airflow, avoid overhead irrigation, and rogue infected leaves immediately into sealed bags. Apply copper hydroxide (2 g/L) or metalaxyl-mancozeb at first symptom; rotate kangkong out of affected channels for 2 cycles."
+      },
+      {
+        "title": "Leaf miner and flea beetle damage",
+        "description": "Liriomyza larvae tunnel serpentine mines through leaf mesophyll while flea beetles create characteristic shothole feeding on tender leaves. Both reduce photosynthetic area and grade-out marketable leaves at retail.",
+        "mitigation": "Deploy yellow sticky traps at 1 trap per 4 m2 and cover seedling stages with 32-mesh insect net. Spray spinosad (0.4 mL/L) or abamectin on rotation; release Diglyphus isaea parasitoid in protected houses."
+      },
+      {
+        "title": "Root rot in stagnant water (Pythium / Phytophthora)",
+        "description": "Brown, slimy, sloughing roots and sudden midday wilt despite full reservoirs, driven by nutrient temps >30C and DO <4 mg/L. Aquatic-type kangkong tolerates low O2 better than upland-type, but both succumb in stagnant warm Kratky setups.",
+        "mitigation": "Add airstones (>= 0.5 L/min per 10 L reservoir), shade or insulate tanks to keep nutrient solution <28C, and dose hydrogen peroxide at 30 ppm weekly or beneficial Trichoderma harzianum."
+      },
+      {
+        "title": "Low light leading to leggy etiolated growth",
+        "description": "Under <10 mol/m2/day DLI or dense planting (>40 plants/m2), internodes elongate to 8-12 cm, stems become pale and weak, and bundles fail size grading. Common in roofed wet-season nurseries and over-shaded balconies.",
+        "mitigation": "Maintain DLI >= 12, thin to 25-35 plants/m2, and supplement with 150 umol/m2/s LED for 4 h dawn extension. Pinch growing tips at 4-leaf stage to force lateral branching."
+      },
+      {
+        "title": "Hollow-stem disorder and lignification",
+        "description": "Late-cut or boron-deficient plants develop hollow, pithy main stems and tough fibrous bases that consumers reject. Often paired with cracked petioles and necrotic shoot tips.",
+        "mitigation": "Harvest by day 28-30 from sow (or day 18-21 from previous cut) before stem diameter exceeds 6 mm. Maintain B at 0.3-0.5 ppm and Ca at 150-180 ppm in solution."
+      },
+      {
+        "title": "Nitrogen deficiency yellowing",
+        "description": "Uniform yellowing of older leaves progressing upward with reduced leaf size and stunted regrowth after ratooning; kangkong is a heavy N feeder (NO3-N demand 180-220 ppm). Common after the 2nd or 3rd cut when reservoir N is depleted.",
+        "mitigation": "Top up calcium nitrate plus potassium nitrate immediately after each cut, targeting NO3 >= 180 ppm. Monitor EC drift and do a full nutrient refresh every 14 days or after 3 ratoons."
+      },
+      {
+        "title": "Regulated invasive species status",
+        "description": "Ipomoea aquatica is a federally listed noxious weed in the USA and restricted in several jurisdictions because escaped fragments root and clog waterways. In the Philippines it is native and unrestricted, but growers exporting transplants or operating near protected wetlands must contain runoff.",
+        "mitigation": "Filter all reservoir discharge through 1 mm screen and compost trimmings on-site; never dump nutrient solution containing stem fragments into canals or irrigation ditches. Confirm local DA/DENR rules before establishing systems near Laguna de Bay or other RAMSAR sites."
       }
     ],
     "growth_stages": [
       {
-        "stage": "Sowing",
+        "stage": "Seed prep and soaking",
         "day_min": 0,
         "day_max": 1,
-        "description": "Direct seed or stem cutting.",
+        "description": "Hard-coated seeds are scarified and pre-soaked to break dormancy and synchronize germination. Without this step, germination drops below 50% and emergence is staggered over 2 weeks.",
         "actions": [
-          "Soak seeds 12h"
+          "Lightly abrade seeds with 220-grit sandpaper or nick coat with nail clipper",
+          "Soak in 30-35C clean water for 18-24 hours; change water at 12 h",
+          "Discard floaters (non-viable)",
+          "Target water pH 6.0-6.5",
+          "Keep soaking vessel in shade at 28-30C ambient",
+          "Drain and surface-dry 30 min before sowing"
         ]
       },
       {
         "stage": "Germination",
-        "day_min": 2,
-        "day_max": 5,
-        "description": "Sprouts emerge.",
+        "day_min": 1,
+        "day_max": 4,
+        "description": "Radicle emerges from scarified seed under warm, humid conditions in rockwool or coco plugs. Cotyledons unfold by day 4; this stage is most vulnerable to damping-off.",
         "actions": [
-          "Keep warm 25C+"
+          "Sow 1-2 seeds per plug at 5 mm depth",
+          "Maintain media temp 25-32C; humidity 80-90% under dome",
+          "Keep media moist with pH 5.8-6.2 plain water (no nutrients yet)",
+          "Provide low light 50-100 umol/m2/s once radicle visible",
+          "EC 0 (plain water) or 0.4 mS/cm dilute starter",
+          "Ventilate dome 10 min daily to prevent fungal bloom",
+          "Remove dome at full cotyledon expansion"
         ]
       },
       {
-        "stage": "Vegetative",
-        "day_min": 6,
-        "day_max": 25,
-        "description": "Stems elongate fast.",
+        "stage": "Seedling / true-leaf",
+        "day_min": 4,
+        "day_max": 10,
+        "description": "First and second true leaves expand and the taproot extends into the plug. Plant becomes light-hungry and begins active nutrient uptake.",
         "actions": [
-          "EC 1.6",
-          "Top up daily"
+          "Increase light to 150-200 umol/m2/s, 14 h photoperiod",
+          "Begin nutrient feed at EC 0.6-0.8 mS/cm, pH 5.8-6.2",
+          "Maintain root-zone temp 24-28C",
+          "Thin to 1 strongest seedling per plug",
+          "Ambient 26-32C day / 22-26C night",
+          "Keep RH 65-75% to harden cuticle"
         ]
       },
       {
-        "stage": "Harvest",
-        "day_min": 25,
-        "day_max": 35,
-        "description": "Cut stems at 20cm.",
+        "stage": "Transplant to system",
+        "day_min": 10,
+        "day_max": 14,
+        "description": "Plugs with 2-3 true leaves and visible roots are moved into NFT channels, DFT rafts, or Kratky pots. Spacing set for final canopy.",
         "actions": [
-          "Leave 5cm stub for ratoon"
+          "Transplant when roots protrude >= 1 cm from plug",
+          "Spacing 15x15 cm (upland) or 20x20 cm (aquatic type)",
+          "EC ramp to 1.0-1.2 mS/cm; pH 5.8-6.3",
+          "Nutrient temp <28C; DO >= 6 mg/L",
+          "Shade 30% for 48 h post-transplant to reduce wilt",
+          "Verify net pot contact with nutrient film/water surface",
+          "Inspect for damping-off; remove failed plugs"
+        ]
+      },
+      {
+        "stage": "Vegetative bulking",
+        "day_min": 14,
+        "day_max": 24,
+        "description": "Rapid stem elongation and leaf production; plant adds 2-3 nodes per week. Highest nutrient demand period; N and K uptake peaks.",
+        "actions": [
+          "EC 1.4-1.8 mS/cm; pH 5.8-6.5",
+          "NO3-N 180-220 ppm, K 200-240 ppm, Ca 150-180 ppm",
+          "DLI 12-16 mol/m2/day; supplement LED if cloudy",
+          "Maintain ambient 28-34C day / 22-26C night",
+          "Scout weekly for leaf miner, flea beetle, aphids",
+          "Top off reservoir daily; full refresh every 10-14 days",
+          "Pinch tip at 6-leaf stage to force lateral branching (optional)"
+        ]
+      },
+      {
+        "stage": "Pre-harvest maturation",
+        "day_min": 24,
+        "day_max": 28,
+        "description": "Stems reach 25-35 cm and leaves attain full size and color. Sugar and dry matter accumulate; pre-flowering stage with no buds yet.",
+        "actions": [
+          "Hold EC 1.6-2.0 mS/cm; pH 5.8-6.5",
+          "Reduce nutrient temp toward 24-26C to firm tissue",
+          "Withhold any spray with PHI >3 days",
+          "Inspect for white rust pustules on leaf undersides",
+          "Confirm internode count >= 6, stem diameter 4-6 mm",
+          "Plan harvest in early AM (5-8 AM) for max turgor"
+        ]
+      },
+      {
+        "stage": "First harvest (cut)",
+        "day_min": 28,
+        "day_max": 30,
+        "description": "Cut stems 3-5 cm above crown leaving 2 basal nodes for regrowth. Yields 80-150 g per plant; bundle and cool immediately to 4-10C.",
+        "actions": [
+          "Harvest 5-8 AM before solar heat load",
+          "Use sanitized shears; cut above 2nd node from base",
+          "Bundle 250-500 g; rinse in 5 ppm chlorinated water",
+          "Cool to 4-10C within 2 h of cut",
+          "Top up reservoir; foliar mist Ca(NO3)2 at 0.5 g/L",
+          "Drop EC to 1.2 mS/cm for 48 h to favor soft regrowth",
+          "Inspect cut surfaces; remove any rotted basal stems"
+        ]
+      },
+      {
+        "stage": "Ratoon regrowth",
+        "day_min": 30,
+        "day_max": 50,
+        "description": "Lateral shoots emerge from retained nodes within 3-5 days; second cut ready in 14-21 days. Repeat for 4-6 cycles before lignification forces replant.",
+        "actions": [
+          "Ramp EC back to 1.6-1.8 mS/cm within 72 h of cut",
+          "Maintain pH 5.8-6.5; refresh reservoir every 14 days",
+          "Watch for hollow-stem at base; replant if stem >8 mm",
+          "Continue pest scouting; rotate spinosad/neem/Bt",
+          "Cull plants showing white rust or root rot immediately",
+          "Track yield per cut; replant when output drops <60% of cut 1",
+          "Sanitize channels between full crop cycles"
         ]
       }
     ]
@@ -324,7 +627,7 @@
     "common_issues": "Fusarium wilt; flowering reduces flavor",
     "harvest_indicator": "Pinch above node, before flowering",
     "image_key": "basil_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1538596313828-41d729090199?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/basil.jpeg",
     "source": "DOST-PCAARRD",
     "tips": [
       "Pinch flowering tips weekly to keep oils concentrated in leaves.",
@@ -431,7 +734,7 @@
     "common_issues": "BER (Ca), blight, whitefly",
     "harvest_indicator": "Fruit fully red, firm",
     "image_key": "tomatoes_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1546470427-e5380b6e9b9e?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/cherry-tomato.jpeg",
     "source": "DA-BPI, Kai farm",
     "tips": [
       "Hand-pollinate by gently shaking trusses each morning.",
@@ -565,7 +868,7 @@
     "common_issues": "Tip burn at high EC",
     "harvest_indicator": "Soft loose head ~18cm",
     "image_key": "lettuce_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1556801712-76c8eb07bbc9?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/butterhead-lettuce.jpeg",
     "source": "DOST-PCAARRD",
     "tips": [
       "Avoid overcrowding to prevent leggy growth and shading.",
@@ -660,7 +963,7 @@
     "common_issues": "Flea beetles; bolting",
     "harvest_indicator": "Leaves 20-25cm",
     "image_key": "mustard_greens_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576156765804-a8c52aae70bb?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/mustard-greens.jpeg",
     "source": "DA-ATI",
     "tips": [
       "Cut yellow-flowering stems immediately to delay bolting.",
@@ -750,7 +1053,7 @@
     "common_issues": "BER; aphids; slow early growth",
     "harvest_indicator": "Full-size, color change",
     "image_key": "bell_peppers_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/bell-pepper.jpeg",
     "source": "DOST-PCAARRD",
     "tips": [
       "Allow first king flower to set then prune subsequent buds for stronger plant.",
@@ -852,7 +1155,7 @@
     "common_issues": "Powdery mildew; spider mites",
     "harvest_indicator": "Fruit 18-22cm, firm",
     "image_key": "cucumbers_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1604977042946-1eecc30f269e?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/cucumber.jpeg",
     "source": "DA-BPI",
     "tips": [
       "Choose parthenocarpic varieties — no pollination needed.",
@@ -957,7 +1260,7 @@
     "common_issues": "Root rot; poor fruit set in heat",
     "harvest_indicator": "Full red color",
     "image_key": "strawberry_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1543528176-61b239494933?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/strawberry.jpeg",
     "source": "DOST-PCAARRD",
     "tips": [
       "Pinch off early flowers during vegetative stage to build stronger plants.",
@@ -1045,7 +1348,7 @@
     "common_issues": "Pythium root rot; sensitive to high temperature",
     "harvest_indicator": "Leaves 10-15cm, cut-and-come-again",
     "image_key": "spinach_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576156765804-a8c52aae70bb?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/spinach.jpeg",
     "source": "Web validation",
     "tips": [
       "Keep nutrient solution cool (under 22C) to prevent Pythium root rot.",
@@ -1135,7 +1438,7 @@
     "common_issues": "Invasive root systems in shared channels",
     "harvest_indicator": "Frequent pruning of tips",
     "image_key": "mint_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1628556270448-4d4e4148e1b1?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/mint.jpeg",
     "source": "Web validation",
     "tips": [
       "Extremely fast growing and roots can easily clog NFT channels if not pruned.",
@@ -1216,7 +1519,7 @@
     "common_issues": "Aphids; high temperatures cause bitterness",
     "harvest_indicator": "Leaves are large enough to eat",
     "image_key": "kale_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1524179091875-bf99a9a6af57?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/kale.jpeg",
     "source": "Web validation",
     "tips": [
       "Use 'cut-and-come-again' harvesting.",
@@ -1305,7 +1608,7 @@
     "common_issues": "Bolting in high heat",
     "harvest_indicator": "Compact heads form",
     "image_key": "bok_choy_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/bok-choy.jpeg",
     "source": "Web validation",
     "tips": [
       "Sensitive to high light/heat causing bolting.",
@@ -1393,7 +1696,7 @@
     "common_issues": "Nutrient burn if EC too high",
     "harvest_indicator": "Leaves 5-10cm long",
     "image_key": "arugula_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/arugula.jpeg",
     "source": "Web validation",
     "tips": [
       "Harvests very quickly in 3-4 weeks.",
@@ -1481,7 +1784,7 @@
     "common_issues": "Early bolting; slow germination",
     "harvest_indicator": "Leaves 10-15cm long",
     "image_key": "cilantro_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/cilantro.jpeg",
     "source": "Web validation",
     "tips": [
       "Crack seeds gently before planting.",
@@ -1569,7 +1872,7 @@
     "common_issues": "Root rot from stagnant water",
     "harvest_indicator": "Stems 15cm long",
     "image_key": "oregano_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/oregano.jpeg",
     "source": "Web validation",
     "tips": [
       "Hardy and compact.",
@@ -1648,7 +1951,7 @@
     "common_issues": "Root rot",
     "harvest_indicator": "Stems 10-15cm long",
     "image_key": "thyme_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1471193945509-9ad0617afabf?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/thyme.jpeg",
     "source": "Web validation",
     "tips": [
       "Prune regularly to prevent woody stems.",
@@ -1727,7 +2030,7 @@
     "common_issues": "Overcrowding in net cups",
     "harvest_indicator": "Leaves 15-20cm tall",
     "image_key": "chives_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1498579150354-977475b7ea0b?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/chives.jpeg",
     "source": "Web validation",
     "tips": [
       "Trim back to 2-3cm above crown every few weeks.",
@@ -1806,7 +2109,7 @@
     "common_issues": "Spider mites; heavy fruit breaking branches",
     "harvest_indicator": "Skin is glossy and firm",
     "image_key": "eggplant_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1659958996891-ff3bcde6a8a0?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/eggplant.jpeg",
     "source": "Web validation",
     "tips": [
       "Requires robust trellising.",
@@ -1896,7 +2199,7 @@
     "common_issues": "Powdery mildew; poor pollination",
     "harvest_indicator": "Fruit 15-20cm long",
     "image_key": "zucchini_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/zucchini.jpeg",
     "source": "Web validation",
     "tips": [
       "Requires significant space.",
@@ -1985,7 +2288,7 @@
     "common_issues": "Root rot if water is stagnant",
     "harvest_indicator": "Stems are 15cm long",
     "image_key": "watercress_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1601390143948-e5d2aab2d2d0?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/watercress.jpeg",
     "source": "Web validation",
     "tips": [
       "Highly oxygenated water is critical.",
@@ -2065,7 +2368,7 @@
     "common_issues": "Root rot if water is too warm",
     "harvest_indicator": "Outer leaves are large enough",
     "image_key": "swiss_chard_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1525059696034-4967a8e1dca2?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/swiss-chard.jpeg",
     "source": "Web validation",
     "tips": [
       "Harvest outer leaves for cut-and-come-again yield.",
@@ -2144,7 +2447,7 @@
     "common_issues": "Crown rot; slow early growth",
     "harvest_indicator": "Stalks are thick and firm",
     "image_key": "celery_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1589927986089-35812388d1f4?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/celery.jpeg",
     "source": "Web validation",
     "tips": [
       "Keep basal plate above waterline to avoid crown rot.",
@@ -2214,7 +2517,7 @@
     "common_issues": "Poor pollination without airflow",
     "harvest_indicator": "Pods are tender and seeds not bulging",
     "image_key": "green_beans_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1567375698348-5d9d5ae99de0?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/green-beans.jpeg",
     "source": "Web validation",
     "tips": [
       "Topping young plants encourages bushier growth.",
@@ -2293,7 +2596,7 @@
     "common_issues": "Aphids; blossom drop from heat/stress",
     "harvest_indicator": "Color change and firm flesh",
     "image_key": "chili_pepper_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1548013146-72479768bada?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/red-chili-pepper.jpeg",
     "source": "Web validation",
     "tips": [
       "Needs high EC during fruiting for heat and yield.",
@@ -2373,7 +2676,7 @@
     "common_issues": "Root rot from overwatering",
     "harvest_indicator": "Stems are 10-15cm",
     "image_key": "rosemary_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/rosemary.jpeg",
     "source": "Web validation",
     "tips": [
       "Best started from cuttings.",
@@ -2443,7 +2746,7 @@
     "common_issues": "Slow early growth",
     "harvest_indicator": "Leaves are large enough to pick",
     "image_key": "sage_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1543362906-acfc16c67564?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/sage.jpeg",
     "source": "Web validation",
     "tips": [
       "Resilient but needs consistent nutrients.",
@@ -2513,7 +2816,7 @@
     "common_issues": "Slow seed germination",
     "harvest_indicator": "Stems are 10-15cm tall",
     "image_key": "parsley_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1591280063444-d3c514eb6e13?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/parsley.jpeg",
     "source": "Web validation",
     "tips": [
       "Very beginner-friendly.",
@@ -2583,7 +2886,7 @@
     "common_issues": "Vines breaking under fruit weight; powdery mildew",
     "harvest_indicator": "Fruit slips easily from vine; sweet aroma",
     "image_key": "melon_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1571575173700-afb9492e6a50?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/melon.jpeg",
     "source": "Web validation",
     "tips": [
       "Crucial to use slings to support fruit.",
@@ -2664,7 +2967,7 @@
     "common_issues": "Bolting in heat; aphids",
     "harvest_indicator": "Head is tight and green",
     "image_key": "broccoli_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/broccoli.jpeg",
     "source": "Web validation",
     "tips": [
       "Heavy feeder, requires high EC.",
@@ -2744,7 +3047,7 @@
     "common_issues": "Head cracking from uneven watering",
     "harvest_indicator": "Head is solid and firm to touch",
     "image_key": "cabbage_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/cabbage.jpeg",
     "source": "Web validation",
     "tips": [
       "Requires significant space.",
@@ -2824,7 +3127,7 @@
     "common_issues": "Bolting in heat; flea beetles; clubroot",
     "harvest_indicator": "Stems pencil-thick, first flower buds appear",
     "image_key": "chinese_kale_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/chinese-kale.jpeg",
     "source": "Plant.Garden, Epic Gardening, Web validation",
     "tips": [
       "Harvest when first flower buds form for tenderest stems.",
@@ -2933,7 +3236,7 @@
     "common_issues": "BER; cracking on irregular watering; whitefly",
     "harvest_indicator": "Fruit fully red, oblong, firm",
     "image_key": "plum_tomato_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1546470427-e5380b6e9b9e?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/plum-tomato.jpeg",
     "source": "Rijk Zwaan Solarino datasheet, NoSoilSolutions, Web validation",
     "tips": [
       "Plum/paste varieties (e.g. Solarino, San Marzano) have less water content — ideal for sauces.",
@@ -3062,7 +3365,7 @@
     "common_issues": "BER; aphids; thin fruit walls if low Ca",
     "harvest_indicator": "Long horn-shape (15-20cm), fully red/yellow, glossy",
     "image_key": "sweet_italian_pepper_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/sweet-italian-horn-pepper.jpeg",
     "source": "Rijk Zwaan Palermo datasheet, IGWorks, NoSoilSolutions",
     "tips": [
       "Palermo-type horns ripen faster than blocky bell peppers — earlier red color = sweeter flavor.",
@@ -3181,7 +3484,7 @@
     "common_issues": "Tip burn; bolting in heat; loose leaf bruising",
     "harvest_indicator": "Loose rosette, lobed leaves 15-20cm",
     "image_key": "oakleaf_lettuce_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/oakleaf-lettuce.jpeg",
     "source": "Rijk Zwaan Lalique, Howard Resh, Produce Grower",
     "tips": [
       "Oakleaf types (e.g. Lalique RZ) hold longer at maturity than romaine — flexible harvest window.",
@@ -3290,7 +3593,7 @@
     "common_issues": "Tip burn; pythium in warm reservoir",
     "harvest_indicator": "Loose semi-head, crinkled leaves 20-25cm",
     "image_key": "batavia_lettuce_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/batavia-lettuce.jpeg",
     "source": "Rijk Zwaan Hydrolique, Howard Resh, ResearchGate",
     "tips": [
       "Batavia (summer crisp) tolerates higher temperatures than butterhead — best lettuce for tropical hydroponics.",
@@ -3397,7 +3700,7 @@
     "common_issues": "Tip burn; bolting; aphids hide in frills",
     "harvest_indicator": "Frilly rosette 20cm, dense ruffles",
     "image_key": "lollo_lettuce_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/lettuce.jpeg",
     "source": "Rijk Zwaan Limambo/Tourbillon, Johnny's Selected Seeds, Howard Resh",
     "tips": [
       "Lollo Bionda (green) and Lollo Rossa (red) are visual upgrades for salad mixes — premium price.",
@@ -3504,7 +3807,7 @@
     "common_issues": "Powdery mildew; vine breakage; poor netting from EC swings",
     "harvest_indicator": "Full slip from vine, sweet aroma, raised tan netting on rind",
     "image_key": "cantaloupe_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1571575173700-afb9492e6a50?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/cantaloupe.jpeg",
     "source": "Rijk Zwaan melon catalog, Dealzer, Agri Farming, NatureTech",
     "tips": [
       "Cantaloupe distinct from generic melon — netted rind, orange flesh, slip-free harvest signal.",
@@ -3640,7 +3943,7 @@
     "common_issues": "Tip burn at high EC; aphids in dense rosette",
     "harvest_indicator": "One cut at base releases 40-50 uniform baby leaves",
     "image_key": "salanova_lettuce_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/lettuce-cut.jpeg",
     "source": "Rijk Zwaan Salanova/Tourbillon, Johnny's Salanova catalog",
     "tips": [
       "Salanova/Multileaf bred so single basal cut yields ready-to-pack baby-leaf mix — labor saver vs hand-picking.",
@@ -3747,7 +4050,7 @@
     "common_issues": "Pods turn fibrous if over-mature; aphids; fruit borer",
     "harvest_indicator": "Pods 6-9cm long, snap easily, smooth glossy skin",
     "image_key": "smooth_okra_crop.png",
-    "image_url": "https://images.unsplash.com/photo-1664478549196-e6cb37db5cd1?w=800",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/okra.jpeg",
     "source": "DA-BPI, GrowByCity Philippines, Hydroforia, Oklahoma State Extension",
     "tips": [
       "Smooth-pod cultivars (e.g. Smooth Green, Clemson Smooth) lack spines on pods and stems — easier handling, less skin irritation than spiny types.",
@@ -3851,6 +4154,312 @@
         "actions": [
           "Cut pods at 6-9cm with shears",
           "Wear gloves even with smooth varieties — leaves still mildly irritating"
+        ]
+      }
+    ]
+  },
+  {
+    "name_en": "Tomato (Slicer)",
+    "name_tl": "Kamatis (Pang-hiwa)",
+    "category": "fruiting",
+    "recommended_setups": "DutchBucket",
+    "ph_min": 5.8,
+    "ph_max": 6.3,
+    "ec_min": 2.5,
+    "ec_max": 3.8,
+    "days_to_harvest_min": 80,
+    "days_to_harvest_max": 110,
+    "typical_yield_grams": 4500.0,
+    "sunlight_hours": "12-14",
+    "growlight_hours": "14-18",
+    "temperature_day_c": "21-27",
+    "temperature_night_c": "16-19",
+    "water_temp_c": "20-24",
+    "humidity_pct": "65-75",
+    "ec_seedling": 1.0,
+    "ec_vegetative": 2.2,
+    "ec_mature": 3.0,
+    "ec_fruiting": 3.5,
+    "local_price_php_per_kg_min": 90.0,
+    "local_price_php_per_kg_max": 200.0,
+    "common_issues": "BER; cat-facing on cool nights; russet mites; fruit cracking; greenback shoulder",
+    "harvest_indicator": "Large globe fruit 150-300g, fully colored shoulder-to-blossom-end, slight give when pressed",
+    "image_key": "tomato_slicer_crop.png",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/tomato-slicer.jpeg",
+    "source": "Rijk Zwaan Climberley/Beorange datasheets, UF/IFAS hydroponic tomato guide, Kai farm calibration",
+    "tips": [
+      "Slicer/beefsteak varieties (e.g. Climberley, Beorange, Big Beef, Trust) need strong trellising — fruit reaches 200-400g.",
+      "Prune to single leader and remove all suckers weekly; lower yield count but bigger fruit.",
+      "Drop nighttime temperature 5-7C below day temp to trigger flowering and improve fruit set.",
+      "Hand-pollinate by tapping flower trusses mid-morning when humidity is 60-70%.",
+      "Reduce EC by 0.3-0.5 during ripening to push sugar concentration and flavor.",
+      "Top the plant once it reaches trellis height — let last 2 trusses ripen, then terminate.",
+      "Remove lower leaves below the first ripening truss to improve airflow and reduce fungal pressure."
+    ],
+    "risks": [
+      {
+        "title": "Blossom-end rot (BER)",
+        "description": "Sunken black lesion at fruit base from localized calcium deficiency — large slicer fruit is highly prone.",
+        "mitigation": "Hold EC steady (avoid >0.4 swings), supplement Cal-Mag weekly, keep humidity 65-75%, ensure root zone never dries between irrigations."
+      },
+      {
+        "title": "Fruit cracking",
+        "description": "Concentric or radial splits on shoulder from sudden rehydration after stress or rapid sugar accumulation.",
+        "mitigation": "Maintain consistent fertigation cycles (4-6 short pulses/day), avoid drought-flood pattern, harvest at breaker stage in rainy season."
+      },
+      {
+        "title": "Cat-facing / zippering",
+        "description": "Deformed scarred fruit from cold nights (<13C) during flower formation.",
+        "mitigation": "Keep night temp >=16C, avoid early-season transplants, remove malformed first trusses to redirect energy."
+      },
+      {
+        "title": "Russet mites",
+        "description": "Microscopic mites bronze the lower stems and leaves; severe infestations collapse the plant.",
+        "mitigation": "Scout weekly with 10x loupe at stem base, apply sulfur spray at first sign, isolate infected plants immediately."
+      },
+      {
+        "title": "Botrytis (gray mold)",
+        "description": "Fuzzy gray sporulation on stems, leaves, fruit — favored by humidity >85% and stagnant air.",
+        "mitigation": "Run circulation fans 24/7, prune lower leaves, vent during cool wet nights, avoid wetting foliage."
+      }
+    ],
+    "growth_stages": [
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 2,
+        "description": "Sow 1-2 seeds 5mm deep in pre-soaked rockwool plug.",
+        "actions": [
+          "Pre-soak rockwool to pH 5.5",
+          "Cover with vermiculite",
+          "Keep at 25-28C, no nutrients"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 3,
+        "day_max": 8,
+        "description": "Cotyledons unfold, radicle anchors.",
+        "actions": [
+          "Move to bright light immediately upon emergence",
+          "16h light",
+          "Maintain 25-28C / 70% RH"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 9,
+        "day_max": 28,
+        "description": "True leaves develop, root system establishes.",
+        "actions": [
+          "Start EC 1.0 at 4 true leaves",
+          "Pot up to 4-inch block at 6 leaves",
+          "Pinch to single seedling per plug"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 28,
+        "day_max": 32,
+        "description": "Move to Dutch Bucket with perlite/coco mix when first flower truss visible.",
+        "actions": [
+          "Bury stem deep to encourage adventitious roots",
+          "EC 2.2",
+          "Install trellis line and clip stem"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 32,
+        "day_max": 55,
+        "description": "Rapid vine extension and leaf production.",
+        "actions": [
+          "Train to single leader on twine",
+          "Prune all suckers weekly",
+          "EC 2.4-2.6, irrigation 4-6 pulses/day"
+        ]
+      },
+      {
+        "stage": "Flowering",
+        "day_min": 50,
+        "day_max": 70,
+        "description": "Trusses with 4-7 yellow flowers form every 3 leaves.",
+        "actions": [
+          "Tap trusses mid-morning to release pollen",
+          "Drop night temp to 16-18C",
+          "EC 2.8, supplement Cal-Mag"
+        ]
+      },
+      {
+        "stage": "Fruit Set",
+        "day_min": 65,
+        "day_max": 90,
+        "description": "Green fruit swells; thin to 4-5 fruit per truss for slicer size.",
+        "actions": [
+          "Remove smallest fruit per cluster",
+          "EC 3.2-3.5",
+          "Maintain Ca/K balance, monitor for BER on first trusses"
+        ]
+      },
+      {
+        "stage": "Ripening",
+        "day_min": 80,
+        "day_max": 100,
+        "description": "Fruit turns from mature green through breaker to full color.",
+        "actions": [
+          "Drop EC to 3.0 to concentrate sugars",
+          "Reduce irrigation frequency slightly",
+          "Lower-leaf prune up to first ripening truss"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 85,
+        "day_max": 110,
+        "description": "Continuous pick every 2-3 days as trusses ripen sequentially.",
+        "actions": [
+          "Twist fruit at calyx joint or use pruners",
+          "Pick at breaker for shipping, vine-ripe for direct sale",
+          "Top plant once trellis reached and let final trusses finish"
+        ]
+      }
+    ]
+  },
+  {
+    "name_en": "Lettuce (Olmetie)",
+    "name_tl": "Letsugas (Olmetie)",
+    "category": "leafy",
+    "recommended_setups": "DFT,NFT,Kratky",
+    "ph_min": 5.6,
+    "ph_max": 6.2,
+    "ec_min": 1.0,
+    "ec_max": 1.6,
+    "days_to_harvest_min": 32,
+    "days_to_harvest_max": 45,
+    "typical_yield_grams": 220.0,
+    "sunlight_hours": "10-14",
+    "growlight_hours": "14-16",
+    "temperature_day_c": "18-24",
+    "temperature_night_c": "12-18",
+    "water_temp_c": "18-22",
+    "humidity_pct": "55-70",
+    "ec_seedling": 0.6,
+    "ec_vegetative": 1.2,
+    "ec_mature": 1.5,
+    "ec_fruiting": null,
+    "local_price_php_per_kg_min": 280.0,
+    "local_price_php_per_kg_max": 600.0,
+    "common_issues": "Tip burn at high EC; bolting above 26C; bottom rot in saturated media; aphids in upright cone",
+    "harvest_indicator": "Tall upright cone-shaped head 25-30cm, dark green outer leaves, firm crisp heart, 200-300g whole-head weight",
+    "image_key": "olmetie_lettuce_crop.png",
+    "image_url": "https://ebnyrcqgjeldokucddza.storage.supabase.co/storage/v1/object/public/default/romaine-lettuce.jpeg",
+    "source": "Rijk Zwaan Olmetie RZ datasheet, Cravo greenhouse trial notes, Web validation",
+    "tips": [
+      "Olmetie RZ is a tall single-cut Cos/romaine type bred for hydroponics — uniform upright heads ideal for whole-head packs.",
+      "Spacing: 18-22cm head-to-head in NFT/DFT to let outer leaves expand without crowding.",
+      "Strong tip-burn tolerance vs older Cos varieties — but still hold EC <=1.6 in hot months.",
+      "High resistance to Bremia (downy mildew) races Bl: 16-37EU,39EU and Nasonovia aphid — reduces spray frequency.",
+      "Drop water temp to 18-20C with chiller in tropical climate to prevent bolting beyond day 35.",
+      "Harvest in early morning when leaves are fully turgid; refrigerate immediately for shelf life."
+    ],
+    "risks": [
+      {
+        "title": "Tip burn",
+        "description": "Inner leaf margin browns from localized Ca deficiency during rapid growth.",
+        "mitigation": "Hold EC <=1.6, keep humidity 55-70%, run gentle constant airflow over canopy, supplement Cal-Mag at 0.5g/L weekly."
+      },
+      {
+        "title": "Bolting (premature flowering)",
+        "description": "Day temps >26C trigger seed-stalk elongation; leaves turn bitter and milky.",
+        "mitigation": "Use shade cloth 30-40% in dry season, run growlights only 12-14h, harvest by day 40 in hot months."
+      },
+      {
+        "title": "Bottom rot / Pythium",
+        "description": "Brown collapse at crown from saturated rockwool plus warm root zone.",
+        "mitigation": "Keep water temp 18-22C, ensure media drains between cycles, sanitize channels between crops with 1% H2O2."
+      },
+      {
+        "title": "Aphids in upright cone",
+        "description": "Tight vertical leaf overlap shelters Nasonovia and Myzus colonies despite resistance gene.",
+        "mitigation": "Weekly scouting at heart, release Aphidius wasps preventatively, neem oil drench at first sign."
+      }
+    ],
+    "growth_stages": [
+      {
+        "stage": "Sowing",
+        "day_min": 0,
+        "day_max": 1,
+        "description": "Sow 1 pelleted seed per rockwool plug, 3mm deep.",
+        "actions": [
+          "Pre-soak rockwool to pH 5.5",
+          "Cover lightly with vermiculite",
+          "Hold at 18-20C, no nutrients"
+        ]
+      },
+      {
+        "stage": "Germination",
+        "day_min": 2,
+        "day_max": 5,
+        "description": "Cotyledons unfold within 3-4 days.",
+        "actions": [
+          "Move to bright light immediately on emergence",
+          "16h light",
+          "Maintain 18-22C, RH 70%"
+        ]
+      },
+      {
+        "stage": "Seedling",
+        "day_min": 6,
+        "day_max": 16,
+        "description": "First 2-3 true leaves form, root system anchors.",
+        "actions": [
+          "Start EC 0.6 at 2 true leaves",
+          "Move to nursery channel",
+          "Pinch to single seedling per plug"
+        ]
+      },
+      {
+        "stage": "Transplant",
+        "day_min": 17,
+        "day_max": 20,
+        "description": "Move to production channel at 4-5 true leaves.",
+        "actions": [
+          "EC 1.2",
+          "pH 5.8",
+          "Space 18-22cm head-to-head"
+        ]
+      },
+      {
+        "stage": "Vegetative",
+        "day_min": 21,
+        "day_max": 35,
+        "description": "Upright cone-shaped head builds; outer wrap leaves expand.",
+        "actions": [
+          "EC 1.4-1.6",
+          "Hold day temp <24C, night <18C",
+          "Top up reservoir daily, monitor pH drift"
+        ]
+      },
+      {
+        "stage": "Heading",
+        "day_min": 30,
+        "day_max": 42,
+        "description": "Inner heart firms up into tight upright Cos shape.",
+        "actions": [
+          "Drop EC to 1.3 final week to improve flavor",
+          "Increase airflow to prevent inner-leaf moisture",
+          "Scout for tip burn and aphids at heart"
+        ]
+      },
+      {
+        "stage": "Harvest",
+        "day_min": 32,
+        "day_max": 45,
+        "description": "Single cut at base when head reaches 25-30cm tall and 200-300g.",
+        "actions": [
+          "Cut at crown with sanitized blade in early morning",
+          "Trim 1-2 outer wrap leaves",
+          "Cool to 4C within 1 hour of cut for max shelf life"
         ]
       }
     ]
