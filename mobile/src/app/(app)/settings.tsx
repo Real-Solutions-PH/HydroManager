@@ -21,6 +21,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { paymongoApi, usersApi } from "@/lib/hydro-api";
 import { useI18n, useT } from "@/lib/i18n";
+import { STALE } from "@/lib/query-config";
 import { formatPHP, handleError } from "@/lib/utils";
 
 export default function SettingsScreen() {
@@ -32,7 +33,11 @@ export default function SettingsScreen() {
 	const qc = useQueryClient();
 	const goBack = useBack();
 
-	const me = useQuery({ queryKey: ["me"], queryFn: () => usersApi.me() });
+	const me = useQuery({
+		queryKey: ["me"],
+		queryFn: () => usersApi.me(),
+		staleTime: STALE.me,
+	});
 
 	const [editOpen, setEditOpen] = useState(false);
 	const [nameDraft, setNameDraft] = useState("");

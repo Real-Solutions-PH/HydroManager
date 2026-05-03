@@ -20,6 +20,7 @@ import {
 	type Milestone,
 	setupsApi,
 } from "@/lib/hydro-api";
+import { STALE } from "@/lib/query-config";
 
 function isoDateOnly(s: string | null | undefined): string | null {
 	if (!s) return null;
@@ -104,6 +105,7 @@ export default function BatchDetailScreen() {
 	const cropsQ = useQuery({
 		queryKey: ["crops"],
 		queryFn: () => cropsApi.list(),
+		staleTime: STALE.crops,
 	});
 
 	const cropOptions: ComboboxOption[] = useMemo(

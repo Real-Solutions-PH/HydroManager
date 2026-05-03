@@ -14,6 +14,7 @@ import { Text } from "@/components/ui/text";
 import { colors, spacing, systemTypes } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { batchesApi, cropsApi, setupsApi } from "@/lib/hydro-api";
+import { STALE } from "@/lib/query-config";
 
 function todayIso(): string {
 	const d = new Date();
@@ -30,10 +31,12 @@ export default function NewBatchScreen() {
 	const setups = useQuery({
 		queryKey: ["setups"],
 		queryFn: () => setupsApi.list(),
+		staleTime: STALE.setups,
 	});
 	const crops = useQuery({
 		queryKey: ["crops"],
 		queryFn: () => cropsApi.list(),
+		staleTime: STALE.crops,
 	});
 
 	const [setupId, setSetupId] = useState(setupParam ?? "");

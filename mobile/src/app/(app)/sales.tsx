@@ -26,6 +26,7 @@ import {
 	usersApi,
 } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
+import { STALE } from "@/lib/query-config";
 import { formatPHP, handleError } from "@/lib/utils";
 
 type Period = "month" | "90d" | "ytd";
@@ -59,7 +60,11 @@ export default function SalesScreen() {
 	const { t } = useT();
 	const toast = useCustomToast();
 	const qc = useQueryClient();
-	const me = useQuery({ queryKey: ["me"], queryFn: () => usersApi.me() });
+	const me = useQuery({
+		queryKey: ["me"],
+		queryFn: () => usersApi.me(),
+		staleTime: STALE.me,
+	});
 	const [period, setPeriod] = useState<Period>("month");
 	const tabBarClearance = useTabBarClearance();
 
@@ -70,10 +75,12 @@ export default function SalesScreen() {
 	const dashboard = useQuery({
 		queryKey: ["sales-dashboard"],
 		queryFn: () => salesApi.dashboard(),
+		staleTime: STALE.salesDashboard,
 	});
 	const inventory = useQuery({
 		queryKey: ["inventory-items"],
 		queryFn: () => inventoryApi.list(),
+		staleTime: STALE.inventory,
 	});
 
 	const del = useMutation({

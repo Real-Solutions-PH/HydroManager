@@ -13,6 +13,7 @@ import {
 	type ChecklistTask,
 	checklistApi,
 } from "@/lib/hydro-api";
+import { STALE } from "@/lib/query-config";
 import { mmkv } from "@/lib/storage";
 
 type UrgencyKey = "overdue" | "today" | "soon";
@@ -108,11 +109,13 @@ export default function ChecklistScreen() {
 		queryKey: ["checklist"],
 		queryFn: () => checklistApi.list(),
 		retry: 0,
+		staleTime: STALE.checklist,
 	});
 	const batches = useQuery({
 		queryKey: ["batches"],
 		queryFn: () => batchesApi.list(),
 		enabled: serverTasks.isError || serverTasks.data?.tasks === undefined,
+		staleTime: STALE.batches,
 	});
 
 	const tasks = useMemo(() => {

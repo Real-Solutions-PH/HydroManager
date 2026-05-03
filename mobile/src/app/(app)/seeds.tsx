@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import {
+	useInfiniteQuery,
 	useMutation,
 	useQueries,
 	useQuery,
@@ -8,10 +9,13 @@ import {
 import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import {
+	ActivityIndicator,
 	Alert,
 	Image,
 	KeyboardAvoidingView,
 	Modal,
+	type NativeScrollEvent,
+	type NativeSyntheticEvent,
 	Platform,
 	Pressable,
 	ScrollView,
@@ -37,6 +41,8 @@ import {
 	type Setup,
 	setupsApi,
 } from "@/lib/hydro-api";
+import { flattenPages, getNextSkip, PAGE_SIZE } from "@/lib/paginate";
+import { STALE } from "@/lib/query-config";
 import { formatDateOnly } from "@/lib/utils";
 
 const FILTERS = ["All", "Active", "Harvest-Ready", "Archived"] as const;
@@ -128,20 +134,43 @@ export default function SeedsScreen() {
 
 	const setupsQ = useQuery({
 		queryKey: ["setups", "all-with-archived"],
-		queryFn: () => setupsApi.list(true),
+		queryFn: () => setupsApi.list(true, { limit: 1000 }),
+		staleTime: STALE.setups,
 	});
-	const batchesQ = useQuery({
-		queryKey: ["batches", "all-with-archived"],
-		queryFn: () => batchesApi.list({ include_archived: true }),
+	const batchesQ = useInfiniteQuery({
+		queryKey: ["batches", "all-with-archived", "paged"],
+		queryFn: ({ pageParam = 0 }) =>
+			batchesApi.list({
+				include_archived: true,
+				skip: pageParam,
+				limit: PAGE_SIZE,
+			}),
+		initialPageParam: 0,
+		getNextPageParam: getNextSkip<Batch>,
+		staleTime: STALE.batches,
 	});
 	const cropsQ = useQuery({
 		queryKey: ["crops"],
-		queryFn: () => cropsApi.list(),
+		queryFn: () => cropsApi.list(undefined, undefined, { limit: 1000 }),
+		staleTime: STALE.crops,
 	});
 
 	const setups = setupsQ.data?.data ?? [];
-	const batches = batchesQ.data?.data ?? [];
+	const batches = flattenPages(batchesQ.data);
 	const crops = cropsQ.data?.data ?? [];
+
+	const onScrollNearEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+		const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
+		const distFromBottom =
+			contentSize.height - (contentOffset.y + layoutMeasurement.height);
+		if (
+			distFromBottom < 400 &&
+			batchesQ.hasNextPage &&
+			!batchesQ.isFetchingNextPage
+		) {
+			batchesQ.fetchNextPage();
+		}
+	};
 
 	const setupById = useMemo(() => {
 		const m = new Map<string, Setup>();
@@ -226,6 +255,8 @@ export default function SeedsScreen() {
 	return (
 		<GradientBackground>
 			<ScrollView
+				onScroll={onScrollNearEnd}
+				scrollEventThrottle={200}
 				contentContainerStyle={{
 					paddingHorizontal: spacing.md,
 					paddingTop: spacing.xs,
@@ -334,6 +365,12 @@ export default function SeedsScreen() {
 						);
 					})
 				)}
+
+				{batchesQ.isFetchingNextPage ? (
+					<View style={{ paddingVertical: spacing.md }}>
+						<ActivityIndicator color={colors.textMuted} />
+					</View>
+				) : null}
 
 				<TipCard />
 			</ScrollView>

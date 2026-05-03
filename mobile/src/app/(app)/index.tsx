@@ -17,6 +17,7 @@ import {
 	usersApi,
 } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
+import { STALE } from "@/lib/query-config";
 
 // TODO: replace with real data once checklist completion tracking lands.
 const TASKS_PROGRESS_MOCK = 0.67;
@@ -91,22 +92,30 @@ export default function HomeScreen() {
 	const { t, locale } = useT();
 	const insets = useSafeAreaInsets();
 
-	const userQ = useQuery({ queryKey: ["me"], queryFn: () => usersApi.me() });
+	const userQ = useQuery({
+		queryKey: ["me"],
+		queryFn: () => usersApi.me(),
+		staleTime: STALE.me,
+	});
 	const setupsQ = useQuery({
 		queryKey: ["setups"],
 		queryFn: () => setupsApi.list(),
+		staleTime: STALE.setups,
 	});
 	const batchesQ = useQuery({
 		queryKey: ["batches"],
 		queryFn: () => batchesApi.list(),
+		staleTime: STALE.batches,
 	});
 	const inventoryQ = useQuery({
 		queryKey: ["inventory"],
 		queryFn: () => inventoryApi.list(),
+		staleTime: STALE.inventory,
 	});
 	const checklistQ = useQuery({
 		queryKey: ["checklist"],
 		queryFn: () => checklistApi.list(),
+		staleTime: STALE.checklist,
 	});
 
 	const firstName =
