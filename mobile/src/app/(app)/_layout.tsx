@@ -34,7 +34,7 @@ export default function AppLayout() {
 	if (!isAuthenticated) return <Redirect href="/login" />;
 
 	return (
-		<View className="flex-1" style={{ backgroundColor: colors.bg }}>
+		<View style={{ flex: 1, backgroundColor: colors.bg }}>
 			<OfflineBanner />
 			<Tabs
 				screenOptions={{

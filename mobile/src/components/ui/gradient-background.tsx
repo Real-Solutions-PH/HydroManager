@@ -18,7 +18,7 @@ interface Props {
 export function GradientBackground({ children, withInsets = true }: Props) {
 	const insets = useSafeAreaInsets();
 	return (
-		<View className="flex-1">
+		<View style={{ flex: 1 }}>
 			<LinearGradient
 				colors={
 					gradientStops as unknown as readonly [string, string, ...string[]]

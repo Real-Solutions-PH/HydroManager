@@ -1,10 +1,4 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
 import { config } from "@/lib/config";
-
-export function cn(...inputs: ClassValue[]): string {
-	return twMerge(clsx(inputs));
-}
 
 export const emailPattern = {
 	value: /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)*$/i,

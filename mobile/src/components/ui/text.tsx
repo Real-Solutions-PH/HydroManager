@@ -5,7 +5,6 @@ import {
 	type TextStyle,
 } from "react-native";
 import { colors } from "@/constants/theme";
-import { cn } from "@/lib/utils";
 
 type Tone = "default" | "muted" | "subtle" | "error" | "success" | "primary";
 type Size = "xs" | "sm" | "md" | "lg" | "xl" | "xxl" | "xxxl";
@@ -43,7 +42,6 @@ const TONE_COLOR: Record<Tone, string> = {
 };
 
 export function Text({
-	className,
 	tone = "default",
 	size = "md",
 	weight = "normal",
@@ -58,5 +56,5 @@ export function Text({
 		},
 		style,
 	];
-	return <RNText className={cn(className)} style={composed} {...props} />;
+	return <RNText style={composed} {...props} />;
 }

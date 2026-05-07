@@ -2,28 +2,27 @@ import { BlurView } from "expo-blur";
 import type { ReactNode } from "react";
 import { Platform, Pressable, View, type ViewProps } from "react-native";
 import { colors, spacing } from "@/constants/theme";
-import { cn } from "@/lib/utils";
 
 interface CardProps extends ViewProps {
 	children: ReactNode;
 	variant?: "default" | "outlined";
 	onPress?: () => void;
-	className?: string;
 }
 
 export function Card({
 	children,
 	variant = "default",
 	onPress,
-	className,
 	style,
 	...props
 }: CardProps) {
 	const base = (
 		<View
-			className={cn("overflow-hidden rounded-2xl border", className)}
 			style={[
 				{
+					overflow: "hidden",
+					borderRadius: 16,
+					borderWidth: 1,
 					borderColor:
 						variant === "outlined" ? colors.borderStrong : colors.border,
 					backgroundColor:
