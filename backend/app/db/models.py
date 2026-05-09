@@ -6,6 +6,7 @@ Alembic autogenerate imports ``SQLModel`` from here; any new module-level
 
 from sqlmodel import SQLModel  # noqa: F401
 
+from app.modules.activity.models import Activity  # noqa: F401
 from app.modules.batches.models import (  # noqa: F401
     Batch,
     BatchHarvest,

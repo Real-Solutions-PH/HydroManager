@@ -5,6 +5,8 @@ from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException
 from sqlmodel import Session, col, func, select
 
+from app.modules.activity import services as activity_service
+from app.modules.activity.schema import ActivityType, TargetType
 from app.modules.hydro_common.quota import require_tier
 from app.modules.iam.users.models import User
 from app.modules.iam.users.schema import UserTier
@@ -64,6 +66,8 @@ def create_sale(
     )
     session.add(sale)
     session.flush()
+    total = 0.0
+    crop_names: list[str] = []
     for it in data.items:
         session.add(
             SaleItem(
@@ -75,6 +79,24 @@ def create_sale(
                 linked_batch_id=it.linked_batch_id,
             )
         )
+        total += (it.quantity or 0) * (it.unit_price or 0)
+        crop_names.append(it.crop_name)
+    label = ", ".join(crop_names[:2])
+    if len(crop_names) > 2:
+        label += f" +{len(crop_names) - 2}"
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.sale_recorded,
+        target_type=TargetType.sale,
+        target_id=sale.id,
+        summary=f"Sale recorded — ₱{total:.2f} {label}".strip(),
+        meta={
+            "total": round(total, 2),
+            "channel": sale.channel.value,
+            "item_count": len(data.items),
+        },
+    )
     session.commit()
     session.refresh(sale)
     return sale
@@ -88,7 +110,16 @@ def delete_sale(
     sale = session.get(Sale, sale_id)
     if not sale or sale.owner_id != current_user.id:
         raise HTTPException(status_code=404, detail="Sale not found")
+    sale_id_val = sale.id
     session.delete(sale)
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.sale_deleted,
+        target_type=TargetType.sale,
+        target_id=sale_id_val,
+        summary="Sale deleted",
+    )
     session.commit()
 
 
@@ -113,6 +144,15 @@ def add_overhead(
         effective_from=data.effective_from or _now(),
     )
     session.add(o)
+    session.flush()
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.overhead_added,
+        target_type=TargetType.overhead,
+        target_id=o.id,
+        summary=f"Overhead added: {o.category} ₱{o.monthly_cost:.2f}/mo",
+    )
     session.commit()
     session.refresh(o)
     return o

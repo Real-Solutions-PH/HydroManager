@@ -780,6 +780,55 @@ export const checklistApi = {
 	},
 };
 
+export type ActivityActionType =
+	| "setup_created"
+	| "setup_archived"
+	| "setup_deleted"
+	| "batch_created"
+	| "batch_archived"
+	| "batch_deleted"
+	| "batch_transition"
+	| "batch_harvest"
+	| "inventory_created"
+	| "inventory_restocked"
+	| "inventory_consumed"
+	| "inventory_adjusted"
+	| "inventory_deleted"
+	| "produce_created"
+	| "produce_movement"
+	| "sale_recorded"
+	| "sale_deleted"
+	| "overhead_added";
+
+export type ActivityTargetType =
+	| "setup"
+	| "batch"
+	| "inventory_item"
+	| "produce"
+	| "sale"
+	| "overhead";
+
+export interface Activity {
+	id: string;
+	user_id: string;
+	action_type: ActivityActionType;
+	target_type: ActivityTargetType | null;
+	target_id: string | null;
+	summary: string;
+	meta: Record<string, unknown> | null;
+	created_at: string;
+}
+
+export const activityApi = {
+	async list(params?: { limit?: number; skip?: number }): Promise<{
+		data: Activity[];
+		count: number;
+	}> {
+		const r = await api.get(`${V1}/activity/`, { params });
+		return r.data;
+	},
+};
+
 export const hydroAiApi = {
 	async chat(message: string): Promise<ChatResponse> {
 		const r = await api.post(`${V1}/hydro-ai/chat`, { message });

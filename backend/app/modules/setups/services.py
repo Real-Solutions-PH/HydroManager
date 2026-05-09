@@ -4,6 +4,8 @@ from datetime import datetime, timezone
 from fastapi import HTTPException
 from sqlmodel import Session, col, select
 
+from app.modules.activity import services as activity_service
+from app.modules.activity.schema import ActivityType, TargetType
 from app.modules.hydro_common.quota import enforce_setup_limit
 from app.modules.iam.users.models import User
 from app.modules.setups import repo as setups_repo
@@ -76,7 +78,18 @@ def create_setup(
     payload["owner_id"] = current_user.id
     db = Setup.model_validate(payload)
     slot_codes = _default_slot_codes(_prefix_for(data.type.value), data.slot_count)
-    return setups_repo.create(session=session, setup=db, slot_codes=slot_codes)
+    setup = setups_repo.create(session=session, setup=db, slot_codes=slot_codes)
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.setup_created,
+        target_type=TargetType.setup,
+        target_id=setup.id,
+        summary=f"Setup {setup.name} ({setup.type.value}) created",
+        meta={"slot_count": setup.slot_count, "type": setup.type.value},
+        commit=True,
+    )
+    return setup
 
 
 def _resize_slots(
@@ -171,11 +184,21 @@ def archive_setup(
     setup = get_setup(
         session=session, current_user=current_user, setup_id=setup_id
     )
-    return setups_repo.update(
+    updated = setups_repo.update(
         session=session,
         setup=setup,
         update_data={"archived_at": datetime.now(timezone.utc)},
     )
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.setup_archived,
+        target_type=TargetType.setup,
+        target_id=updated.id,
+        summary=f"Setup {updated.name} archived",
+        commit=True,
+    )
+    return updated
 
 
 def delete_setup(
@@ -188,7 +211,18 @@ def delete_setup(
         raise HTTPException(
             status_code=400, detail="Archive setup before deleting"
         )
+    name = setup.name
+    setup_id_val = setup.id
     setups_repo.delete(session=session, setup=setup)
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.setup_deleted,
+        target_type=TargetType.setup,
+        target_id=setup_id_val,
+        summary=f"Setup {name} deleted",
+        commit=True,
+    )
 
 
 def list_slots(

@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from app.modules.activity.main import router as activity_router
 from app.modules.batches.main import router as batches_router
 from app.modules.checklist.main import router as checklist_router
 from app.modules.climate.main import router as climate_router
@@ -32,3 +33,4 @@ v1_router.include_router(sales_router)
 v1_router.include_router(hydro_ai_router)
 v1_router.include_router(hydro_common_router)
 v1_router.include_router(paymongo_router)
+v1_router.include_router(activity_router)

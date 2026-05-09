@@ -9,6 +9,7 @@ export const STALE = {
 	checklist: MIN * 2,
 	salesDashboard: MIN * 2,
 	produce: MIN * 5,
+	activity: 0,
 } as const;
 
 export interface InventoryListFilters {
@@ -35,6 +36,7 @@ export const QK = {
 	crops: () => ["crops"] as const,
 	checklist: () => ["checklist"] as const,
 	aiQuota: () => ["ai-quota"] as const,
+	activity: (limit?: number) => ["activity", "list", limit ?? 50] as const,
 	inventory: {
 		all: ["inventory"] as const,
 		lists: () => ["inventory", "list"] as const,

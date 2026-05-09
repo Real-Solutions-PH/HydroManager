@@ -4,6 +4,8 @@ from datetime import date, datetime, timezone
 from fastapi import HTTPException
 from sqlmodel import Session
 
+from app.modules.activity import services as activity_service
+from app.modules.activity.schema import ActivityType, TargetType
 from app.modules.iam.users.models import User
 from app.modules.produce import repo as produce_repo
 from app.modules.produce.models import Produce, ProduceMovement
@@ -69,7 +71,17 @@ def create_produce(
     *, session: Session, current_user: User, data: ProduceCreate
 ) -> Produce:
     db = Produce.model_validate(data, update={"owner_id": current_user.id})
-    return produce_repo.create(session=session, produce=db)
+    p = produce_repo.create(session=session, produce=db)
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.produce_created,
+        target_type=TargetType.produce,
+        target_id=p.id,
+        summary=f"Produce logged: {p.name} ({p.quantity:g} {p.unit})",
+        commit=True,
+    )
+    return p
 
 
 def update_produce(
@@ -132,6 +144,15 @@ def record_movement(
         notes=data.notes,
     )
     produce_repo.add_movement(session=session, movement=movement)
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.produce_movement,
+        target_type=TargetType.produce,
+        target_id=p.id,
+        summary=f"{p.name}: {mt.value} {data.quantity:g} {p.unit}",
+        meta={"movement_type": mt.value, "quantity": data.quantity},
+    )
     session.commit()
     session.refresh(movement)
     return movement

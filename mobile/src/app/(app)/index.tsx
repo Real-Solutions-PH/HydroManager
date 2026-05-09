@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { Link, router, type Href } from "expo-router";
+import { useMemo } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AlertCard, type AlertSeverity } from "@/components/ui/alert-card";
@@ -10,9 +11,17 @@ import { ProgressRing } from "@/components/ui/progress-ring";
 import { Text } from "@/components/ui/text";
 import { colors, radii, spacing } from "@/constants/theme";
 import {
+	type Activity,
+	type ActivityActionType,
+	activityApi,
+	type Batch,
 	batchesApi,
 	checklistApi,
+	type CropGuide,
+	cropsApi,
 	inventoryApi,
+	MILESTONE_ORDER,
+	type Milestone,
 	setupsApi,
 	usersApi,
 } from "@/lib/hydro-api";
@@ -24,8 +33,75 @@ const TASKS_PROGRESS_MOCK = 0.67;
 const TASKS_DONE_MOCK = 8;
 const TASKS_TOTAL_MOCK = 12;
 
-// TODO: source from crop guide (days_to_harvest_min/max) instead of a flat fallback.
-const FALLBACK_DAYS_TO_HARVEST = 30;
+const STAGE_LABEL: Record<Milestone, string> = {
+	Sowed: "Sowed",
+	Germinated: "Germinated",
+	SeedLeaves: "Seed Leaves",
+	TrueLeaves: "True Leaves",
+	Transplanted: "Transplanted",
+	Vegetative: "Vegetative",
+	Flowering: "Flowering",
+	FruitSet: "Fruit Set",
+	HarvestReady: "Harvest-Ready",
+	Harvested: "Harvested",
+	Failed: "Failed",
+};
+
+const LEAFY_STAGES: Milestone[] = [
+	"Sowed",
+	"Germinated",
+	"SeedLeaves",
+	"TrueLeaves",
+	"Transplanted",
+	"Vegetative",
+	"HarvestReady",
+];
+const FRUITING_STAGES: Milestone[] = [
+	"Sowed",
+	"Germinated",
+	"SeedLeaves",
+	"TrueLeaves",
+	"Transplanted",
+	"Vegetative",
+	"Flowering",
+	"HarvestReady",
+];
+
+const MILESTONE_TO_GUIDE_STAGE: Partial<Record<Milestone, string[]>> = {
+	Sowed: ["Sowing"],
+	Germinated: ["Germination"],
+	SeedLeaves: ["Seedling"],
+	TrueLeaves: ["Seedling"],
+	Transplanted: ["Transplant"],
+	Vegetative: ["Vegetative"],
+	Flowering: ["Flowering"],
+	FruitSet: ["Fruit Set"],
+	HarvestReady: ["Harvest"],
+};
+
+function computeCurrentStage(
+	stateCounts: { milestone_code: Milestone; count: number }[],
+): Milestone | null {
+	let latest: Milestone | null = null;
+	for (const m of MILESTONE_ORDER) {
+		const c = stateCounts.find((s) => s.milestone_code === m);
+		if (c && c.count > 0) latest = m;
+	}
+	return latest;
+}
+
+function findGuideStageDayMax(
+	guide: CropGuide | undefined,
+	milestone: Milestone | null,
+): number | null {
+	if (!guide?.growth_stages || !milestone) return null;
+	const names = MILESTONE_TO_GUIDE_STAGE[milestone];
+	if (!names) return null;
+	for (const s of guide.growth_stages) {
+		if (names.includes(s.stage)) return s.day_max;
+	}
+	return null;
+}
 
 interface ActivityItem {
 	id: string;
@@ -36,40 +112,117 @@ interface ActivityItem {
 	timeAgo: string;
 }
 
-const ACTIVITY_MOCK: ActivityItem[] = [
-	{
-		id: "a1",
-		icon: "checkmark-circle",
-		iconBg: colors.successLight,
-		iconColor: colors.primaryLight,
-		title: "pH/EC logged for DFT-A",
-		timeAgo: "2h ago",
-	},
-	{
-		id: "a2",
-		icon: "leaf",
-		iconBg: colors.infoLight,
-		iconColor: colors.info,
-		title: "Pechay Batch A-001 → Vegetative",
-		timeAgo: "5h ago",
-	},
-	{
-		id: "a3",
-		icon: "cube",
-		iconBg: colors.warningLight,
-		iconColor: colors.warning,
-		title: "Rockwool cubes restocked (50 pcs)",
-		timeAgo: "1d ago",
-	},
-	{
-		id: "a4",
-		icon: "trending-up",
-		iconBg: colors.salesAccentLight,
-		iconColor: colors.salesAccent,
-		title: "Sale recorded — ₱480 Pechay",
-		timeAgo: "2d ago",
-	},
-];
+interface ActivityVisual {
+	icon: React.ComponentProps<typeof Ionicons>["name"];
+	iconBg: string;
+	iconColor: string;
+}
+
+function activityVisual(action: ActivityActionType): ActivityVisual {
+	switch (action) {
+		case "batch_created":
+		case "batch_transition":
+			return {
+				icon: "leaf",
+				iconBg: colors.infoLight,
+				iconColor: colors.info,
+			};
+		case "batch_harvest":
+			return {
+				icon: "checkmark-circle",
+				iconBg: colors.successLight,
+				iconColor: colors.primaryLight,
+			};
+		case "batch_archived":
+		case "batch_deleted":
+			return {
+				icon: "archive",
+				iconBg: colors.surfaceVariant,
+				iconColor: colors.textSecondary,
+			};
+		case "inventory_restocked":
+		case "inventory_created":
+			return {
+				icon: "cube",
+				iconBg: colors.warningLight,
+				iconColor: colors.warning,
+			};
+		case "inventory_consumed":
+		case "inventory_adjusted":
+		case "inventory_deleted":
+			return {
+				icon: "remove-circle",
+				iconBg: colors.warningLight,
+				iconColor: colors.warning,
+			};
+		case "sale_recorded":
+		case "overhead_added":
+			return {
+				icon: "trending-up",
+				iconBg: colors.salesAccentLight,
+				iconColor: colors.salesAccent,
+			};
+		case "sale_deleted":
+			return {
+				icon: "close-circle",
+				iconBg: colors.errorLight,
+				iconColor: colors.error,
+			};
+		case "produce_created":
+		case "produce_movement":
+			return {
+				icon: "basket",
+				iconBg: colors.successLight,
+				iconColor: colors.primaryLight,
+			};
+		case "setup_created":
+			return {
+				icon: "construct",
+				iconBg: colors.infoLight,
+				iconColor: colors.info,
+			};
+		case "setup_archived":
+		case "setup_deleted":
+			return {
+				icon: "archive",
+				iconBg: colors.surfaceVariant,
+				iconColor: colors.textSecondary,
+			};
+		default:
+			return {
+				icon: "ellipse",
+				iconBg: colors.surfaceVariant,
+				iconColor: colors.info,
+			};
+	}
+}
+
+function formatTimeAgo(iso: string, locale: string): string {
+	const then = new Date(iso).getTime();
+	const now = Date.now();
+	const diff = Math.max(now - then, 0);
+	const sec = Math.floor(diff / 1000);
+	const min = Math.floor(sec / 60);
+	const hr = Math.floor(min / 60);
+	const day = Math.floor(hr / 24);
+	if (sec < 60) return locale.startsWith("fil") ? "ngayon lang" : "just now";
+	if (min < 60) return `${min}m ago`;
+	if (hr < 24) return `${hr}h ago`;
+	if (day < 7) return `${day}d ago`;
+	return new Date(iso).toLocaleDateString(locale);
+}
+
+function activityToItem(a: Activity, locale: string): ActivityItem {
+	const visual = activityVisual(a.action_type);
+	return {
+		id: a.id,
+		icon: visual.icon,
+		iconBg: visual.iconBg,
+		iconColor: visual.iconColor,
+		title: a.summary,
+		timeAgo: formatTimeAgo(a.created_at, locale),
+	};
+}
 
 interface HomeAlert {
 	id: string;
@@ -116,6 +269,29 @@ export default function HomeScreen() {
 		queryKey: QK.checklist(),
 		queryFn: () => checklistApi.list(),
 		staleTime: STALE.checklist,
+	});
+	const cropsQ = useQuery({
+		queryKey: QK.crops(),
+		queryFn: () => cropsApi.list(undefined, undefined, { limit: 1000 }),
+		staleTime: STALE.crops,
+	});
+	const activityQ = useQuery({
+		queryKey: QK.activity(8),
+		queryFn: () => activityApi.list({ limit: 8 }),
+		staleTime: STALE.activity,
+	});
+
+	const activeBatches = useMemo(
+		() => (batchesQ.data?.data ?? []).filter((b) => !b.archived_at),
+		[batchesQ.data],
+	);
+
+	const detailsQ = useQueries({
+		queries: activeBatches.map((b) => ({
+			queryKey: QK.batches.detail(b.id),
+			queryFn: () => batchesApi.get(b.id),
+			staleTime: 30_000,
+		})),
 	});
 
 	const firstName =
@@ -173,16 +349,68 @@ export default function HomeScreen() {
 		});
 	}
 
-	const upcomingHarvests = (batchesQ.data?.data ?? [])
-		.map((b) => {
-			const days = Math.floor(
+	const crops = cropsQ.data?.data ?? [];
+	const cropById = useMemo(() => {
+		const m = new Map<string, CropGuide>();
+		for (const c of crops) m.set(c.id, c);
+		return m;
+	}, [crops]);
+	const cropByName = useMemo(() => {
+		const m = new Map<string, CropGuide>();
+		for (const c of crops) {
+			if (c.name_en) m.set(c.name_en.toLowerCase(), c);
+			if (c.name_tl) m.set(c.name_tl.toLowerCase(), c);
+		}
+		return m;
+	}, [crops]);
+	const resolveGuide = (b: Batch): CropGuide | undefined => {
+		if (b.crop_guide_id) {
+			const g = cropById.get(b.crop_guide_id);
+			if (g) return g;
+		}
+		const v = b.variety_name?.toLowerCase().trim();
+		if (!v) return undefined;
+		const direct = cropByName.get(v);
+		if (direct) return direct;
+		for (const [k, g] of cropByName) {
+			if (v.includes(k) || k.includes(v)) return g;
+		}
+		return undefined;
+	};
+
+	const upcomingPhases = activeBatches
+		.map((b, i) => {
+			const detail = detailsQ[i]?.data;
+			const stateCounts = detail?.state_counts ?? [];
+			const currentStage = computeCurrentStage(stateCounts);
+			if (!currentStage) return null;
+			const isFruiting = stateCounts.some(
+				(s) =>
+					(s.milestone_code === "Flowering" ||
+						s.milestone_code === "FruitSet") &&
+					s.count > 0,
+			);
+			const stages = isFruiting ? FRUITING_STAGES : LEAFY_STAGES;
+			const idx = stages.indexOf(currentStage);
+			if (idx < 0 || idx >= stages.length - 1) return null;
+			const nextStage = stages[idx + 1];
+			const day = Math.floor(
 				(Date.now() - new Date(b.started_at).getTime()) / 86400000,
 			);
-			const daysLeft = Math.max(0, FALLBACK_DAYS_TO_HARVEST - days);
-			return { batch: b, daysLeft };
+			const guide = resolveGuide(b);
+			const dayMax = findGuideStageDayMax(guide, currentStage);
+			const daysLeft = dayMax !== null ? Math.max(0, dayMax - day) : null;
+			const pendingCount =
+				stateCounts.find((s) => s.milestone_code === currentStage)?.count ?? 0;
+			return { batch: b, currentStage, nextStage, daysLeft, pendingCount };
 		})
-		.sort((a, b) => a.daysLeft - b.daysLeft)
-		.slice(0, 3);
+		.filter((x): x is NonNullable<typeof x> => x !== null)
+		.sort((a, b) => {
+			const av = a.daysLeft ?? 9999;
+			const bv = b.daysLeft ?? 9999;
+			return av - bv;
+		})
+		.slice(0, 5);
 
 	return (
 		<GradientBackground>
@@ -530,8 +758,8 @@ export default function HomeScreen() {
 					</View>
 				) : null}
 
-				{/* Upcoming Harvests */}
-				{upcomingHarvests.length > 0 ? (
+				{/* Upcoming Phases */}
+				{upcomingPhases.length > 0 ? (
 					<View style={{ gap: spacing.sm }}>
 						<View
 							style={{
@@ -542,9 +770,9 @@ export default function HomeScreen() {
 							}}
 						>
 							<Text size="lg" weight="bold">
-								{t("home.upcoming_harvests")}
+								{t("home.upcoming_phases")}
 							</Text>
-							<Link href="/setups" asChild>
+							<Link href="/seeds" asChild>
 								<Pressable accessibilityRole="link">
 									<Text size="sm" tone="primary">
 										{t("home.see_all")}
@@ -560,67 +788,129 @@ export default function HomeScreen() {
 								gap: spacing.sm,
 							}}
 						>
-							{upcomingHarvests.map(({ batch, daysLeft }) => {
-								const urgent = daysLeft < 7;
-								return (
-									<View
-										key={batch.id}
-										style={{
-											width: 140,
-											padding: spacing.sm,
-											borderRadius: radii.lg,
-											backgroundColor: colors.surfaceVariant,
-											borderWidth: 1,
-											borderColor: colors.border,
-											alignItems: "center",
-											gap: spacing.xs,
-										}}
-									>
-										<View
-											style={{
-												width: 44,
-												height: 44,
-												borderRadius: radii.md,
-												backgroundColor: colors.successLight,
-												alignItems: "center",
-												justifyContent: "center",
-											}}
+							{upcomingPhases.map(
+								({ batch, currentStage, nextStage, daysLeft, pendingCount }) => {
+									const due = daysLeft !== null && daysLeft <= 0;
+									const urgent =
+										daysLeft !== null && daysLeft > 0 && daysLeft < 3;
+									const pillBg = due
+										? colors.warningLight
+										: urgent
+											? colors.errorLight
+											: colors.successLight;
+									const pillFg = due
+										? colors.warning
+										: urgent
+											? colors.error
+											: colors.primaryLight;
+									const pillLabel =
+										daysLeft === null
+											? t("home.phase_no_eta")
+											: due
+												? t("home.phase_due")
+												: t("home.days_left", { n: String(daysLeft) });
+									return (
+										<Pressable
+											key={batch.id}
+											accessibilityRole="button"
+											accessibilityLabel={t("home.phase_card_a11y", {
+												variety: batch.variety_name,
+												phase: STAGE_LABEL[nextStage],
+											})}
+											onPress={() => router.push(`/batch/${batch.id}`)}
+											style={({ pressed }) => ({
+												width: 180,
+												padding: spacing.sm,
+												borderRadius: radii.lg,
+												backgroundColor: pressed
+													? colors.glassHover
+													: colors.surfaceVariant,
+												borderWidth: 1,
+												borderColor: colors.border,
+												gap: spacing.xs,
+											})}
 										>
-											<Ionicons
-												name="leaf"
-												size={22}
-												color={colors.primaryLight}
-											/>
-										</View>
-										<Text weight="bold">{batch.variety_name}</Text>
-										<Text size="xs" tone="muted">
-											{t("home.plants_count", { n: String(batch.initial_count) })}
-										</Text>
-										<View
-											style={{
-												paddingHorizontal: spacing.sm,
-												paddingVertical: 4,
-												borderRadius: radii.full,
-												backgroundColor: urgent
-													? colors.errorLight
-													: colors.successLight,
-											}}
-										>
-											<Text
-												size="xs"
-												weight="bold"
+											<View
 												style={{
-													color: urgent ? colors.error : colors.primaryLight,
+													flexDirection: "row",
+													alignItems: "center",
+													gap: spacing.xs,
 												}}
 											>
-												{t("home.days_left", {
-													n: String(daysLeft),
-												})}
-											</Text>
-										</View>
-									</View>
-								);
-							})}
+												<View
+													style={{
+														width: 36,
+														height: 36,
+														borderRadius: radii.md,
+														backgroundColor: colors.successLight,
+														alignItems: "center",
+														justifyContent: "center",
+													}}
+												>
+													<Ionicons
+														name="leaf"
+														size={18}
+														color={colors.primaryLight}
+													/>
+												</View>
+												<View style={{ flex: 1 }}>
+													<Text weight="bold" numberOfLines={1}>
+														{batch.variety_name}
+													</Text>
+													<Text size="xs" tone="muted" numberOfLines={1}>
+														{STAGE_LABEL[currentStage]}
+													</Text>
+												</View>
+											</View>
+											<View
+												style={{
+													flexDirection: "row",
+													alignItems: "center",
+													gap: 4,
+												}}
+											>
+												<Ionicons
+													name="arrow-forward"
+													size={12}
+													color={colors.textMuted}
+												/>
+												<Text size="xs" tone="muted" numberOfLines={1}>
+													{STAGE_LABEL[nextStage]}
+												</Text>
+											</View>
+											<View
+												style={{
+													flexDirection: "row",
+													alignItems: "center",
+													justifyContent: "space-between",
+												}}
+											>
+												<Text size="xs" tone="muted">
+													{t("home.plants_count", {
+														n: String(pendingCount),
+													})}
+												</Text>
+												<View
+													style={{
+														paddingHorizontal: spacing.sm,
+														paddingVertical: 4,
+														borderRadius: radii.full,
+														backgroundColor: pillBg,
+													}}
+												>
+													<Text
+														size="xs"
+														weight="bold"
+														style={{ color: pillFg }}
+													>
+														{pillLabel}
+													</Text>
+												</View>
+											</View>
+										</Pressable>
+									);
+								},
+							)}
 						</ScrollView>
 					</View>
 				) : null}
@@ -636,36 +926,55 @@ export default function HomeScreen() {
 						{t("home.recent_activity")}
 					</Text>
 					<Card>
-						{ACTIVITY_MOCK.map((a, idx) => (
-							<View
-								key={a.id}
-								style={{
-									flexDirection: "row",
-									alignItems: "center",
-									gap: spacing.sm,
-									paddingVertical: spacing.sm,
-									borderBottomWidth: idx === ACTIVITY_MOCK.length - 1 ? 0 : 1,
-									borderBottomColor: colors.borderLight,
-								}}
-							>
+						{(() => {
+							const items = (activityQ.data?.data ?? []).map((a) =>
+								activityToItem(a, locale),
+							);
+							if (items.length === 0) {
+								return (
+									<View
+										style={{
+											paddingVertical: spacing.md,
+											alignItems: "center",
+										}}
+									>
+										<Text size="sm" tone="muted">
+											{activityQ.isLoading ? "…" : t("home.no_activity")}
+										</Text>
+									</View>
+								);
+							}
+							return items.map((a, idx) => (
 								<View
+									key={a.id}
 									style={{
-										width: 36,
-										height: 36,
-										borderRadius: radii.md,
-										backgroundColor: a.iconBg,
+										flexDirection: "row",
 										alignItems: "center",
-										justifyContent: "center",
+										gap: spacing.sm,
+										paddingVertical: spacing.sm,
+										borderBottomWidth: idx === items.length - 1 ? 0 : 1,
+										borderBottomColor: colors.borderLight,
 									}}
 								>
-									<Ionicons name={a.icon} size={18} color={a.iconColor} />
+									<View
+										style={{
+											width: 36,
+											height: 36,
+											borderRadius: radii.md,
+											backgroundColor: a.iconBg,
+											alignItems: "center",
+											justifyContent: "center",
+										}}
+									>
+										<Ionicons name={a.icon} size={18} color={a.iconColor} />
+									</View>
+									<Text style={{ flex: 1 }}>{a.title}</Text>
+									<Text size="xs" tone="muted">
+										{a.timeAgo}
+									</Text>
 								</View>
-								<Text style={{ flex: 1 }}>{a.title}</Text>
-								<Text size="xs" tone="muted">
-									{a.timeAgo}
-								</Text>
-							</View>
-						))}
+							));
+						})()}
 					</Card>
 				</View>
 

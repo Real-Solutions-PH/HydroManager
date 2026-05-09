@@ -4,6 +4,8 @@ from datetime import datetime, timezone
 from fastapi import HTTPException
 from sqlmodel import Session, col, func, select
 
+from app.modules.activity import services as activity_service
+from app.modules.activity.schema import ActivityType, TargetType
 from app.modules.batches import repo as batches_repo
 from app.modules.batches.models import (
     Batch,
@@ -128,6 +130,19 @@ def create_batch(
         slot.batch_id = batch.id
         slot.status = SlotStatus.PLANTED
         session.add(slot)
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.batch_created,
+        target_type=TargetType.batch,
+        target_id=batch.id,
+        summary=f"Batch {batch.variety_name} started ({initial_count} seeds)",
+        meta={
+            "setup_id": str(batch.setup_id),
+            "variety_name": batch.variety_name,
+            "initial_count": initial_count,
+        },
+    )
     session.commit()
     session.refresh(batch)
     return batch
@@ -268,6 +283,14 @@ def archive_batch(
         session=session, current_user=current_user, batch_id=batch_id
     )
     _free_slots_for_batch(session=session, batch_id=batch.id)
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.batch_archived,
+        target_type=TargetType.batch,
+        target_id=batch.id,
+        summary=f"Batch {batch.variety_name} archived",
+    )
     return batches_repo.update(
         session=session,
         batch=batch,
@@ -282,6 +305,14 @@ def delete_batch(
         session=session, current_user=current_user, batch_id=batch_id
     )
     _free_slots_for_batch(session=session, batch_id=batch.id)
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.batch_deleted,
+        target_type=TargetType.batch,
+        target_id=batch.id,
+        summary=f"Batch {batch.variety_name} deleted",
+    )
     session.commit()
     batches_repo.delete(session=session, batch=batch)
 
@@ -332,6 +363,22 @@ def record_transition(
         user_id=current_user.id,
     )
     batches_repo.add_transition(session=session, transition=transition)
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.batch_transition,
+        target_type=TargetType.batch,
+        target_id=batch.id,
+        summary=(
+            f"{batch.variety_name}: {data.count} "
+            f"{data.from_milestone.value} → {data.to_milestone.value}"
+        ),
+        meta={
+            "from": data.from_milestone.value,
+            "to": data.to_milestone.value,
+            "count": data.count,
+        },
+    )
     session.commit()
     session.refresh(transition)
     return transition
@@ -396,6 +443,21 @@ def record_harvest(
         notes=data.notes,
     )
     batches_repo.add_harvest(session=session, harvest=harvest)
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.batch_harvest,
+        target_type=TargetType.batch,
+        target_id=batch.id,
+        summary=(
+            f"Harvested {data.count} of {batch.variety_name} "
+            f"({data.weight_grams:g}g)"
+        ),
+        meta={
+            "count": data.count,
+            "weight_grams": data.weight_grams,
+        },
+    )
     session.commit()
     session.refresh(harvest)
     return harvest
