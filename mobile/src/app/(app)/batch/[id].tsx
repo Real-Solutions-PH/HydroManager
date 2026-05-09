@@ -18,6 +18,7 @@ import {
 	cropsApi,
 	MILESTONE_ORDER,
 	type Milestone,
+	milestonesForCategory,
 	setupsApi,
 } from "@/lib/hydro-api";
 import { QK, STALE } from "@/lib/query-config";
@@ -26,8 +27,6 @@ function isoDateOnly(s: string | null | undefined): string | null {
 	if (!s) return null;
 	return s.slice(0, 10);
 }
-
-const ALL_TARGETS: Milestone[] = [...MILESTONE_ORDER, "Failed"];
 
 export default function BatchDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
@@ -45,16 +44,6 @@ export default function BatchDetailScreen() {
 	const [to, setTo] = useState<Milestone>("Germinated");
 	const [cnt, setCnt] = useState("");
 	const [notes, setNotes] = useState("");
-
-	useEffect(() => {
-		if (to === "Failed") return;
-		const fromIdx = MILESTONE_ORDER.indexOf(from);
-		const toIdx = MILESTONE_ORDER.indexOf(to);
-		if (toIdx <= fromIdx) {
-			const next = MILESTONE_ORDER[fromIdx + 1];
-			if (next) setTo(next);
-		}
-	}, [from, to]);
 
 	const transition = useMutation({
 		mutationFn: () =>
@@ -117,6 +106,37 @@ export default function BatchDetailScreen() {
 			})),
 		[cropsQ.data],
 	);
+
+	const cropCategory = useMemo(
+		() =>
+			cropsQ.data?.data.find((c) => c.id === batch.data?.crop_guide_id)
+				?.category ?? null,
+		[cropsQ.data, batch.data?.crop_guide_id],
+	);
+	const milestoneOrder = useMemo(
+		() => milestonesForCategory(cropCategory),
+		[cropCategory],
+	);
+	const allTargets = useMemo<Milestone[]>(
+		() => [...milestoneOrder, "Failed"],
+		[milestoneOrder],
+	);
+
+	useEffect(() => {
+		if (to === "Failed") return;
+		const fromIdx = milestoneOrder.indexOf(from);
+		const toIdx = milestoneOrder.indexOf(to);
+		if (toIdx <= fromIdx) {
+			const next = milestoneOrder[fromIdx + 1];
+			if (next) setTo(next);
+		}
+	}, [from, to, milestoneOrder]);
+
+	useEffect(() => {
+		if (!milestoneOrder.includes(from)) {
+			setFrom(milestoneOrder[0] ?? "Sowed");
+		}
+	}, [milestoneOrder, from]);
 
 	useEffect(() => {
 		if (batch.data) {
@@ -545,7 +565,7 @@ export default function BatchDetailScreen() {
 							marginBottom: spacing.sm,
 						}}
 					>
-						{MILESTONE_ORDER.map((m) => {
+						{milestoneOrder.map((m) => {
 							const has = (byMs.get(m) ?? 0) > 0;
 							const active = from === m;
 							return (
@@ -589,12 +609,12 @@ export default function BatchDetailScreen() {
 							marginBottom: spacing.sm,
 						}}
 					>
-						{ALL_TARGETS.map((m) => {
+						{allTargets.map((m) => {
 							const active = to === m;
 							const err = m === "Failed";
 							const col = err ? colors.error : colors.primaryLight;
-							const fromIdx = MILESTONE_ORDER.indexOf(from);
-							const toIdx = MILESTONE_ORDER.indexOf(m);
+							const fromIdx = milestoneOrder.indexOf(from);
+							const toIdx = milestoneOrder.indexOf(m);
 							const disabled = !err && toIdx >= 0 && toIdx <= fromIdx;
 							return (
 								<Pressable
