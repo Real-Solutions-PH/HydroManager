@@ -1,15 +1,28 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useQueries, useQuery } from "@tanstack/react-query";
+import * as Location from "expo-location";
 import { Link, router, type Href } from "expo-router";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Image, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { type AlertSeverity } from "@/components/ui/alert-card";
 import { Card } from "@/components/ui/card";
+import {
+	CropCompositionCard,
+	type CropCompositionSegment,
+	getCompositionColor,
+} from "@/components/ui/crop-composition-card";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import {
+	PhaseProgressionCard,
+	type PhaseSegment,
+} from "@/components/ui/phase-progression-card";
 import { SpeechBubble } from "@/components/ui/speech-bubble";
 import { Text } from "@/components/ui/text";
+import { WeatherCard, type TodayForecast } from "@/components/ui/weather-card";
 import { colors, radii, spacing } from "@/constants/theme";
+import { useGeolocation } from "@/hooks/use-geolocation";
+import { useClimateNormals } from "@/hooks/use-library";
 import {
 	type Activity,
 	type ActivityActionType,
@@ -40,6 +53,20 @@ const STAGE_LABEL: Record<Milestone, string> = {
 	HarvestReady: "Harvest-Ready",
 	Harvested: "Harvested",
 	Failed: "Failed",
+};
+
+const STAGE_COLORS: Record<Milestone, { fg: string; bg: string }> = {
+	Sowed: { fg: "#A1887F", bg: "rgba(161, 136, 127, 0.18)" },
+	Germinated: { fg: "#AED581", bg: "rgba(174, 213, 129, 0.18)" },
+	SeedLeaves: { fg: "#9CCC65", bg: "rgba(156, 204, 101, 0.18)" },
+	TrueLeaves: { fg: "#66BB6A", bg: "rgba(102, 187, 106, 0.18)" },
+	Transplanted: { fg: "#42A5F5", bg: "rgba(66, 165, 245, 0.18)" },
+	Vegetative: { fg: "#26A69A", bg: "rgba(38, 166, 154, 0.18)" },
+	Flowering: { fg: "#CE93D8", bg: "rgba(206, 147, 216, 0.18)" },
+	FruitSet: { fg: "#FFB74D", bg: "rgba(255, 183, 77, 0.18)" },
+	HarvestReady: { fg: "#EF5350", bg: "rgba(239, 83, 80, 0.18)" },
+	Harvested: { fg: "rgba(255,255,255,0.6)", bg: "rgba(255,255,255,0.08)" },
+	Failed: { fg: "#EF5350", bg: "rgba(239, 83, 80, 0.18)" },
 };
 
 const LEAFY_STAGES: Milestone[] = [
@@ -276,6 +303,81 @@ export default function HomeScreen() {
 		staleTime: STALE.activity,
 	});
 
+	const {
+		coords,
+		error: geoError,
+		status: geoStatus,
+		refresh: refreshGeo,
+	} = useGeolocation(true);
+	const climateQ = useClimateNormals({
+		lat: coords?.lat ?? null,
+		lon: coords?.lon ?? null,
+		month: new Date().getMonth() + 1,
+	});
+	const todayForecastQ = useQuery({
+		queryKey: ["weather", "today", coords?.lat, coords?.lon],
+		queryFn: async (): Promise<TodayForecast> => {
+			const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords?.lat}&longitude=${coords?.lon}&current=weather_code&daily=precipitation_probability_max,weather_code&forecast_days=1&timezone=auto`;
+			const r = await fetch(url);
+			if (!r.ok) throw new Error("forecast failed");
+			const j = await r.json();
+			const code =
+				j?.current?.weather_code ?? j?.daily?.weather_code?.[0] ?? 0;
+			const prob = j?.daily?.precipitation_probability_max?.[0] ?? null;
+			return { weather_code: code, precipitation_probability_max: prob };
+		},
+		enabled: coords != null,
+		staleTime: 1000 * 60 * 30,
+	});
+	const [cityLabel, setCityLabel] = useState<string | null>(null);
+	useEffect(() => {
+		let cancelled = false;
+		if (!coords) return;
+		const fallback = `${coords.lat.toFixed(2)}, ${coords.lon.toFixed(2)}`;
+
+		const tryNetworkGeocode = async (): Promise<string | null> => {
+			try {
+				const r = await fetch(
+					`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${coords.lat}&longitude=${coords.lon}&localityLanguage=en`,
+				);
+				if (!r.ok) return null;
+				const j = await r.json();
+				const primary =
+					j?.city || j?.locality || j?.localityInfo?.administrative?.[3]?.name;
+				const secondary =
+					j?.principalSubdivision || j?.countryName || j?.countryCode;
+				const label = [primary, secondary].filter(Boolean).join(", ");
+				return label || null;
+			} catch {
+				return null;
+			}
+		};
+
+		(async () => {
+			let label: string | null = null;
+			try {
+				const places = await Location.reverseGeocodeAsync({
+					latitude: coords.lat,
+					longitude: coords.lon,
+				});
+				const p = places[0];
+				const primary =
+					p?.city ?? p?.subregion ?? p?.district ?? p?.name ?? null;
+				const secondary = p?.region ?? p?.country ?? null;
+				label = [primary, secondary].filter(Boolean).join(", ") || null;
+			} catch {
+				label = null;
+			}
+			if (!label) label = await tryNetworkGeocode();
+			if (cancelled) return;
+			setCityLabel(label ?? fallback);
+		})();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [coords]);
+
 	const activeBatches = useMemo(
 		() => (batchesQ.data?.data ?? []).filter((b) => !b.archived_at),
 		[batchesQ.data],
@@ -367,6 +469,89 @@ export default function HomeScreen() {
 		}
 		return undefined;
 	};
+
+	const cropComposition = useMemo(() => {
+		const totals = new Map<string, number>();
+		for (const b of activeBatches) {
+			const key = b.variety_name?.trim() || "Unknown";
+			totals.set(key, (totals.get(key) ?? 0) + (b.initial_count ?? 0));
+		}
+		const segments: CropCompositionSegment[] = Array.from(totals.entries())
+			.map(([label, value]) => ({ label, value }))
+			.sort((a, b) => b.value - a.value)
+			.map((s, i) => ({
+				label: s.label,
+				value: s.value,
+				color: getCompositionColor(i),
+			}));
+		const total = segments.reduce((a, b) => a + b.value, 0);
+		return { segments, total };
+	}, [activeBatches]);
+
+	const phaseGroups = useMemo(() => {
+		let germinating = 0;
+		let trueLeaves = 0;
+		let transplanted = 0;
+		let fruiting = 0;
+		for (const q of detailsQ) {
+			const states = q.data?.state_counts ?? [];
+			for (const s of states) {
+				switch (s.milestone_code) {
+					case "Sowed":
+					case "Germinated":
+						germinating += s.count;
+						break;
+					case "SeedLeaves":
+					case "TrueLeaves":
+						trueLeaves += s.count;
+						break;
+					case "Transplanted":
+					case "Vegetative":
+						transplanted += s.count;
+						break;
+					case "Flowering":
+					case "FruitSet":
+					case "HarvestReady":
+						fruiting += s.count;
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		const phases: PhaseSegment[] = [
+			{
+				key: "germinating",
+				label: t("home.phase_germinating"),
+				count: germinating,
+				color: colors.info,
+				icon: "egg",
+			},
+			{
+				key: "trueLeaves",
+				label: t("home.phase_true_leaves"),
+				count: trueLeaves,
+				color: colors.primaryLight,
+				icon: "leaf",
+			},
+			{
+				key: "transplanted",
+				label: t("home.phase_transplanted"),
+				count: transplanted,
+				color: colors.primary,
+				icon: "git-branch",
+			},
+			{
+				key: "fruiting",
+				label: t("home.phase_fruiting"),
+				count: fruiting,
+				color: colors.warning,
+				icon: "nutrition",
+			},
+		];
+		const total = germinating + trueLeaves + transplanted + fruiting;
+		return { phases, total };
+	}, [detailsQ, t]);
 
 	const upcomingPhases = activeBatches
 		.map((b, i) => {
@@ -657,6 +842,34 @@ export default function HomeScreen() {
 					</Card>
 				</View> */}
 
+				{/* Grow climate widget */}
+				<WeatherCard
+					data={climateQ.data}
+					today={todayForecastQ.data}
+					cityLabel={cityLabel ?? undefined}
+					loading={
+						climateQ.isLoading ||
+						geoStatus === "requesting" ||
+						(geoStatus === "idle" && !coords)
+					}
+					error={
+						geoStatus === "denied"
+							? "Location permission denied. Enable to see local climate."
+							: geoStatus === "error"
+								? geoError
+								: climateQ.error
+									? "Couldn't load climate data."
+									: null
+					}
+					onRetry={
+						geoStatus === "denied" || geoStatus === "error"
+							? refreshGeo
+							: climateQ.error
+								? () => climateQ.refetch()
+								: undefined
+					}
+				/>
+
 				{/* KPI Grid 2x2 */}
 				<View
 					style={{
@@ -695,6 +908,24 @@ export default function HomeScreen() {
 						label={t("home.kpi_low_stock")}
 					/>
 				</View>
+
+				{/* Active crop composition */}
+				<CropCompositionCard
+					title={t("home.crop_composition_title")}
+					segments={cropComposition.segments}
+					centerValue={String(cropComposition.total)}
+					centerLabel={t("home.crop_composition_center")}
+					emptyLabel={t("home.crop_composition_empty")}
+				/>
+
+				{/* Plant phase progression */}
+				<PhaseProgressionCard
+					title={t("home.phases_card_title")}
+					phases={phaseGroups.phases}
+					total={phaseGroups.total}
+					totalLabel={t("home.phases_total_label")}
+					emptyLabel={t("home.phases_empty")}
+				/>
 
 				{/* Alerts */}
 				{/* {alerts.length > 0 ? (
@@ -773,6 +1004,7 @@ export default function HomeScreen() {
 											: due
 												? t("home.phase_due")
 												: t("home.days_left", { n: String(daysLeft) });
+									const stageTint = STAGE_COLORS[nextStage];
 									return (
 										<Pressable
 											key={batch.id}
@@ -788,9 +1020,11 @@ export default function HomeScreen() {
 												borderRadius: radii.lg,
 												backgroundColor: pressed
 													? colors.glassHover
-													: colors.surfaceVariant,
+													: stageTint.bg,
 												borderWidth: 1,
-												borderColor: colors.border,
+												borderColor: stageTint.fg + "40",
+												borderLeftWidth: 4,
+												borderLeftColor: stageTint.fg,
 												gap: spacing.xs,
 											})}
 										>
@@ -806,7 +1040,7 @@ export default function HomeScreen() {
 														width: 36,
 														height: 36,
 														borderRadius: radii.md,
-														backgroundColor: colors.successLight,
+														backgroundColor: stageTint.fg + "26",
 														alignItems: "center",
 														justifyContent: "center",
 													}}
@@ -814,7 +1048,7 @@ export default function HomeScreen() {
 													<Ionicons
 														name="leaf"
 														size={18}
-														color={colors.primaryLight}
+														color={stageTint.fg}
 													/>
 												</View>
 												<View style={{ flex: 1 }}>
