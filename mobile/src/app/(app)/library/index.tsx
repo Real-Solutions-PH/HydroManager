@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import { BookOpen, Bug, type LucideIcon, Sprout } from "lucide-react-native";
-import { Pressable, ScrollView, View } from "react-native";
+import { Image, Pressable, ScrollView, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
@@ -73,6 +73,16 @@ export default function LibraryIndex() {
 							Reference material for owners and staff.
 						</Text>
 					</View>
+					<Image
+						source={require("../../../../assets/character/reading.png")}
+						style={{
+							width: 96,
+							height: 120,
+							marginVertical: -spacing.sm,
+						}}
+						resizeMode="contain"
+						accessibilityIgnoresInvertColors
+					/>
 				</View>
 				{SECTIONS.map((s) => (
 					<Link key={s.href} href={s.href} asChild>
