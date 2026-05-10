@@ -3,7 +3,8 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import * as Location from "expo-location";
 import { Link, router, useFocusEffect, type Href } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Image, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
+import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { type AlertSeverity } from "@/components/ui/alert-card";
 import { Card } from "@/components/ui/card";
@@ -712,7 +713,8 @@ export default function HomeScreen() {
 						key={gifKey}
 						source={require("../../../assets/character/welcome.gif")}
 						style={{ width: 140, height: 140, marginRight: -spacing.xs }}
-						resizeMode="contain"
+						contentFit="contain"
+						cachePolicy="memory-disk"
 						accessibilityIgnoresInvertColors
 					/>
 					<SpeechBubble
