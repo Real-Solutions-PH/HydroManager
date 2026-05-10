@@ -1,5 +1,6 @@
 import { useRouter, usePathname } from "expo-router";
 import { useCallback } from "react";
+import { useNavHistoryStore } from "@/stores/nav-history-store";
 
 function getParentRoute(pathname: string): string {
 	const exact: Record<string, string> = {
@@ -31,8 +32,25 @@ function getParentRoute(pathname: string): string {
 export function useBack(fallback?: string) {
 	const router = useRouter();
 	const pathname = usePathname();
+	const popHistory = useNavHistoryStore((s) => s.pop);
 	return useCallback(() => {
-		const target = fallback ?? getParentRoute(pathname ?? "/");
-		router.replace(target as never);
-	}, [router, pathname, fallback]);
+		if (fallback) {
+			router.replace(fallback as never);
+			return;
+		}
+		const current = pathname ?? "";
+		let previous = popHistory();
+		while (previous && previous === current) {
+			previous = popHistory();
+		}
+		if (previous) {
+			router.replace(previous as never);
+			return;
+		}
+		if (router.canGoBack()) {
+			router.back();
+			return;
+		}
+		router.replace(getParentRoute(current || "/") as never);
+	}, [router, pathname, fallback, popHistory]);
 }
