@@ -173,7 +173,7 @@ export function WeatherCard({
 							</View>
 						</View>
 
-						<View style={{ flexDirection: "row", alignItems: "flex-start", gap: spacing.xs }}>
+						<View style={{ flexDirection: "row", gap: spacing.xs }}>
 							<MetricTile
 								icon="water"
 								iconColor={colors.info}
@@ -236,22 +236,30 @@ function MetricTile({
 				borderWidth: 1,
 				borderColor: colors.border,
 				gap: 4,
+				justifyContent: "space-between",
 			}}
 		>
-			<View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-				<Ionicons name={icon} size={12} color={iconColor} />
-				<Text size="xs" tone="muted">
-					{label}
+			<View style={{ gap: 4 }}>
+				<View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+					<Ionicons name={icon} size={12} color={iconColor} />
+					<Text size="xs" tone="muted">
+						{label}
+					</Text>
+				</View>
+				<Text
+					weight="bold"
+					size="sm"
+					numberOfLines={1}
+					adjustsFontSizeToFit
+					minimumFontScale={0.7}
+					style={valueColor ? { color: valueColor } : undefined}
+				>
+					{value}
 				</Text>
 			</View>
-			<Text weight="bold" size="sm" style={valueColor ? { color: valueColor } : undefined}>
-				{value}
+			<Text size="xs" tone="muted" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
+				{subtext ?? " "}
 			</Text>
-			{subtext ? (
-				<Text size="xs" tone="muted">
-					{subtext}
-				</Text>
-			) : null}
 		</View>
 	);
 }
