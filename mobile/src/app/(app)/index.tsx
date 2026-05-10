@@ -4,10 +4,9 @@ import { Link, router, type Href } from "expo-router";
 import { useMemo } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AlertCard, type AlertSeverity } from "@/components/ui/alert-card";
+import { type AlertSeverity } from "@/components/ui/alert-card";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
-import { ProgressRing } from "@/components/ui/progress-ring";
 import { Text } from "@/components/ui/text";
 import { colors, radii, spacing } from "@/constants/theme";
 import {
@@ -27,11 +26,6 @@ import {
 } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
 import { QK, STALE } from "@/lib/query-config";
-
-// TODO: replace with real data once checklist completion tracking lands.
-const TASKS_PROGRESS_MOCK = 0.67;
-const TASKS_DONE_MOCK = 8;
-const TASKS_TOTAL_MOCK = 12;
 
 const STAGE_LABEL: Record<Milestone, string> = {
 	Sowed: "Sowed",
@@ -468,7 +462,7 @@ export default function HomeScreen() {
 								/>
 							</Pressable>
 						</Link>
-						<Link href="/checklist" asChild>
+						{/* <Link href="/checklist" asChild>
 							<Pressable
 								accessibilityLabel={t("home.a11y_notifications")}
 								accessibilityRole="button"
@@ -502,7 +496,7 @@ export default function HomeScreen() {
 									/>
 								) : null}
 							</Pressable>
-						</Link>
+						</Link> */}
 						<Link href="/settings" asChild>
 							<Pressable
 								accessibilityLabel={t("home.a11y_profile")}
@@ -638,7 +632,7 @@ export default function HomeScreen() {
 				>
 
 				{/* Today's Tasks */}
-				<View style={{ paddingHorizontal: spacing.md }}>
+				{/* <View style={{ paddingHorizontal: spacing.md }}>
 					<Card>
 						<View
 							style={{
@@ -691,7 +685,7 @@ export default function HomeScreen() {
 							})}
 						</Text>
 					</Card>
-				</View>
+				</View> */}
 
 				{/* KPI Grid 2x2 */}
 				<View
@@ -733,7 +727,7 @@ export default function HomeScreen() {
 				</View>
 
 				{/* Alerts */}
-				{alerts.length > 0 ? (
+				{/* {alerts.length > 0 ? (
 					<View
 						style={{
 							paddingHorizontal: spacing.md,
@@ -756,7 +750,7 @@ export default function HomeScreen() {
 							/>
 						))}
 					</View>
-				) : null}
+				) : null} */}
 
 				{/* Upcoming Phases */}
 				{upcomingPhases.length > 0 ? (
