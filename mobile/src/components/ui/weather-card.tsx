@@ -75,6 +75,13 @@ function rainChanceMeta(pct: number | null | undefined): RainMeta {
 	return { label: "Very high", color: colors.error };
 }
 
+function humidityMeta(pct: number | null | undefined): RainMeta {
+	if (pct == null) return { label: "—", color: colors.textMuted };
+	if (pct < 40) return { label: "Low", color: colors.warning };
+	if (pct < 70) return { label: "Medium", color: colors.success };
+	return { label: "High", color: colors.info };
+}
+
 export function WeatherCard({
 	data,
 	today,
@@ -88,6 +95,7 @@ export function WeatherCard({
 
 	const cond = conditionFromCode(today?.weather_code);
 	const rain = rainChanceMeta(today?.precipitation_probability_max ?? null);
+	const humidity = humidityMeta(data?.humidity_pct_avg ?? null);
 
 	return (
 		<View style={{ paddingHorizontal: spacing.md }}>
@@ -178,7 +186,13 @@ export function WeatherCard({
 								icon="water"
 								iconColor={colors.info}
 								label="Humidity"
-								value={`${fmtNum(data.humidity_pct_avg, 0)}%`}
+								value={humidity.label}
+								valueColor={humidity.color}
+								subtext={
+									data.humidity_pct_avg != null
+										? `${fmtNum(data.humidity_pct_avg, 0)}%`
+										: undefined
+								}
 							/>
 							<MetricTile
 								icon={cond.icon}
