@@ -7,7 +7,7 @@ import {
 	useQueryClient,
 } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import {
 	ActivityIndicator,
 	Alert,
@@ -23,6 +23,7 @@ import {
 } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FilterChip, FilterRow } from "@/components/ui/filter-chip";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { useTabBarClearance } from "@/components/ui/interactive-menu";
@@ -119,6 +120,46 @@ function findGuideStage(
 		if (names.includes(s.stage)) return s;
 	}
 	return null;
+}
+
+function formatEcRange(guide: CropGuide, stage: Milestone | null): string {
+	const stageEc: number | null | undefined = (() => {
+		switch (stage) {
+			case "Sowed":
+			case "Germinated":
+			case "SeedLeaves":
+			case "TrueLeaves":
+				return guide.ec_seedling;
+			case "Transplanted":
+			case "Vegetative":
+				return guide.ec_vegetative;
+			case "Flowering":
+			case "FruitSet":
+				return guide.ec_fruiting;
+			case "HarvestReady":
+			case "Harvested":
+				return guide.ec_mature;
+			default:
+				return null;
+		}
+	})();
+	if (stageEc != null) return `${stageEc.toFixed(1)} mS/cm`;
+	if (guide.ec_min != null && guide.ec_max != null) {
+		return `${guide.ec_min.toFixed(1)}–${guide.ec_max.toFixed(1)} mS/cm`;
+	}
+	return "—";
+}
+
+function formatSunlight(guide: CropGuide): string {
+	const v = guide.sunlight_hours?.trim() || guide.growlight_hours?.trim();
+	if (!v) return "—";
+	return /h/i.test(v) ? v : `${v} h`;
+}
+
+function formatWaterTemp(guide: CropGuide): string {
+	const v = guide.water_temp_c?.trim();
+	if (!v) return "—";
+	return /°|c\b/i.test(v) ? v : `${v} °C`;
 }
 
 export default function SeedsScreen() {
@@ -256,16 +297,30 @@ export default function SeedsScreen() {
 		});
 	}, [batches, filter, query, detailById, codeByBatch]);
 
+	const groups = useMemo(() => {
+		const byDate = new Map<string, Batch[]>();
+		for (const b of visible) {
+			const key = b.started_at.slice(0, 10);
+			const arr = byDate.get(key) ?? [];
+			arr.push(b);
+			byDate.set(key, arr);
+		}
+		const keys = [...byDate.keys()].sort((a, b) => b.localeCompare(a));
+		return keys.map((k) => ({
+			dateKey: k,
+			batches: (byDate.get(k) ?? []).sort((a, b) =>
+				b.started_at.localeCompare(a.started_at),
+			),
+		}));
+	}, [visible]);
+
 	return (
 		<GradientBackground>
-			<ScrollView
-				onScroll={onScrollNearEnd}
-				scrollEventThrottle={200}
-				contentContainerStyle={{
+			<View
+				style={{
 					paddingHorizontal: spacing.md,
 					paddingTop: spacing.xs,
-					paddingBottom: tabBarClearance,
-					gap: spacing.md,
+					gap: spacing.sm,
 				}}
 			>
 				<View
@@ -302,39 +357,29 @@ export default function SeedsScreen() {
 					onChangeText={setQuery}
 					placeholder="Search crops or batch code..."
 				/>
+			</View>
 
-				<View
-					style={{ flexDirection: "row", gap: spacing.xs, flexWrap: "wrap" }}
-				>
-					{FILTERS.map((f) => {
-						const active = filter === f;
-						return (
-							<Pressable
-								key={f}
-								onPress={() => setFilter(f)}
-								style={{
-									paddingHorizontal: spacing.md,
-									paddingVertical: 8,
-									borderRadius: 999,
-									borderWidth: 1,
-									borderColor: active ? colors.primaryLight : colors.border,
-									backgroundColor: active
-										? `${colors.primaryLight}26`
-										: colors.surfaceVariant,
-								}}
-							>
-								<Text
-									size="sm"
-									weight="semibold"
-									style={{ color: active ? colors.primaryLight : colors.text }}
-								>
-									{f}
-								</Text>
-							</Pressable>
-						);
-					})}
-				</View>
+			<FilterRow>
+				{FILTERS.map((f) => (
+					<FilterChip
+						key={f}
+						label={f}
+						active={filter === f}
+						onPress={() => setFilter(f)}
+					/>
+				))}
+			</FilterRow>
 
+			<ScrollView
+				onScroll={onScrollNearEnd}
+				scrollEventThrottle={200}
+				contentContainerStyle={{
+					paddingHorizontal: spacing.md,
+					paddingTop: spacing.xs,
+					paddingBottom: tabBarClearance,
+					gap: spacing.md,
+				}}
+			>
 				{batchesQ.isLoading ? (
 					<Text tone="muted">Loading batches...</Text>
 				) : visible.length === 0 ? (
@@ -347,27 +392,40 @@ export default function SeedsScreen() {
 						</Text>
 					</View>
 				) : (
-					visible.map((b) => {
-						const guide = resolveGuide(b);
-						const detail = detailById.get(b.id);
-						return (
-							<BatchCard
-								key={b.id}
-								batch={b}
-								code={codeByBatch.get(b.id) ?? "—"}
-								setup={setupById.get(b.setup_id)}
-								guide={guide}
-								detail={detail}
-								isExpanded={expanded === b.id}
-								onToggle={() =>
-									setExpanded((cur) => (cur === b.id ? null : b.id))
-								}
-								onAutoAdvance={() =>
-									setAdvanceTarget({ batch: b, detail, guide })
-								}
+					groups.map((g) => (
+						<View key={g.dateKey} style={{ gap: spacing.sm }}>
+							<TimelineHeader
+								dateKey={g.dateKey}
+								count={g.batches.length}
 							/>
-						);
-					})
+							{g.batches.map((b, i) => {
+								const guide = resolveGuide(b);
+								const detail = detailById.get(b.id);
+								return (
+									<TimelineRow
+										key={b.id}
+										isFirst={i === 0}
+										isLast={i === g.batches.length - 1}
+									>
+										<BatchCard
+											batch={b}
+											code={codeByBatch.get(b.id) ?? "—"}
+											setup={setupById.get(b.setup_id)}
+											guide={guide}
+											detail={detail}
+											isExpanded={expanded === b.id}
+											onToggle={() =>
+												setExpanded((cur) => (cur === b.id ? null : b.id))
+											}
+											onAutoAdvance={() =>
+												setAdvanceTarget({ batch: b, detail, guide })
+											}
+										/>
+									</TimelineRow>
+								);
+							})}
+						</View>
+					))
 				)}
 
 				{batchesQ.isFetchingNextPage ? (
@@ -683,6 +741,33 @@ function BatchCard({
 					</View>
 				) : null}
 
+				{guide ? (
+					<View
+						style={{
+							flexDirection: "row",
+							gap: spacing.xs,
+							marginTop: spacing.sm,
+							flexWrap: "wrap",
+						}}
+					>
+						<EnvChip
+							icon="flash-outline"
+							color="#FFD54F"
+							label={formatEcRange(guide, currentStage)}
+						/>
+						<EnvChip
+							icon="sunny-outline"
+							color="#FFB74D"
+							label={formatSunlight(guide)}
+						/>
+						<EnvChip
+							icon="water-outline"
+							color="#4FC3F7"
+							label={formatWaterTemp(guide)}
+						/>
+					</View>
+				) : null}
+
 				<StageDots
 					stages={stages}
 					currentIdx={currentIdx}
@@ -705,6 +790,7 @@ function BatchCard({
 					</Text>
 					<View style={{ flexDirection: "row", flexWrap: "wrap" }}>
 						<DetailCell
+							icon="calendar-outline"
 							label="STARTED"
 							value={formatDateOnly(batch.started_at, {
 								month: "short",
@@ -712,23 +798,53 @@ function BatchCard({
 								year: "numeric",
 							})}
 						/>
-						<DetailCell label="HARVEST WINDOW" value={harvestWindow ?? "—"} />
 						<DetailCell
+							icon="time-outline"
+							label="HARVEST WINDOW"
+							value={harvestWindow ?? "—"}
+						/>
+						<DetailCell
+							icon="leaf-outline"
 							label="CURRENT STAGE"
 							value={currentStage ? STAGE_LABEL[currentStage] : "—"}
 						/>
 						<DetailCell
+							icon="arrow-forward-circle-outline"
 							label="NEXT STAGE"
 							value={nextStage ? STAGE_LABEL[nextStage] : "—"}
 						/>
 						<DetailCell
+							icon="layers-outline"
 							label="ACTIVE PLANTS"
 							value={`${activePlants}/${totalPlants}`}
 						/>
 						<DetailCell
+							icon="hourglass-outline"
 							label="DAYS TO HARVEST"
 							value={topRightDays !== null ? `~${topRightDays} days` : "—"}
 						/>
+						{guide ? (
+							<>
+								<DetailCell
+									icon="flash-outline"
+									iconColor="#FFD54F"
+									label="REC. EC"
+									value={formatEcRange(guide, currentStage)}
+								/>
+								<DetailCell
+									icon="sunny-outline"
+									iconColor="#FFB74D"
+									label="SUNLIGHT"
+									value={formatSunlight(guide)}
+								/>
+								<DetailCell
+									icon="water-outline"
+									iconColor="#4FC3F7"
+									label="WATER TEMP"
+									value={formatWaterTemp(guide)}
+								/>
+							</>
+						) : null}
 					</View>
 
 					{nextStage ? (
@@ -1126,22 +1242,195 @@ function StageDots({
 	);
 }
 
-function DetailCell({ label, value }: { label: string; value: string }) {
+function DetailCell({
+	label,
+	value,
+	icon,
+	iconColor,
+}: {
+	label: string;
+	value: string;
+	icon?: keyof typeof Ionicons.glyphMap;
+	iconColor?: string;
+}) {
 	return (
 		<View style={{ width: "50%", paddingVertical: 6 }}>
-			<Text
-				size="xs"
-				tone="muted"
-				weight="semibold"
-				style={{ letterSpacing: 0.5 }}
-			>
-				{label}
-			</Text>
+			<View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+				{icon ? (
+					<Ionicons
+						name={icon}
+						size={12}
+						color={iconColor ?? colors.textMuted}
+					/>
+				) : null}
+				<Text
+					size="xs"
+					tone="muted"
+					weight="semibold"
+					style={{ letterSpacing: 0.5 }}
+				>
+					{label}
+				</Text>
+			</View>
 			<Text weight="semibold" style={{ marginTop: 2 }}>
 				{value}
 			</Text>
 		</View>
 	);
+}
+
+function EnvChip({
+	icon,
+	color,
+	label,
+}: {
+	icon: keyof typeof Ionicons.glyphMap;
+	color: string;
+	label: string;
+}) {
+	return (
+		<View
+			style={{
+				flexDirection: "row",
+				alignItems: "center",
+				gap: 4,
+				paddingHorizontal: 8,
+				paddingVertical: 4,
+				borderRadius: 999,
+				backgroundColor: colors.glass,
+				borderWidth: 1,
+				borderColor: colors.border,
+			}}
+		>
+			<Ionicons name={icon} size={12} color={color} />
+			<Text size="xs" weight="semibold">
+				{label}
+			</Text>
+		</View>
+	);
+}
+
+function TimelineHeader({
+	dateKey,
+	count,
+}: {
+	dateKey: string;
+	count: number;
+}) {
+	const label = formatTimelineDate(dateKey);
+	return (
+		<View
+			style={{
+				flexDirection: "row",
+				alignItems: "center",
+				gap: spacing.sm,
+				marginTop: spacing.xs,
+			}}
+		>
+			<View
+				style={{
+					width: 12,
+					alignItems: "center",
+				}}
+			>
+				<View
+					style={{
+						width: 12,
+						height: 12,
+						borderRadius: 999,
+						backgroundColor: colors.primaryLight,
+						borderWidth: 2,
+						borderColor: colors.bg,
+					}}
+				/>
+			</View>
+			<View
+				style={{
+					flexDirection: "row",
+					alignItems: "center",
+					gap: spacing.xs,
+					flex: 1,
+				}}
+			>
+				<Text size="sm" weight="bold" style={{ letterSpacing: 0.3 }}>
+					{label}
+				</Text>
+				<View
+					style={{
+						paddingHorizontal: 8,
+						paddingVertical: 2,
+						borderRadius: 999,
+						backgroundColor: colors.glass,
+					}}
+				>
+					<Text size="xs" tone="muted" weight="semibold">
+						{count} batch{count === 1 ? "" : "es"}
+					</Text>
+				</View>
+				<View
+					style={{
+						flex: 1,
+						height: 1,
+						backgroundColor: colors.borderLight,
+					}}
+				/>
+			</View>
+		</View>
+	);
+}
+
+function TimelineRow({
+	isFirst,
+	isLast,
+	children,
+}: {
+	isFirst: boolean;
+	isLast: boolean;
+	children: ReactNode;
+}) {
+	return (
+		<View style={{ flexDirection: "row", gap: spacing.sm }}>
+			<View style={{ width: 12, alignItems: "center" }}>
+				<View
+					style={{
+						width: 2,
+						flex: 1,
+						backgroundColor: colors.borderLight,
+						marginTop: isFirst ? 6 : 0,
+						marginBottom: isLast ? 6 : 0,
+					}}
+				/>
+				<View
+					style={{
+						position: "absolute",
+						top: 18,
+						width: 8,
+						height: 8,
+						borderRadius: 999,
+						backgroundColor: colors.glass,
+						borderWidth: 1,
+						borderColor: colors.border,
+					}}
+				/>
+			</View>
+			<View style={{ flex: 1 }}>{children}</View>
+		</View>
+	);
+}
+
+function formatTimelineDate(dateKey: string): string {
+	const today = new Date();
+	const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+	const y = new Date(today);
+	y.setDate(y.getDate() - 1);
+	const yesterdayKey = `${y.getFullYear()}-${String(y.getMonth() + 1).padStart(2, "0")}-${String(y.getDate()).padStart(2, "0")}`;
+	if (dateKey === todayKey) return "Today";
+	if (dateKey === yesterdayKey) return "Yesterday";
+	return formatDateOnly(`${dateKey}T00:00:00`, {
+		month: "short",
+		day: "numeric",
+		year: "numeric",
+	});
 }
 
 function TipCard() {
