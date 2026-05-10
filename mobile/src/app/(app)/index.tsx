@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import * as Location from "expo-location";
-import { Link, router, type Href } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { Link, router, useFocusEffect, type Href } from "expo-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { type AlertSeverity } from "@/components/ui/alert-card";
@@ -324,6 +324,12 @@ export default function HomeScreen() {
 		staleTime: 1000 * 60 * 30,
 	});
 	const [cityLabel, setCityLabel] = useState<string | null>(null);
+	const [gifKey, setGifKey] = useState(0);
+	useFocusEffect(
+		useCallback(() => {
+			setGifKey((k) => k + 1);
+		}, []),
+	);
 	useEffect(() => {
 		let cancelled = false;
 		if (!coords) return;
@@ -703,7 +709,8 @@ export default function HomeScreen() {
 					}}
 				>
 					<Image
-						source={require("../../../assets/character/saying_hi_halfbody.png")}
+						key={gifKey}
+						source={require("../../../assets/character/welcome.gif")}
 						style={{ width: 140, height: 140, marginRight: -spacing.xs }}
 						resizeMode="contain"
 						accessibilityIgnoresInvertColors
