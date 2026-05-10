@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Alert, Pressable, ScrollView, View } from "react-native";
+import { Alert, Platform, Pressable, ScrollView, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -198,7 +198,7 @@ export default function BatchDetailScreen() {
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: QK.batches.all });
 			qc.invalidateQueries({ queryKey: QK.setups.all });
-			router.back();
+			router.replace("/seeds");
 		},
 		onError: (e: Error) => Alert.alert("Delete failed", e.message),
 	});
@@ -286,20 +286,25 @@ export default function BatchDetailScreen() {
 					</View>
 					<Pressable
 						hitSlop={8}
-						onPress={() =>
-							Alert.alert(
-								"Delete Batch",
-								"Delete this batch? Slots will be freed. Cannot be undone.",
-								[
-									{ text: "Cancel", style: "cancel" },
-									{
-										text: "Delete",
-										style: "destructive",
-										onPress: () => del.mutate(),
-									},
-								],
-							)
-						}
+						onPress={() => {
+							const title = "Delete Batch";
+							const body =
+								"Delete this batch? Slots will be freed. Cannot be undone.";
+							if (Platform.OS === "web") {
+								if (globalThis.window?.confirm?.(`${title}\n\n${body}`)) {
+									del.mutate();
+								}
+								return;
+							}
+							Alert.alert(title, body, [
+								{ text: "Cancel", style: "cancel" },
+								{
+									text: "Delete",
+									style: "destructive",
+									onPress: () => del.mutate(),
+								},
+							]);
+						}}
 						disabled={del.isPending}
 						style={{
 							width: 36,
