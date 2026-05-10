@@ -4,6 +4,7 @@ import { Link } from "expo-router";
 import { useMemo, useState } from "react";
 import {
 	Alert,
+	Image,
 	Pressable,
 	ScrollView,
 	useWindowDimensions,
@@ -195,69 +196,123 @@ export default function SalesScreen() {
 					gap: spacing.md,
 				}}
 			>
-				<View
-					style={{
-						flexDirection: "row",
-						justifyContent: "space-between",
-						alignItems: "flex-start",
-						paddingTop: spacing.xs,
-					}}
-				>
-					<View style={{ flex: 1, paddingRight: spacing.sm }}>
-						<Text size="xxl" weight="bold">
+				<View style={{ paddingTop: spacing.xs, gap: spacing.xs }}>
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "space-between",
+							alignItems: "center",
+							gap: spacing.sm,
+						}}
+					>
+						<Text size="xxl" weight="bold" style={{ flex: 1 }}>
 							Sales & COGS
 						</Text>
-						<Text size="sm" tone="muted" style={{ marginTop: 2 }}>
-							{tierLabel}
-						</Text>
+						<Pressable
+							onPress={() => toast.info("CSV export coming soon")}
+							hitSlop={8}
+							style={{
+								width: 40,
+								height: 40,
+								borderRadius: 20,
+								borderWidth: 1,
+								borderColor: colors.border,
+								backgroundColor: colors.glass,
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+						>
+							<Ionicons
+								name="folder-outline"
+								size={18}
+								color={colors.text}
+							/>
+						</Pressable>
+						<Link href="/sale-new" asChild>
+							<Button
+								size="sm"
+								label="Record"
+								leftIcon={
+									<Ionicons name="add" size={18} color="#FFFFFF" />
+								}
+								style={{ borderRadius: 999, flexShrink: 0 }}
+							/>
+						</Link>
 					</View>
-					<Link href="/sale-new" asChild>
-						<Button
-							size="sm"
-							label="Record"
-							leftIcon={
-								<Ionicons name="add" size={18} color="#FFFFFF" />
-							}
-							style={{ borderRadius: 999, flexShrink: 0 }}
+					<Text size="sm" tone="muted">
+						Track revenue, costs and margin
+					</Text>
+				</View>
+
+				<View
+					style={{
+						borderRadius: 24,
+						backgroundColor: `${colors.primaryLight}33`,
+						borderWidth: 1,
+						borderColor: `${colors.primaryLight}40`,
+						paddingVertical: spacing.md,
+						paddingHorizontal: spacing.md,
+						overflow: "hidden",
+						flexDirection: "row",
+						alignItems: "center",
+						gap: spacing.sm,
+					}}
+				>
+					<Image
+						source={require("../../../assets/character/recording.png")}
+						style={{
+							width: 120,
+							height: 150,
+							marginLeft: -spacing.sm,
+							marginVertical: -spacing.sm,
+						}}
+						resizeMode="contain"
+						accessibilityIgnoresInvertColors
+					/>
+					<View
+						style={{
+							flex: 1,
+							borderRadius: 18,
+							backgroundColor: colors.surface,
+							borderWidth: 1,
+							borderColor: colors.border,
+							paddingVertical: spacing.sm,
+							paddingHorizontal: spacing.sm,
+							gap: spacing.xs,
+						}}
+					>
+						<HeaderStatRow
+							label="GROSS"
+							value={formatPHP(gross, 0)}
+							icon="trending-up"
+							iconColor={colors.primaryLight}
 						/>
-					</Link>
+						<View style={{ height: 1, backgroundColor: colors.border }} />
+						<HeaderStatRow
+							label="COGS"
+							value={formatPHP(cogs, 0)}
+							icon="trending-down"
+							iconColor={colors.error}
+						/>
+						<View style={{ height: 1, backgroundColor: colors.border }} />
+						<HeaderStatRow
+							label="NET MARGIN"
+							value={`${margin.toFixed(0)}%`}
+							valueColor={colors.primaryLight}
+							icon="cash-outline"
+							iconColor={colors.primaryLight}
+						/>
+						<View style={{ height: 1, backgroundColor: colors.border }} />
+						<HeaderStatRow
+							label="EXPENSES"
+							value={formatPHP(totalExpense, 0)}
+							icon="cube-outline"
+							iconColor={colors.warning}
+						/>
+					</View>
 				</View>
 
 				<PeriodChips value={period} onChange={setPeriod} />
-
-				<View style={{ flexDirection: "row", gap: spacing.sm }}>
-					<KpiCard
-						label="GROSS SALES"
-						value={formatPHP(gross, 0)}
-						icon="trending-up"
-						iconColor={colors.primaryLight}
-					/>
-					<KpiCard
-						label="COGS"
-						value={formatPHP(cogs, 0)}
-						icon="trending-down"
-						iconColor={colors.error}
-						subtitle="Seeds + nutrients"
-					/>
-					<KpiCard
-						label="NET"
-						value={`${margin.toFixed(0)}%`}
-						valueColor={colors.primaryLight}
-						icon="cash-outline"
-						iconColor={colors.primaryLight}
-						subtitle={`${formatPHP(net, 0)} profit`}
-					/>
-				</View>
-
-				<View style={{ flexDirection: "row", gap: spacing.sm }}>
-					<KpiCard
-						label="TOTAL EXPENSE"
-						value={formatPHP(totalExpense, 0)}
-						icon="cube-outline"
-						iconColor={colors.warning}
-						subtitle="Inventory on hand"
-					/>
-				</View>
 
 				<Card>
 					<Text size="lg" weight="bold">
@@ -417,35 +472,30 @@ function PeriodChips({
 	);
 }
 
-function KpiCard({
+function HeaderStatRow({
 	label,
 	value,
 	icon,
 	iconColor,
 	valueColor,
-	subtitle,
 }: {
 	label: string;
 	value: string;
 	icon: React.ComponentProps<typeof Ionicons>["name"];
 	iconColor: string;
 	valueColor?: string;
-	subtitle?: string;
 }) {
 	return (
 		<View
 			style={{
-				flex: 1,
-				padding: spacing.sm,
-				borderRadius: 16,
-				borderWidth: 1,
-				borderColor: colors.border,
-				backgroundColor: colors.surfaceVariant,
-				gap: 6,
+				flexDirection: "row",
+				alignItems: "center",
+				justifyContent: "space-between",
+				gap: spacing.xs,
 			}}
 		>
 			<View
-				style={{ flexDirection: "row", alignItems: "center", gap: spacing.xxs }}
+				style={{ flexDirection: "row", alignItems: "center", gap: 6, flex: 1 }}
 			>
 				<Ionicons name={icon} size={14} color={iconColor} />
 				<Text
@@ -458,19 +508,13 @@ function KpiCard({
 				</Text>
 			</View>
 			<Text
-				size="lg"
+				size="md"
 				weight="bold"
 				style={valueColor ? { color: valueColor } : undefined}
 				numberOfLines={1}
-				adjustsFontSizeToFit
 			>
 				{value}
 			</Text>
-			{subtitle ? (
-				<Text size="xs" tone="muted" numberOfLines={2}>
-					{subtitle}
-				</Text>
-			) : null}
 		</View>
 	);
 }
