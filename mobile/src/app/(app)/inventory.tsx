@@ -6,6 +6,7 @@ import { ActivityIndicator, FlatList, Pressable, View } from "react-native";
 import { InventoryMovementSheet } from "@/components/inventory/movement-sheet";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { FilterChip, FilterRow } from "@/components/ui/filter-chip";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { SearchBar } from "@/components/ui/search-bar";
@@ -169,51 +170,50 @@ export default function InventoryScreen() {
 					}
 				/>
 
-				<View
-					style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.xs }}
-				>
-					{tab === "materials" ? (
-						<>
-							<Chip
-								label="All"
-								active={category === null}
-								onPress={() => setCategory(null)}
-							/>
-							{CATEGORIES.map((c) => {
-								const meta = inventoryCategoryMeta[c];
-								return (
-									<Chip
-										key={c}
-										label={capitalize(c)}
-										active={category === c}
-										accent={meta.color}
-										onPress={() => setCategory(c)}
-									/>
-								);
-							})}
-						</>
-					) : (
-						PRODUCE_FILTERS.map((s) => {
-							const meta = s === "all" ? null : produceStatusMeta[s];
+			</View>
+
+			<FilterRow>
+				{tab === "materials" ? (
+					<>
+						<FilterChip
+							label="All"
+							active={category === null}
+							onPress={() => setCategory(null)}
+						/>
+						{CATEGORIES.map((c) => {
+							const meta = inventoryCategoryMeta[c];
 							return (
-								<Chip
-									key={s}
-									label={s === "all" ? "All" : (meta?.label ?? capitalize(s))}
-									active={produceStatus === s}
-									accent={meta?.color}
-									onPress={() => setProduceStatus(s)}
+								<FilterChip
+									key={c}
+									label={capitalize(c)}
+									active={category === c}
+									accent={meta.color}
+									onPress={() => setCategory(c)}
 								/>
 							);
-						})
-					)}
-					<Chip
-						label="Near expiry"
-						active={nearExpiryOnly}
-						accent={colors.warning}
-						onPress={() => setNearExpiryOnly((v) => !v)}
-					/>
-				</View>
-			</View>
+						})}
+					</>
+				) : (
+					PRODUCE_FILTERS.map((s) => {
+						const meta = s === "all" ? null : produceStatusMeta[s];
+						return (
+							<FilterChip
+								key={s}
+								label={s === "all" ? "All" : (meta?.label ?? capitalize(s))}
+								active={produceStatus === s}
+								accent={meta?.color}
+								onPress={() => setProduceStatus(s)}
+							/>
+						);
+					})
+				)}
+				<FilterChip
+					label="Near expiry"
+					active={nearExpiryOnly}
+					accent={colors.warning}
+					onPress={() => setNearExpiryOnly((v) => !v)}
+				/>
+			</FilterRow>
 
 			<FlatList
 				data={items as (InventoryItem | Produce)[]}
@@ -544,37 +544,3 @@ function SegmentedControl({
 	);
 }
 
-function Chip({
-	label,
-	active,
-	accent,
-	onPress,
-}: {
-	label: string;
-	active: boolean;
-	accent?: string;
-	onPress: () => void;
-}) {
-	const c = accent ?? colors.primaryLight;
-	return (
-		<Pressable
-			onPress={onPress}
-			style={{
-				paddingHorizontal: spacing.sm,
-				paddingVertical: 6,
-				borderRadius: 999,
-				borderWidth: 1,
-				borderColor: active ? c : colors.border,
-				backgroundColor: active ? `${c}26` : "transparent",
-			}}
-		>
-			<Text
-				size="sm"
-				weight="semibold"
-				style={{ color: active ? c : colors.text }}
-			>
-				{label}
-			</Text>
-		</Pressable>
-	);
-}

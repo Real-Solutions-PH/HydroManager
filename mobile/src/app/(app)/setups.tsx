@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Pressable, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { FilterChip, FilterRow } from "@/components/ui/filter-chip";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { Text } from "@/components/ui/text";
@@ -123,42 +124,17 @@ export default function SetupsScreen() {
 				</View>
 			</View>
 
-			<View
-				style={{
-					flexDirection: "row",
-					gap: spacing.xs,
-					paddingHorizontal: spacing.md,
-					paddingTop: spacing.md,
-					paddingBottom: spacing.xxs,
-				}}
-			>
-				{FILTERS.map((f) => {
-					const active = filter === f;
-					return (
-						<Pressable
+			<View style={{ paddingTop: spacing.sm }}>
+				<FilterRow>
+					{FILTERS.map((f) => (
+						<FilterChip
 							key={f}
+							label={f}
+							active={filter === f}
 							onPress={() => setFilter(f)}
-							style={{
-								paddingHorizontal: spacing.md,
-								paddingVertical: 8,
-								borderRadius: 999,
-								borderWidth: 1,
-								borderColor: active ? colors.primaryLight : colors.border,
-								backgroundColor: active
-									? `${colors.primaryLight}26`
-									: colors.surfaceVariant,
-							}}
-						>
-							<Text
-								size="sm"
-								weight="semibold"
-								style={{ color: active ? colors.primaryLight : colors.text }}
-							>
-								{f}
-							</Text>
-						</Pressable>
-					);
-				})}
+						/>
+					))}
+				</FilterRow>
 			</View>
 
 			<FlatList
