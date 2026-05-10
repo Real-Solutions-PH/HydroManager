@@ -2,11 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { Link, router, type Href } from "expo-router";
 import { useMemo } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { Image, Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { type AlertSeverity } from "@/components/ui/alert-card";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { SpeechBubble } from "@/components/ui/speech-bubble";
 import { Text } from "@/components/ui/text";
 import { colors, radii, spacing } from "@/constants/theme";
 import {
@@ -301,11 +302,6 @@ export default function HomeScreen() {
 	);
 	const tasksPending = checklistQ.data?.count ?? 0;
 
-	const dateLabel = new Date().toLocaleDateString(
-		locale === "tl" ? "fil-PH" : "en-US",
-		{ month: "long", day: "numeric", year: "numeric" },
-	);
-
 	const alerts: HomeAlert[] = [];
 	// Mock pH out-of-range alert until readings API surfaces here
 	alerts.push({
@@ -426,9 +422,6 @@ export default function HomeScreen() {
 					}}
 				>
 					<View style={{ flex: 1, gap: 2 }}>
-						<Text size="sm" tone="muted">
-							{dateLabel}
-						</Text>
 						<Text size="xxl" weight="bold">
 							{`${greeting}, ${firstName}!`}
 						</Text>
@@ -448,17 +441,17 @@ export default function HomeScreen() {
 									width: 44,
 									height: 44,
 									borderRadius: radii.full,
-									backgroundColor: colors.glass,
+									backgroundColor: colors.infoLight,
 									borderWidth: 1,
-									borderColor: colors.border,
+									borderColor: colors.info,
 									alignItems: "center",
 									justifyContent: "center",
 								}}
 							>
 								<Ionicons
-									name="library-outline"
+									name="library"
 									size={20}
-									color={colors.text}
+									color={colors.info}
 								/>
 							</Pressable>
 						</Link>
@@ -527,46 +520,23 @@ export default function HomeScreen() {
 					style={{
 						flexDirection: "row",
 						alignItems: "center",
-						gap: spacing.sm,
 						paddingHorizontal: spacing.md,
 					}}
 				>
-					<View
-						style={{
-							width: 72,
-							height: 72,
-							borderRadius: radii.full,
-							backgroundColor: colors.successLight,
-							borderWidth: 1,
-							borderColor: colors.border,
-							alignItems: "center",
-							justifyContent: "center",
-						}}
-					>
-						<Ionicons name="leaf" size={36} color={colors.primaryLight} />
-					</View>
-					<View
-						style={{
-							flex: 1,
-							padding: spacing.md,
-							borderRadius: radii.lg,
-							backgroundColor: colors.surfaceVariant,
-							borderWidth: 1,
-							borderColor: colors.border,
-							gap: 2,
-						}}
-					>
-						<Text weight="bold" size="md">
-							{`"${t("home.checkin_quote")}"`}
-						</Text>
-						<Text size="sm" tone="muted">
-							{t("home.checkin_summary", {
-								tasks: String(tasksPending),
-								harvests: String(harvestReady.length),
-								low: String(lowStock.length),
-							})}
-						</Text>
-					</View>
+					<Image
+						source={require("../../../assets/character/saying_hi_halfbody.png")}
+						style={{ width: 140, height: 140, marginRight: -spacing.xs }}
+						resizeMode="contain"
+						accessibilityIgnoresInvertColors
+					/>
+					<SpeechBubble
+						title={t("home.checkin_quote")}
+						subtitle={t("home.checkin_summary", {
+							tasks: String(tasksPending),
+							harvests: String(harvestReady.length),
+							low: String(lowStock.length),
+						})}
+					/>
 				</View>
 
 				{/* Horizontal action chip row */}
@@ -1046,23 +1016,23 @@ function QuickActionChip({
 			style={({ pressed }) => ({
 				flexDirection: "row",
 				alignItems: "center",
-				gap: spacing.xs,
-				paddingVertical: spacing.sm,
-				paddingHorizontal: spacing.md,
+				gap: 6,
+				paddingVertical: 6,
+				paddingHorizontal: spacing.sm,
 				borderRadius: radii.full,
 				backgroundColor: pressed ? colors.glassHover : colors.surfaceVariant,
 				borderWidth: 1,
 				borderColor: colors.border,
-				minHeight: 44,
+				minHeight: 32,
 			})}
 		>
-			<Ionicons name={icon} size={16} color={iconColor} />
-			<Text weight="semibold" size="sm">
+			<Ionicons name={icon} size={14} color={iconColor} />
+			<Text weight="semibold" size="xs">
 				{label}
 			</Text>
 			<Ionicons
 				name="chevron-forward"
-				size={14}
+				size={12}
 				color={colors.textMuted}
 			/>
 		</Pressable>
