@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { FilterChip, FilterRow } from "@/components/ui/filter-chip";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { useTabBarClearance } from "@/components/ui/interactive-menu";
+import { ProgressRing } from "@/components/ui/progress-ring";
 import { Text } from "@/components/ui/text";
 import { colors, spacing, systemTypes } from "@/constants/theme";
 import { batchesApi, type Setup, setupsApi } from "@/lib/hydro-api";
@@ -86,41 +87,85 @@ export default function SetupsScreen() {
 			<View
 				style={{
 					flexDirection: "row",
-					alignItems: "center",
+					alignItems: "flex-start",
 					justifyContent: "space-between",
 					paddingHorizontal: spacing.md,
 					paddingTop: spacing.xs,
 				}}
 			>
-				<Text size="xxl" weight="bold">
-					My Setups
-				</Text>
+				<View style={{ flex: 1, paddingRight: spacing.sm }}>
+					<Text size="xxl" weight="bold">
+						My Setups
+					</Text>
+					<Text size="sm" tone="muted" style={{ marginTop: 2 }}>
+						Manage your hydroponic systems
+					</Text>
+				</View>
 				<Link href="/setup/new" asChild>
 					<Button
 						size="sm"
-						label="Add"
+						label="Add Setup"
 						leftIcon={<Ionicons name="add" size={18} color="#FFFFFF" />}
 						style={{ borderRadius: 999, flexShrink: 0 }}
 					/>
 				</Link>
 			</View>
 
-			<View style={{ paddingHorizontal: spacing.md, paddingTop: spacing.md }}>
+			<View
+				style={{
+					flexDirection: "row",
+					alignItems: "center",
+					paddingHorizontal: spacing.md,
+					paddingTop: spacing.sm,
+					gap: spacing.xs,
+				}}
+			>
+				<Image
+					source={require("../../../assets/character/looking.png")}
+					style={{
+						width: 110,
+						height: 110,
+						marginRight: -spacing.xs,
+					}}
+					resizeMode="contain"
+					accessibilityIgnoresInvertColors
+				/>
 				<View
 					style={{
+						flex: 1,
 						flexDirection: "row",
-						borderRadius: 16,
+						alignItems: "center",
+						borderRadius: 18,
 						borderWidth: 1,
 						borderColor: colors.border,
 						backgroundColor: colors.surfaceVariant,
-						paddingVertical: spacing.md,
+						paddingHorizontal: spacing.md,
+						paddingVertical: spacing.sm,
+						gap: spacing.sm,
 					}}
 				>
-					<TotalCell value={String(totals.count)} label="Total Setups" />
-					<Divider />
-					<TotalCell value={String(totals.totalSlots)} label="Total Slots" />
-					<Divider />
-					<TotalCell value={`${totals.util.toFixed(0)}%`} label="Utilization" />
+					<View style={{ flex: 1 }}>
+						<Text size="xs" tone="muted" weight="semibold">
+							UTILIZATION
+						</Text>
+						<Text size="xl" weight="bold" style={{ marginTop: 2 }}>
+							{totals.util.toFixed(0)}%
+						</Text>
+						<Text size="xs" tone="muted" style={{ marginTop: 2 }}>
+							{totals.count} setups · {totals.totalSlots} slots
+						</Text>
+					</View>
+					<ProgressRing
+						size={68}
+						strokeWidth={8}
+						progress={totals.util / 100}
+						color={colors.primaryLight}
+						accessibilityLabel={`${totals.util.toFixed(0)} percent slot utilization`}
+					>
+						<Text size="sm" weight="bold">
+							{totals.util.toFixed(0)}%
+						</Text>
+					</ProgressRing>
 				</View>
 			</View>
 
@@ -192,27 +237,6 @@ export default function SetupsScreen() {
 				}}
 			/>
 		</GradientBackground>
-	);
-}
-
-function TotalCell({ value, label }: { value: string; label: string }) {
-	return (
-		<View style={{ flex: 1, alignItems: "center" }}>
-			<Text size="xxl" weight="bold">
-				{value}
-			</Text>
-			<Text size="xs" tone="muted" style={{ marginTop: 2 }}>
-				{label}
-			</Text>
-		</View>
-	);
-}
-
-function Divider() {
-	return (
-		<View
-			style={{ width: 1, backgroundColor: colors.border, marginVertical: 4 }}
-		/>
 	);
 }
 
