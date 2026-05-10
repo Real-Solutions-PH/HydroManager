@@ -8,7 +8,12 @@ export const metadata: Metadata = {
   description:
     "Setup-aware hydroponics management for PH growers. Milestone approvals, crop guides, grounded AI assistant.",
   icons: {
-    icon: "/assets/images/favicon.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/assets/images/favicon.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
 }
 
