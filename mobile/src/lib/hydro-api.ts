@@ -654,32 +654,32 @@ export const libraryApi = {
 };
 
 export const SETUP_TYPE_COLOR: Record<SetupType, { fg: string; bg: string }> = {
-	DFT: { fg: "#42A5F5", bg: "rgba(66,165,245,0.15)" },
-	NFT: { fg: "#66BB6A", bg: "rgba(102,187,106,0.15)" },
-	DutchBucket: { fg: "#FFB74D", bg: "rgba(255,183,77,0.15)" },
-	Kratky: { fg: "#CE93D8", bg: "rgba(206,147,216,0.15)" },
-	SNAP: { fg: "#80DEEA", bg: "rgba(128,222,234,0.15)" },
+	DFT: { fg: "#8FBE5C", bg: "rgba(143,190,92,0.15)" },
+	NFT: { fg: "#4FB8E8", bg: "rgba(79,184,232,0.15)" },
+	DutchBucket: { fg: "#D49050", bg: "rgba(212,144,80,0.15)" },
+	Kratky: { fg: "#E89AA5", bg: "rgba(232,154,165,0.15)" },
+	SNAP: { fg: "#E8DDA8", bg: "rgba(232,221,168,0.15)" },
 };
 
 export const INVENTORY_CATEGORY_COLOR: Record<
 	InventoryCategory,
 	{ fg: string; bg: string }
 > = {
-	seeds: { fg: "#66BB6A", bg: "rgba(102,187,106,0.15)" },
-	media: { fg: "#FFB74D", bg: "rgba(255,183,77,0.15)" },
-	nutrients: { fg: "#42A5F5", bg: "rgba(66,165,245,0.15)" },
-	equipment: { fg: "#CE93D8", bg: "rgba(206,147,216,0.15)" },
-	packaging: { fg: "#80DEEA", bg: "rgba(128,222,234,0.15)" },
-	other: { fg: "rgba(255,255,255,0.5)", bg: "rgba(255,255,255,0.06)" },
+	seeds: { fg: "#8FBE5C", bg: "rgba(143,190,92,0.15)" },
+	media: { fg: "#D49050", bg: "rgba(212,144,80,0.15)" },
+	nutrients: { fg: "#4FB8E8", bg: "rgba(79,184,232,0.15)" },
+	equipment: { fg: "#E89AA5", bg: "rgba(232,154,165,0.15)" },
+	packaging: { fg: "#E8DDA8", bg: "rgba(232,221,168,0.15)" },
+	other: { fg: "rgba(250,246,232,0.5)", bg: "rgba(250,246,232,0.06)" },
 };
 
 export const PRODUCE_STATUS_COLOR: Record<
 	ProduceStatus,
 	{ fg: string; bg: string }
 > = {
-	ready: { fg: "#66BB6A", bg: "rgba(102,187,106,0.15)" },
-	reserved: { fg: "#FFB74D", bg: "rgba(255,183,77,0.15)" },
-	sold: { fg: "rgba(255,255,255,0.5)", bg: "rgba(255,255,255,0.06)" },
+	ready: { fg: "#8FBE5C", bg: "rgba(143,190,92,0.15)" },
+	reserved: { fg: "#D49050", bg: "rgba(212,144,80,0.15)" },
+	sold: { fg: "rgba(250,246,232,0.5)", bg: "rgba(250,246,232,0.06)" },
 };
 
 export type UserTier = "free" | "grower" | "pro";

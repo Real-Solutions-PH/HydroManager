@@ -64,17 +64,17 @@ const STAGE_LABEL: Record<Milestone, string> = {
 };
 
 const STAGE_COLORS: Record<Milestone, { fg: string; bg: string }> = {
-	Sowed: { fg: "#A1887F", bg: "rgba(161, 136, 127, 0.18)" },
-	Germinated: { fg: "#AED581", bg: "rgba(174, 213, 129, 0.18)" },
-	SeedLeaves: { fg: "#9CCC65", bg: "rgba(156, 204, 101, 0.18)" },
-	TrueLeaves: { fg: "#66BB6A", bg: "rgba(102, 187, 106, 0.18)" },
-	Transplanted: { fg: "#42A5F5", bg: "rgba(66, 165, 245, 0.18)" },
-	Vegetative: { fg: "#26A69A", bg: "rgba(38, 166, 154, 0.18)" },
-	Flowering: { fg: "#CE93D8", bg: "rgba(206, 147, 216, 0.18)" },
-	FruitSet: { fg: "#FFB74D", bg: "rgba(255, 183, 77, 0.18)" },
-	HarvestReady: { fg: "#EF5350", bg: "rgba(239, 83, 80, 0.18)" },
-	Harvested: { fg: "rgba(255,255,255,0.6)", bg: "rgba(255,255,255,0.08)" },
-	Failed: { fg: "#EF5350", bg: "rgba(239, 83, 80, 0.18)" },
+	Sowed: { fg: "#8C5A38", bg: "rgba(140, 90, 56, 0.18)" },
+	Germinated: { fg: "#C5DA8A", bg: "rgba(197, 218, 138, 0.18)" },
+	SeedLeaves: { fg: "#B8D67A", bg: "rgba(184, 214, 122, 0.18)" },
+	TrueLeaves: { fg: "#8FBE5C", bg: "rgba(143, 190, 92, 0.18)" },
+	Transplanted: { fg: "#4FB8E8", bg: "rgba(79, 184, 232, 0.18)" },
+	Vegetative: { fg: "#6B9A3D", bg: "rgba(107, 154, 61, 0.18)" },
+	Flowering: { fg: "#E89AA5", bg: "rgba(232, 154, 165, 0.18)" },
+	FruitSet: { fg: "#D49050", bg: "rgba(212, 144, 80, 0.18)" },
+	HarvestReady: { fg: "#C66B4A", bg: "rgba(198, 107, 74, 0.18)" },
+	Harvested: { fg: "rgba(250,246,232,0.6)", bg: "rgba(250,246,232,0.08)" },
+	Failed: { fg: "#B0432A", bg: "rgba(176, 67, 42, 0.18)" },
 };
 
 const LEAFY_STAGES: Milestone[] = [

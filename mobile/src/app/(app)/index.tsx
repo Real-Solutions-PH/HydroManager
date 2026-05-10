@@ -35,7 +35,6 @@ import {
 	inventoryApi,
 	MILESTONE_ORDER,
 	type Milestone,
-	setupsApi,
 	usersApi,
 } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
@@ -56,17 +55,17 @@ const STAGE_LABEL: Record<Milestone, string> = {
 };
 
 const STAGE_COLORS: Record<Milestone, { fg: string; bg: string }> = {
-	Sowed: { fg: "#A1887F", bg: "rgba(161, 136, 127, 0.18)" },
-	Germinated: { fg: "#AED581", bg: "rgba(174, 213, 129, 0.18)" },
-	SeedLeaves: { fg: "#9CCC65", bg: "rgba(156, 204, 101, 0.18)" },
-	TrueLeaves: { fg: "#66BB6A", bg: "rgba(102, 187, 106, 0.18)" },
-	Transplanted: { fg: "#42A5F5", bg: "rgba(66, 165, 245, 0.18)" },
-	Vegetative: { fg: "#26A69A", bg: "rgba(38, 166, 154, 0.18)" },
-	Flowering: { fg: "#CE93D8", bg: "rgba(206, 147, 216, 0.18)" },
-	FruitSet: { fg: "#FFB74D", bg: "rgba(255, 183, 77, 0.18)" },
-	HarvestReady: { fg: "#EF5350", bg: "rgba(239, 83, 80, 0.18)" },
-	Harvested: { fg: "rgba(255,255,255,0.6)", bg: "rgba(255,255,255,0.08)" },
-	Failed: { fg: "#EF5350", bg: "rgba(239, 83, 80, 0.18)" },
+	Sowed: { fg: "#8C5A38", bg: "rgba(140, 90, 56, 0.18)" },
+	Germinated: { fg: "#C5DA8A", bg: "rgba(197, 218, 138, 0.18)" },
+	SeedLeaves: { fg: "#B8D67A", bg: "rgba(184, 214, 122, 0.18)" },
+	TrueLeaves: { fg: "#8FBE5C", bg: "rgba(143, 190, 92, 0.18)" },
+	Transplanted: { fg: "#4FB8E8", bg: "rgba(79, 184, 232, 0.18)" },
+	Vegetative: { fg: "#6B9A3D", bg: "rgba(107, 154, 61, 0.18)" },
+	Flowering: { fg: "#E89AA5", bg: "rgba(232, 154, 165, 0.18)" },
+	FruitSet: { fg: "#D49050", bg: "rgba(212, 144, 80, 0.18)" },
+	HarvestReady: { fg: "#C66B4A", bg: "rgba(198, 107, 74, 0.18)" },
+	Harvested: { fg: "rgba(250,246,232,0.6)", bg: "rgba(250,246,232,0.08)" },
+	Failed: { fg: "#B0432A", bg: "rgba(176, 67, 42, 0.18)" },
 };
 
 const LEAFY_STAGES: Milestone[] = [
@@ -271,11 +270,6 @@ export default function HomeScreen() {
 		queryKey: QK.me(),
 		queryFn: () => usersApi.me(),
 		staleTime: STALE.me,
-	});
-	const setupsQ = useQuery({
-		queryKey: QK.setups.list(),
-		queryFn: () => setupsApi.list(),
-		staleTime: STALE.setups,
 	});
 	const batchesQ = useQuery({
 		queryKey: QK.batches.list(),
@@ -870,45 +864,6 @@ export default function HomeScreen() {
 					}
 				/>
 
-				{/* KPI Grid 2x2 */}
-				<View
-					style={{
-						flexDirection: "row",
-						flexWrap: "wrap",
-						gap: spacing.sm,
-						paddingHorizontal: spacing.md,
-					}}
-				>
-					<KpiTile
-						icon="grid"
-						iconBg={colors.successLight}
-						iconColor={colors.primaryLight}
-						value={setupsQ.data?.count ?? 0}
-						label={t("home.kpi_active_setups")}
-					/>
-					<KpiTile
-						icon="leaf"
-						iconBg={colors.infoLight}
-						iconColor={colors.info}
-						value={batchesQ.data?.count ?? 0}
-						label={t("home.kpi_plant_batches")}
-					/>
-					<KpiTile
-						icon="nutrition"
-						iconBg={colors.successLight}
-						iconColor={colors.primaryLight}
-						value={harvestReady.length}
-						label={t("home.kpi_near_harvest")}
-					/>
-					<KpiTile
-						icon="alert-circle"
-						iconBg={colors.errorLight}
-						iconColor={colors.error}
-						value={lowStock.length}
-						label={t("home.kpi_low_stock")}
-					/>
-				</View>
-
 				{/* Active crop composition */}
 				<CropCompositionCard
 					title={t("home.crop_composition_title")}
@@ -1180,54 +1135,6 @@ export default function HomeScreen() {
 
 			</ScrollView>
 		</GradientBackground>
-	);
-}
-
-function KpiTile({
-	icon,
-	iconBg,
-	iconColor,
-	value,
-	label,
-}: {
-	icon: React.ComponentProps<typeof Ionicons>["name"];
-	iconBg: string;
-	iconColor: string;
-	value: number | string;
-	label: string;
-}) {
-	return (
-		<View
-			style={{
-				flex: 1,
-				minWidth: "47%",
-				padding: spacing.md,
-				borderRadius: radii.lg,
-				backgroundColor: colors.surfaceVariant,
-				borderWidth: 1,
-				borderColor: colors.border,
-				gap: spacing.sm,
-			}}
-		>
-			<View
-				style={{
-					width: 36,
-					height: 36,
-					borderRadius: radii.md,
-					backgroundColor: iconBg,
-					alignItems: "center",
-					justifyContent: "center",
-				}}
-			>
-				<Ionicons name={icon} size={18} color={iconColor} />
-			</View>
-			<Text size="xxxl" weight="bold">
-				{value}
-			</Text>
-			<Text size="sm" tone="muted">
-				{label}
-			</Text>
-		</View>
 	);
 }
 
