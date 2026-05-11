@@ -707,6 +707,7 @@ export default function HomeScreen() {
 						flexDirection: "row",
 						alignItems: "center",
 						paddingHorizontal: spacing.md,
+						marginBottom: -spacing.xl,
 					}}
 				>
 					<Image
@@ -730,7 +731,6 @@ export default function HomeScreen() {
 				{/* Bottom panel — clear separation from header */}
 				<View
 					style={{
-						marginTop: spacing.sm,
 						paddingTop: spacing.lg,
 						paddingBottom: insets.bottom + 128,
 						gap: spacing.md,
