@@ -1,4 +1,48 @@
-export const colors = {
+import { useColorScheme } from "react-native";
+
+export const lightColors = {
+	primary: "#5C8A3A",
+	primaryLight: "#8FBE5C",
+	primaryDark: "#4A7028",
+	primaryDeep: "#2F4A1A",
+	accent: "#D49050",
+	buttonSolidBg: "#5C8A3A",
+	buttonSolidActive: "#4A7028",
+	bg: "#FFFFFF",
+	bgMid: "#F5F5F5",
+	bgLight: "#EEEEEE",
+	surface: "#FAFAFA",
+	surfaceVariant: "rgba(10, 10, 10, 0.04)",
+	glass: "rgba(10, 10, 10, 0.06)",
+	glassHover: "rgba(10, 10, 10, 0.10)",
+	cardGlassOverlay: "rgba(10, 10, 10, 0.03)",
+	text: "#0A0A0A",
+	textSecondary: "rgba(10, 10, 10, 0.65)",
+	textMuted: "rgba(10, 10, 10, 0.45)",
+	textDisabled: "rgba(10, 10, 10, 0.30)",
+	placeholder: "rgba(10, 10, 10, 0.40)",
+	border: "rgba(10, 10, 10, 0.12)",
+	borderLight: "rgba(10, 10, 10, 0.08)",
+	borderStrong: "rgba(10, 10, 10, 0.18)",
+	borderInput: "rgba(10, 10, 10, 0.15)",
+	borderError: "#E89AA5",
+	tabBarTopBorder: "rgba(10, 10, 10, 0.08)",
+	tabBarBg: "rgba(255, 255, 255, 0.85)",
+	success: "#5C8A3A",
+	successLight: "rgba(92, 138, 58, 0.15)",
+	warning: "#D49050",
+	warningLight: "rgba(212, 144, 80, 0.15)",
+	error: "#E89AA5",
+	errorLight: "rgba(232, 154, 165, 0.15)",
+	info: "#4FB8E8",
+	infoLight: "rgba(79, 184, 232, 0.15)",
+	salesAccent: "#E89AA5",
+	salesAccentLight: "rgba(232, 154, 165, 0.15)",
+	restockAccent: "#A88500",
+	restockAccentLight: "rgba(168, 133, 0, 0.15)",
+} as const;
+
+export const darkColors = {
 	primary: "#8FBE5C",
 	primaryLight: "#B8D67A",
 	primaryDark: "#6B9A3D",
@@ -6,26 +50,26 @@ export const colors = {
 	accent: "#D49050",
 	buttonSolidBg: "#5C8A3A",
 	buttonSolidActive: "#4A7028",
-	bg: "#1B2412",
-	bgMid: "#2A3A1E",
-	bgLight: "#3A4D2A",
-	surface: "rgba(42, 58, 30, 0.85)",
-	surfaceVariant: "rgba(255, 248, 220, 0.06)",
-	glass: "rgba(255, 248, 220, 0.08)",
-	glassHover: "rgba(255, 248, 220, 0.12)",
-	cardGlassOverlay: "rgba(255, 248, 220, 0.04)",
-	text: "#FAF6E8",
-	textSecondary: "rgba(250, 246, 232, 0.72)",
-	textMuted: "rgba(250, 246, 232, 0.5)",
-	textDisabled: "rgba(250, 246, 232, 0.3)",
-	placeholder: "rgba(250, 246, 232, 0.4)",
-	border: "rgba(250, 246, 232, 0.12)",
-	borderLight: "rgba(250, 246, 232, 0.08)",
-	borderStrong: "rgba(250, 246, 232, 0.15)",
-	borderInput: "rgba(250, 246, 232, 0.15)",
+	bg: "#0A0A0A",
+	bgMid: "#161616",
+	bgLight: "#1F1F1F",
+	surface: "#141414",
+	surfaceVariant: "rgba(250, 250, 250, 0.06)",
+	glass: "rgba(250, 250, 250, 0.08)",
+	glassHover: "rgba(250, 250, 250, 0.12)",
+	cardGlassOverlay: "rgba(250, 250, 250, 0.04)",
+	text: "#FAFAFA",
+	textSecondary: "rgba(250, 250, 250, 0.72)",
+	textMuted: "rgba(250, 250, 250, 0.50)",
+	textDisabled: "rgba(250, 250, 250, 0.30)",
+	placeholder: "rgba(250, 250, 250, 0.40)",
+	border: "rgba(250, 250, 250, 0.12)",
+	borderLight: "rgba(250, 250, 250, 0.08)",
+	borderStrong: "rgba(250, 250, 250, 0.15)",
+	borderInput: "rgba(250, 250, 250, 0.15)",
 	borderError: "#E89AA5",
-	tabBarTopBorder: "rgba(250, 246, 232, 0.06)",
-	tabBarBg: "rgba(27, 36, 18, 0.6)",
+	tabBarTopBorder: "rgba(250, 250, 250, 0.06)",
+	tabBarBg: "rgba(10, 10, 10, 0.85)",
 	success: "#8FBE5C",
 	successLight: "rgba(143, 190, 92, 0.15)",
 	warning: "#D49050",
@@ -40,17 +84,19 @@ export const colors = {
 	restockAccentLight: "rgba(232, 221, 168, 0.15)",
 } as const;
 
-export const gradientStops = [
-	"#121A0B",
-	"#1B2412",
-	"#2A3A1E",
-	"#1F2D14",
-	"#121A0B",
-] as const;
+export type ThemeColors = { readonly [K in keyof typeof darkColors]: string };
 
-export const gradientLocations = [0, 0.25, 0.5, 0.75, 1];
-export const gradientStart = { x: 0.2, y: 0 };
-export const gradientEnd = { x: 0.8, y: 1 };
+export function useThemeColors(): ThemeColors {
+	const scheme = useColorScheme();
+	return scheme === "light" ? lightColors : darkColors;
+}
+
+/**
+ * Deprecated. Use `useThemeColors()` instead.
+ * Retained during the light/dark migration so non-migrated files still compile.
+ * Remove after Phase 8.
+ */
+export const colors = darkColors;
 
 export const systemTypes = {
 	NFT: { color: "#4FB8E8", bg: "rgba(79, 184, 232, 0.15)", icon: "water" },
@@ -78,17 +124,17 @@ export const inventoryCategoryMeta = {
 	nutrients: { color: "#4FB8E8", icon: "flask" },
 	equipment: { color: "#E89AA5", icon: "construct" },
 	packaging: { color: "#E8DDA8", icon: "cube" },
-	other: { color: "rgba(250, 246, 232, 0.5)", icon: "ellipsis-horizontal" },
+	other: { color: "rgba(128, 128, 128, 0.6)", icon: "ellipsis-horizontal" },
 } as const;
 
 export const produceStatusMeta = {
-	ready: { color: "#8FBE5C", icon: "checkmark-circle", label: "Ready" },
+	ready: { color: "#5C8A3A", icon: "checkmark-circle", label: "Ready" },
 	reserved: { color: "#D49050", icon: "time", label: "Reserved" },
-	sold: { color: "rgba(250, 246, 232, 0.5)", icon: "cash", label: "Sold" },
+	sold: { color: "rgba(128, 128, 128, 0.6)", icon: "cash", label: "Sold" },
 } as const;
 
 export const expiryStatusMeta = {
-	ok: { color: "#8FBE5C", icon: "checkmark-circle", label: "OK" },
+	ok: { color: "#5C8A3A", icon: "checkmark-circle", label: "OK" },
 	warning: { color: "#D49050", icon: "warning", label: "EXPIRES SOON" },
 	expired: { color: "#E89AA5", icon: "alert-circle", label: "EXPIRED" },
 } as const;
