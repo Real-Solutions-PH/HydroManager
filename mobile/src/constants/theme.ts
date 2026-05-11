@@ -1,4 +1,5 @@
 import { useColorScheme } from "react-native";
+import { useThemeStore } from "@/stores/theme-store";
 
 export const lightColors = {
 	primary: "#5C8A3A",
@@ -86,9 +87,27 @@ export const darkColors = {
 
 export type ThemeColors = { readonly [K in keyof typeof darkColors]: string };
 
+/**
+ * Returns the active palette based on the stored theme mode.
+ * mode === "system" follows OS color scheme; otherwise forces light/dark.
+ * Defaults to dark when scheme is null/undefined and mode is "system".
+ */
 export function useThemeColors(): ThemeColors {
 	const scheme = useColorScheme();
-	return scheme === "light" ? lightColors : darkColors;
+	const mode = useThemeStore((s) => s.mode);
+	const active = mode === "system" ? scheme : mode;
+	return active === "light" ? lightColors : darkColors;
+}
+
+/**
+ * Returns the effective theme name ("light" | "dark") accounting for system mode.
+ * Useful for StatusBar style, image variants, etc.
+ */
+export function useEffectiveTheme(): "light" | "dark" {
+	const scheme = useColorScheme();
+	const mode = useThemeStore((s) => s.mode);
+	const active = mode === "system" ? scheme : mode;
+	return active === "light" ? "light" : "dark";
 }
 
 /**

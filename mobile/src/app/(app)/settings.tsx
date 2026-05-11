@@ -23,12 +23,15 @@ import { paymongoApi, usersApi } from "@/lib/hydro-api";
 import { useI18n, useT } from "@/lib/i18n";
 import { QK, STALE } from "@/lib/query-config";
 import { formatPHP, handleError } from "@/lib/utils";
+import { useThemeStore } from "@/stores/theme-store";
 
 export default function SettingsScreen() {
 	const { t } = useT();
 	const toast = useCustomToast();
 	const locale = useI18n((s) => s.locale);
 	const setLocale = useI18n((s) => s.setLocale);
+	const themeMode = useThemeStore((s) => s.mode);
+	const setThemeMode = useThemeStore((s) => s.setMode);
 	const { logout } = useAuth();
 	const qc = useQueryClient();
 	const goBack = useBack();
@@ -219,6 +222,43 @@ export default function SettingsScreen() {
 				</View>
 
 				<View style={{ marginTop: spacing.lg }}>
+					<Text
+						size="xs"
+						weight="semibold"
+						tone="muted"
+						style={{
+							textTransform: "uppercase",
+							letterSpacing: 0.5,
+							marginBottom: spacing.xs,
+						}}
+					>
+						{t("settings.theme")}
+					</Text>
+					<Card>
+						<View style={{ flexDirection: "row", gap: 10 }}>
+							<ThemeBtn
+								label={t("settings.theme_system")}
+								icon="phone-portrait-outline"
+								active={themeMode === "system"}
+								onPress={() => setThemeMode("system")}
+							/>
+							<ThemeBtn
+								label={t("settings.theme_light")}
+								icon="sunny-outline"
+								active={themeMode === "light"}
+								onPress={() => setThemeMode("light")}
+							/>
+							<ThemeBtn
+								label={t("settings.theme_dark")}
+								icon="moon-outline"
+								active={themeMode === "dark"}
+								onPress={() => setThemeMode("dark")}
+							/>
+						</View>
+					</Card>
+				</View>
+
+				<View style={{ marginTop: spacing.lg }}>
 					<Button
 						variant="danger"
 						label={t("actions.logout")}
@@ -315,6 +355,47 @@ function LocaleBtn({
 			}}
 		>
 			<Text
+				weight="semibold"
+				style={{ color: active ? colors.primaryLight : colors.text }}
+			>
+				{label}
+			</Text>
+		</Pressable>
+	);
+}
+
+function ThemeBtn({
+	label,
+	icon,
+	active,
+	onPress,
+}: {
+	label: string;
+	icon: React.ComponentProps<typeof Ionicons>["name"];
+	active: boolean;
+	onPress: () => void;
+}) {
+	return (
+		<Pressable
+			onPress={onPress}
+			style={{
+				flex: 1,
+				paddingVertical: spacing.sm,
+				borderRadius: 12,
+				borderWidth: 1,
+				borderColor: active ? colors.primaryLight : colors.border,
+				backgroundColor: active ? `${colors.primaryLight}26` : "transparent",
+				alignItems: "center",
+				gap: 4,
+			}}
+		>
+			<Ionicons
+				name={icon}
+				size={18}
+				color={active ? colors.primaryLight : colors.text}
+			/>
+			<Text
+				size="xs"
 				weight="semibold"
 				style={{ color: active ? colors.primaryLight : colors.text }}
 			>
