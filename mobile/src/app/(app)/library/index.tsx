@@ -16,32 +16,34 @@ type Section = {
 	accent: string;
 };
 
-const SECTIONS: Section[] = [
-	{
-		href: "/library/crops",
-		title: "Crops & Care",
-		subtitle:
-			"Detailed grow profiles, EC by stage, pricing, tips, risks and stage-by-stage guides.",
-		icon: Sprout,
-		accent: colors.primaryLight,
-	},
-	{
-		href: "/library/guides",
-		title: "Guides & How-to",
-		subtitle:
-			"Operational playbooks for owners and staff: nutrients, setups, pricing, biosecurity.",
-		icon: BookOpen,
-		accent: colors.info,
-	},
-	{
-		href: "/library/pests",
-		title: "Pests & Diseases",
-		subtitle:
-			"Identify symptoms, learn causes, and apply prevention or treatment.",
-		icon: Bug,
-		accent: colors.warning,
-	},
-];
+function buildSections(): Section[] {
+	return [
+		{
+			href: "/library/crops",
+			title: "Crops & Care",
+			subtitle:
+				"Detailed grow profiles, EC by stage, pricing, tips, risks and stage-by-stage guides.",
+			icon: Sprout,
+			accent: colors.primaryLight,
+		},
+		{
+			href: "/library/guides",
+			title: "Guides & How-to",
+			subtitle:
+				"Operational playbooks for owners and staff: nutrients, setups, pricing, biosecurity.",
+			icon: BookOpen,
+			accent: colors.info,
+		},
+		{
+			href: "/library/pests",
+			title: "Pests & Diseases",
+			subtitle:
+				"Identify symptoms, learn causes, and apply prevention or treatment.",
+			icon: Bug,
+			accent: colors.warning,
+		},
+	];
+}
 
 export default function LibraryIndex() {
 	const goBack = useBack();
@@ -84,7 +86,7 @@ export default function LibraryIndex() {
 						accessibilityIgnoresInvertColors
 					/>
 				</View>
-				{SECTIONS.map((s) => (
+				{buildSections().map((s) => (
 					<Link key={s.href} href={s.href} asChild>
 						<Card onPress={() => {}}>
 							<View

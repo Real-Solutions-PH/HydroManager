@@ -16,29 +16,34 @@ interface AlertCardProps {
 	chevron?: boolean;
 }
 
-const SEVERITY = {
-	urgent: {
-		border: colors.error,
-		pillBg: colors.errorLight,
-		pillText: colors.error,
-		iconBg: colors.errorLight,
-		iconColor: colors.error,
-	},
-	low: {
-		border: colors.warning,
-		pillBg: colors.warningLight,
-		pillText: colors.warning,
-		iconBg: colors.warningLight,
-		iconColor: colors.warning,
-	},
-	info: {
-		border: colors.info,
-		pillBg: colors.infoLight,
-		pillText: colors.info,
-		iconBg: colors.infoLight,
-		iconColor: colors.info,
-	},
-} as const;
+function severityStyle(severity: AlertSeverity) {
+	switch (severity) {
+		case "urgent":
+			return {
+				border: colors.error,
+				pillBg: colors.errorLight,
+				pillText: colors.error,
+				iconBg: colors.errorLight,
+				iconColor: colors.error,
+			};
+		case "low":
+			return {
+				border: colors.warning,
+				pillBg: colors.warningLight,
+				pillText: colors.warning,
+				iconBg: colors.warningLight,
+				iconColor: colors.warning,
+			};
+		case "info":
+			return {
+				border: colors.info,
+				pillBg: colors.infoLight,
+				pillText: colors.info,
+				iconBg: colors.infoLight,
+				iconColor: colors.info,
+			};
+	}
+}
 
 export function AlertCard({
 	severity,
@@ -49,7 +54,7 @@ export function AlertCard({
 	onPress,
 	chevron,
 }: AlertCardProps) {
-	const s = SEVERITY[severity];
+	const s = severityStyle(severity);
 
 	const body = (
 		<Card
@@ -98,11 +103,7 @@ export function AlertCard({
 					</View>
 				) : null}
 				{chevron ? (
-					<Ionicons
-						name="chevron-forward"
-						size={18}
-						color={colors.textMuted}
-					/>
+					<Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
 				) : null}
 			</View>
 		</Card>

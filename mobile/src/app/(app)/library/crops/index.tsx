@@ -1,7 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, Image, Pressable, View } from "react-native";
+import {
+	ActivityIndicator,
+	FlatList,
+	Image,
+	Pressable,
+	View,
+} from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -19,12 +25,18 @@ import { capitalize } from "@/lib/utils";
 const CATEGORIES = ["leafy", "herb", "fruiting", "other"] as const;
 type Cat = (typeof CATEGORIES)[number];
 
-const CAT_COLOR: Record<Cat, string> = {
-	leafy: colors.success,
-	herb: colors.primaryLight,
-	fruiting: colors.warning,
-	other: colors.info,
-};
+function catColor(c: Cat): string {
+	switch (c) {
+		case "leafy":
+			return colors.success;
+		case "herb":
+			return colors.primaryLight;
+		case "fruiting":
+			return colors.warning;
+		case "other":
+			return colors.info;
+	}
+}
 
 const MONTHS = [
 	"January",
@@ -238,7 +250,7 @@ export default function CropsListScreen() {
 							key={c}
 							label={capitalize(c)}
 							active={category === c}
-							accent={CAT_COLOR[c]}
+							accent={catColor(c)}
 							onPress={() => setCategory(c)}
 						/>
 					))}

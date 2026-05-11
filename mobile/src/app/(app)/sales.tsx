@@ -10,7 +10,14 @@ import {
 	useWindowDimensions,
 	View,
 } from "react-native";
-import Svg, { Circle, Defs, G, LinearGradient, Path, Stop } from "react-native-svg";
+import Svg, {
+	Circle,
+	Defs,
+	G,
+	LinearGradient,
+	Path,
+	Stop,
+} from "react-native-svg";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -32,30 +39,49 @@ import { formatPHP, handleError } from "@/lib/utils";
 
 type Period = "month" | "90d" | "ytd";
 
-const CROP_COLORS = [
-	colors.primaryLight,
-	colors.info,
-	colors.warning,
-	"#CE93D8",
-	colors.textMuted,
-];
+function cropColors(): string[] {
+	return [
+		colors.primaryLight,
+		colors.info,
+		colors.warning,
+		"#CE93D8",
+		colors.textMuted,
+	];
+}
 
-const CATEGORY_META: Record<InventoryCategory, { label: string; color: string }> = {
-	seeds: { label: "Seeds", color: colors.primaryLight },
-	media: { label: "Media", color: colors.info },
-	nutrients: { label: "Nutrients", color: colors.warning },
-	equipment: { label: "Equipment", color: "#CE93D8" },
-	packaging: { label: "Packaging", color: colors.success },
-	other: { label: "Other", color: colors.textMuted },
-};
+function categoryMeta(
+	c: InventoryCategory,
+): { label: string; color: string } {
+	switch (c) {
+		case "seeds":
+			return { label: "Seeds", color: colors.primaryLight };
+		case "media":
+			return { label: "Media", color: colors.info };
+		case "nutrients":
+			return { label: "Nutrients", color: colors.warning };
+		case "equipment":
+			return { label: "Equipment", color: "#CE93D8" };
+		case "packaging":
+			return { label: "Packaging", color: colors.success };
+		case "other":
+			return { label: "Other", color: colors.textMuted };
+	}
+}
 
-const CHANNEL_META: Record<SaleChannel, { label: string; color: string }> = {
-	market: { label: "Kadiwa", color: colors.primaryLight },
-	direct: { label: "Direct", color: colors.info },
-	resto: { label: "Restaurant", color: colors.warning },
-	delivery: { label: "Online", color: "#CE93D8" },
-	other: { label: "Other", color: colors.textMuted },
-};
+function channelMeta(c: SaleChannel): { label: string; color: string } {
+	switch (c) {
+		case "market":
+			return { label: "Kadiwa", color: colors.primaryLight };
+		case "direct":
+			return { label: "Direct", color: colors.info };
+		case "resto":
+			return { label: "Restaurant", color: colors.warning };
+		case "delivery":
+			return { label: "Online", color: "#CE93D8" };
+		case "other":
+			return { label: "Other", color: colors.textMuted };
+	}
+}
 
 export default function SalesScreen() {
 	const { t } = useT();
@@ -180,7 +206,7 @@ export default function SalesScreen() {
 	const topCrops = d?.top_crops ?? [];
 	const topCropsMax = topCrops.reduce((m, c) => Math.max(m, c.revenue), 0);
 
-	const tierLabel =
+	const _tierLabel =
 		me.data.tier === "pro"
 			? "Pro tier — Full analytics"
 			: me.data.tier === "grower"
@@ -222,19 +248,13 @@ export default function SalesScreen() {
 								justifyContent: "center",
 							}}
 						>
-							<Ionicons
-								name="folder-outline"
-								size={18}
-								color={colors.text}
-							/>
+							<Ionicons name="folder-outline" size={18} color={colors.text} />
 						</Pressable>
 						<Link href="/sale-new" asChild>
 							<Button
 								size="sm"
 								label="Record"
-								leftIcon={
-									<Ionicons name="add" size={18} color="#FFFFFF" />
-								}
+								leftIcon={<Ionicons name="add" size={18} color="#FFFFFF" />}
 								style={{ borderRadius: 999, flexShrink: 0 }}
 							/>
 						</Link>
@@ -321,10 +341,7 @@ export default function SalesScreen() {
 					<Text size="sm" tone="muted" style={{ marginTop: 2 }}>
 						Inventory cost composition
 					</Text>
-					<ExpensePieChart
-						slices={expenseByCategory}
-						total={totalExpense}
-					/>
+					<ExpensePieChart slices={expenseByCategory} total={totalExpense} />
 				</Card>
 
 				<Card>
@@ -353,7 +370,7 @@ export default function SalesScreen() {
 										name={c.crop}
 										revenue={c.revenue}
 										max={topCropsMax}
-										color={CROP_COLORS[idx] ?? colors.textMuted}
+										color={cropColors()[idx] ?? colors.textMuted}
 										isLast={idx === Math.min(topCrops.length, 5) - 1}
 									/>
 								))
@@ -592,7 +609,7 @@ function ChannelCard({
 	revenue: number;
 	total: number;
 }) {
-	const meta = CHANNEL_META[channel] ?? CHANNEL_META.other;
+	const meta = channelMeta(channel) ?? channelMeta("other");
 	const pct = total > 0 ? (revenue / total) * 100 : 0;
 	return (
 		<View
@@ -662,7 +679,7 @@ function RecentSaleCard({
 	onDelete: () => void;
 	disabled: boolean;
 }) {
-	const meta = CHANNEL_META[sale.channel] ?? CHANNEL_META.other;
+	const meta = channelMeta(sale.channel) ?? channelMeta("other");
 	const total = sale.items.reduce(
 		(s, it) => s + it.quantity * it.unit_price,
 		0,
@@ -820,13 +837,13 @@ function ExpensePieChart({
 							cx={cx}
 							cy={cy}
 							r={innerR}
-							stroke={CATEGORY_META[arcs[0].category].color}
+							stroke={categoryMeta(arcs[0].category).color}
 							strokeWidth={stroke}
 							fill="none"
 						/>
 					) : (
 						arcs.map((a) => {
-							const meta = CATEGORY_META[a.category];
+							const meta = categoryMeta(a.category);
 							const startAngle = a.start * 2 * Math.PI;
 							const endAngle = a.end * 2 * Math.PI;
 							const x1 = cx + innerR * Math.cos(startAngle);
@@ -850,7 +867,7 @@ function ExpensePieChart({
 			</Svg>
 			<View style={{ flex: 1, gap: spacing.xs }}>
 				{arcs.map((a) => {
-					const meta = CATEGORY_META[a.category];
+					const meta = categoryMeta(a.category);
 					return (
 						<View
 							key={a.category}
@@ -874,7 +891,11 @@ function ExpensePieChart({
 							<Text size="sm" weight="semibold">
 								{formatPHP(a.value, 0)}
 							</Text>
-							<Text size="xs" tone="muted" style={{ width: 36, textAlign: "right" }}>
+							<Text
+								size="xs"
+								tone="muted"
+								style={{ width: 36, textAlign: "right" }}
+							>
 								{(a.fraction * 100).toFixed(0)}%
 							</Text>
 						</View>

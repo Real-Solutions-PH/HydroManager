@@ -22,15 +22,17 @@ const CELL = 11;
 const CELL_GAP = 3;
 const GRID_SIZE = CELL * GRID + CELL_GAP * (GRID - 1);
 
-const SEGMENT_PALETTE = [
-	colors.primaryDeep,
-	colors.primaryLight,
-	colors.accent,
-	colors.warning,
-	colors.info,
-	colors.salesAccent,
-	colors.restockAccent,
-] as const;
+function segmentPalette(): string[] {
+	return [
+		colors.primaryDeep,
+		colors.primaryLight,
+		colors.accent,
+		colors.warning,
+		colors.info,
+		colors.salesAccent,
+		colors.restockAccent,
+	];
+}
 
 function hslToHex(h: number, s: number, l: number): string {
 	const sat = s / 100;
@@ -47,8 +49,9 @@ function hslToHex(h: number, s: number, l: number): string {
 }
 
 export function getCompositionColor(index: number): string {
-	if (index < SEGMENT_PALETTE.length) return SEGMENT_PALETTE[index];
-	const hue = ((index - SEGMENT_PALETTE.length) * 137.508) % 360;
+	const palette = segmentPalette();
+	if (index < palette.length) return palette[index];
+	const hue = ((index - palette.length) * 137.508) % 360;
 	return hslToHex(hue, 55, 58);
 }
 

@@ -10,17 +10,27 @@ import { useBack } from "@/hooks/use-back";
 import { usePest } from "@/hooks/use-library";
 import type { LibraryPest, PestKind, PestSeverity } from "@/lib/hydro-api";
 
-const KIND_COLOR: Record<PestKind, string> = {
-	pest: colors.warning,
-	disease: colors.error,
-	deficiency: colors.info,
-};
+function kindColor(k: PestKind): string {
+	switch (k) {
+		case "pest":
+			return colors.warning;
+		case "disease":
+			return colors.error;
+		case "deficiency":
+			return colors.info;
+	}
+}
 
-const SEV_COLOR: Record<PestSeverity, string> = {
-	low: colors.success,
-	medium: colors.warning,
-	high: colors.error,
-};
+function sevColor(s: PestSeverity): string {
+	switch (s) {
+		case "low":
+			return colors.success;
+		case "medium":
+			return colors.warning;
+		case "high":
+			return colors.error;
+	}
+}
 
 export default function PestDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
@@ -89,8 +99,8 @@ function PestDetail({ pest }: { pest: LibraryPest }) {
 						flexWrap: "wrap",
 					}}
 				>
-					<Badge label={pest.kind} color={KIND_COLOR[pest.kind]} small />
-					<Badge label={pest.severity} color={SEV_COLOR[pest.severity]} small />
+					<Badge label={pest.kind} color={kindColor(pest.kind)} small />
+					<Badge label={pest.severity} color={sevColor(pest.severity)} small />
 				</View>
 			</View>
 

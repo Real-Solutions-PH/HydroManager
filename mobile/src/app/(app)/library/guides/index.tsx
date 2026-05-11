@@ -1,7 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, FlatList, Image, Pressable, View } from "react-native";
+import {
+	ActivityIndicator,
+	FlatList,
+	Image,
+	Pressable,
+	View,
+} from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -23,14 +29,22 @@ const CATEGORIES: GuideCategory[] = [
 	"other",
 ];
 
-const CAT_COLOR: Record<GuideCategory, string> = {
-	setup: colors.info,
-	nutrition: colors.primaryLight,
-	business: colors.warning,
-	safety: colors.error,
-	operations: colors.success,
-	other: colors.textMuted,
-};
+function catColor(c: GuideCategory): string {
+	switch (c) {
+		case "setup":
+			return colors.info;
+		case "nutrition":
+			return colors.primaryLight;
+		case "business":
+			return colors.warning;
+		case "safety":
+			return colors.error;
+		case "operations":
+			return colors.success;
+		case "other":
+			return colors.textMuted;
+	}
+}
 
 export default function GuidesListScreen() {
 	const _router = useRouter();
@@ -82,7 +96,7 @@ export default function GuidesListScreen() {
 							key={c}
 							label={capitalize(c)}
 							active={category === c}
-							accent={CAT_COLOR[c]}
+							accent={catColor(c)}
 							onPress={() => setCategory(c)}
 						/>
 					))}
@@ -187,7 +201,7 @@ function GuideRow({ guide }: { guide: LibraryGuide }) {
 						>
 							<Badge
 								label={guide.category}
-								color={CAT_COLOR[guide.category]}
+								color={catColor(guide.category)}
 								small
 							/>
 							{guide.read_time_min ? (

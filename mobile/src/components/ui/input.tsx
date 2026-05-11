@@ -30,7 +30,7 @@ export const Input = forwardRef<TextInput, Props>(
 					paddingHorizontal: 16,
 					fontSize: 15,
 					color: colors.text,
-					backgroundColor: "rgba(255,255,255,0.05)",
+					backgroundColor: colors.glass,
 					borderColor: invalid ? colors.borderError : colors.borderInput,
 				},
 				multiline

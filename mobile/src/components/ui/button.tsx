@@ -22,21 +22,24 @@ const SIZE_STYLE: Record<
 	icon: { height: 44, width: 44 },
 };
 
-const VARIANT_BG: Record<Variant, string> = {
-	solid: colors.buttonSolidBg,
-	outline: colors.glass,
-	ghost: "transparent",
-	danger: "#DC2626",
-	destructive: "#DC2626",
-};
+function variantBg(v: Variant): string {
+	switch (v) {
+		case "solid":
+			return colors.buttonSolidBg;
+		case "outline":
+			return colors.glass;
+		case "ghost":
+			return "transparent";
+		case "danger":
+		case "destructive":
+			return "#DC2626";
+	}
+}
 
-const VARIANT_BORDER: Record<Variant, string | undefined> = {
-	solid: undefined,
-	outline: "rgba(255,255,255,0.3)",
-	ghost: undefined,
-	danger: undefined,
-	destructive: undefined,
-};
+function variantBorder(v: Variant): string | undefined {
+	if (v === "outline") return colors.border;
+	return undefined;
+}
 
 export interface ButtonProps extends PressableProps {
 	variant?: Variant;
@@ -71,7 +74,8 @@ export const Button = forwardRef<
 		const v = variant;
 		const sz = SIZE_STYLE[size];
 		const blocked = isDisabled || disabled || isLoading;
-		const hasBorder = Boolean(VARIANT_BORDER[v]);
+		const border = variantBorder(v);
+		const hasBorder = Boolean(border);
 		return (
 			<Pressable
 				ref={ref}
@@ -86,14 +90,14 @@ export const Button = forwardRef<
 						width: sz.width,
 						paddingHorizontal: sz.paddingHorizontal,
 						borderWidth: hasBorder ? 1 : 0,
-						borderColor: VARIANT_BORDER[v],
+						borderColor: border,
 						backgroundColor: state.pressed
 							? v === "solid"
 								? colors.buttonSolidActive
 								: v === "danger" || v === "destructive"
 									? "#B91C1C"
-									: "rgba(255,255,255,0.1)"
-							: VARIANT_BG[v],
+									: colors.glassHover
+							: variantBg(v),
 						opacity: blocked ? 0.5 : 1,
 					},
 					typeof style === "function" ? style(state) : style,

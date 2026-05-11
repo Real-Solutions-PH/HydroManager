@@ -32,14 +32,22 @@ const WEIGHT_MAP: Record<Weight, TextStyle["fontWeight"]> = {
 	bold: "700",
 	heavy: "800",
 };
-const TONE_COLOR: Record<Tone, string> = {
-	default: colors.text,
-	muted: colors.textMuted,
-	subtle: colors.textSecondary,
-	error: colors.borderError,
-	success: colors.success,
-	primary: colors.primary,
-};
+function toneColor(tone: Tone): string {
+	switch (tone) {
+		case "muted":
+			return colors.textMuted;
+		case "subtle":
+			return colors.textSecondary;
+		case "error":
+			return colors.borderError;
+		case "success":
+			return colors.success;
+		case "primary":
+			return colors.primary;
+		default:
+			return colors.text;
+	}
+}
 
 export function Text({
 	tone = "default",
@@ -50,7 +58,7 @@ export function Text({
 }: TextProps) {
 	const composed: StyleProp<TextStyle> = [
 		{
-			color: TONE_COLOR[tone],
+			color: toneColor(tone),
 			fontSize: SIZE_MAP[size],
 			fontWeight: WEIGHT_MAP[weight],
 		},
