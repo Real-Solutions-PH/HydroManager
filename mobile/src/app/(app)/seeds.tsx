@@ -44,7 +44,7 @@ import {
 } from "@/lib/hydro-api";
 import { flattenPages, getNextSkip, PAGE_SIZE } from "@/lib/paginate";
 import { QK, STALE } from "@/lib/query-config";
-import { formatDateOnly } from "@/lib/utils";
+import { darkenForBadgeText, formatDateOnly } from "@/lib/utils";
 
 const FILTERS = ["All", "Active", "Harvest-Ready", "Archived"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -64,17 +64,17 @@ const STAGE_LABEL: Record<Milestone, string> = {
 };
 
 const STAGE_COLORS: Record<Milestone, { fg: string; bg: string }> = {
-	Sowed: { fg: "#8C5A38", bg: "rgba(140, 90, 56, 0.18)" },
-	Germinated: { fg: "#C5DA8A", bg: "rgba(197, 218, 138, 0.18)" },
-	SeedLeaves: { fg: "#B8D67A", bg: "rgba(184, 214, 122, 0.18)" },
-	TrueLeaves: { fg: "#8FBE5C", bg: "rgba(143, 190, 92, 0.18)" },
-	Transplanted: { fg: "#4FB8E8", bg: "rgba(79, 184, 232, 0.18)" },
-	Vegetative: { fg: "#6B9A3D", bg: "rgba(107, 154, 61, 0.18)" },
-	Flowering: { fg: "#E89AA5", bg: "rgba(232, 154, 165, 0.18)" },
-	FruitSet: { fg: "#D49050", bg: "rgba(212, 144, 80, 0.18)" },
-	HarvestReady: { fg: "#C66B4A", bg: "rgba(198, 107, 74, 0.18)" },
-	Harvested: { fg: "rgba(250,246,232,0.6)", bg: "rgba(250,246,232,0.08)" },
-	Failed: { fg: "#B0432A", bg: "rgba(176, 67, 42, 0.18)" },
+	Sowed: { fg: "#5A3A24", bg: "rgba(140, 90, 56, 0.18)" },
+	Germinated: { fg: "#4F6B1F", bg: "rgba(197, 218, 138, 0.22)" },
+	SeedLeaves: { fg: "#4A6618", bg: "rgba(184, 214, 122, 0.22)" },
+	TrueLeaves: { fg: "#3F5E1E", bg: "rgba(143, 190, 92, 0.22)" },
+	Transplanted: { fg: "#1F5D80", bg: "rgba(79, 184, 232, 0.20)" },
+	Vegetative: { fg: "#2F4A1A", bg: "rgba(107, 154, 61, 0.22)" },
+	Flowering: { fg: "#9C2C3D", bg: "rgba(232, 154, 165, 0.22)" },
+	FruitSet: { fg: "#7A4716", bg: "rgba(212, 144, 80, 0.22)" },
+	HarvestReady: { fg: "#74321B", bg: "rgba(198, 107, 74, 0.22)" },
+	Harvested: { fg: "rgba(10, 10, 10, 0.55)", bg: "rgba(10, 10, 10, 0.06)" },
+	Failed: { fg: "#7A2C1C", bg: "rgba(176, 67, 42, 0.20)" },
 };
 
 const LEAFY_STAGES: Milestone[] = [
@@ -345,7 +345,9 @@ export default function SeedsScreen() {
 						})}
 					>
 						<Ionicons name="add" size={18} color="#FFFFFF" />
-						<Text weight="semibold">Start Batch</Text>
+						<Text weight="semibold" style={{ color: "#FFFFFF" }}>
+							Start Batch
+						</Text>
 					</Pressable>
 				</View>
 
@@ -614,7 +616,7 @@ function BatchCard({
 									<Text
 										size="xs"
 										weight="semibold"
-										style={{ color: setupColor.color }}
+										style={{ color: darkenForBadgeText(setupColor.color) }}
 										numberOfLines={1}
 									>
 										{setup.name}
@@ -704,7 +706,7 @@ function BatchCard({
 										<Text
 											size="xs"
 											weight="semibold"
-											style={{ color: colors.primaryLight }}
+											style={{ color: darkenForBadgeText(colors.primary) }}
 										>
 											{count} {STAGE_LABEL[m]}
 										</Text>
@@ -893,7 +895,9 @@ function BatchCard({
 										: colors.buttonSolidBg,
 								})}
 							>
-								<Text weight="semibold">Advance Stage</Text>
+								<Text weight="semibold" style={{ color: "#FFFFFF" }}>
+									Advance Stage
+								</Text>
 							</Pressable>
 							{readyToAdvance ? (
 								<Pressable
@@ -1443,7 +1447,7 @@ function TipCard() {
 				borderRadius: 16,
 				borderWidth: 1,
 				borderColor: colors.border,
-				backgroundColor: colors.surfaceVariant,
+				backgroundColor: colors.surface,
 			}}
 		>
 			<View

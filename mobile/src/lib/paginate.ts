@@ -2,9 +2,7 @@ import type { Paged } from "@/lib/hydro-api";
 
 export const PAGE_SIZE = 20;
 
-export function flattenPages<T>(
-	data: { pages: Paged<T>[] } | undefined,
-): T[] {
+export function flattenPages<T>(data: { pages: Paged<T>[] } | undefined): T[] {
 	return data?.pages.flatMap((p) => p.data) ?? [];
 }
 

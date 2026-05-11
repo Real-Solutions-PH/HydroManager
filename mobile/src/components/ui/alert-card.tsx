@@ -2,7 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { Pressable, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
-import { radii, spacing, type ThemeColors, useThemeColors } from "@/constants/theme";
+import {
+	radii,
+	spacing,
+	type ThemeColors,
+	useThemeColors,
+} from "@/constants/theme";
 
 export type AlertSeverity = "urgent" | "low" | "info";
 

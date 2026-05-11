@@ -5,10 +5,10 @@ import { useMemo, useState } from "react";
 import {
 	ActivityIndicator,
 	FlatList,
-	Image,
 	Pressable,
 	View,
 } from "react-native";
+import { Image } from "expo-image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FilterChip, FilterRow } from "@/components/ui/filter-chip";
@@ -19,6 +19,7 @@ import { Text } from "@/components/ui/text";
 import { spacing, systemTypes, useThemeColors } from "@/constants/theme";
 import { batchesApi, type Setup, setupsApi } from "@/lib/hydro-api";
 import { flattenPages, getNextSkip, PAGE_SIZE } from "@/lib/paginate";
+import { darkenForBadgeText } from "@/lib/utils";
 import { QK, STALE } from "@/lib/query-config";
 
 const FILTERS = ["All", "Active", "Archived"] as const;
@@ -124,13 +125,15 @@ export default function SetupsScreen() {
 				}}
 			>
 				<Image
-					source={require("../../../assets/character/looking.png")}
+					source={require("../../../assets/character/neutral_action.gif")}
 					style={{
 						width: 110,
 						height: 110,
 						marginRight: -spacing.xs,
 					}}
-					resizeMode="contain"
+					contentFit="contain"
+					cachePolicy="memory-disk"
+					autoplay
 					accessibilityIgnoresInvertColors
 				/>
 				<View
@@ -141,7 +144,7 @@ export default function SetupsScreen() {
 						borderRadius: 18,
 						borderWidth: 1,
 						borderColor: colors.border,
-						backgroundColor: colors.surfaceVariant,
+						backgroundColor: colors.surface,
 						paddingHorizontal: spacing.md,
 						paddingVertical: spacing.sm,
 						gap: spacing.sm,
@@ -325,7 +328,11 @@ function SetupCard({
 										backgroundColor: c.bg,
 									}}
 								>
-									<Text size="xs" weight="semibold" style={{ color: c.color }}>
+									<Text
+										size="xs"
+										weight="semibold"
+										style={{ color: darkenForBadgeText(c.color) }}
+									>
 										{SETUP_LABEL[setup.type]}
 									</Text>
 								</View>
@@ -392,7 +399,7 @@ function SetupCard({
 									<Text
 										size="xs"
 										weight="semibold"
-										style={{ color: colors.primaryLight }}
+										style={{ color: darkenForBadgeText(colors.primary) }}
 									>
 										{v}
 									</Text>
@@ -426,7 +433,11 @@ function SetupCard({
 						<Text size="sm" tone="muted">
 							Slot utilization
 						</Text>
-						<Text size="sm" weight="semibold" style={{ color: c.color }}>
+						<Text
+							size="sm"
+							weight="semibold"
+							style={{ color: darkenForBadgeText(c.color) }}
+						>
 							{used}/{setup.slot_count} ({pct.toFixed(0)}%)
 						</Text>
 					</View>

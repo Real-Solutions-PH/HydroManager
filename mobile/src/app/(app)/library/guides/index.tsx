@@ -13,7 +13,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
-import { type ThemeColors, spacing, useThemeColors } from "@/constants/theme";
+import { spacing, type ThemeColors, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useGuides } from "@/hooks/use-library";
 import type { GuideCategory, LibraryGuide } from "@/lib/hydro-api";

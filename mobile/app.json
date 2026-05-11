@@ -1,51 +1,47 @@
 {
-  "expo": {
-    "name": "Bot-choy - Hydroponics Manager",
-    "slug": "hydro-manager",
-    "version": "0.1.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "scheme": "hydromanager",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "hydromanager",
-      "icon": "./assets/icon.png",
-      "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#C5E8A4"
-      },
-      "package": "com.real_solutions_ph.hydromanager"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      "expo-secure-store",
-      "expo-sqlite"
-    ],
-    "experiments": {
-      "typedRoutes": true,
-      "tsconfigPaths": true
-    },
-    "extra": {
-      "router": {
-        "origin": false,
-        "root": "./src/app"
-      },
-      "eas": {
-        "projectId": "a5a28829-fa04-43f8-826a-c9af5b46e876"
-      }
-    },
-    "owner": "real_solutions_ph"
-  }
+	"expo": {
+		"name": "Bot-choy - Hydroponics Manager",
+		"slug": "hydro-manager",
+		"version": "0.1.0",
+		"orientation": "portrait",
+		"icon": "./assets/icon.png",
+		"scheme": "hydromanager",
+		"userInterfaceStyle": "automatic",
+		"newArchEnabled": true,
+		"ios": {
+			"supportsTablet": true,
+			"bundleIdentifier": "hydromanager",
+			"icon": "./assets/icon.png",
+			"infoPlist": {
+				"ITSAppUsesNonExemptEncryption": false
+			}
+		},
+		"android": {
+			"adaptiveIcon": {
+				"foregroundImage": "./assets/adaptive-icon.png",
+				"backgroundColor": "#C5E8A4"
+			},
+			"package": "com.real_solutions_ph.hydromanager"
+		},
+		"web": {
+			"bundler": "metro",
+			"output": "static",
+			"favicon": "./assets/favicon.png"
+		},
+		"plugins": ["expo-router", "expo-secure-store", "expo-sqlite"],
+		"experiments": {
+			"typedRoutes": true,
+			"tsconfigPaths": true
+		},
+		"extra": {
+			"router": {
+				"origin": false,
+				"root": "./src/app"
+			},
+			"eas": {
+				"projectId": "a5a28829-fa04-43f8-826a-c9af5b46e876"
+			}
+		},
+		"owner": "real_solutions_ph"
+	}
 }

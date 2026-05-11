@@ -1,15 +1,24 @@
 import { Text, View } from "react-native";
 import { spacing } from "@/constants/theme";
+import { darkenForBadgeText } from "@/lib/utils";
 
 interface BadgeProps {
 	label: string;
 	color?: string;
 	bg?: string;
+	textColor?: string;
 	small?: boolean;
 }
 
-export function Badge({ label, color = "#FFFFFF", bg, small }: BadgeProps) {
+export function Badge({
+	label,
+	color = "#FFFFFF",
+	bg,
+	textColor,
+	small,
+}: BadgeProps) {
 	const backgroundColor = bg ?? `${color}26`;
+	const resolvedText = textColor ?? darkenForBadgeText(color);
 	return (
 		<View
 			style={{
@@ -22,7 +31,7 @@ export function Badge({ label, color = "#FFFFFF", bg, small }: BadgeProps) {
 		>
 			<Text
 				style={{
-					color,
+					color: resolvedText,
 					fontSize: small ? 11 : 13,
 					fontWeight: "600",
 				}}

@@ -8,7 +8,6 @@ import {
 } from "lucide-react-native";
 import { useEffect } from "react";
 import { View } from "react-native";
-import { OfflineBanner } from "@/components/offline-banner";
 import {
 	InteractiveMenu,
 	type InteractiveMenuItem,
@@ -44,7 +43,6 @@ export default function AppLayout() {
 
 	return (
 		<View style={{ flex: 1, backgroundColor: colors.bg }}>
-			<OfflineBanner />
 			<Tabs
 				screenOptions={{
 					headerShown: false,

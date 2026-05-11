@@ -37,7 +37,7 @@ export function PhaseProgressionCard({
 		<View style={{ paddingHorizontal: spacing.md }}>
 			<View
 				style={{
-					backgroundColor: colors.surfaceVariant,
+					backgroundColor: colors.surface,
 					borderRadius: radii.lg,
 					borderWidth: 1,
 					borderColor: colors.border,

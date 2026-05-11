@@ -838,7 +838,7 @@ function HeroHeader({
 				borderBottomLeftRadius: radii.xxl,
 				borderBottomRightRadius: radii.xxl,
 				overflow: "hidden",
-				backgroundColor: colors.surfaceVariant,
+				backgroundColor: colors.surface,
 			}}
 		>
 			{imageUrl ? (

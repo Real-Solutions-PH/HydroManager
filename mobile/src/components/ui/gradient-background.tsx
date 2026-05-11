@@ -7,13 +7,14 @@ import { spacing, useThemeColors } from "@/constants/theme";
 interface Props {
 	children: ReactNode;
 	withInsets?: boolean;
+	bg?: string;
 }
 
-export function GradientBackground({ children, withInsets = true }: Props) {
+export function GradientBackground({ children, withInsets = true, bg }: Props) {
 	const insets = useSafeAreaInsets();
 	const colors = useThemeColors();
 	return (
-		<View style={{ flex: 1, backgroundColor: colors.headerBg }}>
+		<View style={{ flex: 1, backgroundColor: bg ?? colors.headerBg }}>
 			<View
 				style={{
 					flex: 1,

@@ -340,7 +340,11 @@ export default function SetupDetailScreen() {
 									}}
 								>
 									<Ionicons name="add" size={14} color="#FFFFFF" />
-									<Text size="xs" weight="semibold">
+									<Text
+										size="xs"
+										weight="semibold"
+										style={{ color: "#FFFFFF" }}
+									>
 										New
 									</Text>
 								</Pressable>

@@ -8,7 +8,11 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { inventoryCategoryMeta, spacing, useThemeColors } from "@/constants/theme";
+import {
+	inventoryCategoryMeta,
+	spacing,
+	useThemeColors,
+} from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import {
 	type InventoryCategory,

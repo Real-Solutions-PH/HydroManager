@@ -3,11 +3,14 @@ import { View, type ViewStyle } from "react-native";
 import { Text } from "@/components/ui/text";
 import { radii, spacing, useThemeColors } from "@/constants/theme";
 
+type SpeechBubbleTone = "default" | "onBrand";
+
 interface SpeechBubbleProps {
 	title: string;
 	subtitle?: ReactNode;
 	style?: ViewStyle;
 	tailOffset?: number;
+	tone?: SpeechBubbleTone;
 }
 
 const TAIL_HALF = 8;
@@ -18,8 +21,16 @@ export function SpeechBubble({
 	subtitle,
 	style,
 	tailOffset,
+	tone = "default",
 }: SpeechBubbleProps) {
 	const colors = useThemeColors();
+	const isOnBrand = tone === "onBrand";
+	const bubbleBg = isOnBrand ? "rgba(255, 255, 255, 0.14)" : colors.glass;
+	const bubbleBorder = isOnBrand ? "rgba(255, 255, 255, 0.18)" : colors.border;
+	const titleColor = isOnBrand ? "#FFFFFF" : colors.text;
+	const subtitleColor = isOnBrand
+		? "rgba(255, 255, 255, 0.78)"
+		: colors.textMuted;
 	return (
 		<View
 			style={[
@@ -41,7 +52,7 @@ export function SpeechBubble({
 					borderRightWidth: TAIL_WIDTH,
 					borderTopColor: "transparent",
 					borderBottomColor: "transparent",
-					borderRightColor: colors.glass,
+					borderRightColor: bubbleBg,
 				}}
 			/>
 			<View
@@ -50,17 +61,17 @@ export function SpeechBubble({
 					marginLeft: -1,
 					padding: spacing.md,
 					borderRadius: radii.lg,
-					backgroundColor: colors.glass,
+					backgroundColor: bubbleBg,
 					borderWidth: 1,
-					borderColor: colors.border,
+					borderColor: bubbleBorder,
 					gap: 2,
 				}}
 			>
-				<Text weight="bold" size="md">
+				<Text weight="bold" size="md" style={{ color: titleColor }}>
 					{title}
 				</Text>
 				{typeof subtitle === "string" ? (
-					<Text size="sm" tone="muted">
+					<Text size="sm" style={{ color: subtitleColor }}>
 						{subtitle}
 					</Text>
 				) : (

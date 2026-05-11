@@ -17,7 +17,7 @@ export function StatCard({ label, value, icon, accent, onPress }: Props) {
 			style={{
 				flex: 1,
 				minWidth: "45%",
-				backgroundColor: colors.surfaceVariant,
+				backgroundColor: colors.surface,
 				borderWidth: 1,
 				borderColor: colors.border,
 				borderRadius: 16,

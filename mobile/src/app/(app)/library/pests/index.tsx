@@ -13,7 +13,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
-import { type ThemeColors, spacing, useThemeColors } from "@/constants/theme";
+import { spacing, type ThemeColors, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { usePests } from "@/hooks/use-library";
 import type { LibraryPest, PestKind, PestSeverity } from "@/lib/hydro-api";
@@ -135,7 +135,10 @@ export default function PestsListScreen() {
 					)
 				}
 				renderItem={({ item }) => (
-					<PestRow pest={item} severityColor={sevColor(item.severity, colors)} />
+					<PestRow
+						pest={item}
+						severityColor={sevColor(item.severity, colors)}
+					/>
 				)}
 			/>
 		</GradientBackground>
@@ -227,7 +230,11 @@ function PestRow({
 								flexWrap: "wrap",
 							}}
 						>
-							<Badge label={pest.kind} color={kindColor(pest.kind, colors)} small />
+							<Badge
+								label={pest.kind}
+								color={kindColor(pest.kind, colors)}
+								small
+							/>
 							<Badge label={pest.severity} color={severityColor} small />
 						</View>
 						{pest.affected_crops?.length ? (

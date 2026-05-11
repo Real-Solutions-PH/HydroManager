@@ -5,7 +5,7 @@ import { Image, Pressable, ScrollView, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
-import { type ThemeColors, spacing, useThemeColors } from "@/constants/theme";
+import { spacing, type ThemeColors, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 
 type Section = {

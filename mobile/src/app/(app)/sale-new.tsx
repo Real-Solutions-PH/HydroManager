@@ -380,11 +380,11 @@ export default function NewSaleScreen() {
 									borderColor: colors.primaryLight,
 								}}
 							>
-								<Ionicons name="add" size={16} color={colors.text} />
+								<Ionicons name="add" size={16} color="#FFFFFF" />
 								<Text
 									size="sm"
 									weight="semibold"
-									style={{ color: colors.text }}
+									style={{ color: "#FFFFFF" }}
 								>
 									{t("sales.add_item")}
 								</Text>

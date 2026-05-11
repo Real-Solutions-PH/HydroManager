@@ -1,4 +1,4 @@
-import { useRouter, usePathname } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import { useCallback } from "react";
 import { useNavHistoryStore } from "@/stores/nav-history-store";
 

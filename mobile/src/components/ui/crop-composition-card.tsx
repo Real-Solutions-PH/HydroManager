@@ -1,6 +1,11 @@
 import { ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/text";
-import { radii, spacing, type ThemeColors, useThemeColors } from "@/constants/theme";
+import {
+	radii,
+	spacing,
+	type ThemeColors,
+	useThemeColors,
+} from "@/constants/theme";
 
 export interface CropCompositionSegment {
 	label: string;
@@ -48,7 +53,10 @@ function hslToHex(h: number, s: number, l: number): string {
 	return `#${f(0)}${f(8)}${f(4)}`;
 }
 
-export function getCompositionColor(index: number, colors: ThemeColors): string {
+export function getCompositionColor(
+	index: number,
+	colors: ThemeColors,
+): string {
 	const palette = segmentPalette(colors);
 	if (index < palette.length) return palette[index];
 	const hue = ((index - palette.length) * 137.508) % 360;
@@ -98,7 +106,7 @@ export function CropCompositionCard({
 		<View style={{ paddingHorizontal: spacing.md }}>
 			<View
 				style={{
-					backgroundColor: colors.surfaceVariant,
+					backgroundColor: colors.surface,
 					borderRadius: radii.lg,
 					borderWidth: 1,
 					borderColor: colors.border,

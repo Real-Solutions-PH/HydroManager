@@ -72,9 +72,7 @@ export function milestonesForCategory(
 	category: CropCategory | null | undefined,
 ): Milestone[] {
 	if (category === "leafy" || category === "herb") {
-		return MILESTONE_ORDER.filter(
-			(m) => m !== "Flowering" && m !== "FruitSet",
-		);
+		return MILESTONE_ORDER.filter((m) => m !== "Flowering" && m !== "FruitSet");
 	}
 	return MILESTONE_ORDER;
 }

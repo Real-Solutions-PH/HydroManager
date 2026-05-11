@@ -14,7 +14,7 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Select } from "@/components/ui/select";
 import { Text } from "@/components/ui/text";
-import { type ThemeColors, spacing, useThemeColors } from "@/constants/theme";
+import { spacing, type ThemeColors, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { useClimateNormals, useCrops } from "@/hooks/use-library";

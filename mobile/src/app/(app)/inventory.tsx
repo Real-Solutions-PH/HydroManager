@@ -150,7 +150,9 @@ export default function InventoryScreen() {
 							}}
 						>
 							<Ionicons name="add" size={18} color="#FFFFFF" />
-							<Text weight="semibold">New</Text>
+							<Text weight="semibold" style={{ color: "#FFFFFF" }}>
+								New
+							</Text>
 						</Pressable>
 					</Link>
 				</View>

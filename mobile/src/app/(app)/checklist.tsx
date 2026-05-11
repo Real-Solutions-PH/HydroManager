@@ -235,7 +235,9 @@ export default function ChecklistScreen() {
 								borderRadius: 12,
 							}}
 						>
-							<Text weight="semibold">+ Start a Batch</Text>
+							<Text weight="semibold" style={{ color: "#FFFFFF" }}>
+								+ Start a Batch
+							</Text>
 						</Pressable>
 					</Link>
 				</View>

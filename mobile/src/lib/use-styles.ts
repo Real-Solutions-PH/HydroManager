@@ -7,5 +7,5 @@ import { type ThemeColors, useThemeColors } from "@/constants/theme";
  */
 export function useStyles<T>(factory: (colors: ThemeColors) => T): T {
 	const colors = useThemeColors();
-	return useMemo(() => factory(colors), [colors]);
+	return useMemo(() => factory(colors), [colors, factory]);
 }

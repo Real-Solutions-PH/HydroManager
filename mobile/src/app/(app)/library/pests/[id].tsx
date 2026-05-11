@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
-import { type ThemeColors, spacing, useThemeColors } from "@/constants/theme";
+import { spacing, type ThemeColors, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { usePest } from "@/hooks/use-library";
 import type { LibraryPest, PestKind, PestSeverity } from "@/lib/hydro-api";
@@ -102,7 +102,11 @@ function PestDetail({ pest }: { pest: LibraryPest }) {
 					}}
 				>
 					<Badge label={pest.kind} color={kindColor(pest.kind, colors)} small />
-					<Badge label={pest.severity} color={sevColor(pest.severity, colors)} small />
+					<Badge
+						label={pest.severity}
+						color={sevColor(pest.severity, colors)}
+						small
+					/>
 				</View>
 			</View>
 

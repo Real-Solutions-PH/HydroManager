@@ -282,7 +282,7 @@ export default function SettingsScreen() {
 						padding: spacing.lg,
 					}}
 				>
-					<Card variant="outlined" style={{ backgroundColor: colors.bgMid }}>
+					<Card variant="outlined" style={{ backgroundColor: colors.surface }}>
 						<Text size="lg" weight="bold" style={{ marginBottom: spacing.sm }}>
 							{t("settings.edit_profile")}
 						</Text>

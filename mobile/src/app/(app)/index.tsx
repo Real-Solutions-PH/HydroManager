@@ -614,13 +614,20 @@ export default function HomeScreen() {
 		.slice(0, 5);
 
 	return (
-		<GradientBackground bg={colors.primaryDeep}>
+		<GradientBackground bg={colors.bg} withInsets={false}>
 			<ScrollView
 				contentContainerStyle={{
 					gap: spacing.md,
 				}}
 				style={{ flex: 1 }}
 			>
+				<View
+					style={{
+						backgroundColor: colors.primaryDeep,
+						paddingTop: insets.top + spacing.sm,
+						gap: spacing.md,
+					}}
+				>
 				{/* Header: date + greeting on left, circular bell + gear on right */}
 				<View
 					style={{
@@ -727,14 +734,13 @@ export default function HomeScreen() {
 						flexDirection: "row",
 						alignItems: "center",
 						paddingHorizontal: spacing.md,
-						marginBottom: spacing.lg,
 					}}
 				>
 					<Image
 						key={gifKey}
 						source={require("../../../assets/character/welcome.gif")}
 						style={{
-							width: 150,
+							width: 160,
 							height: 160,
 							marginRight: -spacing.xs,
 							marginBottom: -spacing.xxxl - spacing.md,
@@ -752,6 +758,7 @@ export default function HomeScreen() {
 							low: String(lowStock.length),
 						})}
 					/>
+				</View>
 				</View>
 
 				{/* Bottom panel — clear separation from header */}

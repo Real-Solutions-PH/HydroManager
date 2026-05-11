@@ -53,11 +53,11 @@ home: {
     setups_subtitle: "Your active systems",
     no_setups: "No setups yet. Add your first.",
     // new
-    greeting_morning: "Good morning! 🇵🇭",
-    greeting_afternoon: "Good afternoon! 🇵🇭",
-    greeting_evening: "Good evening! 🇵🇭",
+    greeting_morning: "Good morning!",
+    greeting_afternoon: "Good afternoon!",
+    greeting_evening: "Good evening!",
     farm_suffix: "'s Farm",
-    checkin_quote: "How's your farm today? 👋",
+    checkin_quote: "How's your farm today?",
     checkin_summary: "{tasks} tasks pending • {harvests} batches ready to check • {low} low stock",
     todays_tasks: "Today's Tasks",
     tasks_done_count: "{done} of {total} tasks completed today",
@@ -107,11 +107,11 @@ home: {
     setups_subtitle: "Iyong aktibong mga sistema",
     no_setups: "Wala pang setup. Magdagdag.",
     // new
-    greeting_morning: "Magandang umaga! 🇵🇭",
-    greeting_afternoon: "Magandang hapon! 🇵🇭",
-    greeting_evening: "Magandang gabi! 🇵🇭",
+    greeting_morning: "Magandang umaga!",
+    greeting_afternoon: "Magandang hapon!",
+    greeting_evening: "Magandang gabi!",
     farm_suffix: " Farm",
-    checkin_quote: "Kumusta ang farm mo ngayon! 👋",
+    checkin_quote: "Kumusta ang farm mo ngayon!",
     checkin_summary: "{tasks} gawain natitira • {harvests} batch handa nang suriin • {low} kulang na stock",
     todays_tasks: "Mga Gawain Ngayon",
     tasks_done_count: "{done} sa {total} gawain natapos ngayon",
@@ -1280,8 +1280,8 @@ With `en` locale (default):
 - [ ] **Step 3: Verify visual layout (tl)**
 
 In Settings, switch the language to Tagalog. Return to Home. Confirm:
-- Greeting becomes `Magandang umaga/hapon/gabi! 🇵🇭` matching the time of day.
-- Quote becomes `"Kumusta ang farm mo ngayon! 👋"`.
+- Greeting becomes `Magandang umaga/hapon/gabi!` matching the time of day.
+- Quote becomes `"Kumusta ang farm mo ngayon!"`.
 - All section headers, KPI labels, alert pill labels, and quick action labels render in Tagalog.
 - No empty `{var}` placeholder strings appear.
 

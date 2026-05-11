@@ -170,7 +170,9 @@ export function AIChatFab() {
 										borderRadius: 16,
 									}}
 								>
-									<Text>{m.content}</Text>
+									<Text style={m.role === "user" ? { color: "#FFFFFF" } : undefined}>
+										{m.content}
+									</Text>
 								</View>
 								{m.citations?.length ? (
 									<View
