@@ -6,7 +6,7 @@ import { FormField } from "@/components/ui/form-field";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 import { useAuth } from "@/hooks/useAuth";
 import {
 	confirmPasswordRules,
@@ -24,6 +24,7 @@ interface SignupForm {
 
 export default function SignupScreen() {
 	const { signup } = useAuth();
+	const colors = useThemeColors();
 	const {
 		control,
 		handleSubmit,
