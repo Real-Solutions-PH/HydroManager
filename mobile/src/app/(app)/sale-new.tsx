@@ -10,7 +10,7 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Select, type SelectOption } from "@/components/ui/select";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import {
@@ -106,6 +106,7 @@ function lineFromInventory(item: InventoryItem): LineItem {
 
 export default function NewSaleScreen() {
 	const { t } = useT();
+	const colors = useThemeColors();
 	const qc = useQueryClient();
 	const toast = useCustomToast();
 	const goBack = useBack();
@@ -661,6 +662,7 @@ function Chip({
 	active: boolean;
 	onPress: () => void;
 }) {
+	const colors = useThemeColors();
 	return (
 		<Pressable
 			onPress={onPress}
@@ -693,6 +695,7 @@ function PricingModeBtn({
 	active: boolean;
 	onPress: () => void;
 }) {
+	const colors = useThemeColors();
 	return (
 		<Pressable
 			onPress={onPress}

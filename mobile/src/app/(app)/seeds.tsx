@@ -29,7 +29,7 @@ import { Input } from "@/components/ui/input";
 import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
-import { colors, spacing, systemTypes } from "@/constants/theme";
+import { spacing, systemTypes, useThemeColors } from "@/constants/theme";
 import {
 	type Batch,
 	type BatchDetail,
@@ -163,6 +163,7 @@ function formatWaterTemp(guide: CropGuide): string {
 }
 
 export default function SeedsScreen() {
+	const colors = useThemeColors();
 	const [filter, setFilter] = useState<Filter>("All");
 	const [query, setQuery] = useState("");
 	const [expanded, setExpanded] = useState<string | null>(null);
@@ -179,11 +180,7 @@ export default function SeedsScreen() {
 		staleTime: STALE.setups,
 	});
 	const batchesQ = useInfiniteQuery({
-		queryKey: [
-			...QK.batches.lists(),
-			"paged",
-			{ includeArchived: true },
-		],
+		queryKey: [...QK.batches.lists(), "paged", { includeArchived: true }],
 		queryFn: ({ pageParam = 0 }) =>
 			batchesApi.list({
 				include_archived: true,
@@ -394,10 +391,7 @@ export default function SeedsScreen() {
 				) : (
 					groups.map((g) => (
 						<View key={g.dateKey} style={{ gap: spacing.sm }}>
-							<TimelineHeader
-								dateKey={g.dateKey}
-								count={g.batches.length}
-							/>
+							<TimelineHeader dateKey={g.dateKey} count={g.batches.length} />
 							{g.batches.map((b, i) => {
 								const guide = resolveGuide(b);
 								const detail = detailById.get(b.id);
@@ -464,6 +458,7 @@ function BatchCard({
 	onToggle: () => void;
 	onAutoAdvance: () => void;
 }) {
+	const colors = useThemeColors();
 	const setupColor = setup ? systemTypes[setup.type] : null;
 	const day = Math.max(
 		0,
@@ -588,11 +583,7 @@ function BatchCard({
 										backgroundColor: colors.warningLight,
 									}}
 								>
-									<Ionicons
-										name="flash"
-										size={10}
-										color={colors.warning}
-									/>
+									<Ionicons name="flash" size={10} color={colors.warning} />
 									<Text
 										size="xs"
 										weight="bold"
@@ -651,7 +642,7 @@ function BatchCard({
 									borderRadius: 999,
 									backgroundColor: STAGE_COLORS[nextStage].bg,
 									borderWidth: 1,
-									borderColor: STAGE_COLORS[nextStage].fg + "40",
+									borderColor: `${STAGE_COLORS[nextStage].fg}40`,
 								}}
 							>
 								<Text
@@ -973,6 +964,7 @@ function BatchCard({
 }
 
 function CropImage({ url }: { url: string | null }) {
+	const colors = useThemeColors();
 	const [errored, setErrored] = useState(false);
 	const showImg = !!url && !errored;
 	return (
@@ -1007,6 +999,7 @@ function AdvanceStageDialog({
 	target: { batch: Batch; detail?: BatchDetail; guide?: CropGuide } | null;
 	onClose: () => void;
 }) {
+	const colors = useThemeColors();
 	const qc = useQueryClient();
 	const stateCounts = target?.detail?.state_counts ?? [];
 	const isFruiting = stateCounts.some(
@@ -1188,6 +1181,7 @@ function StageDots({
 	currentIdx: number;
 	totalPlants: number;
 }) {
+	const colors = useThemeColors();
 	return (
 		<View
 			style={{
@@ -1253,6 +1247,7 @@ function DetailCell({
 	icon?: keyof typeof Ionicons.glyphMap;
 	iconColor?: string;
 }) {
+	const colors = useThemeColors();
 	return (
 		<View style={{ width: "50%", paddingVertical: 6 }}>
 			<View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
@@ -1288,6 +1283,7 @@ function EnvChip({
 	color: string;
 	label: string;
 }) {
+	const colors = useThemeColors();
 	return (
 		<View
 			style={{
@@ -1317,6 +1313,7 @@ function TimelineHeader({
 	dateKey: string;
 	count: number;
 }) {
+	const colors = useThemeColors();
 	const label = formatTimelineDate(dateKey);
 	return (
 		<View
@@ -1388,6 +1385,7 @@ function TimelineRow({
 	isLast: boolean;
 	children: ReactNode;
 }) {
+	const colors = useThemeColors();
 	return (
 		<View style={{ flexDirection: "row", gap: spacing.sm }}>
 			<View style={{ width: 12, alignItems: "center" }}>
@@ -1434,6 +1432,7 @@ function formatTimelineDate(dateKey: string): string {
 }
 
 function TipCard() {
+	const colors = useThemeColors();
 	return (
 		<View
 			style={{

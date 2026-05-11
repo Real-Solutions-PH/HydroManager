@@ -13,7 +13,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { type ThemeColors, spacing, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { usePests } from "@/hooks/use-library";
 import type { LibraryPest, PestKind, PestSeverity } from "@/lib/hydro-api";
@@ -22,7 +22,7 @@ import { capitalize } from "@/lib/utils";
 
 const KINDS: PestKind[] = ["pest", "disease", "deficiency"];
 
-function kindColor(k: PestKind): string {
+function kindColor(k: PestKind, colors: ThemeColors): string {
 	switch (k) {
 		case "pest":
 			return colors.warning;
@@ -33,7 +33,7 @@ function kindColor(k: PestKind): string {
 	}
 }
 
-function sevColor(s: PestSeverity): string {
+function sevColor(s: PestSeverity, colors: ThemeColors): string {
 	switch (s) {
 		case "low":
 			return colors.success;
@@ -45,6 +45,7 @@ function sevColor(s: PestSeverity): string {
 }
 
 export default function PestsListScreen() {
+	const colors = useThemeColors();
 	const _router = useRouter();
 	const goBack = useBack();
 	const [query, setQuery] = useState("");
@@ -94,7 +95,7 @@ export default function PestsListScreen() {
 							key={k}
 							label={capitalize(k)}
 							active={kind === k}
-							accent={kindColor(k)}
+							accent={kindColor(k, colors)}
 							onPress={() => setKind(k)}
 						/>
 					))}
@@ -134,7 +135,7 @@ export default function PestsListScreen() {
 					)
 				}
 				renderItem={({ item }) => (
-					<PestRow pest={item} severityColor={sevColor(item.severity)} />
+					<PestRow pest={item} severityColor={sevColor(item.severity, colors)} />
 				)}
 			/>
 		</GradientBackground>
@@ -152,6 +153,7 @@ function Chip({
 	accent?: string;
 	onPress: () => void;
 }) {
+	const colors = useThemeColors();
 	const c = accent ?? colors.primaryLight;
 	return (
 		<Pressable
@@ -183,6 +185,7 @@ function PestRow({
 	pest: LibraryPest;
 	severityColor: string;
 }) {
+	const colors = useThemeColors();
 	return (
 		<Link href={`/library/pests/${pest.id}`} asChild>
 			<Card onPress={() => {}}>
@@ -224,7 +227,7 @@ function PestRow({
 								flexWrap: "wrap",
 							}}
 						>
-							<Badge label={pest.kind} color={kindColor(pest.kind)} small />
+							<Badge label={pest.kind} color={kindColor(pest.kind, colors)} small />
 							<Badge label={pest.severity} color={severityColor} small />
 						</View>
 						{pest.affected_crops?.length ? (

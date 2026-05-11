@@ -4,12 +4,13 @@ import { Image, Pressable, ScrollView, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useGuide } from "@/hooks/use-library";
 import { MarkdownRender } from "@/lib/markdown-render";
 
 export default function GuideDetailScreen() {
+	const colors = useThemeColors();
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const _router = useRouter();
 	const goBack = useBack();

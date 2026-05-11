@@ -13,7 +13,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { type ThemeColors, spacing, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useGuides } from "@/hooks/use-library";
 import type { GuideCategory, LibraryGuide } from "@/lib/hydro-api";
@@ -29,7 +29,7 @@ const CATEGORIES: GuideCategory[] = [
 	"other",
 ];
 
-function catColor(c: GuideCategory): string {
+function catColor(c: GuideCategory, colors: ThemeColors): string {
 	switch (c) {
 		case "setup":
 			return colors.info;
@@ -47,6 +47,7 @@ function catColor(c: GuideCategory): string {
 }
 
 export default function GuidesListScreen() {
+	const colors = useThemeColors();
 	const _router = useRouter();
 	const goBack = useBack();
 	const [query, setQuery] = useState("");
@@ -96,7 +97,7 @@ export default function GuidesListScreen() {
 							key={c}
 							label={capitalize(c)}
 							active={category === c}
-							accent={catColor(c)}
+							accent={catColor(c, colors)}
 							onPress={() => setCategory(c)}
 						/>
 					))}
@@ -156,6 +157,7 @@ function Chip({
 	accent?: string;
 	onPress: () => void;
 }) {
+	const colors = useThemeColors();
 	const c = accent ?? colors.primaryLight;
 	return (
 		<Pressable
@@ -181,6 +183,7 @@ function Chip({
 }
 
 function GuideRow({ guide }: { guide: LibraryGuide }) {
+	const colors = useThemeColors();
 	return (
 		<Link href={`/library/guides/${guide.id}`} asChild>
 			<Card onPress={() => {}}>
@@ -201,7 +204,7 @@ function GuideRow({ guide }: { guide: LibraryGuide }) {
 						>
 							<Badge
 								label={guide.category}
-								color={catColor(guide.category)}
+								color={catColor(guide.category, colors)}
 								small
 							/>
 							{guide.read_time_min ? (

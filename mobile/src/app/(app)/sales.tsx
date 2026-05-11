@@ -23,7 +23,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { type ThemeColors, spacing, useThemeColors } from "@/constants/theme";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import {
 	type InventoryCategory,
@@ -39,7 +39,7 @@ import { formatPHP, handleError } from "@/lib/utils";
 
 type Period = "month" | "90d" | "ytd";
 
-function cropColors(): string[] {
+function cropColors(colors: ThemeColors): string[] {
 	return [
 		colors.primaryLight,
 		colors.info,
@@ -51,6 +51,7 @@ function cropColors(): string[] {
 
 function categoryMeta(
 	c: InventoryCategory,
+	colors: ThemeColors,
 ): { label: string; color: string } {
 	switch (c) {
 		case "seeds":
@@ -68,7 +69,10 @@ function categoryMeta(
 	}
 }
 
-function channelMeta(c: SaleChannel): { label: string; color: string } {
+function channelMeta(
+	c: SaleChannel,
+	colors: ThemeColors,
+): { label: string; color: string } {
 	switch (c) {
 		case "market":
 			return { label: "Kadiwa", color: colors.primaryLight };
@@ -85,6 +89,7 @@ function channelMeta(c: SaleChannel): { label: string; color: string } {
 
 export default function SalesScreen() {
 	const { t } = useT();
+	const colors = useThemeColors();
 	const toast = useCustomToast();
 	const qc = useQueryClient();
 	const me = useQuery({
@@ -370,7 +375,7 @@ export default function SalesScreen() {
 										name={c.crop}
 										revenue={c.revenue}
 										max={topCropsMax}
-										color={cropColors()[idx] ?? colors.textMuted}
+										color={cropColors(colors)[idx] ?? colors.textMuted}
 										isLast={idx === Math.min(topCrops.length, 5) - 1}
 									/>
 								))
@@ -451,6 +456,7 @@ function PeriodChips({
 	value: Period;
 	onChange: (p: Period) => void;
 }) {
+	const colors = useThemeColors();
 	const opts: { key: Period; label: string }[] = [
 		{ key: "month", label: "Month" },
 		{ key: "90d", label: "90 Days" },
@@ -549,6 +555,7 @@ function CropRow({
 	color: string;
 	isLast: boolean;
 }) {
+	const colors = useThemeColors();
 	const pct = max > 0 ? Math.max(4, (revenue / max) * 100) : 0;
 	return (
 		<View style={{ marginBottom: isLast ? 0 : spacing.sm }}>
@@ -609,7 +616,8 @@ function ChannelCard({
 	revenue: number;
 	total: number;
 }) {
-	const meta = channelMeta(channel) ?? channelMeta("other");
+	const colors = useThemeColors();
+	const meta = channelMeta(channel, colors) ?? channelMeta("other", colors);
 	const pct = total > 0 ? (revenue / total) * 100 : 0;
 	return (
 		<View
@@ -679,7 +687,8 @@ function RecentSaleCard({
 	onDelete: () => void;
 	disabled: boolean;
 }) {
-	const meta = channelMeta(sale.channel) ?? channelMeta("other");
+	const colors = useThemeColors();
+	const meta = channelMeta(sale.channel, colors) ?? channelMeta("other", colors);
 	const total = sale.items.reduce(
 		(s, it) => s + it.quantity * it.unit_price,
 		0,
@@ -789,6 +798,7 @@ function ExpensePieChart({
 	slices: { category: InventoryCategory; value: number }[];
 	total: number;
 }) {
+	const colors = useThemeColors();
 	const size = 160;
 	const radius = size / 2;
 	const stroke = 28;
@@ -837,13 +847,13 @@ function ExpensePieChart({
 							cx={cx}
 							cy={cy}
 							r={innerR}
-							stroke={categoryMeta(arcs[0].category).color}
+							stroke={categoryMeta(arcs[0].category, colors).color}
 							strokeWidth={stroke}
 							fill="none"
 						/>
 					) : (
 						arcs.map((a) => {
-							const meta = categoryMeta(a.category);
+							const meta = categoryMeta(a.category, colors);
 							const startAngle = a.start * 2 * Math.PI;
 							const endAngle = a.end * 2 * Math.PI;
 							const x1 = cx + innerR * Math.cos(startAngle);
@@ -867,7 +877,7 @@ function ExpensePieChart({
 			</Svg>
 			<View style={{ flex: 1, gap: spacing.xs }}>
 				{arcs.map((a) => {
-					const meta = categoryMeta(a.category);
+					const meta = categoryMeta(a.category, colors);
 					return (
 						<View
 							key={a.category}
@@ -907,6 +917,7 @@ function ExpensePieChart({
 }
 
 function TrendChart({ points }: { points: { x: string; y: number }[] }) {
+	const colors = useThemeColors();
 	const { width: winW } = useWindowDimensions();
 	const width = winW - spacing.md * 4;
 	const height = 140;

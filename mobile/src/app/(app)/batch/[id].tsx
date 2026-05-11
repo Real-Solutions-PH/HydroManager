@@ -11,7 +11,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { colors, spacing, systemTypes } from "@/constants/theme";
+import { spacing, systemTypes, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import {
 	batchesApi,
@@ -29,6 +29,7 @@ function isoDateOnly(s: string | null | undefined): string | null {
 }
 
 export default function BatchDetailScreen() {
+	const colors = useThemeColors();
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const batchId = id ?? "";
 	const qc = useQueryClient();
@@ -451,27 +452,29 @@ export default function BatchDetailScreen() {
 							);
 						})}
 					</View>
-					{editSetupId && editSetupId !== b.setup_id ? (() => {
-						const targetEmpty =
-							editSetupQ.data?.slots.filter(
-								(s) => s.status === "empty" && !s.batch_id,
-							).length ?? 0;
-						const need = b.slots_used ?? 0;
-						const short = need > 0 && targetEmpty < need;
-						return (
-							<Text
-								size="xs"
-								style={{
-									marginTop: 6,
-									color: short ? colors.error : colors.textMuted,
-								}}
-							>
-								{need > 0
-									? `Need ${need} empty slots · ${targetEmpty} available in target`
-									: "Moving to different setup"}
-							</Text>
-						);
-					})() : null}
+					{editSetupId && editSetupId !== b.setup_id
+						? (() => {
+								const targetEmpty =
+									editSetupQ.data?.slots.filter(
+										(s) => s.status === "empty" && !s.batch_id,
+									).length ?? 0;
+								const need = b.slots_used ?? 0;
+								const short = need > 0 && targetEmpty < need;
+								return (
+									<Text
+										size="xs"
+										style={{
+											marginTop: 6,
+											color: short ? colors.error : colors.textMuted,
+										}}
+									>
+										{need > 0
+											? `Need ${need} empty slots · ${targetEmpty} available in target`
+											: "Moving to different setup"}
+									</Text>
+								);
+							})()
+						: null}
 					<View style={{ height: spacing.sm }} />
 					<Label>VARIETY NAME</Label>
 					<Input value={editVariety} onChangeText={setEditVariety} />

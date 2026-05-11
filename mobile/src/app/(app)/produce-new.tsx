@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { batchesApi, produceApi } from "@/lib/hydro-api";
@@ -22,6 +22,7 @@ function todayISO(): string {
 }
 
 export default function NewProduceScreen() {
+	const colors = useThemeColors();
 	const qc = useQueryClient();
 	const goBack = useBack();
 	const toast = useCustomToast();
@@ -227,6 +228,7 @@ function Chip({
 	active: boolean;
 	onPress: () => void;
 }) {
+	const colors = useThemeColors();
 	return (
 		<Pressable
 			onPress={onPress}

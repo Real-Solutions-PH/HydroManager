@@ -5,7 +5,7 @@ import { Image, Pressable, ScrollView, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { type ThemeColors, spacing, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 
 type Section = {
@@ -16,7 +16,7 @@ type Section = {
 	accent: string;
 };
 
-function buildSections(): Section[] {
+function buildSections(colors: ThemeColors): Section[] {
 	return [
 		{
 			href: "/library/crops",
@@ -46,6 +46,7 @@ function buildSections(): Section[] {
 }
 
 export default function LibraryIndex() {
+	const colors = useThemeColors();
 	const goBack = useBack();
 	return (
 		<GradientBackground>
@@ -86,7 +87,7 @@ export default function LibraryIndex() {
 						accessibilityIgnoresInvertColors
 					/>
 				</View>
-				{buildSections().map((s) => (
+				{buildSections(colors).map((s) => (
 					<Link key={s.href} href={s.href} asChild>
 						<Card onPress={() => {}}>
 							<View

@@ -5,12 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { type ThemeColors, spacing, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { usePest } from "@/hooks/use-library";
 import type { LibraryPest, PestKind, PestSeverity } from "@/lib/hydro-api";
 
-function kindColor(k: PestKind): string {
+function kindColor(k: PestKind, colors: ThemeColors): string {
 	switch (k) {
 		case "pest":
 			return colors.warning;
@@ -21,7 +21,7 @@ function kindColor(k: PestKind): string {
 	}
 }
 
-function sevColor(s: PestSeverity): string {
+function sevColor(s: PestSeverity, colors: ThemeColors): string {
 	switch (s) {
 		case "low":
 			return colors.success;
@@ -33,6 +33,7 @@ function sevColor(s: PestSeverity): string {
 }
 
 export default function PestDetailScreen() {
+	const colors = useThemeColors();
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const _router = useRouter();
 	const goBack = useBack();
@@ -66,6 +67,7 @@ export default function PestDetailScreen() {
 }
 
 function PestDetail({ pest }: { pest: LibraryPest }) {
+	const colors = useThemeColors();
 	return (
 		<View style={{ gap: spacing.md }}>
 			{pest.image_url ? (
@@ -99,8 +101,8 @@ function PestDetail({ pest }: { pest: LibraryPest }) {
 						flexWrap: "wrap",
 					}}
 				>
-					<Badge label={pest.kind} color={kindColor(pest.kind)} small />
-					<Badge label={pest.severity} color={sevColor(pest.severity)} small />
+					<Badge label={pest.kind} color={kindColor(pest.kind, colors)} small />
+					<Badge label={pest.severity} color={sevColor(pest.severity, colors)} small />
 				</View>
 			</View>
 

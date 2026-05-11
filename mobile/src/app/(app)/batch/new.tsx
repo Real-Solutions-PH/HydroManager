@@ -11,7 +11,7 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { SlotMeter } from "@/components/ui/slot-meter";
 import { Text } from "@/components/ui/text";
-import { colors, spacing, systemTypes } from "@/constants/theme";
+import { spacing, systemTypes, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { batchesApi, cropsApi, setupsApi } from "@/lib/hydro-api";
 import { QK, STALE } from "@/lib/query-config";
@@ -25,6 +25,7 @@ function todayIso(): string {
 }
 
 export default function NewBatchScreen() {
+	const colors = useThemeColors();
 	const { setup: setupParam } = useLocalSearchParams<{ setup?: string }>();
 	const qc = useQueryClient();
 	const goBack = useBack();
@@ -85,9 +86,7 @@ export default function NewBatchScreen() {
 				seeds_per_slot: seedsPerSlotNum,
 				crop_guide_id: cropId,
 				notes: notes.trim() || undefined,
-				started_at: startDate
-					? `${startDate}T00:00:00.000Z`
-					: undefined,
+				started_at: startDate ? `${startDate}T00:00:00.000Z` : undefined,
 			}),
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: QK.batches.all });

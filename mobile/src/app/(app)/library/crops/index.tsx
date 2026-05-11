@@ -14,7 +14,7 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Select } from "@/components/ui/select";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { type ThemeColors, spacing, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { useClimateNormals, useCrops } from "@/hooks/use-library";
@@ -25,7 +25,7 @@ import { capitalize } from "@/lib/utils";
 const CATEGORIES = ["leafy", "herb", "fruiting", "other"] as const;
 type Cat = (typeof CATEGORIES)[number];
 
-function catColor(c: Cat): string {
+function catColor(c: Cat, colors: ThemeColors): string {
 	switch (c) {
 		case "leafy":
 			return colors.success;
@@ -175,6 +175,7 @@ function sortCrops(crops: CropGuide[], key: SortKey): CropGuide[] {
 }
 
 export default function CropsListScreen() {
+	const colors = useThemeColors();
 	const _router = useRouter();
 	const goBack = useBack();
 	const [query, setQuery] = useState("");
@@ -250,7 +251,7 @@ export default function CropsListScreen() {
 							key={c}
 							label={capitalize(c)}
 							active={category === c}
-							accent={catColor(c)}
+							accent={catColor(c, colors)}
 							onPress={() => setCategory(c)}
 						/>
 					))}
@@ -385,6 +386,7 @@ function EnvBanner({
 	env: ClimateNormals | null;
 	onRetryGeo: () => void;
 }) {
+	const colors = useThemeColors();
 	if (geoStatus === "denied" || geoStatus === "error") {
 		return (
 			<Pressable
@@ -446,6 +448,7 @@ function Chip({
 	accent?: string;
 	onPress: () => void;
 }) {
+	const colors = useThemeColors();
 	const c = accent ?? colors.primaryLight;
 	return (
 		<Pressable
@@ -472,6 +475,7 @@ function Chip({
 }
 
 function CropRow({ crop }: { crop: CropGuide }) {
+	const colors = useThemeColors();
 	return (
 		<Link href={`/library/crops/${crop.id}`} asChild>
 			<Card onPress={() => {}}>

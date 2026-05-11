@@ -5,7 +5,7 @@ import { Image, Pressable, ScrollView, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
-import { colors, radii, spacing, systemTypes } from "@/constants/theme";
+import { radii, spacing, systemTypes, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useCrop, useCropStats } from "@/hooks/use-library";
 import type { CropGuide, CropStatValue } from "@/lib/hydro-api";
@@ -89,6 +89,7 @@ function CropDetail({
 	stats: Record<string, CropStatValue>;
 	onBack: () => void;
 }) {
+	const colors = useThemeColors();
 	const sunlightRange = tryParseRange("sunlight_hours", crop.sunlight_hours);
 	const growlightRange = tryParseRange("growlight_hours", crop.growlight_hours);
 	const dayTempRange = tryParseRange(
@@ -320,6 +321,7 @@ function CropDetail({
 		}
 		return arr;
 	}, [
+		colors,
 		crop,
 		dayTempRange,
 		domainFor,
@@ -412,7 +414,7 @@ function CropDetail({
 					<Section title="Crop Guide" icon="git-branch">
 						<View>
 							{crop.growth_stages.map((stage, i) => {
-								const isLast = i === crop.growth_stages!.length - 1;
+								const isLast = i === crop.growth_stages?.length - 1;
 								return (
 									<View
 										key={`${stage.stage}-${stage.day_min}`}
@@ -544,7 +546,11 @@ function CropDetail({
 				) : null}
 
 				{crop.risks?.length ? (
-					<Section title="Risks & Mitigation" icon="warning" iconColor={colors.warning}>
+					<Section
+						title="Risks & Mitigation"
+						icon="warning"
+						iconColor={colors.warning}
+					>
 						<View style={{ gap: spacing.sm }}>
 							{crop.risks.map((risk) => (
 								<Card key={`risk-${risk.title}`} variant="outlined">
@@ -592,6 +598,7 @@ function Section({
 	iconColor?: string;
 	children: React.ReactNode;
 }) {
+	const colors = useThemeColors();
 	return (
 		<View style={{ gap: spacing.xs }}>
 			<View
@@ -632,6 +639,7 @@ function RangeBar({
 	domainMax: number;
 	avg?: number;
 }) {
+	const colors = useThemeColors();
 	const lo = Math.min(min, max);
 	const hi = Math.max(min, max);
 	const span = domainMax - domainMin;
@@ -715,6 +723,7 @@ function MeterRow({
 	domainMax: number;
 	avg?: number;
 }) {
+	const colors = useThemeColors();
 	return (
 		<View
 			style={{ flexDirection: "row", gap: spacing.sm, alignItems: "center" }}
@@ -769,6 +778,7 @@ function MeterRow({
 }
 
 function HarvestHighlight({ text }: { text: string | null }) {
+	const colors = useThemeColors();
 	if (!text) return null;
 	return (
 		<Card variant="outlined">
@@ -814,6 +824,7 @@ function HeroHeader({
 	onBack: () => void;
 	setups?: string | null;
 }) {
+	const colors = useThemeColors();
 	const setupTags = setups
 		? setups
 				.split(",")
@@ -902,6 +913,7 @@ function EcStageGrid({
 		icon: keyof typeof Ionicons.glyphMap;
 	}[];
 }) {
+	const colors = useThemeColors();
 	const visible = stages.filter((s) => s.value);
 	return (
 		<View style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.sm }}>
@@ -955,7 +967,7 @@ function EcStageGrid({
 	);
 }
 
-function StatGrid({
+function _StatGrid({
 	stats,
 }: {
 	stats: { label: string; value: string | null | undefined }[];

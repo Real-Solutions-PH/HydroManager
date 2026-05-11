@@ -6,7 +6,7 @@ import { FlatList, Pressable, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 import {
 	type Batch,
 	batchesApi,
@@ -105,6 +105,7 @@ function orderByUrgency(tasks: UiTask[]): UiTask[] {
 }
 
 export default function ChecklistScreen() {
+	const colors = useThemeColors();
 	const serverTasks = useQuery({
 		queryKey: QK.checklist(),
 		queryFn: () => checklistApi.list(),
@@ -285,6 +286,7 @@ function TaskRow({
 	done: boolean;
 	onToggle: () => void;
 }) {
+	const colors = useThemeColors();
 	const accent =
 		task.urgency === "overdue"
 			? colors.error

@@ -15,7 +15,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useAuth } from "@/hooks/useAuth";
 import { useCustomToast } from "@/hooks/useCustomToast";
@@ -27,6 +27,7 @@ import { useThemeStore } from "@/stores/theme-store";
 
 export default function SettingsScreen() {
 	const { t } = useT();
+	const colors = useThemeColors();
 	const toast = useCustomToast();
 	const locale = useI18n((s) => s.locale);
 	const setLocale = useI18n((s) => s.setLocale);
@@ -341,6 +342,7 @@ function LocaleBtn({
 	active: boolean;
 	onPress: () => void;
 }) {
+	const colors = useThemeColors();
 	return (
 		<Pressable
 			onPress={onPress}
@@ -375,6 +377,7 @@ function ThemeBtn({
 	active: boolean;
 	onPress: () => void;
 }) {
+	const colors = useThemeColors();
 	return (
 		<Pressable
 			onPress={onPress}

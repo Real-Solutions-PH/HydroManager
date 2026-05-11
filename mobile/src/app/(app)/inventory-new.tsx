@@ -8,7 +8,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { colors, inventoryCategoryMeta, spacing } from "@/constants/theme";
+import { inventoryCategoryMeta, spacing, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import {
 	type InventoryCategory,
@@ -28,6 +28,7 @@ const CATEGORIES: InventoryCategory[] = [
 const UNITS: InventoryUnit[] = ["grams", "pieces", "liters", "milliliters"];
 
 export default function NewInventoryItemScreen() {
+	const colors = useThemeColors();
 	const qc = useQueryClient();
 	const goBack = useBack();
 	const [name, setName] = useState("");
@@ -324,6 +325,7 @@ function Chip({
 	active: boolean;
 	onPress: () => void;
 }) {
+	const colors = useThemeColors();
 	return (
 		<Pressable
 			onPress={onPress}

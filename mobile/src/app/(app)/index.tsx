@@ -21,7 +21,7 @@ import {
 import { SpeechBubble } from "@/components/ui/speech-bubble";
 import { Text } from "@/components/ui/text";
 import { type TodayForecast, WeatherCard } from "@/components/ui/weather-card";
-import { colors, radii, spacing } from "@/constants/theme";
+import { type ThemeColors, radii, spacing, useThemeColors } from "@/constants/theme";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { useClimateNormals } from "@/hooks/use-library";
 import {
@@ -140,7 +140,10 @@ interface ActivityVisual {
 	iconColor: string;
 }
 
-function activityVisual(action: ActivityActionType): ActivityVisual {
+function activityVisual(
+	action: ActivityActionType,
+	colors: ThemeColors,
+): ActivityVisual {
 	switch (action) {
 		case "batch_created":
 		case "batch_transition":
@@ -234,8 +237,12 @@ function formatTimeAgo(iso: string, locale: string): string {
 	return new Date(iso).toLocaleDateString(locale);
 }
 
-function activityToItem(a: Activity, locale: string): ActivityItem {
-	const visual = activityVisual(a.action_type);
+function activityToItem(
+	a: Activity,
+	locale: string,
+	colors: ThemeColors,
+): ActivityItem {
+	const visual = activityVisual(a.action_type, colors);
 	return {
 		id: a.id,
 		icon: visual.icon,
@@ -266,6 +273,7 @@ function getGreetingKey(hour: number): string {
 export default function HomeScreen() {
 	const { t, locale } = useT();
 	const insets = useSafeAreaInsets();
+	const colors = useThemeColors();
 
 	const userQ = useQuery({
 		queryKey: QK.me(),
@@ -1078,7 +1086,7 @@ export default function HomeScreen() {
 						<Card>
 							{(() => {
 								const items = (activityQ.data?.data ?? []).map((a) =>
-									activityToItem(a, locale),
+									activityToItem(a, locale, colors),
 								);
 								if (items.length === 0) {
 									return (
@@ -1142,6 +1150,7 @@ function QuickActionCircle({
 	label: string;
 	href: Href;
 }) {
+	const colors = useThemeColors();
 	return (
 		<Pressable
 			accessibilityRole="link"

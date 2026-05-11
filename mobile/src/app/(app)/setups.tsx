@@ -2,7 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { Link } from "expo-router";
 import { useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, Image, Pressable, View } from "react-native";
+import {
+	ActivityIndicator,
+	FlatList,
+	Image,
+	Pressable,
+	View,
+} from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FilterChip, FilterRow } from "@/components/ui/filter-chip";
@@ -10,7 +16,7 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { Text } from "@/components/ui/text";
-import { colors, spacing, systemTypes } from "@/constants/theme";
+import { spacing, systemTypes, useThemeColors } from "@/constants/theme";
 import { batchesApi, type Setup, setupsApi } from "@/lib/hydro-api";
 import { flattenPages, getNextSkip, PAGE_SIZE } from "@/lib/paginate";
 import { QK, STALE } from "@/lib/query-config";
@@ -27,15 +33,12 @@ const SETUP_LABEL: Record<Setup["type"], string> = {
 };
 
 export default function SetupsScreen() {
+	const colors = useThemeColors();
 	const [filter, setFilter] = useState<Filter>("All");
 	const tabBarClearance = useTabBarClearance();
 
 	const setupsQ = useInfiniteQuery({
-		queryKey: [
-			...QK.setups.lists(),
-			"paged",
-			{ includeArchived: true },
-		],
+		queryKey: [...QK.setups.lists(), "paged", { includeArchived: true }],
 		queryFn: ({ pageParam = 0 }) =>
 			setupsApi.list(true, { skip: pageParam, limit: PAGE_SIZE }),
 		initialPageParam: 0,
@@ -249,6 +252,7 @@ function SetupCard({
 	used: number;
 	varieties: string[];
 }) {
+	const colors = useThemeColors();
 	const c = systemTypes[setup.type];
 	const pct = setup.slot_count > 0 ? (used / setup.slot_count) * 100 : 0;
 	const archived = !!setup.archived_at;
@@ -468,6 +472,7 @@ function MetaItem({
 	icon: React.ComponentProps<typeof Ionicons>["name"];
 	label: string;
 }) {
+	const colors = useThemeColors();
 	return (
 		<View
 			style={{

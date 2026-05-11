@@ -12,11 +12,11 @@ import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
 import {
-	colors,
 	expiryStatusMeta,
 	inventoryCategoryMeta,
 	produceStatusMeta,
 	spacing,
+	useThemeColors,
 } from "@/constants/theme";
 import {
 	type InventoryCategory,
@@ -49,6 +49,7 @@ const PRODUCE_FILTERS: (ProduceStatus | "all")[] = [
 type Tab = "materials" | "produce";
 
 export default function InventoryScreen() {
+	const colors = useThemeColors();
 	const [tab, setTab] = useState<Tab>("materials");
 	const [query, setQuery] = useState("");
 	const [category, setCategory] = useState<InventoryCategory | null>(null);
@@ -110,7 +111,8 @@ export default function InventoryScreen() {
 	const isRefetching = active.isRefetching;
 	const refetch = active.refetch;
 	const onEndReached = () => {
-		if (active.hasNextPage && !active.isFetchingNextPage) active.fetchNextPage();
+		if (active.hasNextPage && !active.isFetchingNextPage)
+			active.fetchNextPage();
 	};
 
 	return (
@@ -169,7 +171,6 @@ export default function InventoryScreen() {
 						tab === "materials" ? "Search materials" : "Search produce"
 					}
 				/>
-
 			</View>
 
 			<FilterRow>
@@ -281,6 +282,7 @@ function MaterialRow({
 	item: InventoryItem;
 	onLongPress: () => void;
 }) {
+	const colors = useThemeColors();
 	const meta = inventoryCategoryMeta[item.category];
 	const low = item.is_low_stock;
 	const expiry = item.expiry_status;
@@ -396,6 +398,7 @@ function MaterialRow({
 }
 
 function ProduceRow({ item }: { item: Produce }) {
+	const colors = useThemeColors();
 	const meta = produceStatusMeta[item.status];
 	const expired = item.expiry_status === "expired";
 	const warn = item.expiry_status === "warning";
@@ -493,6 +496,7 @@ function SegmentedControl({
 	value: Tab;
 	onChange: (v: Tab) => void;
 }) {
+	const colors = useThemeColors();
 	const opts: { key: Tab; label: string; icon: string }[] = [
 		{ key: "materials", label: "Materials", icon: "cube" },
 		{ key: "produce", label: "Produce", icon: "leaf" },
@@ -543,4 +547,3 @@ function SegmentedControl({
 		</View>
 	);
 }
-

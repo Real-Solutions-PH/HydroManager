@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { colors, spacing, systemTypes } from "@/constants/theme";
+import { spacing, systemTypes, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { photosApi, type SetupType, setupsApi } from "@/lib/hydro-api";
 import { QK } from "@/lib/query-config";
@@ -17,6 +17,7 @@ import { QK } from "@/lib/query-config";
 const TYPES: SetupType[] = ["DFT", "NFT", "DutchBucket", "Kratky", "SNAP"];
 
 export default function EditSetupScreen() {
+	const colors = useThemeColors();
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const setupId = id ?? "";
 	const qc = useQueryClient();

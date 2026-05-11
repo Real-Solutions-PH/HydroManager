@@ -12,10 +12,10 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import {
-	colors,
 	expiryStatusMeta,
 	inventoryCategoryMeta,
 	spacing,
+	useThemeColors,
 } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
@@ -39,6 +39,7 @@ const CATEGORIES: InventoryCategory[] = [
 const UNITS: InventoryUnit[] = ["grams", "pieces", "liters", "milliliters"];
 
 export default function InventoryDetailScreen() {
+	const colors = useThemeColors();
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const qc = useQueryClient();
 	const toast = useCustomToast();
@@ -281,9 +282,7 @@ export default function InventoryDetailScreen() {
 											borderRadius: 12,
 											borderWidth: 1,
 											borderColor: active ? m.color : colors.border,
-											backgroundColor: active
-												? `${m.color}26`
-												: "transparent",
+											backgroundColor: active ? `${m.color}26` : "transparent",
 										}}
 									>
 										<Ionicons
@@ -322,9 +321,7 @@ export default function InventoryDetailScreen() {
 											paddingVertical: 6,
 											borderRadius: 999,
 											borderWidth: 1,
-											borderColor: active
-												? colors.primaryLight
-												: colors.border,
+											borderColor: active ? colors.primaryLight : colors.border,
 											backgroundColor: active
 												? `${colors.primaryLight}26`
 												: "transparent",
@@ -467,6 +464,7 @@ function QuickAction({
 	color: string;
 	onPress: () => void;
 }) {
+	const colors = useThemeColors();
 	return (
 		<Pressable
 			onPress={onPress}

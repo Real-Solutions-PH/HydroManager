@@ -10,10 +10,10 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import {
-	colors,
 	expiryStatusMeta,
 	produceStatusMeta,
 	spacing,
+	useThemeColors,
 } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
@@ -25,6 +25,7 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const STATUSES: ProduceStatus[] = ["ready", "reserved", "sold"];
 
 export default function ProduceDetailScreen() {
+	const colors = useThemeColors();
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const qc = useQueryClient();
 	const toast = useCustomToast();
