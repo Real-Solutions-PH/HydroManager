@@ -282,38 +282,31 @@ export default function SalesScreen() {
 				{/* Mascot + KPI summary peeking into bottom panel */}
 				<View
 					style={{
-						flexDirection: "row",
-						alignItems: "center",
+						position: "relative",
 						paddingHorizontal: spacing.md,
-						gap: spacing.sm,
 						marginBottom: spacing.lg,
 					}}
 				>
-					<Image
-						source={require("../../../assets/character/recording.gif")}
-						style={{
-							width: 130,
-							height: 150,
-							marginRight: -spacing.xs,
-							marginBottom: -spacing.xxxl - spacing.md,
-						}}
-						contentFit="contain"
-						cachePolicy="memory-disk"
-						autoplay
-						accessibilityIgnoresInvertColors
-					/>
 					<View
 						style={{
-							flex: 1,
-							borderRadius: 18,
-							backgroundColor: colors.surface,
-							borderWidth: 1,
-							borderColor: colors.border,
-							paddingVertical: spacing.sm,
-							paddingHorizontal: spacing.sm,
-							gap: spacing.xs,
+							flexDirection: "row",
+							alignItems: "center",
+							gap: spacing.sm,
 						}}
 					>
+						<View style={{ width: 120, height: 130 }} />
+						<View
+							style={{
+								flex: 1,
+								borderRadius: 18,
+								backgroundColor: colors.surface,
+								borderWidth: 1,
+								borderColor: colors.border,
+								paddingVertical: spacing.sm,
+								paddingHorizontal: spacing.sm,
+								gap: spacing.xs,
+							}}
+						>
 						<HeaderStatRow
 							label="GROSS"
 							value={formatPHP(gross, 0)}
@@ -343,6 +336,21 @@ export default function SalesScreen() {
 							iconColor={colors.warning}
 						/>
 					</View>
+				</View>
+					<Image
+						source={require("../../../assets/character/recording.gif")}
+						style={{
+							position: "absolute",
+							left: spacing.xs,
+							bottom: -spacing.xxl,
+							width: 150,
+							height: 170,
+						}}
+						contentFit="contain"
+						cachePolicy="memory-disk"
+						autoplay
+						accessibilityIgnoresInvertColors
+					/>
 				</View>
 
 				{/* Bottom panel */}
