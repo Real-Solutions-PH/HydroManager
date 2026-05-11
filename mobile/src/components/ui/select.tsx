@@ -1,7 +1,7 @@
 import * as SelectPrimitive from "@rn-primitives/select";
 import { ScrollView, View } from "react-native";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 
 export interface SelectOption {
 	value: string;
@@ -27,6 +27,7 @@ export function Select({
 	emptyMessage = "No options available.",
 	disabled,
 }: SelectProps) {
+	const colors = useThemeColors();
 	const empty = options.length === 0;
 	const isDisabled = disabled || empty;
 	const current = options.find((o) => o.value === value);

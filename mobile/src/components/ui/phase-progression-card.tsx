@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { View } from "react-native";
 import { Text } from "@/components/ui/text";
-import { colors, radii, spacing } from "@/constants/theme";
+import { radii, spacing, useThemeColors } from "@/constants/theme";
 
 export interface PhaseSegment {
 	key: string;
@@ -29,6 +29,7 @@ export function PhaseProgressionCard({
 	totalLabel,
 	emptyLabel,
 }: Props) {
+	const colors = useThemeColors();
 	const sum = phases.reduce((a, b) => a + b.count, 0);
 	const allEmpty = sum === 0;
 
@@ -78,8 +79,7 @@ export function PhaseProgressionCard({
 								key={p.key}
 								style={{
 									flex: Math.max(ratio, 0.04),
-									backgroundColor:
-										p.count > 0 ? p.color : colors.borderLight,
+									backgroundColor: p.count > 0 ? p.color : colors.borderLight,
 									borderRadius: radii.full,
 								}}
 							/>
@@ -89,16 +89,13 @@ export function PhaseProgressionCard({
 
 				<View style={{ flexDirection: "row", gap: spacing.xs }}>
 					{phases.map((p) => (
-						<View
-							key={p.key}
-							style={{ flex: 1, alignItems: "center", gap: 4 }}
-						>
+						<View key={p.key} style={{ flex: 1, alignItems: "center", gap: 4 }}>
 							<View
 								style={{
 									width: 36,
 									height: 36,
 									borderRadius: radii.md,
-									backgroundColor: p.color + "26",
+									backgroundColor: `${p.color}26`,
 									alignItems: "center",
 									justifyContent: "center",
 								}}

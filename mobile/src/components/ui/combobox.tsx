@@ -3,7 +3,7 @@ import * as DialogPrimitive from "@rn-primitives/dialog";
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, TextInput, View } from "react-native";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 
 export interface ComboboxOption {
 	value: string;
@@ -32,6 +32,7 @@ export function Combobox({
 	allowClear = false,
 	disabled,
 }: Props) {
+	const colors = useThemeColors();
 	const [open, setOpen] = useState(false);
 	const [query, setQuery] = useState("");
 	const current = options.find((o) => o.value === value) ?? null;

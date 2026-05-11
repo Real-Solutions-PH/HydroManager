@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 
 interface Props {
 	title: string;
@@ -7,6 +7,7 @@ interface Props {
 }
 
 export function SectionHeader({ title, subtitle }: Props) {
+	const colors = useThemeColors();
 	return (
 		<View
 			style={{

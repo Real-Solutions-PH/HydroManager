@@ -1,12 +1,12 @@
+import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker, {
 	type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Modal, Platform, Pressable, View } from "react-native";
+import { Modal, Platform, Pressable, useColorScheme, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 
 interface Props {
 	value: string | null;
@@ -44,6 +44,8 @@ export function DatePicker({
 	minimumDate,
 	maximumDate,
 }: Props) {
+	const colors = useThemeColors();
+	const scheme = useColorScheme();
 	const [open, setOpen] = useState(false);
 	const [draft, setDraft] = useState<Date | null>(null);
 	const current = parseIso(value);
@@ -105,7 +107,7 @@ export function DatePicker({
 						outline: "none",
 						color: colors.text,
 						fontSize: 15,
-						colorScheme: "dark",
+						colorScheme: scheme === "light" ? "light" : "dark",
 					}}
 					placeholder={placeholder}
 				/>

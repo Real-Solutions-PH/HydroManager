@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Pressable, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
-import { colors, radii, spacing } from "@/constants/theme";
+import { radii, spacing, type ThemeColors, useThemeColors } from "@/constants/theme";
 
 export type AlertSeverity = "urgent" | "low" | "info";
 
@@ -16,7 +16,7 @@ interface AlertCardProps {
 	chevron?: boolean;
 }
 
-function severityStyle(severity: AlertSeverity) {
+function severityStyle(severity: AlertSeverity, colors: ThemeColors) {
 	switch (severity) {
 		case "urgent":
 			return {
@@ -54,7 +54,8 @@ export function AlertCard({
 	onPress,
 	chevron,
 }: AlertCardProps) {
-	const s = severityStyle(severity);
+	const colors = useThemeColors();
+	const s = severityStyle(severity, colors);
 
 	const body = (
 		<Card

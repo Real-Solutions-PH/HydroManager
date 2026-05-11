@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { View, type ViewStyle } from "react-native";
 import { Text } from "@/components/ui/text";
-import { colors, radii, spacing } from "@/constants/theme";
+import { radii, spacing, useThemeColors } from "@/constants/theme";
 
 interface SpeechBubbleProps {
 	title: string;
@@ -19,6 +19,7 @@ export function SpeechBubble({
 	style,
 	tailOffset,
 }: SpeechBubbleProps) {
+	const colors = useThemeColors();
 	return (
 		<View
 			style={[

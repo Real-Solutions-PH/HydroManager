@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { TextInput, type TextInputProps } from "react-native";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 
 interface Props extends TextInputProps {
 	invalid?: boolean;
@@ -9,7 +9,7 @@ interface Props extends TextInputProps {
 export const Input = forwardRef<TextInput, Props>(
 	(
 		{
-			placeholderTextColor = colors.placeholder,
+			placeholderTextColor,
 			invalid,
 			style,
 			multiline,
@@ -17,33 +17,36 @@ export const Input = forwardRef<TextInput, Props>(
 			...props
 		},
 		ref,
-	) => (
-		<TextInput
-			ref={ref}
-			multiline={multiline}
-			placeholderTextColor={placeholderTextColor}
-			textAlignVertical={textAlignVertical ?? (multiline ? "top" : "center")}
-			style={[
-				{
-					borderRadius: 12,
-					borderWidth: 1,
-					paddingHorizontal: 16,
-					fontSize: 15,
-					color: colors.text,
-					backgroundColor: colors.glass,
-					borderColor: invalid ? colors.borderError : colors.borderInput,
-				},
-				multiline
-					? {
-							minHeight: 96,
-							paddingTop: spacing.sm,
-							paddingBottom: spacing.sm,
-						}
-					: { height: 44 },
-				style,
-			]}
-			{...props}
-		/>
-	),
+	) => {
+		const colors = useThemeColors();
+		return (
+			<TextInput
+				ref={ref}
+				multiline={multiline}
+				placeholderTextColor={placeholderTextColor ?? colors.placeholder}
+				textAlignVertical={textAlignVertical ?? (multiline ? "top" : "center")}
+				style={[
+					{
+						borderRadius: 12,
+						borderWidth: 1,
+						paddingHorizontal: 16,
+						fontSize: 15,
+						color: colors.text,
+						backgroundColor: colors.glass,
+						borderColor: invalid ? colors.borderError : colors.borderInput,
+					},
+					multiline
+						? {
+								minHeight: 96,
+								paddingTop: spacing.sm,
+								paddingBottom: spacing.sm,
+							}
+						: { height: 44 },
+					style,
+				]}
+				{...props}
+			/>
+		);
+	},
 );
 Input.displayName = "Input";

@@ -6,7 +6,7 @@ import {
 	Text,
 	View,
 } from "react-native";
-import { colors } from "@/constants/theme";
+import { useThemeColors } from "@/constants/theme";
 
 type Variant = "solid" | "outline" | "ghost" | "danger" | "destructive";
 type Size = "sm" | "md" | "lg" | "default" | "icon";
@@ -21,25 +21,6 @@ const SIZE_STYLE: Record<
 	default: { height: 44, paddingHorizontal: 16 },
 	icon: { height: 44, width: 44 },
 };
-
-function variantBg(v: Variant): string {
-	switch (v) {
-		case "solid":
-			return colors.buttonSolidBg;
-		case "outline":
-			return colors.glass;
-		case "ghost":
-			return "transparent";
-		case "danger":
-		case "destructive":
-			return "#DC2626";
-	}
-}
-
-function variantBorder(v: Variant): string | undefined {
-	if (v === "outline") return colors.border;
-	return undefined;
-}
 
 export interface ButtonProps extends PressableProps {
 	variant?: Variant;
@@ -71,11 +52,27 @@ export const Button = forwardRef<
 		},
 		ref,
 	) => {
+		const colors = useThemeColors();
 		const v = variant;
 		const sz = SIZE_STYLE[size];
 		const blocked = isDisabled || disabled || isLoading;
-		const border = variantBorder(v);
-		const hasBorder = Boolean(border);
+
+		const variantBg: Record<Variant, string> = {
+			solid: colors.buttonSolidBg,
+			outline: colors.glass,
+			ghost: "transparent",
+			danger: "#DC2626",
+			destructive: "#DC2626",
+		};
+		const variantBorder: Record<Variant, string | undefined> = {
+			solid: undefined,
+			outline: colors.borderStrong,
+			ghost: undefined,
+			danger: undefined,
+			destructive: undefined,
+		};
+		const hasBorder = Boolean(variantBorder[v]);
+
 		return (
 			<Pressable
 				ref={ref}
@@ -90,14 +87,14 @@ export const Button = forwardRef<
 						width: sz.width,
 						paddingHorizontal: sz.paddingHorizontal,
 						borderWidth: hasBorder ? 1 : 0,
-						borderColor: border,
+						borderColor: variantBorder[v],
 						backgroundColor: state.pressed
 							? v === "solid"
 								? colors.buttonSolidActive
 								: v === "danger" || v === "destructive"
 									? "#B91C1C"
 									: colors.glassHover
-							: variantBg(v),
+							: variantBg[v],
 						opacity: blocked ? 0.5 : 1,
 					},
 					typeof style === "function" ? style(state) : style,

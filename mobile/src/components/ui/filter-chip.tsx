@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Pressable, ScrollView, View } from "react-native";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 import { Text } from "./text";
 
 export function FilterChip({
@@ -14,6 +14,7 @@ export function FilterChip({
 	accent?: string;
 	onPress: () => void;
 }) {
+	const colors = useThemeColors();
 	const c = accent ?? colors.primaryLight;
 	return (
 		<Pressable

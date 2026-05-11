@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 
 interface Props {
 	label: string;
@@ -11,6 +11,7 @@ interface Props {
 }
 
 export function StatCard({ label, value, icon, accent, onPress }: Props) {
+	const colors = useThemeColors();
 	const body = (
 		<View
 			style={{

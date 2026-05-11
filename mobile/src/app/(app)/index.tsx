@@ -1,12 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useQueries, useQuery } from "@tanstack/react-query";
+import { Image } from "expo-image";
 import * as Location from "expo-location";
-import { Link, router, useFocusEffect, type Href } from "expo-router";
+import { type Href, Link, router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
-import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { type AlertSeverity } from "@/components/ui/alert-card";
+import type { AlertSeverity } from "@/components/ui/alert-card";
 import { Card } from "@/components/ui/card";
 import {
 	CropCompositionCard,
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/phase-progression-card";
 import { SpeechBubble } from "@/components/ui/speech-bubble";
 import { Text } from "@/components/ui/text";
-import { WeatherCard, type TodayForecast } from "@/components/ui/weather-card";
+import { type TodayForecast, WeatherCard } from "@/components/ui/weather-card";
 import { colors, radii, spacing } from "@/constants/theme";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { useClimateNormals } from "@/hooks/use-library";
@@ -30,8 +30,8 @@ import {
 	activityApi,
 	type Batch,
 	batchesApi,
-	checklistApi,
 	type CropGuide,
+	checklistApi,
 	cropsApi,
 	inventoryApi,
 	MILESTONE_ORDER,
@@ -316,8 +316,7 @@ export default function HomeScreen() {
 			const r = await fetch(url);
 			if (!r.ok) throw new Error("forecast failed");
 			const j = await r.json();
-			const code =
-				j?.current?.weather_code ?? j?.daily?.weather_code?.[0] ?? 0;
+			const code = j?.current?.weather_code ?? j?.daily?.weather_code?.[0] ?? 0;
 			const prob = j?.daily?.precipitation_probability_max?.[0] ?? null;
 			return { weather_code: code, precipitation_probability_max: prob };
 		},
@@ -394,7 +393,7 @@ export default function HomeScreen() {
 
 	const firstName =
 		userQ.data?.full_name?.split(" ")[0] ?? t("home.default_name");
-	const farmName = t("home.farm_label", { name: firstName });
+	const _farmName = t("home.farm_label", { name: firstName });
 	const greeting = t(getGreetingKey(new Date().getHours()));
 
 	const lowStock = (inventoryQ.data?.data ?? []).filter((i) => i.is_low_stock);
@@ -422,7 +421,11 @@ export default function HomeScreen() {
 			severity: "low",
 			icon: "cube",
 			title: t("home.alert_low_stock_title", { name: firstLow.name }),
-			subtitle: t("home.alert_low_stock_subtitle", { stock: String(firstLow.current_stock), unit: firstLow.unit, min: String(firstLow.low_stock_threshold) }),
+			subtitle: t("home.alert_low_stock_subtitle", {
+				stock: String(firstLow.current_stock),
+				unit: firstLow.unit,
+				min: String(firstLow.low_stock_threshold),
+			}),
 			pillLabel: t("home.alert_severity_low"),
 		});
 	}
@@ -435,7 +438,9 @@ export default function HomeScreen() {
 			id: `ready-${firstReady.id}`,
 			severity: "info",
 			icon: "time",
-			title: t("home.alert_harvest_ready_title", { variety: firstReady.variety_name }),
+			title: t("home.alert_harvest_ready_title", {
+				variety: firstReady.variety_name,
+			}),
 			subtitle: t("home.alert_harvest_ready_subtitle", { day: String(days) }),
 			chevron: true,
 			onPress: () => router.push("/setups"),
@@ -483,7 +488,7 @@ export default function HomeScreen() {
 			.map((s, i) => ({
 				label: s.label,
 				value: s.value,
-				color: getCompositionColor(i),
+				color: getCompositionColor(i, colors),
 			}));
 		const total = segments.reduce((a, b) => a + b.value, 0);
 		return { segments, total };
@@ -616,7 +621,6 @@ export default function HomeScreen() {
 						style={{
 							flexDirection: "row",
 							gap: spacing.xs,
-							paddingTop: spacing.lg,
 						}}
 					>
 						<Link href="/library" asChild>
@@ -634,11 +638,7 @@ export default function HomeScreen() {
 									justifyContent: "center",
 								}}
 							>
-								<Ionicons
-									name="library"
-									size={20}
-									color={colors.info}
-								/>
+								<Ionicons name="library" size={20} color={colors.info} />
 							</Pressable>
 						</Link>
 						{/* <Link href="/checklist" asChild>
@@ -741,38 +741,38 @@ export default function HomeScreen() {
 						borderColor: colors.borderLight,
 					}}
 				>
-				{/* Quick actions — 4 circle buttons */}
-				<View
-					style={{
-						flexDirection: "row",
-						justifyContent: "space-around",
-						paddingHorizontal: spacing.md,
-					}}
-				>
-					<QuickActionCircle
-						icon="water"
-						label={t("home.qa_log_reading")}
-						href="/checklist"
-					/>
-					<QuickActionCircle
-						icon="add"
-						label={t("home.qa_new_batch")}
-						href="/batch/new"
-					/>
-					<QuickActionCircle
-						icon="trending-up"
-						label={t("home.qa_add_sale")}
-						href="/sale-new"
-					/>
-					<QuickActionCircle
-						icon="cube"
-						label={t("home.qa_restock")}
-						href="/inventory-new"
-					/>
-				</View>
+					{/* Quick actions — 4 circle buttons */}
+					<View
+						style={{
+							flexDirection: "row",
+							justifyContent: "space-around",
+							paddingHorizontal: spacing.md,
+						}}
+					>
+						<QuickActionCircle
+							icon="water"
+							label={t("home.qa_log_reading")}
+							href="/checklist"
+						/>
+						<QuickActionCircle
+							icon="add"
+							label={t("home.qa_new_batch")}
+							href="/batch/new"
+						/>
+						<QuickActionCircle
+							icon="trending-up"
+							label={t("home.qa_add_sale")}
+							href="/sale-new"
+						/>
+						<QuickActionCircle
+							icon="cube"
+							label={t("home.qa_restock")}
+							href="/inventory-new"
+						/>
+					</View>
 
-				{/* Today's Tasks */}
-				{/* <View style={{ paddingHorizontal: spacing.md }}>
+					{/* Today's Tasks */}
+					{/* <View style={{ paddingHorizontal: spacing.md }}>
 					<Card>
 						<View
 							style={{
@@ -827,54 +827,54 @@ export default function HomeScreen() {
 					</Card>
 				</View> */}
 
-				{/* Grow climate widget */}
-				<WeatherCard
-					data={climateQ.data}
-					today={todayForecastQ.data}
-					cityLabel={cityLabel ?? undefined}
-					loading={
-						climateQ.isLoading ||
-						geoStatus === "requesting" ||
-						(geoStatus === "idle" && !coords)
-					}
-					error={
-						geoStatus === "denied"
-							? "Location permission denied. Enable to see local climate."
-							: geoStatus === "error"
-								? geoError
+					{/* Grow climate widget */}
+					<WeatherCard
+						data={climateQ.data}
+						today={todayForecastQ.data}
+						cityLabel={cityLabel ?? undefined}
+						loading={
+							climateQ.isLoading ||
+							geoStatus === "requesting" ||
+							(geoStatus === "idle" && !coords)
+						}
+						error={
+							geoStatus === "denied"
+								? "Location permission denied. Enable to see local climate."
+								: geoStatus === "error"
+									? geoError
+									: climateQ.error
+										? "Couldn't load climate data."
+										: null
+						}
+						onRetry={
+							geoStatus === "denied" || geoStatus === "error"
+								? refreshGeo
 								: climateQ.error
-									? "Couldn't load climate data."
-									: null
-					}
-					onRetry={
-						geoStatus === "denied" || geoStatus === "error"
-							? refreshGeo
-							: climateQ.error
-								? () => climateQ.refetch()
-								: undefined
-					}
-				/>
+									? () => climateQ.refetch()
+									: undefined
+						}
+					/>
 
-				{/* Active crop composition */}
-				<CropCompositionCard
-					title={t("home.crop_composition_title")}
-					segments={cropComposition.segments}
-					centerValue={String(cropComposition.total)}
-					centerLabel={t("home.crop_composition_center")}
-					emptyLabel={t("home.crop_composition_empty")}
-				/>
+					{/* Active crop composition */}
+					<CropCompositionCard
+						title={t("home.crop_composition_title")}
+						segments={cropComposition.segments}
+						centerValue={String(cropComposition.total)}
+						centerLabel={t("home.crop_composition_center")}
+						emptyLabel={t("home.crop_composition_empty")}
+					/>
 
-				{/* Plant phase progression */}
-				<PhaseProgressionCard
-					title={t("home.phases_card_title")}
-					phases={phaseGroups.phases}
-					total={phaseGroups.total}
-					totalLabel={t("home.phases_total_label")}
-					emptyLabel={t("home.phases_empty")}
-				/>
+					{/* Plant phase progression */}
+					<PhaseProgressionCard
+						title={t("home.phases_card_title")}
+						phases={phaseGroups.phases}
+						total={phaseGroups.total}
+						totalLabel={t("home.phases_total_label")}
+						emptyLabel={t("home.phases_empty")}
+					/>
 
-				{/* Alerts */}
-				{/* {alerts.length > 0 ? (
+					{/* Alerts */}
+					{/* {alerts.length > 0 ? (
 					<View
 						style={{
 							paddingHorizontal: spacing.md,
@@ -899,231 +899,235 @@ export default function HomeScreen() {
 					</View>
 				) : null} */}
 
-				{/* Upcoming Phases */}
-				{upcomingPhases.length > 0 ? (
-					<View style={{ gap: spacing.sm }}>
-						<View
-							style={{
-								flexDirection: "row",
-								alignItems: "center",
-								justifyContent: "space-between",
-								paddingHorizontal: spacing.md,
-							}}
-						>
-							<Text size="lg" weight="bold">
-								{t("home.upcoming_phases")}
-							</Text>
-							<Link href="/seeds" asChild>
-								<Pressable accessibilityRole="link">
-									<Text size="sm" tone="primary">
-										{t("home.see_all")}
-									</Text>
-								</Pressable>
-							</Link>
-						</View>
-						<ScrollView
-							horizontal
-							showsHorizontalScrollIndicator={false}
-							contentContainerStyle={{
-								paddingHorizontal: spacing.md,
-								gap: spacing.sm,
-							}}
-						>
-							{upcomingPhases.map(
-								({ batch, currentStage, nextStage, daysLeft, pendingCount }) => {
-									const due = daysLeft !== null && daysLeft <= 0;
-									const urgent =
-										daysLeft !== null && daysLeft > 0 && daysLeft < 3;
-									const pillBg = due
-										? colors.warningLight
-										: urgent
-											? colors.errorLight
-											: colors.successLight;
-									const pillFg = due
-										? colors.warning
-										: urgent
-											? colors.error
-											: colors.primaryLight;
-									const pillLabel =
-										daysLeft === null
-											? t("home.phase_no_eta")
-											: due
-												? t("home.phase_due")
-												: t("home.days_left", { n: String(daysLeft) });
-									const stageTint = STAGE_COLORS[nextStage];
-									return (
-										<Pressable
-											key={batch.id}
-											accessibilityRole="button"
-											accessibilityLabel={t("home.phase_card_a11y", {
-												variety: batch.variety_name,
-												phase: STAGE_LABEL[nextStage],
-											})}
-											onPress={() => router.push(`/batch/${batch.id}`)}
-											style={({ pressed }) => ({
-												width: 180,
-												padding: spacing.sm,
-												borderRadius: radii.lg,
-												backgroundColor: pressed
-													? colors.glassHover
-													: stageTint.bg,
-												borderWidth: 1,
-												borderColor: stageTint.fg + "40",
-												borderLeftWidth: 4,
-												borderLeftColor: stageTint.fg,
-												gap: spacing.xs,
-											})}
-										>
-											<View
-												style={{
-													flexDirection: "row",
-													alignItems: "center",
+					{/* Upcoming Phases */}
+					{upcomingPhases.length > 0 ? (
+						<View style={{ gap: spacing.sm }}>
+							<View
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+									justifyContent: "space-between",
+									paddingHorizontal: spacing.md,
+								}}
+							>
+								<Text size="lg" weight="bold">
+									{t("home.upcoming_phases")}
+								</Text>
+								<Link href="/seeds" asChild>
+									<Pressable accessibilityRole="link">
+										<Text size="sm" tone="primary">
+											{t("home.see_all")}
+										</Text>
+									</Pressable>
+								</Link>
+							</View>
+							<ScrollView
+								horizontal
+								showsHorizontalScrollIndicator={false}
+								contentContainerStyle={{
+									paddingHorizontal: spacing.md,
+									gap: spacing.sm,
+								}}
+							>
+								{upcomingPhases.map(
+									({
+										batch,
+										currentStage,
+										nextStage,
+										daysLeft,
+										pendingCount,
+									}) => {
+										const due = daysLeft !== null && daysLeft <= 0;
+										const urgent =
+											daysLeft !== null && daysLeft > 0 && daysLeft < 3;
+										const pillBg = due
+											? colors.warningLight
+											: urgent
+												? colors.errorLight
+												: colors.successLight;
+										const pillFg = due
+											? colors.warning
+											: urgent
+												? colors.error
+												: colors.primaryLight;
+										const pillLabel =
+											daysLeft === null
+												? t("home.phase_no_eta")
+												: due
+													? t("home.phase_due")
+													: t("home.days_left", { n: String(daysLeft) });
+										const stageTint = STAGE_COLORS[nextStage];
+										return (
+											<Pressable
+												key={batch.id}
+												accessibilityRole="button"
+												accessibilityLabel={t("home.phase_card_a11y", {
+													variety: batch.variety_name,
+													phase: STAGE_LABEL[nextStage],
+												})}
+												onPress={() => router.push(`/batch/${batch.id}`)}
+												style={({ pressed }) => ({
+													width: 180,
+													padding: spacing.sm,
+													borderRadius: radii.lg,
+													backgroundColor: pressed
+														? colors.glassHover
+														: stageTint.bg,
+													borderWidth: 1,
+													borderColor: `${stageTint.fg}40`,
+													borderLeftWidth: 4,
+													borderLeftColor: stageTint.fg,
 													gap: spacing.xs,
-												}}
+												})}
 											>
 												<View
 													style={{
-														width: 36,
-														height: 36,
-														borderRadius: radii.md,
-														backgroundColor: stageTint.fg + "26",
+														flexDirection: "row",
 														alignItems: "center",
-														justifyContent: "center",
+														gap: spacing.xs,
+													}}
+												>
+													<View
+														style={{
+															width: 36,
+															height: 36,
+															borderRadius: radii.md,
+															backgroundColor: `${stageTint.fg}26`,
+															alignItems: "center",
+															justifyContent: "center",
+														}}
+													>
+														<Ionicons
+															name="leaf"
+															size={18}
+															color={stageTint.fg}
+														/>
+													</View>
+													<View style={{ flex: 1 }}>
+														<Text weight="bold" numberOfLines={1}>
+															{batch.variety_name}
+														</Text>
+														<Text size="xs" tone="muted" numberOfLines={1}>
+															{STAGE_LABEL[currentStage]}
+														</Text>
+													</View>
+												</View>
+												<View
+													style={{
+														flexDirection: "row",
+														alignItems: "center",
+														gap: 4,
 													}}
 												>
 													<Ionicons
-														name="leaf"
-														size={18}
-														color={stageTint.fg}
+														name="arrow-forward"
+														size={12}
+														color={colors.textMuted}
 													/>
-												</View>
-												<View style={{ flex: 1 }}>
-													<Text weight="bold" numberOfLines={1}>
-														{batch.variety_name}
-													</Text>
 													<Text size="xs" tone="muted" numberOfLines={1}>
-														{STAGE_LABEL[currentStage]}
+														{STAGE_LABEL[nextStage]}
 													</Text>
 												</View>
-											</View>
-											<View
-												style={{
-													flexDirection: "row",
-													alignItems: "center",
-													gap: 4,
-												}}
-											>
-												<Ionicons
-													name="arrow-forward"
-													size={12}
-													color={colors.textMuted}
-												/>
-												<Text size="xs" tone="muted" numberOfLines={1}>
-													{STAGE_LABEL[nextStage]}
-												</Text>
-											</View>
-											<View
-												style={{
-													flexDirection: "row",
-													alignItems: "center",
-													justifyContent: "space-between",
-												}}
-											>
-												<Text size="xs" tone="muted">
-													{t("home.plants_count", {
-														n: String(pendingCount),
-													})}
-												</Text>
 												<View
 													style={{
-														paddingHorizontal: spacing.sm,
-														paddingVertical: 4,
-														borderRadius: radii.full,
-														backgroundColor: pillBg,
+														flexDirection: "row",
+														alignItems: "center",
+														justifyContent: "space-between",
 													}}
 												>
-													<Text
-														size="xs"
-														weight="bold"
-														style={{ color: pillFg }}
-													>
-														{pillLabel}
+													<Text size="xs" tone="muted">
+														{t("home.plants_count", {
+															n: String(pendingCount),
+														})}
 													</Text>
+													<View
+														style={{
+															paddingHorizontal: spacing.sm,
+															paddingVertical: 4,
+															borderRadius: radii.full,
+															backgroundColor: pillBg,
+														}}
+													>
+														<Text
+															size="xs"
+															weight="bold"
+															style={{ color: pillFg }}
+														>
+															{pillLabel}
+														</Text>
+													</View>
 												</View>
-											</View>
-										</Pressable>
-									);
-								},
-							)}
-						</ScrollView>
-					</View>
-				) : null}
+											</Pressable>
+										);
+									},
+								)}
+							</ScrollView>
+						</View>
+					) : null}
 
-				{/* Recent Activity */}
-				<View
-					style={{
-						paddingHorizontal: spacing.md,
-						gap: spacing.sm,
-					}}
-				>
-					<Text size="lg" weight="bold">
-						{t("home.recent_activity")}
-					</Text>
-					<Card>
-						{(() => {
-							const items = (activityQ.data?.data ?? []).map((a) =>
-								activityToItem(a, locale),
-							);
-							if (items.length === 0) {
-								return (
+					{/* Recent Activity */}
+					<View
+						style={{
+							paddingHorizontal: spacing.md,
+							gap: spacing.sm,
+						}}
+					>
+						<Text size="lg" weight="bold">
+							{t("home.recent_activity")}
+						</Text>
+						<Card>
+							{(() => {
+								const items = (activityQ.data?.data ?? []).map((a) =>
+									activityToItem(a, locale),
+								);
+								if (items.length === 0) {
+									return (
+										<View
+											style={{
+												paddingVertical: spacing.md,
+												alignItems: "center",
+											}}
+										>
+											<Text size="sm" tone="muted">
+												{activityQ.isLoading ? "…" : t("home.no_activity")}
+											</Text>
+										</View>
+									);
+								}
+								return items.map((a, idx) => (
 									<View
+										key={a.id}
 										style={{
-											paddingVertical: spacing.md,
+											flexDirection: "row",
 											alignItems: "center",
+											gap: spacing.sm,
+											paddingVertical: spacing.sm,
+											borderBottomWidth: idx === items.length - 1 ? 0 : 1,
+											borderBottomColor: colors.borderLight,
 										}}
 									>
-										<Text size="sm" tone="muted">
-											{activityQ.isLoading ? "…" : t("home.no_activity")}
+										<View
+											style={{
+												width: 36,
+												height: 36,
+												borderRadius: radii.md,
+												backgroundColor: a.iconBg,
+												alignItems: "center",
+												justifyContent: "center",
+											}}
+										>
+											<Ionicons name={a.icon} size={18} color={a.iconColor} />
+										</View>
+										<Text style={{ flex: 1 }}>{a.title}</Text>
+										<Text size="xs" tone="muted">
+											{a.timeAgo}
 										</Text>
 									</View>
-								);
-							}
-							return items.map((a, idx) => (
-								<View
-									key={a.id}
-									style={{
-										flexDirection: "row",
-										alignItems: "center",
-										gap: spacing.sm,
-										paddingVertical: spacing.sm,
-										borderBottomWidth: idx === items.length - 1 ? 0 : 1,
-										borderBottomColor: colors.borderLight,
-									}}
-								>
-									<View
-										style={{
-											width: 36,
-											height: 36,
-											borderRadius: radii.md,
-											backgroundColor: a.iconBg,
-											alignItems: "center",
-											justifyContent: "center",
-										}}
-									>
-										<Ionicons name={a.icon} size={18} color={a.iconColor} />
-									</View>
-									<Text style={{ flex: 1 }}>{a.title}</Text>
-									<Text size="xs" tone="muted">
-										{a.timeAgo}
-									</Text>
-								</View>
-							));
-						})()}
-					</Card>
+								));
+							})()}
+						</Card>
+					</View>
 				</View>
-
-				</View>
-
 			</ScrollView>
 		</GradientBackground>
 	);

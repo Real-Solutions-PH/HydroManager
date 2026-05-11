@@ -9,7 +9,7 @@ import Animated, {
 	withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { colors, radii, spacing } from "@/constants/theme";
+import { radii, spacing, useThemeColors } from "@/constants/theme";
 
 export interface InteractiveMenuItem {
 	key: string;
@@ -43,6 +43,7 @@ interface MenuItemProps {
 }
 
 function MenuItem({ item, isActive, accentColor, onPress }: MenuItemProps) {
+	const colors = useThemeColors();
 	const bounce = useSharedValue(0);
 	const progress = useSharedValue(isActive ? 1 : 0);
 
@@ -115,6 +116,7 @@ export function InteractiveMenu({
 	onSelect,
 	accentColor,
 }: InteractiveMenuProps) {
+	const colors = useThemeColors();
 	const insets = useSafeAreaInsets();
 	const effectiveAccent = accentColor ?? colors.accent;
 

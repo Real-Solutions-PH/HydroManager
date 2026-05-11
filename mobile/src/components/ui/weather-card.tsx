@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { ActivityIndicator, Pressable, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { Text } from "@/components/ui/text";
-import { colors, radii, spacing } from "@/constants/theme";
+import { radii, spacing, type ThemeColors, useThemeColors } from "@/constants/theme";
 import type { ClimateNormals } from "@/lib/hydro-api";
 
 export interface TodayForecast {
@@ -46,18 +46,44 @@ interface ConditionMeta {
 }
 
 // WMO weather codes → label + icon.
-function conditionFromCode(code: number | undefined): ConditionMeta {
-	if (code == null) return { label: "—", icon: "partly-sunny", color: colors.textMuted };
-	if (code === 0) return { label: "Sunny", icon: "sunny", color: colors.warning };
-	if (code <= 2) return { label: "Mostly sunny", icon: "partly-sunny", color: colors.warning };
-	if (code === 3) return { label: "Cloudy", icon: "cloud", color: colors.textSecondary };
-	if (code === 45 || code === 48) return { label: "Foggy", icon: "cloud-outline", color: colors.textSecondary };
-	if (code >= 51 && code <= 57) return { label: "Drizzle", icon: "rainy-outline", color: colors.restockAccent };
-	if (code >= 61 && code <= 67) return { label: "Rainy", icon: "rainy", color: colors.info };
-	if (code >= 71 && code <= 77) return { label: "Snowy", icon: "snow", color: colors.restockAccent };
-	if (code >= 80 && code <= 82) return { label: "Showers", icon: "rainy", color: colors.info };
-	if (code >= 85 && code <= 86) return { label: "Snow showers", icon: "snow", color: colors.restockAccent };
-	if (code >= 95) return { label: "Thunderstorm", icon: "thunderstorm", color: colors.error };
+function conditionFromCode(
+	code: number | undefined,
+	colors: ThemeColors,
+): ConditionMeta {
+	if (code == null)
+		return { label: "—", icon: "partly-sunny", color: colors.textMuted };
+	if (code === 0)
+		return { label: "Sunny", icon: "sunny", color: colors.warning };
+	if (code <= 2)
+		return {
+			label: "Mostly sunny",
+			icon: "partly-sunny",
+			color: colors.warning,
+		};
+	if (code === 3)
+		return { label: "Cloudy", icon: "cloud", color: colors.textSecondary };
+	if (code === 45 || code === 48)
+		return {
+			label: "Foggy",
+			icon: "cloud-outline",
+			color: colors.textSecondary,
+		};
+	if (code >= 51 && code <= 57)
+		return {
+			label: "Drizzle",
+			icon: "rainy-outline",
+			color: colors.restockAccent,
+		};
+	if (code >= 61 && code <= 67)
+		return { label: "Rainy", icon: "rainy", color: colors.info };
+	if (code >= 71 && code <= 77)
+		return { label: "Snowy", icon: "snow", color: colors.restockAccent };
+	if (code >= 80 && code <= 82)
+		return { label: "Showers", icon: "rainy", color: colors.info };
+	if (code >= 85 && code <= 86)
+		return { label: "Snow showers", icon: "snow", color: colors.restockAccent };
+	if (code >= 95)
+		return { label: "Thunderstorm", icon: "thunderstorm", color: colors.error };
 	return { label: "Mixed", icon: "partly-sunny", color: colors.textSecondary };
 }
 
@@ -66,7 +92,10 @@ interface RainMeta {
 	color: string;
 }
 
-function rainChanceMeta(pct: number | null | undefined): RainMeta {
+function rainChanceMeta(
+	pct: number | null | undefined,
+	colors: ThemeColors,
+): RainMeta {
 	if (pct == null) return { label: "—", color: colors.textMuted };
 	if (pct < 10) return { label: "No rain", color: colors.primaryLight };
 	if (pct < 30) return { label: "Low chance", color: colors.success };
@@ -75,7 +104,10 @@ function rainChanceMeta(pct: number | null | undefined): RainMeta {
 	return { label: "Very high", color: colors.error };
 }
 
-function humidityMeta(pct: number | null | undefined): RainMeta {
+function humidityMeta(
+	pct: number | null | undefined,
+	colors: ThemeColors,
+): RainMeta {
 	if (pct == null) return { label: "—", color: colors.textMuted };
 	if (pct < 40) return { label: "Low", color: colors.warning };
 	if (pct < 70) return { label: "Medium", color: colors.success };
@@ -90,12 +122,15 @@ export function WeatherCard({
 	error,
 	onRetry,
 }: WeatherCardProps) {
+	const colors = useThemeColors();
 	const monthLabel =
-		data?.month != null ? MONTH_LABELS[data.month - 1] : MONTH_LABELS[new Date().getMonth()];
+		data?.month != null
+			? MONTH_LABELS[data.month - 1]
+			: MONTH_LABELS[new Date().getMonth()];
 
-	const cond = conditionFromCode(today?.weather_code);
-	const rain = rainChanceMeta(today?.precipitation_probability_max ?? null);
-	const humidity = humidityMeta(data?.humidity_pct_avg ?? null);
+	const cond = conditionFromCode(today?.weather_code, colors);
+	const rain = rainChanceMeta(today?.precipitation_probability_max ?? null, colors);
+	const humidity = humidityMeta(data?.humidity_pct_avg ?? null, colors);
 
 	return (
 		<View style={{ paddingHorizontal: spacing.md }}>
@@ -137,7 +172,8 @@ export function WeatherCard({
 				) : error || !data ? (
 					<View style={{ paddingVertical: spacing.md, gap: spacing.xs }}>
 						<Text size="sm" tone="muted">
-							{error ?? "Enable location to see climate data for your grow site."}
+							{error ??
+								"Enable location to see climate data for your grow site."}
 						</Text>
 						{onRetry ? (
 							<Pressable
@@ -176,7 +212,8 @@ export function WeatherCard({
 									Avg air temp
 								</Text>
 								<Text size="xs" tone="muted">
-									{fmtNum(data.air_temp_c_min, 0)}° / {fmtNum(data.air_temp_c_max, 0)}°
+									{fmtNum(data.air_temp_c_min, 0)}° /{" "}
+									{fmtNum(data.air_temp_c_max, 0)}°
 								</Text>
 							</View>
 						</View>
@@ -240,6 +277,7 @@ function MetricTile({
 	valueColor?: string;
 	subtext?: string;
 }) {
+	const colors = useThemeColors();
 	return (
 		<View
 			style={{
@@ -271,7 +309,13 @@ function MetricTile({
 					{value}
 				</Text>
 			</View>
-			<Text size="xs" tone="muted" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
+			<Text
+				size="xs"
+				tone="muted"
+				numberOfLines={1}
+				adjustsFontSizeToFit
+				minimumFontScale={0.8}
+			>
 				{subtext ?? " "}
 			</Text>
 		</View>

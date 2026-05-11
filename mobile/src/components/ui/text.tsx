@@ -4,7 +4,7 @@ import {
 	type StyleProp,
 	type TextStyle,
 } from "react-native";
-import { colors } from "@/constants/theme";
+import { type ThemeColors, useThemeColors } from "@/constants/theme";
 
 type Tone = "default" | "muted" | "subtle" | "error" | "success" | "primary";
 type Size = "xs" | "sm" | "md" | "lg" | "xl" | "xxl" | "xxxl";
@@ -32,7 +32,7 @@ const WEIGHT_MAP: Record<Weight, TextStyle["fontWeight"]> = {
 	bold: "700",
 	heavy: "800",
 };
-function toneColor(tone: Tone): string {
+function toneColor(tone: Tone, colors: ThemeColors): string {
 	switch (tone) {
 		case "muted":
 			return colors.textMuted;
@@ -56,9 +56,10 @@ export function Text({
 	style,
 	...props
 }: TextProps) {
+	const colors = useThemeColors();
 	const composed: StyleProp<TextStyle> = [
 		{
-			color: toneColor(tone),
+			color: toneColor(tone, colors),
 			fontSize: SIZE_MAP[size],
 			fontWeight: WEIGHT_MAP[weight],
 		},

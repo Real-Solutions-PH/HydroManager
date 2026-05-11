@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { Text } from "@/components/ui/text";
-import { colors } from "@/constants/theme";
+import { useThemeColors } from "@/constants/theme";
 
 interface Props {
 	used: number;
@@ -9,6 +9,7 @@ interface Props {
 }
 
 export function SlotMeter({ used, free, label = "Slots" }: Props) {
+	const colors = useThemeColors();
 	const total = Math.max(free, 0);
 	const safeUsed = Math.max(used, 0);
 	const ratio = total === 0 ? 0 : Math.min(safeUsed / total, 1);

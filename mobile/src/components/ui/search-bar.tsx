@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { TextInput, View } from "react-native";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 
 interface Props {
 	value: string;
@@ -13,6 +13,7 @@ export function SearchBar({
 	onChangeText,
 	placeholder = "Search",
 }: Props) {
+	const colors = useThemeColors();
 	return (
 		<View
 			style={{
