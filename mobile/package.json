@@ -39,7 +39,6 @@
 		"expo-file-system": "~18.0.12",
 		"expo-image": "~2.0.7",
 		"expo-image-picker": "~16.0.4",
-		"expo-linear-gradient": "~14.0.2",
 		"expo-linking": "~7.0.3",
 		"expo-location": "~18.0.10",
 		"expo-router": "~4.0.0",
@@ -74,7 +73,9 @@
 	"expo": {
 		"doctor": {
 			"reactNativeDirectoryCheck": {
-				"exclude": ["clsx"]
+				"exclude": [
+					"clsx"
+				]
 			}
 		}
 	}
