@@ -25,7 +25,6 @@ export interface InteractiveMenuProps {
 	accentColor?: string;
 }
 
-const DEFAULT_ACCENT = colors.accent;
 const ICON_SIZE = 22;
 const ANIM_MS = 220;
 const MENU_HEIGHT = 84;
@@ -114,9 +113,10 @@ export function InteractiveMenu({
 	items,
 	activeKey,
 	onSelect,
-	accentColor = DEFAULT_ACCENT,
+	accentColor,
 }: InteractiveMenuProps) {
 	const insets = useSafeAreaInsets();
+	const effectiveAccent = accentColor ?? colors.accent;
 
 	return (
 		<View
@@ -126,13 +126,21 @@ export function InteractiveMenu({
 				{ bottom: (insets.bottom || spacing.sm) + spacing.sm },
 			]}
 		>
-			<View style={styles.bar}>
+			<View
+				style={[
+					styles.bar,
+					{
+						backgroundColor: colors.tabBarBg,
+						borderColor: colors.border,
+					},
+				]}
+			>
 				{items.map((item) => (
 					<MenuItem
 						key={item.key}
 						item={item}
 						isActive={item.key === activeKey}
-						accentColor={accentColor}
+						accentColor={effectiveAccent}
 						onPress={() => onSelect(item.key, item.route)}
 					/>
 				))}
@@ -151,9 +159,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
-		backgroundColor: colors.tabBarBg,
 		borderWidth: 1,
-		borderColor: colors.border,
 		borderRadius: radii.xxl,
 		paddingVertical: spacing.sm,
 		paddingHorizontal: spacing.sm,

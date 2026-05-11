@@ -1,4 +1,4 @@
-import { useColorScheme } from "react-native";
+import { Appearance, useColorScheme } from "react-native";
 import { useThemeStore } from "@/stores/theme-store";
 
 export const lightColors = {
@@ -111,11 +111,38 @@ export function useEffectiveTheme(): "light" | "dark" {
 }
 
 /**
- * Deprecated. Use `useThemeColors()` instead.
- * Retained during the light/dark migration so non-migrated files still compile.
- * Remove after Phase 8.
+ * Live theme palette. Reads the current mode from the theme store + the OS
+ * color scheme at property-access time, so existing `import { colors }` call
+ * sites pick up the correct value without migration. Components must be
+ * remounted on theme change to re-render with new values — handled by
+ * <ThemeRoot> in src/app/_layout.tsx, which keys the tree on the effective
+ * theme.
  */
-export const colors = darkColors;
+function resolveActiveColors(): ThemeColors {
+	const mode = useThemeStore.getState().mode;
+	const sys = Appearance.getColorScheme();
+	const active = mode === "system" ? sys : mode;
+	return active === "light" ? lightColors : darkColors;
+}
+
+export const colors = new Proxy({} as ThemeColors, {
+	get(_target, prop) {
+		return resolveActiveColors()[prop as keyof ThemeColors];
+	},
+	has(_target, prop) {
+		return prop in darkColors;
+	},
+	ownKeys() {
+		return Reflect.ownKeys(darkColors);
+	},
+	getOwnPropertyDescriptor(_target, prop) {
+		return {
+			enumerable: true,
+			configurable: true,
+			value: resolveActiveColors()[prop as keyof ThemeColors],
+		};
+	},
+});
 
 export const systemTypes = {
 	NFT: { color: "#4FB8E8", bg: "rgba(79, 184, 232, 0.15)", icon: "water" },
