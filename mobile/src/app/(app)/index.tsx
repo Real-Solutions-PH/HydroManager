@@ -727,17 +727,17 @@ export default function HomeScreen() {
 						flexDirection: "row",
 						alignItems: "center",
 						paddingHorizontal: spacing.md,
-						marginBottom: spacing.sm,
+						marginBottom: spacing.lg,
 					}}
 				>
 					<Image
 						key={gifKey}
 						source={require("../../../assets/character/welcome.gif")}
 						style={{
-							width: 140,
-							height: 150,
+							width: 150,
+							height: 160,
 							marginRight: -spacing.xs,
-							marginBottom: -spacing.xxxl,
+							marginBottom: -spacing.xxxl - spacing.md,
 						}}
 						contentFit="contain"
 						cachePolicy="memory-disk"
