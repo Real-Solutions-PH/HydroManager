@@ -284,7 +284,7 @@ export default function SalesScreen() {
 					style={{
 						position: "relative",
 						paddingHorizontal: spacing.md,
-						marginBottom: spacing.lg,
+						marginBottom: spacing.xs,
 					}}
 				>
 					<View
@@ -342,9 +342,9 @@ export default function SalesScreen() {
 						style={{
 							position: "absolute",
 							left: spacing.xs,
-							bottom: -spacing.xxl,
-							width: 150,
-							height: 170,
+							bottom: -spacing.xxxl - spacing.lg,
+							width: 160,
+							height: 200,
 						}}
 						contentFit="contain"
 						cachePolicy="memory-disk"
