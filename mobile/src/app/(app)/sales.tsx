@@ -10,6 +10,7 @@ import {
 	View,
 } from "react-native";
 import { Image } from "expo-image";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, {
 	Circle,
 	Defs,
@@ -18,7 +19,6 @@ import Svg, {
 	Path,
 	Stop,
 } from "react-native-svg";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -226,14 +226,20 @@ export default function SalesScreen() {
 				: "Free tier — Basic analytics";
 
 	return (
-		<GradientBackground bg={colors.primaryDeep}>
+		<GradientBackground bg={colors.bg} withInsets={false}>
 			<ScrollView
 				contentContainerStyle={{
-					paddingBottom: tabBarClearance,
 					gap: spacing.md,
 				}}
 				style={{ flex: 1 }}
 			>
+				<View
+					style={{
+						backgroundColor: colors.primaryDeep,
+						paddingTop: insets.top + spacing.sm,
+						gap: spacing.md,
+					}}
+				>
 				{/* Header: title + actions on brand bg */}
 				<View
 					style={{
@@ -284,7 +290,6 @@ export default function SalesScreen() {
 					style={{
 						position: "relative",
 						paddingHorizontal: spacing.md,
-						marginBottom: spacing.xs,
 					}}
 				>
 					<View
@@ -352,12 +357,14 @@ export default function SalesScreen() {
 						accessibilityIgnoresInvertColors
 					/>
 				</View>
+				</View>
 
 				{/* Bottom panel */}
 				<View
 					style={{
+						marginTop: -spacing.md,
 						paddingTop: spacing.lg,
-						paddingBottom: insets.bottom + 32,
+						paddingBottom: tabBarClearance,
 						gap: spacing.md,
 						backgroundColor: colors.bg,
 						borderTopLeftRadius: radii.xxl,
