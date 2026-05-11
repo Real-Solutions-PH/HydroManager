@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 import { hydroAiApi } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
 import { QK } from "@/lib/query-config";
@@ -39,6 +39,7 @@ export function AIChatFab() {
 	});
 	const [input, setInput] = useState("");
 	const [msgs, setMsgs] = useState<Msg[]>([]);
+	const colors = useThemeColors();
 
 	const quotaReached = quota.data !== undefined && quota.data.remaining <= 0;
 

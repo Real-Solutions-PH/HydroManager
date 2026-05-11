@@ -1,8 +1,9 @@
 import { View } from "react-native";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 
 export function MarkdownRender({ source }: { source: string }) {
+	const colors = useThemeColors();
 	const lines = source.split(/\r?\n/);
 	const blocks: React.ReactNode[] = [];
 	let listBuffer: string[] = [];

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import {
 	type InventoryItem,
@@ -42,6 +42,7 @@ export function InventoryMovementSheet({ item, onClose, defaultType }: Props) {
 	const [qty, setQty] = useState("1");
 	const [cost, setCost] = useState("");
 	const [notes, setNotes] = useState("");
+	const colors = useThemeColors();
 
 	useEffect(() => {
 		if (item) {
@@ -113,7 +114,8 @@ export function InventoryMovementSheet({ item, onClose, defaultType }: Props) {
 	};
 
 	const qtyNum = Number.parseFloat(qty);
-	const valid = type === "adjust" ? qtyNum >= 0 && !Number.isNaN(qtyNum) : qtyNum > 0;
+	const valid =
+		type === "adjust" ? qtyNum >= 0 && !Number.isNaN(qtyNum) : qtyNum > 0;
 	const busy = mutation.isPending || deleteMutation.isPending;
 
 	return (
@@ -215,7 +217,6 @@ export function InventoryMovementSheet({ item, onClose, defaultType }: Props) {
 
 					<Card>
 						<Field label={type === "adjust" ? "New stock" : "Quantity"}>
-
 							<Input
 								keyboardType="decimal-pad"
 								value={qty}

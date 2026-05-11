@@ -1,11 +1,12 @@
 import { View } from "react-native";
 import { Text } from "@/components/ui/text";
-import { colors, spacing } from "@/constants/theme";
+import { spacing, useThemeColors } from "@/constants/theme";
 import { useNetworkStore } from "@/stores/network-store";
 
 export function OfflineBanner() {
 	const isConnected = useNetworkStore((s) => s.isConnected);
 	const isWifi = useNetworkStore((s) => s.isWifi);
+	const colors = useThemeColors();
 
 	if (isWifi) return null;
 
@@ -19,8 +20,8 @@ export function OfflineBanner() {
 		>
 			<Text size="xs" style={{ color: colors.warning, textAlign: "center" }}>
 				{isConnected
-					? "On cellular \u2014 sync paused (WiFi only)"
-					: "Offline \u2014 changes saved locally"}
+					? "On cellular — sync paused (WiFi only)"
+					: "Offline — changes saved locally"}
 			</Text>
 		</View>
 	);

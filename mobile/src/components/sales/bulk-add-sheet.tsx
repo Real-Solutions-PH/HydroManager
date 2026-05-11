@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Modal, Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
-import { colors, radii, spacing } from "@/constants/theme";
+import { radii, spacing, useThemeColors } from "@/constants/theme";
 import type { InventoryItem, Produce } from "@/lib/hydro-api";
 
 export type BulkAddTab = "produce" | "inventory";
@@ -33,6 +33,7 @@ export function BulkAddSheet({
 	const [selectedInventory, setSelectedInventory] = useState<Set<string>>(
 		new Set(),
 	);
+	const colors = useThemeColors();
 
 	useEffect(() => {
 		if (visible) {
@@ -197,6 +198,7 @@ function TabBtn({
 	active: boolean;
 	onPress: () => void;
 }) {
+	const colors = useThemeColors();
 	return (
 		<Pressable
 			onPress={onPress}
@@ -232,6 +234,7 @@ function Row({
 	selected: boolean;
 	onPress: () => void;
 }) {
+	const colors = useThemeColors();
 	return (
 		<Pressable
 			onPress={onPress}
