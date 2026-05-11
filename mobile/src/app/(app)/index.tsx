@@ -727,53 +727,6 @@ export default function HomeScreen() {
 					/>
 				</View>
 
-				{/* Horizontal action chip row */}
-				<ScrollView
-					horizontal
-					showsHorizontalScrollIndicator={false}
-					contentContainerStyle={{
-						paddingHorizontal: spacing.md,
-						gap: spacing.xs,
-					}}
-				>
-					<QuickActionChip
-						icon="water"
-						iconColor={colors.info}
-						label={t("home.qa_log_reading")}
-						href="/checklist"
-					/>
-					<QuickActionChip
-						icon="add"
-						iconColor={colors.primaryLight}
-						label={t("home.qa_new_batch")}
-						href="/batch/new"
-					/>
-					<QuickActionChip
-						icon="trending-up"
-						iconColor={colors.salesAccent}
-						label={t("home.qa_add_sale")}
-						href="/sale-new"
-					/>
-					<QuickActionChip
-						icon="cube"
-						iconColor={colors.restockAccent}
-						label={t("home.qa_restock")}
-						href="/inventory-new"
-					/>
-					<QuickActionChip
-						icon="flash"
-						iconColor={colors.primaryLight}
-						label={t("home.qa_tasks")}
-						href="/checklist"
-					/>
-					<QuickActionChip
-						icon="book"
-						iconColor={colors.warning}
-						label={t("home.qa_crop_guide")}
-						href="/library/crops"
-					/>
-				</ScrollView>
-
 				{/* Bottom panel — clear separation from header */}
 				<View
 					style={{
@@ -788,6 +741,35 @@ export default function HomeScreen() {
 						borderColor: colors.borderLight,
 					}}
 				>
+				{/* Quick actions — 4 circle buttons */}
+				<View
+					style={{
+						flexDirection: "row",
+						justifyContent: "space-around",
+						paddingHorizontal: spacing.md,
+					}}
+				>
+					<QuickActionCircle
+						icon="water"
+						label={t("home.qa_log_reading")}
+						href="/checklist"
+					/>
+					<QuickActionCircle
+						icon="add"
+						label={t("home.qa_new_batch")}
+						href="/batch/new"
+					/>
+					<QuickActionCircle
+						icon="trending-up"
+						label={t("home.qa_add_sale")}
+						href="/sale-new"
+					/>
+					<QuickActionCircle
+						icon="cube"
+						label={t("home.qa_restock")}
+						href="/inventory-new"
+					/>
+				</View>
 
 				{/* Today's Tasks */}
 				{/* <View style={{ paddingHorizontal: spacing.md }}>
@@ -1147,14 +1129,12 @@ export default function HomeScreen() {
 	);
 }
 
-function QuickActionChip({
+function QuickActionCircle({
 	icon,
-	iconColor,
 	label,
 	href,
 }: {
 	icon: React.ComponentProps<typeof Ionicons>["name"];
-	iconColor: string;
 	label: string;
 	href: Href;
 }) {
@@ -1164,27 +1144,32 @@ function QuickActionChip({
 			accessibilityLabel={label}
 			onPress={() => router.push(href)}
 			style={({ pressed }) => ({
-				flexDirection: "row",
 				alignItems: "center",
-				gap: 6,
-				paddingVertical: 6,
-				paddingHorizontal: spacing.sm,
-				borderRadius: radii.full,
-				backgroundColor: pressed ? colors.glassHover : colors.surfaceVariant,
-				borderWidth: 1,
-				borderColor: colors.border,
-				minHeight: 32,
+				gap: spacing.xs,
+				opacity: pressed ? 0.7 : 1,
+				width: 72,
 			})}
 		>
-			<Ionicons name={icon} size={14} color={iconColor} />
-			<Text weight="semibold" size="xs">
+			<View
+				style={{
+					width: 56,
+					height: 56,
+					borderRadius: radii.full,
+					backgroundColor: colors.primary,
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+			>
+				<Ionicons name={icon} size={24} color={colors.bg} />
+			</View>
+			<Text
+				size="xs"
+				weight="semibold"
+				numberOfLines={1}
+				style={{ textAlign: "center" }}
+			>
 				{label}
 			</Text>
-			<Ionicons
-				name="chevron-forward"
-				size={12}
-				color={colors.textMuted}
-			/>
 		</Pressable>
 	);
 }
