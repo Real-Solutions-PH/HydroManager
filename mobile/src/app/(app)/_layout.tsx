@@ -13,7 +13,7 @@ import {
 	InteractiveMenu,
 	type InteractiveMenuItem,
 } from "@/components/ui/interactive-menu";
-import { colors } from "@/constants/theme";
+import { useThemeColors } from "@/constants/theme";
 import { useAuthStore } from "@/stores/auth-store";
 import { useNavHistoryStore } from "@/stores/nav-history-store";
 
@@ -34,6 +34,7 @@ export default function AppLayout() {
 	const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 	const pathname = usePathname();
 	const pushHistory = useNavHistoryStore((s) => s.push);
+	const colors = useThemeColors();
 
 	useEffect(() => {
 		if (pathname) pushHistory(pathname);
