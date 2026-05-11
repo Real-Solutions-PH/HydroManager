@@ -21,7 +21,12 @@ import {
 import { SpeechBubble } from "@/components/ui/speech-bubble";
 import { Text } from "@/components/ui/text";
 import { type TodayForecast, WeatherCard } from "@/components/ui/weather-card";
-import { type ThemeColors, radii, spacing, useThemeColors } from "@/constants/theme";
+import {
+	radii,
+	spacing,
+	type ThemeColors,
+	useThemeColors,
+} from "@/constants/theme";
 import { useGeolocation } from "@/hooks/use-geolocation";
 import { useClimateNormals } from "@/hooks/use-library";
 import {
@@ -500,7 +505,7 @@ export default function HomeScreen() {
 			}));
 		const total = segments.reduce((a, b) => a + b.value, 0);
 		return { segments, total };
-	}, [activeBatches]);
+	}, [activeBatches, colors]);
 
 	const phaseGroups = useMemo(() => {
 		let germinating = 0;
@@ -565,7 +570,14 @@ export default function HomeScreen() {
 		];
 		const total = germinating + trueLeaves + transplanted + fruiting;
 		return { phases, total };
-	}, [detailsQ, t]);
+	}, [
+		detailsQ,
+		t,
+		colors.primary,
+		colors.warning,
+		colors.primaryLight,
+		colors.info,
+	]);
 
 	const upcomingPhases = activeBatches
 		.map((b, i) => {
@@ -602,7 +614,7 @@ export default function HomeScreen() {
 		.slice(0, 5);
 
 	return (
-		<GradientBackground>
+		<GradientBackground bg={colors.primaryDeep}>
 			<ScrollView
 				contentContainerStyle={{
 					gap: spacing.md,
@@ -621,7 +633,7 @@ export default function HomeScreen() {
 					}}
 				>
 					<View style={{ flex: 1, gap: 2 }}>
-						<Text size="xxl" weight="bold">
+						<Text size="xxl" weight="bold" style={{ color: "#FFFFFF" }}>
 							{`${greeting}, ${firstName}!`}
 						</Text>
 					</View>
@@ -639,14 +651,14 @@ export default function HomeScreen() {
 									width: 44,
 									height: 44,
 									borderRadius: radii.full,
-									backgroundColor: colors.infoLight,
+									backgroundColor: "rgba(255, 255, 255, 0.14)",
 									borderWidth: 1,
-									borderColor: colors.info,
+									borderColor: "rgba(255, 255, 255, 0.22)",
 									alignItems: "center",
 									justifyContent: "center",
 								}}
 							>
-								<Ionicons name="library" size={20} color={colors.info} />
+								<Ionicons name="library" size={20} color="#FFFFFF" />
 							</Pressable>
 						</Link>
 						{/* <Link href="/checklist" asChild>
@@ -692,9 +704,9 @@ export default function HomeScreen() {
 									width: 44,
 									height: 44,
 									borderRadius: radii.full,
-									backgroundColor: colors.glass,
+									backgroundColor: "rgba(255, 255, 255, 0.14)",
 									borderWidth: 1,
-									borderColor: colors.border,
+									borderColor: "rgba(255, 255, 255, 0.22)",
 									alignItems: "center",
 									justifyContent: "center",
 								}}
@@ -702,7 +714,7 @@ export default function HomeScreen() {
 								<Ionicons
 									name="settings-outline"
 									size={20}
-									color={colors.text}
+									color="#FFFFFF"
 								/>
 							</Pressable>
 						</Link>
@@ -715,18 +727,19 @@ export default function HomeScreen() {
 						flexDirection: "row",
 						alignItems: "center",
 						paddingHorizontal: spacing.md,
-						marginBottom: -spacing.xl,
+						marginBottom: -56,
 					}}
 				>
 					<Image
 						key={gifKey}
 						source={require("../../../assets/character/welcome.gif")}
-						style={{ width: 140, height: 140, marginRight: -spacing.xs }}
+						style={{ width: 160, height: 160, marginRight: -spacing.xs, marginBottom: -spacing.md }}
 						contentFit="contain"
 						cachePolicy="memory-disk"
 						accessibilityIgnoresInvertColors
 					/>
 					<SpeechBubble
+						tone="onBrand"
 						title={t("home.checkin_quote")}
 						subtitle={t("home.checkin_summary", {
 							tasks: String(tasksPending),
