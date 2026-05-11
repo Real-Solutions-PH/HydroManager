@@ -279,45 +279,32 @@ export default function SalesScreen() {
 					</Link>
 				</View>
 
-				{/* Mascot peeking into bottom panel */}
+				{/* Mascot + KPI summary peeking into bottom panel */}
 				<View
 					style={{
 						flexDirection: "row",
-						alignItems: "flex-end",
+						alignItems: "center",
 						paddingHorizontal: spacing.md,
-						marginBottom: -spacing.xxxl,
+						gap: spacing.sm,
+						marginBottom: spacing.lg,
 					}}
 				>
 					<Image
 						source={require("../../../assets/character/recording.gif")}
 						style={{
-							width: 150,
-							height: 160,
+							width: 130,
+							height: 150,
+							marginRight: -spacing.xs,
+							marginBottom: -spacing.xxxl - spacing.md,
 						}}
 						contentFit="contain"
 						cachePolicy="memory-disk"
 						autoplay
 						accessibilityIgnoresInvertColors
 					/>
-				</View>
-
-				{/* Bottom panel */}
-				<View
-					style={{
-						paddingTop: spacing.lg,
-						paddingBottom: insets.bottom + 32,
-						gap: spacing.md,
-						backgroundColor: colors.bg,
-						borderTopLeftRadius: radii.xxl,
-						borderTopRightRadius: radii.xxl,
-						borderTopWidth: 1,
-						borderColor: colors.borderLight,
-						paddingHorizontal: spacing.md,
-					}}
-				>
-					{/* KPI summary card */}
 					<View
 						style={{
+							flex: 1,
 							borderRadius: 18,
 							backgroundColor: colors.surface,
 							borderWidth: 1,
@@ -356,7 +343,22 @@ export default function SalesScreen() {
 							iconColor={colors.warning}
 						/>
 					</View>
+				</View>
 
+				{/* Bottom panel */}
+				<View
+					style={{
+						paddingTop: spacing.lg,
+						paddingBottom: insets.bottom + 32,
+						gap: spacing.md,
+						backgroundColor: colors.bg,
+						borderTopLeftRadius: radii.xxl,
+						borderTopRightRadius: radii.xxl,
+						borderTopWidth: 1,
+						borderColor: colors.borderLight,
+						paddingHorizontal: spacing.md,
+					}}
+				>
 					<PeriodChips value={period} onChange={setPeriod} />
 
 				<Card>
