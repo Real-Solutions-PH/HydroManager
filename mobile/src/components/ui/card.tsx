@@ -1,7 +1,7 @@
 import { BlurView } from "expo-blur";
 import type { ReactNode } from "react";
 import { Platform, Pressable, View, type ViewProps } from "react-native";
-import { colors, spacing } from "@/constants/theme";
+import { colors, spacing, useEffectiveTheme } from "@/constants/theme";
 
 interface CardProps extends ViewProps {
 	children: ReactNode;
@@ -16,6 +16,7 @@ export function Card({
 	style,
 	...props
 }: CardProps) {
+	const theme = useEffectiveTheme();
 	const base = (
 		<View
 			style={[
@@ -37,7 +38,7 @@ export function Card({
 			{Platform.OS !== "web" && variant === "default" ? (
 				<BlurView
 					intensity={25}
-					tint="dark"
+					tint={theme === "light" ? "light" : "dark"}
 					style={{ position: "absolute", inset: 0 }}
 				/>
 			) : null}

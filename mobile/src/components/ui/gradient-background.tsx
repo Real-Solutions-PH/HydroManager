@@ -1,3 +1,4 @@
+// TODO(palette-migration): rename to SurfaceBackground — renders solid bg, not a gradient.
 import type { ReactNode } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -12,7 +13,7 @@ export function GradientBackground({ children, withInsets = true }: Props) {
 	const insets = useSafeAreaInsets();
 	const colors = useThemeColors();
 	return (
-		<View style={{ flex: 1, backgroundColor: colors.bg }}>
+		<View style={{ flex: 1, backgroundColor: colors.headerBg }}>
 			<View
 				style={{
 					flex: 1,
