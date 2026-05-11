@@ -4,12 +4,12 @@ import { Link } from "expo-router";
 import { useMemo, useState } from "react";
 import {
 	Alert,
-	Image,
 	Pressable,
 	ScrollView,
 	useWindowDimensions,
 	View,
 } from "react-native";
+import { Image } from "expo-image";
 import Svg, {
 	Circle,
 	Defs,
@@ -18,12 +18,18 @@ import Svg, {
 	Path,
 	Stop,
 } from "react-native-svg";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { Text } from "@/components/ui/text";
-import { type ThemeColors, spacing, useThemeColors } from "@/constants/theme";
+import {
+	radii,
+	spacing,
+	type ThemeColors,
+	useThemeColors,
+} from "@/constants/theme";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import {
 	type InventoryCategory,
@@ -99,6 +105,7 @@ export default function SalesScreen() {
 	});
 	const [period, setPeriod] = useState<Period>("month");
 	const tabBarClearance = useTabBarClearance();
+	const insets = useSafeAreaInsets();
 
 	const sales = useQuery({
 		queryKey: QK.sales.list(),
@@ -219,84 +226,98 @@ export default function SalesScreen() {
 				: "Free tier — Basic analytics";
 
 	return (
-		<GradientBackground>
+		<GradientBackground bg={colors.primaryDeep}>
 			<ScrollView
 				contentContainerStyle={{
 					paddingBottom: tabBarClearance,
-					paddingHorizontal: spacing.md,
 					gap: spacing.md,
 				}}
+				style={{ flex: 1 }}
 			>
-				<View style={{ paddingTop: spacing.xs, gap: spacing.xs }}>
-					<View
-						style={{
-							flexDirection: "row",
-							justifyContent: "space-between",
-							alignItems: "center",
-							gap: spacing.sm,
-						}}
-					>
-						<Text size="xxl" weight="bold" style={{ flex: 1 }}>
-							Sales & COGS
-						</Text>
-						<Pressable
-							onPress={() => toast.info("CSV export coming soon")}
-							hitSlop={8}
-							style={{
-								width: 40,
-								height: 40,
-								borderRadius: 20,
-								borderWidth: 1,
-								borderColor: colors.border,
-								backgroundColor: colors.glass,
-								alignItems: "center",
-								justifyContent: "center",
-							}}
-						>
-							<Ionicons name="folder-outline" size={18} color={colors.text} />
-						</Pressable>
-						<Link href="/sale-new" asChild>
-							<Button
-								size="sm"
-								label="Record"
-								leftIcon={<Ionicons name="add" size={18} color="#FFFFFF" />}
-								style={{ borderRadius: 999, flexShrink: 0 }}
-							/>
-						</Link>
-					</View>
-					<Text size="sm" tone="muted">
-						Track revenue, costs and margin
-					</Text>
-				</View>
-
+				{/* Header: title + actions on brand bg */}
 				<View
 					style={{
-						borderRadius: 24,
-						backgroundColor: `${colors.primaryLight}33`,
-						borderWidth: 1,
-						borderColor: `${colors.primaryLight}40`,
-						paddingVertical: spacing.md,
-						paddingHorizontal: spacing.md,
-						overflow: "hidden",
 						flexDirection: "row",
 						alignItems: "center",
+						justifyContent: "space-between",
+						paddingHorizontal: spacing.md,
+						paddingTop: spacing.xs,
 						gap: spacing.sm,
 					}}
 				>
-					<Image
-						source={require("../../../assets/character/recording.png")}
+					<View style={{ flex: 1, gap: 2 }}>
+						<Text size="xxl" weight="bold" style={{ color: "#FFFFFF" }}>
+							Sales & COGS
+						</Text>
+						<Text size="sm" style={{ color: "rgba(255,255,255,0.7)" }}>
+							Track revenue, costs and margin
+						</Text>
+					</View>
+					<Pressable
+						onPress={() => toast.info("CSV export coming soon")}
+						hitSlop={8}
 						style={{
-							width: 120,
-							height: 150,
-							marginLeft: -spacing.sm,
-							marginVertical: -spacing.sm,
+							width: 44,
+							height: 44,
+							borderRadius: radii.full,
+							backgroundColor: "rgba(255, 255, 255, 0.14)",
+							borderWidth: 1,
+							borderColor: "rgba(255, 255, 255, 0.22)",
+							alignItems: "center",
+							justifyContent: "center",
 						}}
-						resizeMode="contain"
+					>
+						<Ionicons name="folder-outline" size={18} color="#FFFFFF" />
+					</Pressable>
+					<Link href="/sale-new" asChild>
+						<Button
+							size="sm"
+							label="Record"
+							leftIcon={<Ionicons name="add" size={18} color="#FFFFFF" />}
+							style={{ borderRadius: 999, flexShrink: 0 }}
+						/>
+					</Link>
+				</View>
+
+				{/* Mascot peeking into bottom panel */}
+				<View
+					style={{
+						flexDirection: "row",
+						alignItems: "flex-end",
+						paddingHorizontal: spacing.md,
+						marginBottom: -spacing.xxxl,
+					}}
+				>
+					<Image
+						source={require("../../../assets/character/recording.gif")}
+						style={{
+							width: 150,
+							height: 160,
+						}}
+						contentFit="contain"
+						cachePolicy="memory-disk"
+						autoplay
 						accessibilityIgnoresInvertColors
 					/>
+				</View>
+
+				{/* Bottom panel */}
+				<View
+					style={{
+						paddingTop: spacing.lg,
+						paddingBottom: insets.bottom + 32,
+						gap: spacing.md,
+						backgroundColor: colors.bg,
+						borderTopLeftRadius: radii.xxl,
+						borderTopRightRadius: radii.xxl,
+						borderTopWidth: 1,
+						borderColor: colors.borderLight,
+						paddingHorizontal: spacing.md,
+					}}
+				>
+					{/* KPI summary card */}
 					<View
 						style={{
-							flex: 1,
 							borderRadius: 18,
 							backgroundColor: colors.surface,
 							borderWidth: 1,
@@ -335,9 +356,8 @@ export default function SalesScreen() {
 							iconColor={colors.warning}
 						/>
 					</View>
-				</View>
 
-				<PeriodChips value={period} onChange={setPeriod} />
+					<PeriodChips value={period} onChange={setPeriod} />
 
 				<Card>
 					<Text size="lg" weight="bold">
@@ -443,6 +463,7 @@ export default function SalesScreen() {
 								/>
 							))
 					)}
+				</View>
 				</View>
 			</ScrollView>
 		</GradientBackground>
@@ -628,7 +649,7 @@ function ChannelCard({
 				borderRadius: 16,
 				borderWidth: 1,
 				borderColor: colors.border,
-				backgroundColor: colors.surfaceVariant,
+				backgroundColor: colors.surface,
 				gap: spacing.xs,
 			}}
 		>
@@ -688,7 +709,8 @@ function RecentSaleCard({
 	disabled: boolean;
 }) {
 	const colors = useThemeColors();
-	const meta = channelMeta(sale.channel, colors) ?? channelMeta("other", colors);
+	const meta =
+		channelMeta(sale.channel, colors) ?? channelMeta("other", colors);
 	const total = sale.items.reduce(
 		(s, it) => s + it.quantity * it.unit_price,
 		0,
