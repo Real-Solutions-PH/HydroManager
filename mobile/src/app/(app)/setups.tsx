@@ -86,14 +86,13 @@ export default function SetupsScreen() {
 				: true,
 	);
 
-	return (
-		<GradientBackground>
+	const ListHeader = (
+		<View style={{ gap: spacing.sm, marginBottom: spacing.md }}>
 			<View
 				style={{
 					flexDirection: "row",
 					alignItems: "flex-start",
 					justifyContent: "space-between",
-					paddingHorizontal: spacing.md,
 					paddingTop: spacing.xs,
 				}}
 			>
@@ -119,8 +118,6 @@ export default function SetupsScreen() {
 				style={{
 					flexDirection: "row",
 					alignItems: "center",
-					paddingHorizontal: spacing.md,
-					paddingTop: spacing.sm,
 					gap: spacing.xs,
 				}}
 			>
@@ -175,7 +172,7 @@ export default function SetupsScreen() {
 				</View>
 			</View>
 
-			<View style={{ paddingTop: spacing.sm }}>
+			<View style={{ marginHorizontal: -spacing.md }}>
 				<FilterRow>
 					{FILTERS.map((f) => (
 						<FilterChip
@@ -187,10 +184,15 @@ export default function SetupsScreen() {
 					))}
 				</FilterRow>
 			</View>
+		</View>
+	);
 
+	return (
+		<GradientBackground>
 			<FlatList
 				data={rows}
 				keyExtractor={(s) => s.id}
+				ListHeaderComponent={ListHeader}
 				refreshing={setupsQ.isRefetching || batchesQ.isRefetching}
 				onRefresh={() => {
 					setupsQ.refetch();
