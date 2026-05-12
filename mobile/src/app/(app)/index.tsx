@@ -338,6 +338,7 @@ export default function HomeScreen() {
 	});
 	const [cityLabel, setCityLabel] = useState<string | null>(null);
 	const [gifKey, setGifKey] = useState(0);
+	const [brandHeaderHeight, setBrandHeaderHeight] = useState(0);
 	useFocusEffect(
 		useCallback(() => {
 			setGifKey((k) => k + 1);
@@ -616,15 +617,15 @@ export default function HomeScreen() {
 	return (
 		<GradientBackground bg={colors.bg} withInsets={false}>
 			<ScrollView
-				contentContainerStyle={{
-					gap: spacing.md,
-				}}
 				style={{ flex: 1 }}
 			>
+				<View style={{ position: "relative" }}>
 				<View
+					onLayout={(e) => setBrandHeaderHeight(e.nativeEvent.layout.height)}
 					style={{
 						backgroundColor: colors.primaryDeep,
 						paddingTop: insets.top + spacing.sm,
+						paddingBottom: spacing.xl,
 						gap: spacing.md,
 					}}
 				>
@@ -728,50 +729,40 @@ export default function HomeScreen() {
 					</View>
 				</View>
 
-				{/* Mascot + speech bubble */}
+				{/* Speech bubble row — reserves left space for absolutely positioned mascot */}
 				<View
 					style={{
 						flexDirection: "row",
 						alignItems: "center",
+						gap: spacing.sm,
 						paddingHorizontal: spacing.md,
 					}}
 				>
-					<Image
-						key={gifKey}
-						source={require("../../../assets/character/welcome.gif")}
-						style={{
-							width: 160,
-							height: 160,
-							marginRight: -spacing.xs,
-							marginBottom: -spacing.xxxl - spacing.md,
-						}}
-						contentFit="contain"
-						cachePolicy="memory-disk"
-						accessibilityIgnoresInvertColors
-					/>
-					<SpeechBubble
-						tone="onBrand"
-						title={t("home.checkin_quote")}
-						subtitle={t("home.checkin_summary", {
-							tasks: String(tasksPending),
-							harvests: String(harvestReady.length),
-							low: String(lowStock.length),
-						})}
-					/>
+					<View style={{ width: 120, height: 130 }} />
+					<View style={{ flex: 1 }}>
+						<SpeechBubble
+							tone="onBrand"
+							title={t("home.checkin_quote")}
+							subtitle={t("home.checkin_summary", {
+								tasks: String(tasksPending),
+								harvests: String(harvestReady.length),
+								low: String(lowStock.length),
+							})}
+						/>
+					</View>
 				</View>
 				</View>
 
-				{/* Bottom panel — clear separation from header */}
+				{/* Bottom panel — overlaps into header so curved corners expose green */}
 				<View
 					style={{
-						paddingTop: spacing.lg,
+						marginTop: -spacing.lg,
+						paddingTop: spacing.lg + spacing.sm,
 						paddingBottom: insets.bottom + 128,
 						gap: spacing.md,
 						backgroundColor: colors.bg,
 						borderTopLeftRadius: radii.xxl,
 						borderTopRightRadius: radii.xxl,
-						borderTopWidth: 1,
-						borderColor: colors.borderLight,
 					}}
 				>
 					{/* Quick actions — 4 circle buttons */}
@@ -1160,6 +1151,23 @@ export default function HomeScreen() {
 							})()}
 						</Card>
 					</View>
+				</View>
+				{brandHeaderHeight > 0 ? (
+					<Image
+						key={gifKey}
+						source={require("../../../assets/character/welcome.gif")}
+						style={{
+							position: "absolute",
+							left: spacing.xs,
+							top: brandHeaderHeight - 160,
+							width: 160,
+							height: 160,
+						}}
+						contentFit="contain"
+						cachePolicy="memory-disk"
+						accessibilityIgnoresInvertColors
+					/>
+				) : null}
 				</View>
 			</ScrollView>
 		</GradientBackground>

@@ -1,7 +1,9 @@
 import axios, { type AxiosInstance } from "axios";
+import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 import { config } from "@/lib/config";
+import { useAuthStore } from "@/stores/auth-store";
 
 const ACCESS_TOKEN_KEY = "access_token";
 
@@ -55,6 +57,22 @@ export async function isLoggedIn(): Promise<boolean> {
 	return !!token;
 }
 
+let redirecting = false;
+
+async function handleUnauthorized() {
+	if (redirecting) return;
+	redirecting = true;
+	try {
+		await clearAccessToken();
+		useAuthStore.getState().clearAuth();
+		router.replace("/login");
+	} finally {
+		setTimeout(() => {
+			redirecting = false;
+		}, 1000);
+	}
+}
+
 export function createApiClient(): AxiosInstance {
 	const instance = axios.create({ baseURL: API_URL });
 
@@ -65,6 +83,20 @@ export function createApiClient(): AxiosInstance {
 		}
 		return config;
 	});
+
+	instance.interceptors.response.use(
+		(response) => response,
+		(error) => {
+			const status = error?.response?.status;
+			const url: string = error?.config?.url ?? "";
+			const isLoginEndpoint =
+				url.includes("/login/access-token") || url.includes("/users/signup");
+			if ((status === 401 || status === 403) && !isLoginEndpoint) {
+				void handleUnauthorized();
+			}
+			return Promise.reject(error);
+		},
+	);
 
 	return instance;
 }

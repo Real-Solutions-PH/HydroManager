@@ -227,16 +227,12 @@ export default function SalesScreen() {
 
 	return (
 		<GradientBackground bg={colors.bg} withInsets={false}>
-			<ScrollView
-				contentContainerStyle={{
-					gap: spacing.md,
-				}}
-				style={{ flex: 1 }}
-			>
+			<ScrollView style={{ flex: 1 }}>
 				<View
 					style={{
 						backgroundColor: colors.primaryDeep,
 						paddingTop: insets.top + spacing.sm,
+						paddingBottom: spacing.xl,
 						gap: spacing.md,
 					}}
 				>
@@ -310,6 +306,7 @@ export default function SalesScreen() {
 								paddingVertical: spacing.sm,
 								paddingHorizontal: spacing.sm,
 								gap: spacing.xs,
+								marginBottom: 12,
 							}}
 						>
 						<HeaderStatRow
@@ -347,7 +344,7 @@ export default function SalesScreen() {
 						style={{
 							position: "absolute",
 							left: spacing.xs,
-							bottom: -spacing.xxxl - spacing.lg,
+							bottom: -spacing.xxxl,
 							width: 160,
 							height: 200,
 						}}
@@ -362,8 +359,8 @@ export default function SalesScreen() {
 				{/* Bottom panel */}
 				<View
 					style={{
-						marginTop: -spacing.md,
-						paddingTop: spacing.lg,
+						marginTop: -radii.xxl,
+						paddingTop: spacing.md,
 						paddingBottom: tabBarClearance,
 						gap: spacing.md,
 						backgroundColor: colors.bg,
