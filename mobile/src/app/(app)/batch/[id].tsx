@@ -1,8 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
-import { Alert, Platform, Pressable, ScrollView, View } from "react-native";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+	Alert,
+	Image,
+	Platform,
+	Pressable,
+	ScrollView,
+	View,
+} from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,8 +17,15 @@ import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import { DatePicker } from "@/components/ui/date-picker";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
+import { SlotMeter } from "@/components/ui/slot-meter";
 import { Text } from "@/components/ui/text";
-import { spacing, systemTypes, useThemeColors } from "@/constants/theme";
+import {
+	radii,
+	spacing,
+	systemTypes,
+	type ThemeColors,
+	useThemeColors,
+} from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import {
 	batchesApi,
@@ -27,6 +41,36 @@ function isoDateOnly(s: string | null | undefined): string | null {
 	if (!s) return null;
 	return s.slice(0, 10);
 }
+
+function timeAgo(iso: string): string {
+	const diff = Date.now() - new Date(iso).getTime();
+	const sec = Math.floor(diff / 1000);
+	if (sec < 60) return "just now";
+	const min = Math.floor(sec / 60);
+	if (min < 60) return `${min}m ago`;
+	const hr = Math.floor(min / 60);
+	if (hr < 24) return `${hr}h ago`;
+	const days = Math.floor(hr / 24);
+	if (days < 7) return `${days}d ago`;
+	return new Date(iso).toLocaleDateString();
+}
+
+const MILESTONE_META: Record<
+	Milestone,
+	{ icon: React.ComponentProps<typeof Ionicons>["name"] }
+> = {
+	Sowed: { icon: "ellipse-outline" },
+	Germinated: { icon: "leaf-outline" },
+	SeedLeaves: { icon: "leaf" },
+	TrueLeaves: { icon: "rose-outline" },
+	Transplanted: { icon: "git-branch" },
+	Vegetative: { icon: "flower-outline" },
+	Flowering: { icon: "flower" },
+	FruitSet: { icon: "nutrition" },
+	HarvestReady: { icon: "basket" },
+	Harvested: { icon: "checkmark-done-circle" },
+	Failed: { icon: "close-circle" },
+};
 
 export default function BatchDetailScreen() {
 	const colors = useThemeColors();
@@ -45,6 +89,8 @@ export default function BatchDetailScreen() {
 	const [to, setTo] = useState<Milestone>("Germinated");
 	const [cnt, setCnt] = useState("");
 	const [notes, setNotes] = useState("");
+	const [showAllSources, setShowAllSources] = useState(false);
+	const [heroEditing, setHeroEditing] = useState(false);
 
 	const transition = useMutation({
 		mutationFn: () =>
@@ -67,8 +113,14 @@ export default function BatchDetailScreen() {
 	const [allocSlots, setAllocSlots] = useState("");
 	const [allocSeeds, setAllocSeeds] = useState("1");
 
+	const seededAllocIdRef = useRef<string | null>(null);
 	useEffect(() => {
-		if (batch.data && !batch.data.legacy) {
+		if (
+			batch.data &&
+			!batch.data.legacy &&
+			seededAllocIdRef.current !== batch.data.id
+		) {
+			seededAllocIdRef.current = batch.data.id;
 			setAllocSlots(String(batch.data.slots_used ?? ""));
 			setAllocSeeds(String(batch.data.seeds_per_slot ?? "1"));
 		}
@@ -114,15 +166,16 @@ export default function BatchDetailScreen() {
 				?.category ?? null,
 		[cropsQ.data, batch.data?.crop_guide_id],
 	);
+	const cropImage = useMemo(
+		() =>
+			cropsQ.data?.data.find((c) => c.id === batch.data?.crop_guide_id)
+				?.image_url ?? null,
+		[cropsQ.data, batch.data?.crop_guide_id],
+	);
 	const milestoneOrder = useMemo(
 		() => milestonesForCategory(cropCategory),
 		[cropCategory],
 	);
-	const allTargets = useMemo<Milestone[]>(
-		() => [...milestoneOrder, "Failed"],
-		[milestoneOrder],
-	);
-
 	useEffect(() => {
 		if (to === "Failed") return;
 		const fromIdx = milestoneOrder.indexOf(from);
@@ -140,7 +193,23 @@ export default function BatchDetailScreen() {
 	}, [milestoneOrder, from]);
 
 	useEffect(() => {
-		if (batch.data) {
+		if (!batch.data || showAllSources) return;
+		const fromCount =
+			batch.data.state_counts.find((c) => c.milestone_code === from)?.count ??
+			0;
+		if (fromCount > 0) return;
+		const firstSource = milestoneOrder.find(
+			(m) =>
+				(batch.data?.state_counts.find((c) => c.milestone_code === m)?.count ??
+					0) > 0,
+		);
+		if (firstSource && firstSource !== from) setFrom(firstSource);
+	}, [batch.data, milestoneOrder, from, showAllSources]);
+
+	const seededEditIdRef = useRef<string | null>(null);
+	useEffect(() => {
+		if (batch.data && seededEditIdRef.current !== batch.data.id) {
+			seededEditIdRef.current = batch.data.id;
 			setEditSetupId(batch.data.setup_id);
 			setEditVariety(batch.data.variety_name);
 			setEditCropId(batch.data.crop_guide_id);
@@ -166,7 +235,6 @@ export default function BatchDetailScreen() {
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: QK.batches.all });
 			qc.invalidateQueries({ queryKey: QK.setups.all });
-			Alert.alert("Saved", "Batch updated.");
 		},
 		onError: (e: Error) => Alert.alert("Update failed", e.message),
 	});
@@ -203,6 +271,34 @@ export default function BatchDetailScreen() {
 		},
 		onError: (e: Error) => Alert.alert("Delete failed", e.message),
 	});
+
+	const saveHero = async () => {
+		if (!batch.data) return;
+		const bd = batch.data;
+		const newSlotsNum = Number.parseInt(allocSlots, 10) || 0;
+		const newSeedsNum = Number.parseInt(allocSeeds, 10) || 0;
+		const slotsChanged =
+			bd.legacy ||
+			newSlotsNum !== (bd.slots_used ?? 0) ||
+			newSeedsNum !== (bd.seeds_per_slot ?? 0);
+		const detailsChanged =
+			editSetupId !== bd.setup_id ||
+			editVariety.trim() !== bd.variety_name ||
+			editCropId !== bd.crop_guide_id ||
+			editStartDate !== isoDateOnly(bd.started_at) ||
+			(editNotes.trim() || null) !== bd.notes;
+		try {
+			if (slotsChanged && newSlotsNum > 0 && newSeedsNum > 0) {
+				await allocate.mutateAsync();
+			}
+			if (detailsChanged) {
+				await updateBatch.mutateAsync();
+			}
+			setHeroEditing(false);
+		} catch {
+			// individual mutation onError already alerts
+		}
+	};
 
 	const harvest = useMutation({
 		mutationFn: () =>
@@ -254,6 +350,24 @@ export default function BatchDetailScreen() {
 		(Date.now() - new Date(b.started_at).getTime()) / 86400000,
 	);
 	const available = byMs.get(from) ?? 0;
+	const currentSetup = setupsQ.data?.data.find((s) => s.id === b.setup_id);
+	const setupMeta = currentSetup ? systemTypes[currentSetup.type] : null;
+	const totalActive = MILESTONE_ORDER.filter((m) => m !== "Failed").reduce(
+		(a, m) => a + (byMs.get(m) ?? 0),
+		0,
+	);
+	const failedCount = byMs.get("Failed") ?? 0;
+	const cntNum = Number.parseInt(cnt, 10) || 0;
+	const validTransition = cntNum > 0 && cntNum <= available && from !== to;
+	const sourcePhases = milestoneOrder.filter((m) => (byMs.get(m) ?? 0) > 0);
+	const visibleSources = showAllSources ? milestoneOrder : sourcePhases;
+	const hasAnyTransitionableSource = sourcePhases.length > 0;
+	const harvestReadyCount = byMs.get("HarvestReady") ?? 0;
+	const harvestActive = harvestReadyCount > 0;
+	const fromIdxForChips = milestoneOrder.indexOf(from);
+	const forwardTargets = milestoneOrder.filter(
+		(_, idx) => idx > fromIdxForChips,
+	);
 
 	return (
 		<GradientBackground>
@@ -261,30 +375,23 @@ export default function BatchDetailScreen() {
 				contentContainerStyle={{
 					padding: spacing.md,
 					paddingBottom: spacing.xxxl,
+					gap: spacing.md,
 				}}
 			>
+				{/* Back row */}
 				<View
 					style={{
 						flexDirection: "row",
 						alignItems: "center",
 						gap: spacing.xs,
-						marginBottom: spacing.xs,
 					}}
 				>
-					<Pressable onPress={goBack}>
+					<Pressable onPress={goBack} hitSlop={12}>
 						<Ionicons name="arrow-back" size={24} color={colors.text} />
 					</Pressable>
-					<View style={{ flex: 1 }}>
-						<Text size="xxl" weight="bold">
-							{b.variety_name}
-						</Text>
-						<Text size="xs" tone="muted">
-							Day {age} · {b.initial_count} units initial
-							{b.slots_used && b.seeds_per_slot
-								? ` · ${b.slots_used} slots × ${b.seeds_per_slot}`
-								: ""}
-						</Text>
-					</View>
+					<Text size="sm" tone="muted" style={{ flex: 1 }}>
+						Edit batch
+					</Text>
 					<Pressable
 						hitSlop={8}
 						onPress={() => {
@@ -325,449 +432,1074 @@ export default function BatchDetailScreen() {
 					</Pressable>
 				</View>
 
+				{/* HERO — info display + inline edit */}
 				<Card>
-					{b.legacy ? (
+					{/* Top row: image + title + edit toggle */}
+					<View style={{ flexDirection: "row", gap: spacing.md }}>
 						<View
 							style={{
-								flexDirection: "row",
+								width: 72,
+								height: 72,
+								borderRadius: radii.lg,
+								backgroundColor: colors.glass,
 								alignItems: "center",
-								gap: spacing.xs,
-								marginBottom: spacing.sm,
+								justifyContent: "center",
+								overflow: "hidden",
 							}}
 						>
-							<Badge
-								label="Legacy"
-								color={colors.textMuted}
-								bg={colors.glass}
-								small
-							/>
-							<Text size="sm" tone="muted" style={{ flex: 1 }}>
-								No slot allocation. Assign slots to track.
-							</Text>
+							{cropImage ? (
+								<Image
+									source={{ uri: cropImage }}
+									style={{ width: "100%", height: "100%" }}
+									resizeMode="cover"
+								/>
+							) : (
+								<Ionicons name="leaf" size={32} color={colors.primaryLight} />
+							)}
 						</View>
-					) : (
-						<Text size="lg" weight="bold" style={{ marginBottom: spacing.xs }}>
-							Slots & Seeds
-						</Text>
-					)}
-					{(() => {
-						const currentSlots = b.slots_used ?? 0;
-						const newSlots = Number.parseInt(allocSlots, 10) || 0;
-						const delta = newSlots - currentSlots;
-						const maxAllowed = currentSlots + emptySlots;
-						const hasTransitions = b.recent_transitions.length > 0;
-						return (
-							<>
-								<Label>SLOTS USED</Label>
-								<Input
-									keyboardType="numeric"
-									value={allocSlots}
-									onChangeText={setAllocSlots}
-									placeholder={`Up to ${maxAllowed}`}
+						<View style={{ flex: 1, justifyContent: "center" }}>
+							<Text size="xxl" weight="bold" numberOfLines={1}>
+								{b.variety_name}
+							</Text>
+							<View
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+									gap: spacing.xs,
+									marginTop: 2,
+								}}
+							>
+								<Ionicons
+									name="time-outline"
+									size={12}
+									color={colors.textMuted}
 								/>
-								<Text size="xs" tone="muted" style={{ marginTop: 4 }}>
-									{b.legacy
-										? `${emptySlots} empty slots in setup`
-										: `Current: ${currentSlots} · ${emptySlots} empty in setup · max ${maxAllowed}`}
+								<Text size="xs" tone="muted">
+									Day {age} · {b.initial_count} initial
 								</Text>
-								<View style={{ height: spacing.sm }} />
-								<Label>SEEDS PER SLOT</Label>
-								<Input
-									keyboardType="numeric"
-									value={allocSeeds}
-									onChangeText={setAllocSeeds}
-								/>
-								{hasTransitions && !b.legacy ? (
-									<Text size="xs" tone="muted" style={{ marginTop: 4 }}>
-										Transitions recorded — initial count will not change.
-									</Text>
-								) : null}
-								<View style={{ height: spacing.md }} />
-								<Button
-									label={b.legacy ? "Allocate Slots" : "Update Slots & Seeds"}
-									isLoading={allocate.isPending}
-									isDisabled={
-										newSlots <= 0 ||
-										newSlots > maxAllowed ||
-										Number.parseInt(allocSeeds, 10) <= 0 ||
-										allocate.isPending ||
-										(!b.legacy &&
-											delta === 0 &&
-											Number.parseInt(allocSeeds, 10) ===
-												(b.seeds_per_slot ?? 0))
-									}
-									onPress={() => allocate.mutate()}
-								/>
-							</>
-						);
-					})()}
-				</Card>
-
-				<View style={{ height: 20 }} />
-
-				<Card>
-					<Text size="lg" weight="bold" style={{ marginBottom: spacing.xs }}>
-						Edit Batch
-					</Text>
-					<Label>SETUP</Label>
-					<View
-						style={{
-							flexDirection: "row",
-							flexWrap: "wrap",
-							gap: spacing.xs,
-						}}
-					>
-						{(setupsQ.data?.data ?? []).map((s) => {
-							const active = editSetupId === s.id;
-							const c = systemTypes[s.type];
-							return (
-								<Pressable
-									key={s.id}
-									onPress={() => setEditSetupId(s.id)}
+							</View>
+							{setupMeta && currentSetup ? (
+								<View
 									style={{
 										flexDirection: "row",
 										alignItems: "center",
-										gap: 6,
-										paddingHorizontal: spacing.sm,
-										paddingVertical: spacing.xs,
-										borderRadius: 12,
-										borderWidth: 1,
-										borderColor: active ? c.color : colors.border,
-										backgroundColor: active ? c.bg : "transparent",
+										gap: 4,
+										marginTop: spacing.xs,
+										paddingHorizontal: spacing.xs,
+										paddingVertical: 3,
+										borderRadius: radii.full,
+										backgroundColor: setupMeta.bg,
+										alignSelf: "flex-start",
 									}}
 								>
 									<Ionicons
-										name={c.icon as never}
-										size={14}
-										color={active ? c.color : colors.textMuted}
+										name={setupMeta.icon as never}
+										size={11}
+										color={setupMeta.color}
 									/>
 									<Text
-										size="sm"
+										size="xs"
 										weight="semibold"
-										style={{ color: active ? c.color : colors.text }}
+										style={{ color: setupMeta.color }}
 									>
-										{s.name}
+										{currentSetup.name}
 									</Text>
-								</Pressable>
-							);
-						})}
+								</View>
+							) : null}
+						</View>
+						{!heroEditing ? (
+							<Pressable
+								onPress={() => setHeroEditing(true)}
+								hitSlop={8}
+								style={({ pressed }) => ({
+									flexDirection: "row",
+									alignItems: "center",
+									gap: 4,
+									paddingHorizontal: spacing.sm,
+									paddingVertical: spacing.xs,
+									borderRadius: radii.full,
+									borderWidth: 1,
+									borderColor: colors.border,
+									backgroundColor: pressed ? colors.glassHover : "transparent",
+									alignSelf: "flex-start",
+								})}
+							>
+								<Ionicons
+									name="create-outline"
+									size={14}
+									color={colors.primary}
+								/>
+								<Text
+									size="xs"
+									weight="semibold"
+									style={{ color: colors.primary }}
+								>
+									Edit
+								</Text>
+							</Pressable>
+						) : null}
 					</View>
-					{editSetupId && editSetupId !== b.setup_id
-						? (() => {
+
+					<View
+						style={{
+							height: 1,
+							backgroundColor: colors.borderLight,
+							marginVertical: spacing.md,
+						}}
+					/>
+
+					{!heroEditing ? (
+						/* INFO VIEW */
+						<View style={{ gap: spacing.sm }}>
+							<InfoRow
+								icon="grid-outline"
+								label="Slots × Seeds"
+								value={
+									b.slots_used && b.seeds_per_slot
+										? `${b.slots_used} × ${b.seeds_per_slot} = ${b.slots_used * b.seeds_per_slot} seeds`
+										: b.legacy
+											? "Legacy — no allocation"
+											: "—"
+								}
+								colors={colors}
+							/>
+							<InfoRow
+								icon="calendar-outline"
+								label="Started"
+								value={
+									editStartDate
+										? new Date(editStartDate).toLocaleDateString()
+										: "—"
+								}
+								colors={colors}
+							/>
+							<InfoRow
+								icon="leaf-outline"
+								label="Crop guide"
+								value={
+									cropsQ.data?.data.find((c) => c.id === editCropId)?.name_en ??
+									"Not set"
+								}
+								colors={colors}
+							/>
+							{b.notes ? (
+								<InfoRow
+									icon="document-text-outline"
+									label="Notes"
+									value={b.notes}
+									colors={colors}
+									multiline
+								/>
+							) : null}
+						</View>
+					) : (
+						/* EDIT FORM */
+						<View>
+							{(() => {
+								const currentSlots = b.slots_used ?? 0;
+								const newSlots = Number.parseInt(allocSlots, 10) || 0;
+								const newSeeds = Number.parseInt(allocSeeds, 10) || 0;
+								const maxAllowed = currentSlots + emptySlots;
+								const hasTransitions = b.recent_transitions.length > 0;
+								const slotsValid =
+									newSlots > 0 && newSlots <= maxAllowed && newSeeds > 0;
+								const detailsValid = editVariety.trim().length > 0;
 								const targetEmpty =
 									editSetupQ.data?.slots.filter(
 										(s) => s.status === "empty" && !s.batch_id,
 									).length ?? 0;
-								const need = b.slots_used ?? 0;
-								const short = need > 0 && targetEmpty < need;
+								const needSlots = b.slots_used ?? 0;
+								const setupShort =
+									editSetupId !== b.setup_id &&
+									needSlots > 0 &&
+									targetEmpty < needSlots;
+								const busy = allocate.isPending || updateBatch.isPending;
+
 								return (
-									<Text
-										size="xs"
-										style={{
-											marginTop: 6,
-											color: short ? colors.error : colors.textMuted,
-										}}
-									>
-										{need > 0
-											? `Need ${need} empty slots · ${targetEmpty} available in target`
-											: "Moving to different setup"}
-									</Text>
+									<>
+										<Label>VARIETY NAME</Label>
+										<Input value={editVariety} onChangeText={setEditVariety} />
+
+										<View style={{ height: spacing.md }} />
+										<Label>SETUP</Label>
+										<View
+											style={{
+												flexDirection: "row",
+												flexWrap: "wrap",
+												gap: spacing.xs,
+											}}
+										>
+											{(setupsQ.data?.data ?? []).map((s) => {
+												const active = editSetupId === s.id;
+												const c = systemTypes[s.type];
+												return (
+													<Pressable
+														key={s.id}
+														onPress={() => setEditSetupId(s.id)}
+														style={{
+															flexDirection: "row",
+															alignItems: "center",
+															gap: 6,
+															paddingHorizontal: spacing.sm,
+															paddingVertical: spacing.xs,
+															borderRadius: 12,
+															borderWidth: 1,
+															borderColor: active ? c.color : colors.border,
+															backgroundColor: active ? c.bg : "transparent",
+														}}
+													>
+														<Ionicons
+															name={c.icon as never}
+															size={14}
+															color={active ? c.color : colors.textMuted}
+														/>
+														<Text
+															size="sm"
+															weight="semibold"
+															style={{
+																color: active ? c.color : colors.text,
+															}}
+														>
+															{s.name}
+														</Text>
+													</Pressable>
+												);
+											})}
+										</View>
+										{editSetupId !== b.setup_id ? (
+											<Text
+												size="xs"
+												style={{
+													marginTop: 6,
+													color: setupShort ? colors.error : colors.textMuted,
+												}}
+											>
+												{needSlots > 0
+													? `Need ${needSlots} empty slots · ${targetEmpty} available in target`
+													: "Moving to different setup"}
+											</Text>
+										) : null}
+
+										{/* SLOTS & SEEDS inline */}
+										<View style={{ height: spacing.md }} />
+										<SlotMeter
+											used={newSlots}
+											free={maxAllowed}
+											label="Slot allocation"
+										/>
+										<View style={{ height: spacing.sm }} />
+
+										<View
+											style={{
+												flexDirection: "row",
+												alignItems: "center",
+												justifyContent: "space-between",
+												marginBottom: 6,
+											}}
+										>
+											<Label>SLOTS USED</Label>
+											<Text size="xs" tone="muted">
+												max {maxAllowed}
+											</Text>
+										</View>
+										<View
+											style={{
+												flexDirection: "row",
+												gap: spacing.xs,
+												alignItems: "stretch",
+											}}
+										>
+											<StepperBtn
+												icon="remove"
+												onPress={() =>
+													setAllocSlots(String(Math.max(0, newSlots - 1)))
+												}
+												disabled={newSlots <= 0}
+												colors={colors}
+											/>
+											<View style={{ flex: 1 }}>
+												<Input
+													keyboardType="numeric"
+													value={allocSlots}
+													onChangeText={setAllocSlots}
+													placeholder={`Up to ${maxAllowed}`}
+													style={{ textAlign: "center" }}
+												/>
+											</View>
+											<StepperBtn
+												icon="add"
+												onPress={() =>
+													setAllocSlots(
+														String(Math.min(maxAllowed, newSlots + 1)),
+													)
+												}
+												disabled={newSlots >= maxAllowed}
+												colors={colors}
+											/>
+											<Pressable
+												onPress={() => setAllocSlots(String(maxAllowed))}
+												disabled={maxAllowed <= 0}
+												style={({ pressed }) => ({
+													paddingHorizontal: spacing.md,
+													justifyContent: "center",
+													borderRadius: radii.md,
+													borderWidth: 1,
+													borderColor: colors.border,
+													backgroundColor: pressed
+														? colors.glassHover
+														: colors.glass,
+													opacity: maxAllowed <= 0 ? 0.4 : 1,
+												})}
+											>
+												<Text size="sm" weight="semibold">
+													Max
+												</Text>
+											</Pressable>
+										</View>
+
+										<View style={{ height: spacing.sm }} />
+										<Label>SEEDS PER SLOT</Label>
+										<View
+											style={{
+												flexDirection: "row",
+												gap: spacing.xs,
+												alignItems: "stretch",
+											}}
+										>
+											<StepperBtn
+												icon="remove"
+												onPress={() =>
+													setAllocSeeds(String(Math.max(1, newSeeds - 1)))
+												}
+												disabled={newSeeds <= 1}
+												colors={colors}
+											/>
+											<View style={{ flex: 1 }}>
+												<Input
+													keyboardType="numeric"
+													value={allocSeeds}
+													onChangeText={setAllocSeeds}
+													style={{ textAlign: "center" }}
+												/>
+											</View>
+											<StepperBtn
+												icon="add"
+												onPress={() => setAllocSeeds(String(newSeeds + 1))}
+												colors={colors}
+											/>
+										</View>
+										{hasTransitions && !b.legacy ? (
+											<Text size="xs" tone="muted" style={{ marginTop: 4 }}>
+												Transitions recorded — initial count will not change.
+											</Text>
+										) : null}
+
+										<View style={{ height: spacing.md }} />
+										<Label>CROP GUIDE</Label>
+										<Combobox
+											value={editCropId}
+											onValueChange={(v, opt) => {
+												setEditCropId(v);
+												if (opt && !editVariety.trim())
+													setEditVariety(opt.label);
+											}}
+											options={cropOptions}
+											placeholder="Pick a crop"
+											searchPlaceholder="Search crops..."
+											emptyMessage={
+												cropsQ.isLoading ? "Loading crops..." : "No crops found"
+											}
+											allowClear
+										/>
+
+										<View style={{ height: spacing.md }} />
+										<Label>START DATE</Label>
+										<DatePicker
+											value={editStartDate}
+											onChange={setEditStartDate}
+											placeholder="Today"
+										/>
+
+										<View style={{ height: spacing.md }} />
+										<Label>NOTES</Label>
+										<Input
+											value={editNotes}
+											onChangeText={setEditNotes}
+											placeholder="Optional"
+											multiline
+										/>
+
+										<View style={{ height: spacing.lg }} />
+										<View style={{ flexDirection: "row", gap: spacing.xs }}>
+											<Pressable
+												onPress={() => {
+													setHeroEditing(false);
+													setEditSetupId(b.setup_id);
+													setEditVariety(b.variety_name);
+													setEditCropId(b.crop_guide_id);
+													setEditStartDate(isoDateOnly(b.started_at));
+													setEditNotes(b.notes ?? "");
+													setAllocSlots(String(b.slots_used ?? ""));
+													setAllocSeeds(String(b.seeds_per_slot ?? "1"));
+												}}
+												disabled={busy}
+												style={({ pressed }) => ({
+													flex: 1,
+													height: 44,
+													borderRadius: radii.md,
+													borderWidth: 1,
+													borderColor: colors.border,
+													backgroundColor: pressed
+														? colors.glassHover
+														: colors.glass,
+													alignItems: "center",
+													justifyContent: "center",
+													opacity: busy ? 0.5 : 1,
+												})}
+											>
+												<Text size="sm" weight="semibold">
+													Cancel
+												</Text>
+											</Pressable>
+											<View style={{ flex: 2 }}>
+												<Button
+													label="Save Changes"
+													isLoading={busy}
+													isDisabled={
+														!detailsValid ||
+														(!b.legacy && !slotsValid) ||
+														setupShort
+													}
+													onPress={saveHero}
+												/>
+											</View>
+										</View>
+									</>
 								);
-							})()
-						: null}
-					<View style={{ height: spacing.sm }} />
-					<Label>VARIETY NAME</Label>
-					<Input value={editVariety} onChangeText={setEditVariety} />
-					<View style={{ height: spacing.sm }} />
-					<Label>CROP GUIDE</Label>
-					<Combobox
-						value={editCropId}
-						onValueChange={(v, opt) => {
-							setEditCropId(v);
-							if (opt && !editVariety.trim()) setEditVariety(opt.label);
-						}}
-						options={cropOptions}
-						placeholder="Pick a crop"
-						searchPlaceholder="Search crops..."
-						emptyMessage={
-							cropsQ.isLoading ? "Loading crops..." : "No crops found"
-						}
-						allowClear
-					/>
-					<View style={{ height: spacing.sm }} />
-					<Label>START DATE</Label>
-					<DatePicker
-						value={editStartDate}
-						onChange={setEditStartDate}
-						placeholder="Today"
-					/>
-					<View style={{ height: spacing.sm }} />
-					<Label>NOTES</Label>
-					<Input
-						value={editNotes}
-						onChangeText={setEditNotes}
-						placeholder="Optional"
-						multiline
-					/>
-					<View style={{ height: spacing.md }} />
-					<Button
-						label="Save Changes"
-						isLoading={updateBatch.isPending}
-						isDisabled={editVariety.trim().length === 0}
-						onPress={() => updateBatch.mutate()}
-					/>
+							})()}
+						</View>
+					)}
 				</Card>
 
-				<View style={{ height: 20 }} />
-
+				{/* MOVE PHASE (PRIMARY) */}
 				<Card>
-					<Text
-						size="xs"
-						weight="semibold"
-						tone="muted"
+					<View
 						style={{
-							textTransform: "uppercase",
-							letterSpacing: 0.5,
+							flexDirection: "row",
+							alignItems: "center",
+							gap: spacing.xs,
+							marginBottom: spacing.xxs,
+						}}
+					>
+						<Ionicons name="leaf" size={18} color={colors.primary} />
+						<Text size="lg" weight="bold" style={{ flex: 1 }}>
+							Move phase
+						</Text>
+						<Badge
+							label={`${totalActive} active`}
+							color={colors.primaryLight}
+							small
+						/>
+					</View>
+
+					{!hasAnyTransitionableSource && !showAllSources ? (
+						<View
+							style={{
+								paddingVertical: spacing.lg,
+								alignItems: "center",
+								gap: spacing.xs,
+							}}
+						>
+							<Ionicons
+								name="leaf-outline"
+								size={28}
+								color={colors.textMuted}
+							/>
+							<Text size="sm" tone="muted">
+								No seeds in any phase yet.
+							</Text>
+							<Pressable onPress={() => setShowAllSources(true)} hitSlop={8}>
+								<Text
+									size="sm"
+									weight="semibold"
+									style={{ color: colors.primary }}
+								>
+									Show all phases to backfill →
+								</Text>
+							</Pressable>
+						</View>
+					) : (
+						<>
+							{/* Step 1: SOURCE */}
+							<View
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+									justifyContent: "space-between",
+									marginTop: spacing.xs,
+									marginBottom: 6,
+								}}
+							>
+								<Label>1 · FROM PHASE</Label>
+								{sourcePhases.length < milestoneOrder.length ? (
+									<Pressable
+										onPress={() => setShowAllSources((v) => !v)}
+										hitSlop={6}
+									>
+										<Text
+											size="xs"
+											weight="semibold"
+											style={{ color: colors.primary }}
+										>
+											{showAllSources ? "Hide empty" : "Show all phases"}
+										</Text>
+									</Pressable>
+								) : null}
+							</View>
+							<View style={{ gap: 6 }}>
+								{visibleSources.map((m) => {
+									const count = byMs.get(m) ?? 0;
+									const has = count > 0;
+									const active = from === m;
+									const meta = MILESTONE_META[m];
+									const accent = active
+										? colors.primary
+										: has
+											? colors.text
+											: colors.textMuted;
+									return (
+										<Pressable
+											key={m}
+											disabled={!has && !showAllSources}
+											onPress={() => setFrom(m)}
+											style={{
+												flexDirection: "row",
+												alignItems: "center",
+												gap: spacing.sm,
+												paddingHorizontal: spacing.sm,
+												paddingVertical: spacing.sm,
+												borderRadius: radii.md,
+												borderWidth: active ? 2 : 1,
+												borderColor: active ? colors.primary : colors.border,
+												backgroundColor: active
+													? colors.successLight
+													: "transparent",
+												opacity: !has && showAllSources ? 0.55 : 1,
+											}}
+										>
+											<View
+												style={{
+													width: 22,
+													height: 22,
+													borderRadius: radii.full,
+													borderWidth: 2,
+													borderColor: active
+														? colors.primary
+														: colors.borderStrong,
+													alignItems: "center",
+													justifyContent: "center",
+												}}
+											>
+												{active ? (
+													<View
+														style={{
+															width: 10,
+															height: 10,
+															borderRadius: radii.full,
+															backgroundColor: colors.primary,
+														}}
+													/>
+												) : null}
+											</View>
+											<View
+												style={{
+													width: 32,
+													height: 32,
+													borderRadius: radii.full,
+													backgroundColor: `${accent}1F`,
+													alignItems: "center",
+													justifyContent: "center",
+												}}
+											>
+												<Ionicons name={meta.icon} size={16} color={accent} />
+											</View>
+											<Text
+												size="md"
+												weight="semibold"
+												style={{ flex: 1, color: colors.text }}
+											>
+												{m}
+											</Text>
+											<Text
+												size="lg"
+												weight="bold"
+												style={{
+													color: has ? colors.text : colors.textMuted,
+												}}
+											>
+												{count}
+											</Text>
+											<Text size="xs" tone="muted">
+												{count === 1 ? "seed" : "seeds"}
+											</Text>
+										</Pressable>
+									);
+								})}
+							</View>
+
+							{/* Step 2: DESTINATION */}
+							<View style={{ height: spacing.md }} />
+							<Label>2 · MOVE TO</Label>
+							{forwardTargets.length === 0 ? (
+								<Text size="xs" tone="muted">
+									{from} is the final phase.
+								</Text>
+							) : (
+								<View
+									style={{
+										flexDirection: "row",
+										flexWrap: "wrap",
+										gap: 6,
+									}}
+								>
+									{forwardTargets.map((m) => {
+										const active = to === m;
+										const meta = MILESTONE_META[m];
+										return (
+											<Pressable
+												key={m}
+												onPress={() => setTo(m)}
+												style={{
+													flexDirection: "row",
+													alignItems: "center",
+													gap: 6,
+													paddingHorizontal: spacing.sm,
+													paddingVertical: spacing.xs,
+													borderRadius: radii.full,
+													borderWidth: active ? 2 : 1,
+													borderColor: active ? colors.primary : colors.border,
+													backgroundColor: active
+														? colors.successLight
+														: "transparent",
+												}}
+											>
+												<Ionicons
+													name={meta.icon}
+													size={14}
+													color={active ? colors.primary : colors.textMuted}
+												/>
+												<Text
+													size="sm"
+													weight="semibold"
+													style={{
+														color: active ? colors.primary : colors.text,
+													}}
+												>
+													{m}
+												</Text>
+											</Pressable>
+										);
+									})}
+								</View>
+							)}
+
+							{/* Failed action (separated, destructive) */}
+							<View style={{ height: spacing.xs }} />
+							<Pressable
+								onPress={() => setTo("Failed")}
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+									gap: 6,
+									paddingHorizontal: spacing.sm,
+									paddingVertical: spacing.xs,
+									borderRadius: radii.full,
+									borderWidth: to === "Failed" ? 2 : 1,
+									borderColor: to === "Failed" ? colors.error : colors.border,
+									backgroundColor:
+										to === "Failed" ? colors.errorLight : "transparent",
+									alignSelf: "flex-start",
+								}}
+							>
+								<Ionicons name="close-circle" size={14} color={colors.error} />
+								<Text
+									size="sm"
+									weight="semibold"
+									style={{ color: colors.error }}
+								>
+									Mark as Failed
+								</Text>
+							</Pressable>
+
+							{/* Step 3: COUNT */}
+							<View style={{ height: spacing.md }} />
+							<View
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+									justifyContent: "space-between",
+									marginBottom: 6,
+								}}
+							>
+								<Label>3 · HOW MANY?</Label>
+								<Text size="xs" tone="muted">
+									{available} available
+								</Text>
+							</View>
+							<View
+								style={{
+									flexDirection: "row",
+									alignItems: "stretch",
+									gap: spacing.xs,
+								}}
+							>
+								<StepperBtn
+									icon="remove"
+									onPress={() => setCnt(String(Math.max(0, cntNum - 1)))}
+									disabled={cntNum <= 0}
+									colors={colors}
+								/>
+								<View style={{ flex: 1 }}>
+									<Input
+										keyboardType="numeric"
+										value={cnt}
+										onChangeText={setCnt}
+										placeholder="0"
+										style={{ textAlign: "center" }}
+									/>
+								</View>
+								<StepperBtn
+									icon="add"
+									onPress={() =>
+										setCnt(String(Math.min(available, cntNum + 1)))
+									}
+									disabled={cntNum >= available}
+									colors={colors}
+								/>
+								<Pressable
+									onPress={() => setCnt(String(available))}
+									disabled={available <= 0}
+									style={({ pressed }) => ({
+										paddingHorizontal: spacing.md,
+										justifyContent: "center",
+										borderRadius: radii.md,
+										borderWidth: 1,
+										borderColor: colors.border,
+										backgroundColor: pressed ? colors.glassHover : colors.glass,
+										opacity: available <= 0 ? 0.4 : 1,
+									})}
+								>
+									<Text size="sm" weight="semibold">
+										All
+									</Text>
+								</Pressable>
+							</View>
+
+							<View style={{ height: spacing.sm }} />
+							<Label>NOTES (OPTIONAL)</Label>
+							<Input
+								value={notes}
+								onChangeText={setNotes}
+								placeholder="e.g. transplanted to bigger net pots"
+							/>
+
+							<View style={{ height: spacing.md }} />
+
+							{/* Summary preview */}
+							{validTransition ? (
+								<View
+									style={{
+										flexDirection: "row",
+										alignItems: "center",
+										justifyContent: "center",
+										gap: spacing.xs,
+										paddingVertical: spacing.xs,
+										marginBottom: spacing.xs,
+										borderRadius: radii.md,
+										backgroundColor:
+											to === "Failed" ? colors.errorLight : colors.successLight,
+									}}
+								>
+									<Text size="sm" weight="bold">
+										{cntNum}
+									</Text>
+									<Text size="sm" weight="semibold">
+										{from}
+									</Text>
+									<Ionicons
+										name="arrow-forward"
+										size={14}
+										color={to === "Failed" ? colors.error : colors.primary}
+									/>
+									<Text
+										size="sm"
+										weight="bold"
+										style={{
+											color: to === "Failed" ? colors.error : colors.primary,
+										}}
+									>
+										{to}
+									</Text>
+								</View>
+							) : null}
+
+							<Button
+								label={
+									to === "Failed"
+										? `Mark ${cntNum || ""} as Failed`.trim()
+										: `Move ${cntNum || ""} to ${to}`.replace(/\s+/g, " ")
+								}
+								variant={to === "Failed" ? "danger" : "solid"}
+								isLoading={transition.isPending}
+								isDisabled={!validTransition}
+								onPress={() => transition.mutate()}
+							/>
+						</>
+					)}
+				</Card>
+
+				{/* CURRENT DISTRIBUTION */}
+				{totalActive > 0 || failedCount > 0 ? (
+					<Card>
+						<Text
+							size="xs"
+							weight="semibold"
+							tone="muted"
+							style={{
+								textTransform: "uppercase",
+								letterSpacing: 0.5,
+								marginBottom: spacing.xs,
+							}}
+						>
+							Current distribution
+						</Text>
+						<View
+							style={{
+								flexDirection: "row",
+								flexWrap: "wrap",
+								gap: spacing.xs,
+							}}
+						>
+							{MILESTONE_ORDER.filter((m) => (byMs.get(m) ?? 0) > 0).map(
+								(m) => (
+									<Badge
+										key={m}
+										label={`${m} · ${byMs.get(m)}`}
+										color={colors.primaryLight}
+										small
+									/>
+								),
+							)}
+							{failedCount > 0 ? (
+								<Badge
+									label={`Failed · ${failedCount}`}
+									color={colors.error}
+									small
+								/>
+							) : null}
+						</View>
+					</Card>
+				) : null}
+
+				{/* RECORD HARVEST */}
+				<Card>
+					<View
+						style={{
+							flexDirection: "row",
+							alignItems: "center",
+							gap: spacing.xs,
 							marginBottom: spacing.xs,
 						}}
 					>
-						Current distribution
-					</Text>
-					<View
-						style={{ flexDirection: "row", flexWrap: "wrap", gap: spacing.xs }}
-					>
-						{MILESTONE_ORDER.filter((m) => (byMs.get(m) ?? 0) > 0).map((m) => (
-							<Badge
-								key={m}
-								label={`${m} · ${byMs.get(m)}`}
-								color={colors.primaryLight}
-								small
+						<View
+							style={{
+								width: 32,
+								height: 32,
+								borderRadius: radii.full,
+								backgroundColor: harvestActive
+									? colors.successLight
+									: colors.glass,
+								alignItems: "center",
+								justifyContent: "center",
+							}}
+						>
+							<Ionicons
+								name="basket"
+								size={16}
+								color={harvestActive ? colors.primary : colors.textMuted}
 							/>
-						))}
-						{(byMs.get("Failed") ?? 0) > 0 ? (
+						</View>
+						<Text
+							size="lg"
+							weight="bold"
+							style={{
+								flex: 1,
+								color: harvestActive ? colors.text : colors.textSecondary,
+							}}
+						>
+							Record Harvest
+						</Text>
+						{harvestActive ? (
 							<Badge
-								label={`Failed · ${byMs.get("Failed")}`}
-								color={colors.error}
+								label={`${harvestReadyCount} ready`}
+								color={colors.primary}
 								small
 							/>
 						) : null}
 					</View>
-				</Card>
-
-				<View style={{ height: 20 }} />
-
-				<Card>
-					<Text size="lg" weight="bold">
-						Record Transition
-					</Text>
-					<Text size="xs" tone="muted" style={{ marginBottom: spacing.sm }}>
-						Nothing auto-advances. You approve each step.
-					</Text>
-
-					<Label>FROM</Label>
-					<View
-						style={{
-							flexDirection: "row",
-							flexWrap: "wrap",
-							gap: 6,
-							marginBottom: spacing.sm,
-						}}
-					>
-						{milestoneOrder.map((m) => {
-							const has = (byMs.get(m) ?? 0) > 0;
-							const active = from === m;
-							return (
-								<Pressable
-									key={m}
-									disabled={!has}
-									onPress={() => setFrom(m)}
-									style={{
-										paddingHorizontal: spacing.xs,
-										paddingVertical: spacing.xxs,
-										borderRadius: 999,
-										borderWidth: 1,
-										borderColor: active ? colors.primaryLight : colors.border,
-										backgroundColor: active
-											? `${colors.primaryLight}26`
-											: "transparent",
-										opacity: has ? 1 : 0.35,
-									}}
-								>
-									<Text
-										size="xs"
-										weight="semibold"
-										style={{
-											color: active ? colors.primaryLight : colors.text,
-										}}
-									>
-										{m}
-										{has ? ` (${byMs.get(m)})` : ""}
-									</Text>
-								</Pressable>
-							);
-						})}
-					</View>
-
-					<Label>TO</Label>
-					<View
-						style={{
-							flexDirection: "row",
-							flexWrap: "wrap",
-							gap: 6,
-							marginBottom: spacing.sm,
-						}}
-					>
-						{allTargets.map((m) => {
-							const active = to === m;
-							const err = m === "Failed";
-							const col = err ? colors.error : colors.primaryLight;
-							const fromIdx = milestoneOrder.indexOf(from);
-							const toIdx = milestoneOrder.indexOf(m);
-							const disabled = !err && toIdx >= 0 && toIdx <= fromIdx;
-							return (
-								<Pressable
-									key={m}
-									disabled={disabled}
-									onPress={() => setTo(m)}
-									style={{
-										paddingHorizontal: spacing.xs,
-										paddingVertical: spacing.xxs,
-										borderRadius: 999,
-										borderWidth: 1,
-										borderColor: active ? col : colors.border,
-										backgroundColor: active ? `${col}26` : "transparent",
-										opacity: disabled ? 0.35 : 1,
-									}}
-								>
-									<Text
-										size="xs"
-										weight="semibold"
-										style={{ color: active ? col : colors.text }}
-									>
-										{m}
-									</Text>
-								</Pressable>
-							);
-						})}
-					</View>
-
-					<Label>{`COUNT (max ${available})`}</Label>
-					<View
-						style={{
-							flexDirection: "row",
-							alignItems: "stretch",
-							gap: spacing.xs,
-						}}
-					>
-						<View style={{ flex: 1 }}>
-							<Input
-								keyboardType="numeric"
-								value={cnt}
-								onChangeText={setCnt}
-								placeholder={`How many ${from} → ${to}?`}
-							/>
-						</View>
-						<Pressable
-							onPress={() => setCnt(String(available))}
-							disabled={available <= 0}
-							style={({ pressed }) => ({
-								paddingHorizontal: spacing.md,
-								justifyContent: "center",
-								borderRadius: 12,
-								borderWidth: 1,
-								borderColor: colors.border,
-								backgroundColor: pressed ? colors.glassHover : colors.glass,
-								opacity: available <= 0 ? 0.4 : 1,
-							})}
-						>
-							<Text size="sm" weight="semibold">
-								All
-							</Text>
-						</Pressable>
-					</View>
-
-					<View style={{ height: 12 }} />
-					<Label>NOTES</Label>
-					<Input value={notes} onChangeText={setNotes} placeholder="Optional" />
-
-					<View style={{ height: 16 }} />
-					<Button
-						label="Save Transition"
-						isLoading={transition.isPending}
-						isDisabled={
-							Number.parseInt(cnt, 10) <= 0 ||
-							Number.parseInt(cnt, 10) > available ||
-							from === to
-						}
-						onPress={() => transition.mutate()}
-					/>
-				</Card>
-
-				<View style={{ height: 20 }} />
-
-				<Card>
-					<Text size="lg" weight="bold">
-						Record Harvest
-					</Text>
-					<Text size="xs" tone="muted" style={{ marginBottom: spacing.sm }}>
-						Available in HarvestReady: {byMs.get("HarvestReady") ?? 0}
-					</Text>
-					<View style={{ flexDirection: "row", gap: 10 }}>
-						<View style={{ flex: 1 }}>
-							<Label>WEIGHT (g)</Label>
-							<Input keyboardType="numeric" value={hw} onChangeText={setHw} />
-						</View>
-						<View style={{ flex: 1 }}>
-							<Label>COUNT</Label>
-							<Input keyboardType="numeric" value={hc} onChangeText={setHc} />
-						</View>
-					</View>
-					<View style={{ height: 16 }} />
-					<Button
-						label="Record Harvest"
-						isLoading={harvest.isPending}
-						isDisabled={
-							Number.parseFloat(hw) <= 0 || Number.parseInt(hc, 10) <= 0
-						}
-						onPress={() => harvest.mutate()}
-					/>
-				</Card>
-
-				<View style={{ height: 20 }} />
-
-				<Card>
-					<Text size="lg" weight="bold" style={{ marginBottom: spacing.xs }}>
-						Recent Transitions
-					</Text>
-					{b.recent_transitions.length === 0 ? (
+					{!harvestActive ? (
 						<Text size="sm" tone="muted">
-							No transitions yet.
+							Available when seeds reach HarvestReady.
 						</Text>
 					) : (
-						<View style={{ gap: 10 }}>
-							{b.recent_transitions.map((t) => (
-								<View
-									key={t.id}
-									style={{
-										borderWidth: 1,
-										borderColor: colors.borderLight,
-										borderRadius: 12,
-										padding: spacing.sm,
-									}}
-								>
-									<Text size="sm" weight="semibold">
-										{t.from_milestone} → {t.to_milestone} · {t.count}
-									</Text>
-									<Text size="xs" tone="muted">
-										{new Date(t.occurred_at).toLocaleString()}
-									</Text>
-									{t.notes ? (
-										<Text size="xs" style={{ marginTop: spacing.xxs }}>
-											{t.notes}
-										</Text>
-									) : null}
+						<>
+							<View
+								style={{ flexDirection: "row", gap: 10, marginTop: spacing.xs }}
+							>
+								<View style={{ flex: 1 }}>
+									<Label>WEIGHT (g)</Label>
+									<Input
+										keyboardType="numeric"
+										value={hw}
+										onChangeText={setHw}
+									/>
 								</View>
-							))}
+								<View style={{ flex: 1 }}>
+									<Label>COUNT</Label>
+									<Input
+										keyboardType="numeric"
+										value={hc}
+										onChangeText={setHc}
+									/>
+								</View>
+							</View>
+							<View style={{ height: spacing.md }} />
+							<Button
+								label="Record Harvest"
+								isLoading={harvest.isPending}
+								isDisabled={
+									Number.parseFloat(hw) <= 0 || Number.parseInt(hc, 10) <= 0
+								}
+								onPress={() => harvest.mutate()}
+							/>
+						</>
+					)}
+				</Card>
+
+				{/* RECENT TRANSITIONS TIMELINE */}
+				<Card>
+					<View
+						style={{
+							flexDirection: "row",
+							alignItems: "center",
+							gap: spacing.xs,
+							marginBottom: spacing.sm,
+						}}
+					>
+						<Ionicons name="time" size={18} color={colors.primary} />
+						<Text size="lg" weight="bold" style={{ flex: 1 }}>
+							History
+						</Text>
+						{b.recent_transitions.length > 0 ? (
+							<Text size="xs" tone="muted">
+								{b.recent_transitions.length} entries
+							</Text>
+						) : null}
+					</View>
+					{b.recent_transitions.length === 0 ? (
+						<View
+							style={{
+								paddingVertical: spacing.md,
+								alignItems: "center",
+								gap: 4,
+							}}
+						>
+							<Ionicons
+								name="hourglass-outline"
+								size={24}
+								color={colors.textMuted}
+							/>
+							<Text size="sm" tone="muted">
+								No transitions yet.
+							</Text>
+						</View>
+					) : (
+						<View>
+							{b.recent_transitions.map((t, idx) => {
+								const isLast = idx === b.recent_transitions.length - 1;
+								const failed = t.to_milestone === "Failed";
+								const dotColor = failed ? colors.error : colors.primary;
+								return (
+									<View
+										key={t.id}
+										style={{ flexDirection: "row", gap: spacing.sm }}
+									>
+										<View style={{ alignItems: "center", width: 16 }}>
+											<View
+												style={{
+													width: 10,
+													height: 10,
+													borderRadius: radii.full,
+													backgroundColor: dotColor,
+													marginTop: 4,
+												}}
+											/>
+											{!isLast ? (
+												<View
+													style={{
+														flex: 1,
+														width: 2,
+														backgroundColor: colors.borderLight,
+														marginTop: 2,
+													}}
+												/>
+											) : null}
+										</View>
+										<View
+											style={{
+												flex: 1,
+												paddingBottom: isLast ? 0 : spacing.sm,
+											}}
+										>
+											<View
+												style={{
+													flexDirection: "row",
+													alignItems: "center",
+													gap: 4,
+													flexWrap: "wrap",
+												}}
+											>
+												<Text size="sm" weight="semibold">
+													{t.from_milestone}
+												</Text>
+												<Ionicons
+													name="arrow-forward"
+													size={12}
+													color={colors.textMuted}
+												/>
+												<Text
+													size="sm"
+													weight="semibold"
+													style={{
+														color: failed ? colors.error : colors.text,
+													}}
+												>
+													{t.to_milestone}
+												</Text>
+												<Badge label={`${t.count}`} color={dotColor} small />
+											</View>
+											<Text size="xs" tone="muted" style={{ marginTop: 2 }}>
+												{timeAgo(t.occurred_at)}
+											</Text>
+											{t.notes ? (
+												<Text size="xs" style={{ marginTop: 2 }}>
+													{t.notes}
+												</Text>
+											) : null}
+										</View>
+									</View>
+								);
+							})}
 						</View>
 					)}
 				</Card>
@@ -790,5 +1522,82 @@ function Label({ children }: { children: React.ReactNode }) {
 		>
 			{children}
 		</Text>
+	);
+}
+
+function StepperBtn({
+	icon,
+	onPress,
+	disabled,
+	colors,
+}: {
+	icon: React.ComponentProps<typeof Ionicons>["name"];
+	onPress: () => void;
+	disabled?: boolean;
+	colors: ThemeColors;
+}) {
+	return (
+		<Pressable
+			onPress={onPress}
+			disabled={disabled}
+			hitSlop={6}
+			style={({ pressed }) => ({
+				width: 44,
+				justifyContent: "center",
+				alignItems: "center",
+				borderRadius: radii.md,
+				borderWidth: 1,
+				borderColor: colors.border,
+				backgroundColor: pressed ? colors.glassHover : colors.glass,
+				opacity: disabled ? 0.4 : 1,
+			})}
+		>
+			<Ionicons name={icon} size={18} color={colors.text} />
+		</Pressable>
+	);
+}
+
+function InfoRow({
+	icon,
+	label,
+	value,
+	colors,
+	multiline,
+}: {
+	icon: React.ComponentProps<typeof Ionicons>["name"];
+	label: string;
+	value: string;
+	colors: ThemeColors;
+	multiline?: boolean;
+}) {
+	return (
+		<View
+			style={{
+				flexDirection: "row",
+				alignItems: multiline ? "flex-start" : "center",
+				gap: spacing.sm,
+			}}
+		>
+			<View
+				style={{
+					width: 28,
+					height: 28,
+					borderRadius: radii.full,
+					backgroundColor: colors.glass,
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+			>
+				<Ionicons name={icon} size={14} color={colors.textSecondary} />
+			</View>
+			<View style={{ flex: 1 }}>
+				<Text size="xs" tone="muted">
+					{label}
+				</Text>
+				<Text size="sm" weight="semibold" numberOfLines={multiline ? 3 : 1}>
+					{value}
+				</Text>
+			</View>
+		</View>
 	);
 }
