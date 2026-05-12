@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
 import { spacing, useThemeColors } from "@/constants/theme";
+import { useBack } from "@/hooks/use-back";
 import {
 	type Batch,
 	batchesApi,
@@ -106,6 +107,7 @@ function orderByUrgency(tasks: UiTask[]): UiTask[] {
 
 export default function ChecklistScreen() {
 	const colors = useThemeColors();
+	const goBack = useBack();
 	const serverTasks = useQuery({
 		queryKey: QK.checklist(),
 		queryFn: () => checklistApi.list(),
@@ -152,9 +154,20 @@ export default function ChecklistScreen() {
 	return (
 		<GradientBackground>
 			<View style={{ paddingHorizontal: spacing.md, paddingTop: spacing.xs }}>
-				<Text size="xxl" weight="bold">
-					Tasks
-				</Text>
+				<View
+					style={{
+						flexDirection: "row",
+						alignItems: "center",
+						gap: spacing.xs,
+					}}
+				>
+					<Pressable onPress={goBack} hitSlop={8}>
+						<Ionicons name="arrow-back" size={24} color={colors.text} />
+					</Pressable>
+					<Text size="xxl" weight="bold">
+						Tasks
+					</Text>
+				</View>
 				<Text size="sm" tone="muted">
 					Setup-aware daily checklist
 				</Text>
