@@ -29,7 +29,12 @@ import { Input } from "@/components/ui/input";
 import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
-import { spacing, systemTypes, useThemeColors } from "@/constants/theme";
+import {
+	spacing,
+	systemTypes,
+	useBadgeTextColor,
+	useThemeColors,
+} from "@/constants/theme";
 import {
 	type Batch,
 	type BatchDetail,
@@ -44,7 +49,7 @@ import {
 } from "@/lib/hydro-api";
 import { flattenPages, getNextSkip, PAGE_SIZE } from "@/lib/paginate";
 import { QK, STALE } from "@/lib/query-config";
-import { darkenForBadgeText, formatDateOnly } from "@/lib/utils";
+import { formatDateOnly } from "@/lib/utils";
 
 const FILTERS = ["All", "Active", "Harvest-Ready", "Archived"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -461,6 +466,7 @@ function BatchCard({
 	onAutoAdvance: () => void;
 }) {
 	const colors = useThemeColors();
+	const tint = useBadgeTextColor();
 	const setupColor = setup ? systemTypes[setup.type] : null;
 	const day = Math.max(
 		0,
@@ -616,7 +622,7 @@ function BatchCard({
 									<Text
 										size="xs"
 										weight="semibold"
-										style={{ color: darkenForBadgeText(setupColor.color) }}
+										style={{ color: tint(setupColor.color) }}
 										numberOfLines={1}
 									>
 										{setup.name}
@@ -635,38 +641,36 @@ function BatchCard({
 							gap: 4,
 						}}
 					>
-						{nextStage && daysToNextPhase !== null ? (
-							<View
-								style={{
-									alignItems: "center",
-									paddingHorizontal: 10,
-									paddingVertical: 4,
-									borderRadius: 999,
-									backgroundColor: STAGE_COLORS[nextStage].bg,
-									borderWidth: 1,
-									borderColor: `${STAGE_COLORS[nextStage].fg}40`,
-								}}
-							>
-								<Text
-									size="xs"
-									weight="bold"
-									numberOfLines={1}
-									style={{
-										color: STAGE_COLORS[nextStage].fg,
-										letterSpacing: 0.3,
-									}}
-								>
-									{STAGE_LABEL[nextStage].toUpperCase()}
-								</Text>
-								<Text
-									size="xs"
-									weight="bold"
-									style={{ color: STAGE_COLORS[nextStage].fg }}
-								>
-									~{daysToNextPhase}d
-								</Text>
-							</View>
-						) : null}
+						{nextStage && daysToNextPhase !== null
+							? (() => {
+									const stageFg = tint(STAGE_COLORS[nextStage].fg);
+									return (
+										<View
+											style={{
+												alignItems: "center",
+												paddingHorizontal: 10,
+												paddingVertical: 4,
+												borderRadius: 999,
+												backgroundColor: STAGE_COLORS[nextStage].bg,
+												borderWidth: 1,
+												borderColor: `${stageFg}40`,
+											}}
+										>
+											<Text
+												size="xs"
+												weight="bold"
+												numberOfLines={1}
+												style={{ color: stageFg, letterSpacing: 0.3 }}
+											>
+												{STAGE_LABEL[nextStage].toUpperCase()}
+											</Text>
+											<Text size="xs" weight="bold" style={{ color: stageFg }}>
+												~{daysToNextPhase}d
+											</Text>
+										</View>
+									);
+								})()
+							: null}
 						<Ionicons
 							name={isExpanded ? "chevron-up" : "chevron-down"}
 							size={14}
@@ -706,7 +710,7 @@ function BatchCard({
 										<Text
 											size="xs"
 											weight="semibold"
-											style={{ color: darkenForBadgeText(colors.primary) }}
+											style={{ color: tint(colors.primary) }}
 										>
 											{count} {STAGE_LABEL[m]}
 										</Text>

@@ -1,6 +1,5 @@
 import { Text, View } from "react-native";
-import { spacing } from "@/constants/theme";
-import { darkenForBadgeText } from "@/lib/utils";
+import { spacing, useBadgeTextColor } from "@/constants/theme";
 
 interface BadgeProps {
 	label: string;
@@ -17,8 +16,9 @@ export function Badge({
 	textColor,
 	small,
 }: BadgeProps) {
+	const tint = useBadgeTextColor();
 	const backgroundColor = bg ?? `${color}26`;
-	const resolvedText = textColor ?? darkenForBadgeText(color);
+	const resolvedText = textColor ?? tint(color);
 	return (
 		<View
 			style={{

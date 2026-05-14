@@ -162,16 +162,21 @@ function hslToHex(h: number, s: number, l: number): string {
 }
 
 /**
- * Returns a hex color guaranteed to have enough darkness for AA text contrast
- * against a light tint of the same hue (used by Badge backgrounds at ~15% alpha).
- * Caps lightness at 0.30 and keeps saturation >= 0.40 to preserve the hue identity.
+ * Returns a hex color tuned for AA text contrast against a translucent tint of
+ * the same hue (used by Badge backgrounds at ~15% alpha). In light mode the
+ * color is darkened (cap lightness 0.30); in dark mode it is lightened (floor
+ * lightness 0.78). Saturation is kept >= 0.40 to preserve hue identity.
  * Falls back to original input for non-hex colors (e.g. rgba()).
  */
-export function darkenForBadgeText(input: string): string {
+export function tintForBadgeText(input: string, isDark: boolean): string {
 	const rgb = hexToRgb(input);
 	if (!rgb) return input;
 	const [h, s, l] = rgbToHsl(rgb[0], rgb[1], rgb[2]);
-	const targetL = Math.min(l, 0.3);
 	const targetS = Math.max(s, 0.4);
+	const targetL = isDark ? Math.max(l, 0.78) : Math.min(l, 0.3);
 	return hslToHex(h, targetS, targetL);
+}
+
+export function darkenForBadgeText(input: string): string {
+	return tintForBadgeText(input, false);
 }

@@ -16,10 +16,14 @@ import { GradientBackground } from "@/components/ui/gradient-background";
 import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { Text } from "@/components/ui/text";
-import { spacing, systemTypes, useThemeColors } from "@/constants/theme";
+import {
+	spacing,
+	systemTypes,
+	useBadgeTextColor,
+	useThemeColors,
+} from "@/constants/theme";
 import { batchesApi, type Setup, setupsApi } from "@/lib/hydro-api";
 import { flattenPages, getNextSkip, PAGE_SIZE } from "@/lib/paginate";
-import { darkenForBadgeText } from "@/lib/utils";
 import { QK, STALE } from "@/lib/query-config";
 
 const FILTERS = ["All", "Active", "Archived"] as const;
@@ -258,6 +262,7 @@ function SetupCard({
 	varieties: string[];
 }) {
 	const colors = useThemeColors();
+	const tint = useBadgeTextColor();
 	const c = systemTypes[setup.type];
 	const pct = setup.slot_count > 0 ? (used / setup.slot_count) * 100 : 0;
 	const archived = !!setup.archived_at;
@@ -333,7 +338,7 @@ function SetupCard({
 									<Text
 										size="xs"
 										weight="semibold"
-										style={{ color: darkenForBadgeText(c.color) }}
+										style={{ color: tint(c.color) }}
 									>
 										{SETUP_LABEL[setup.type]}
 									</Text>
@@ -401,7 +406,7 @@ function SetupCard({
 									<Text
 										size="xs"
 										weight="semibold"
-										style={{ color: darkenForBadgeText(colors.primary) }}
+										style={{ color: tint(colors.primary) }}
 									>
 										{v}
 									</Text>
@@ -438,7 +443,7 @@ function SetupCard({
 						<Text
 							size="sm"
 							weight="semibold"
-							style={{ color: darkenForBadgeText(c.color) }}
+							style={{ color: tint(c.color) }}
 						>
 							{used}/{setup.slot_count} ({pct.toFixed(0)}%)
 						</Text>

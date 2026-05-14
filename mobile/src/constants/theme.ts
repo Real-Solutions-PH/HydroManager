@@ -1,5 +1,6 @@
 import { useColorScheme } from "react-native";
 import { useThemeStore } from "@/stores/theme-store";
+import { tintForBadgeText } from "@/lib/utils";
 
 export const lightColors = {
 	primary: "#5C8A3A",
@@ -110,6 +111,15 @@ export function useEffectiveTheme(): "light" | "dark" {
 	const mode = useThemeStore((s) => s.mode);
 	const active = mode === "system" ? scheme : mode;
 	return active === "light" ? "light" : "dark";
+}
+
+/**
+ * Returns a tinter that converts a brand hex color into a readable text color
+ * against translucent same-hue badge backgrounds, adjusted for current theme.
+ */
+export function useBadgeTextColor(): (input: string) => string {
+	const isDark = useEffectiveTheme() === "dark";
+	return (input: string) => tintForBadgeText(input, isDark);
 }
 
 export const systemTypes = {
