@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Toaster } from "sonner-native";
+import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { initializeDatabase } from "@/lib/database";
 
@@ -57,6 +58,7 @@ export function Providers({ children }: ProvidersProps) {
 				>
 					<AppInitializer />
 					{children}
+					<PwaInstallPrompt />
 					<PortalHost />
 					<Toaster />
 				</PersistQueryClientProvider>
