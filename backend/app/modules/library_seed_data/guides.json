@@ -19,13 +19,13 @@
     "image_key": null,
     "read_time_min": 6,
     "tags": ["setup", "planning"],
-    "source": "HydroGuide editorial"
+    "source": "Bot-choy editorial"
   },
   {
     "title": "Daily Operations Checklist for Staff",
     "summary": "Morning and afternoon routine to keep batches healthy.",
     "category": "business",
-    "body_md": "## Morning (06:00 - 07:00)\n- Inspect pumps and aerators.\n- Check pH and EC of each reservoir.\n- Note any wilting, discoloration, or pest signs.\n- Top up reservoirs to mark line.\n\n## Mid-day (12:00)\n- Verify shade-cloth deployed if outdoor.\n- Spot-check water temperature.\n\n## Afternoon (16:00 - 17:00)\n- Harvest mature batches.\n- Pack and pre-cool produce.\n- Log all observations in HydroGuide app.\n\n## End of week\n- Drain and refresh nutrient solution.\n- Sanitize empty channels with 1% H2O2.",
+    "body_md": "## Morning (06:00 - 07:00)\n- Inspect pumps and aerators.\n- Check pH and EC of each reservoir.\n- Note any wilting, discoloration, or pest signs.\n- Top up reservoirs to mark line.\n\n## Mid-day (12:00)\n- Verify shade-cloth deployed if outdoor.\n- Spot-check water temperature.\n\n## Afternoon (16:00 - 17:00)\n- Harvest mature batches.\n- Pack and pre-cool produce.\n- Log all observations in Bot-choy app.\n\n## End of week\n- Drain and refresh nutrient solution.\n- Sanitize empty channels with 1% H2O2.",
     "image_url": "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=800",
     "image_key": null,
     "read_time_min": 5,
@@ -36,12 +36,12 @@
     "title": "Pricing Your Hydroponic Produce in Manila",
     "summary": "Market segments, price benchmarks, and margin tips for owners.",
     "category": "business",
-    "body_md": "## Channels\n- **Direct to consumer (DTC):** highest margin, requires logistics.\n- **Restaurants:** stable volume, weekly invoicing.\n- **Wet markets:** fastest cash but lowest margin.\n- **Online (Lazada / Shopee):** good for premium herbs.\n\n## Benchmark price ranges\n- Romaine lettuce: PHP 200-350/kg DTC\n- Basil: PHP 400-900/kg restaurant\n- Cherry tomato: PHP 150-320/kg DTC\n\n## Margin tips\n- Bundle slow movers with hero crops.\n- Offer 10% subscription discount to lock revenue.\n- Track CoGS in HydroGuide Sales tab to know your floor.",
+    "body_md": "## Channels\n- **Direct to consumer (DTC):** highest margin, requires logistics.\n- **Restaurants:** stable volume, weekly invoicing.\n- **Wet markets:** fastest cash but lowest margin.\n- **Online (Lazada / Shopee):** good for premium herbs.\n\n## Benchmark price ranges\n- Romaine lettuce: PHP 200-350/kg DTC\n- Basil: PHP 400-900/kg restaurant\n- Cherry tomato: PHP 150-320/kg DTC\n\n## Margin tips\n- Bundle slow movers with hero crops.\n- Offer 10% subscription discount to lock revenue.\n- Track CoGS in Bot-choy Sales tab to know your floor.",
     "image_url": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=800",
     "image_key": null,
     "read_time_min": 7,
     "tags": ["pricing", "business", "owner"],
-    "source": "DA-AMAS, HydroGuide market notes"
+    "source": "DA-AMAS, Bot-choy market notes"
   },
   {
     "title": "Hygiene and Biosecurity Basics",

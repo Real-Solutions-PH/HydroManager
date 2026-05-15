@@ -68,7 +68,7 @@ export default function LoginScreen() {
 									weight="heavy"
 									style={{ color: "#FFFFFF", lineHeight: 36 }}
 								>
-									HydroGuide
+									Bot-choy - Hydroponics Manager
 								</Text>
 								<Text
 									size="md"
@@ -171,7 +171,7 @@ export default function LoginScreen() {
 							}}
 						>
 							<Text size="sm" tone="muted">
-								New to HydroGuide?
+								New to Bot-choy?
 							</Text>
 							<Link href="/signup">
 								<Text size="sm" weight="semibold" tone="primary">

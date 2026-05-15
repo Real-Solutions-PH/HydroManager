@@ -1,7 +1,7 @@
 {
-  "name": "HydroManager Design System",
+  "name": "Bot-choy - Hydroponics Manager Design System",
   "version": "2.0.0",
-  "description": "Comprehensive UI/UX spec for the HydroGuide Expo + React Native app. Dark forest-green glassmorphic theme with hydroponic system-specific color coding.",
+  "description": "Comprehensive UI/UX spec for the Bot-choy - Hydroponics Manager Expo + React Native app. Dark forest-green glassmorphic theme with hydroponic system-specific color coding.",
   "platform": {
     "framework": "Expo + React Native",
     "styling": "NativeWind (Tailwind) + StyleSheet",
