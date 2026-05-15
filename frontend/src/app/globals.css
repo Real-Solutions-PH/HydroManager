@@ -42,25 +42,35 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --radius: 0.875rem;
+  --background: oklch(0.99 0.005 130);
+  --foreground: oklch(0.18 0.01 130);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.18 0.01 130);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.5982 0.10687 182.4689);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.18 0.01 130);
+  --primary: oklch(0.55 0.11 130);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.96 0.015 130);
+  --secondary-foreground: oklch(0.22 0.02 130);
+  --muted: oklch(0.96 0.01 130);
+  --muted-foreground: oklch(0.5 0.015 130);
+  --accent: oklch(0.93 0.05 65);
+  --accent-foreground: oklch(0.3 0.1 65);
+  --destructive: oklch(0.55 0.2 27);
+  --border: oklch(0.91 0.015 130);
+  --input: oklch(0.92 0.01 130);
+  --ring: oklch(0.55 0.11 130);
+  --brand-leaf: #5c8a3a;
+  --brand-leaf-light: #8fbe5c;
+  --brand-leaf-dark: #4a7028;
+  --brand-leaf-deep: #2f4a1a;
+  --brand-leaf-50: #f2f8ec;
+  --brand-leaf-100: #ddecc9;
+  --brand-clay: #d49050;
+  --brand-clay-light: #e8b789;
+  --brand-water: #4fb8e8;
+  --brand-sun: #e0b23a;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -77,14 +87,14 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.65 0.10687 182.4689);
-  --primary-foreground: oklch(0.985 0 0);
+  --background: oklch(0.16 0.01 130);
+  --foreground: oklch(0.97 0.01 130);
+  --card: oklch(0.21 0.01 130);
+  --card-foreground: oklch(0.97 0.01 130);
+  --popover: oklch(0.21 0.01 130);
+  --popover-foreground: oklch(0.97 0.01 130);
+  --primary: oklch(0.74 0.13 130);
+  --primary-foreground: oklch(0.16 0.02 130);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
@@ -116,9 +126,84 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "cv02", "cv03", "cv04", "ss01";
   }
   button,
   [role="button"] {
     cursor: pointer;
+  }
+}
+
+@layer utilities {
+  .bg-leaf-gradient {
+    background-image:
+      radial-gradient(
+        ellipse 80% 60% at 50% -10%,
+        rgba(143, 190, 92, 0.3),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 60% 80% at 100% 50%,
+        rgba(212, 144, 80, 0.18),
+        transparent 60%
+      ),
+      linear-gradient(180deg, #f7faf2 0%, #ecf3df 100%);
+  }
+  .bg-leaf-gradient-dark {
+    background-image:
+      radial-gradient(
+        ellipse 80% 60% at 50% -10%,
+        rgba(143, 190, 92, 0.22),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 60% 80% at 100% 50%,
+        rgba(212, 144, 80, 0.12),
+        transparent 60%
+      ),
+      linear-gradient(180deg, #1a2210 0%, #0f1408 100%);
+  }
+  .grain {
+    background-image:
+      repeating-radial-gradient(
+        circle at 20% 30%,
+        rgba(92, 138, 58, 0.04) 0,
+        transparent 2px
+      ),
+      repeating-radial-gradient(
+        circle at 80% 70%,
+        rgba(212, 144, 80, 0.03) 0,
+        transparent 2px
+      );
+  }
+  @keyframes float-slow {
+    0%,
+    100% {
+      transform: translateY(0) rotate(0);
+    }
+    50% {
+      transform: translateY(-12px) rotate(2deg);
+    }
+  }
+  .animate-float-slow {
+    animation: float-slow 6s ease-in-out infinite;
+  }
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  .animate-pulse-soft {
+    animation: pulse-soft 3s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-float-slow,
+    .animate-pulse-soft {
+      animation: none;
+    }
   }
 }
