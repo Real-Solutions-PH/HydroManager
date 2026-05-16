@@ -91,7 +91,7 @@ export function createApiClient(): AxiosInstance {
 			const url: string = error?.config?.url ?? "";
 			const isLoginEndpoint =
 				url.includes("/login/access-token") || url.includes("/users/signup");
-			if ((status === 401 || status === 403) && !isLoginEndpoint) {
+			if (status === 401 && !isLoginEndpoint) {
 				void handleUnauthorized();
 			}
 			return Promise.reject(error);
