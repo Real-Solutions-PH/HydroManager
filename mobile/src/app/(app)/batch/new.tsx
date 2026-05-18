@@ -196,7 +196,7 @@ export default function NewBatchScreen() {
 						/>
 						{selectedCrop ? (
 							<Text size="xs" tone="muted" style={{ marginTop: 6 }}>
-								Crop guide: {selectedCrop.name_en} ·{" "}
+								Crop type: {selectedCrop.name_en} ·{" "}
 								{selectedCrop.days_to_harvest_min}-
 								{selectedCrop.days_to_harvest_max} days to harvest
 							</Text>

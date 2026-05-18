@@ -509,7 +509,16 @@ export default function BatchDetailScreen() {
 						</View>
 						{!heroEditing ? (
 							<Pressable
-								onPress={() => setHeroEditing(true)}
+								onPress={() => {
+									if (batch.data) {
+										setEditSetupId(batch.data.setup_id);
+										setEditVariety(batch.data.variety_name);
+										setEditCropId(batch.data.crop_guide_id);
+										setEditStartDate(isoDateOnly(batch.data.started_at));
+										setEditNotes(batch.data.notes ?? "");
+									}
+									setHeroEditing(true);
+								}}
 								hitSlop={8}
 								style={({ pressed }) => ({
 									flexDirection: "row",
@@ -575,10 +584,11 @@ export default function BatchDetailScreen() {
 							/>
 							<InfoRow
 								icon="leaf-outline"
-								label="Crop guide"
+								label="Crop type"
 								value={
-									cropsQ.data?.data.find((c) => c.id === editCropId)?.name_en ??
-									"Not set"
+									cropsQ.data?.data.find(
+										(c) => c.id === (editCropId ?? b.crop_guide_id),
+									)?.name_en ?? "Not set"
 								}
 								colors={colors}
 							/>
@@ -795,7 +805,7 @@ export default function BatchDetailScreen() {
 										) : null}
 
 										<View style={{ height: spacing.md }} />
-										<Label>CROP GUIDE</Label>
+										<Label>CROP TYPE</Label>
 										<Combobox
 											value={editCropId}
 											onValueChange={(v, opt) => {
