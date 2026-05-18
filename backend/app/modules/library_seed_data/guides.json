@@ -4,10 +4,14 @@
     "summary": "Step-by-step on diluting Part A and Part B without nutrient lockout.",
     "category": "nutrition",
     "body_md": "## Equipment\n- 20 L mixing bucket\n- TDS / EC meter\n- pH meter and calibration solution\n\n## Steps\n1. Fill bucket with 18 L of room-temp water.\n2. Add **Part A** first — stir 30 seconds.\n3. Add **Part B** — never together with A in concentrate form.\n4. Adjust pH to target with phosphoric acid or potassium hydroxide.\n5. Verify EC matches crop stage chart.\n\n## Tips\n- Always calibrate meters weekly.\n- Use cool water — heat speeds nutrient breakdown.",
-    "image_url": "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=800",
+    "image_url": null,
     "image_key": null,
     "read_time_min": 4,
-    "tags": ["nutrients", "operations", "beginner"],
+    "tags": [
+      "nutrients",
+      "operations",
+      "beginner"
+    ],
     "source": "Real Solutions PH knowledge base"
   },
   {
@@ -15,10 +19,13 @@
     "summary": "DFT, NFT, Kratky, Dutch Bucket, SNAP — pick by crop weight and water tolerance.",
     "category": "setup",
     "body_md": "## Quick Match\n| Crop class | Best setup | Why |\n|---|---|---|\n| Lightweight leafy | DFT, NFT, Kratky | Constant flow, no fruiting load |\n| Herbs | DFT, Kratky | Low EC, easy maintenance |\n| Heavy fruiting | Dutch Bucket | Supports root mass + trellising |\n| Beginner farm | SNAP | Passive, no electricity |\n\n## Notes\n- DFT is the safest entry point — pumps fail gracefully.\n- NFT requires steady power; backup pump recommended.\n- Dutch Bucket needs more space and structural support.",
-    "image_url": "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=800",
+    "image_url": null,
     "image_key": null,
     "read_time_min": 6,
-    "tags": ["setup", "planning"],
+    "tags": [
+      "setup",
+      "planning"
+    ],
     "source": "Bot-choy editorial"
   },
   {
@@ -26,10 +33,14 @@
     "summary": "Morning and afternoon routine to keep batches healthy.",
     "category": "business",
     "body_md": "## Morning (06:00 - 07:00)\n- Inspect pumps and aerators.\n- Check pH and EC of each reservoir.\n- Note any wilting, discoloration, or pest signs.\n- Top up reservoirs to mark line.\n\n## Mid-day (12:00)\n- Verify shade-cloth deployed if outdoor.\n- Spot-check water temperature.\n\n## Afternoon (16:00 - 17:00)\n- Harvest mature batches.\n- Pack and pre-cool produce.\n- Log all observations in Bot-choy app.\n\n## End of week\n- Drain and refresh nutrient solution.\n- Sanitize empty channels with 1% H2O2.",
-    "image_url": "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=800",
+    "image_url": null,
     "image_key": null,
     "read_time_min": 5,
-    "tags": ["staff", "operations", "checklist"],
+    "tags": [
+      "staff",
+      "operations",
+      "checklist"
+    ],
     "source": "Real Solutions PH SOP"
   },
   {
@@ -37,10 +48,14 @@
     "summary": "Market segments, price benchmarks, and margin tips for owners.",
     "category": "business",
     "body_md": "## Channels\n- **Direct to consumer (DTC):** highest margin, requires logistics.\n- **Restaurants:** stable volume, weekly invoicing.\n- **Wet markets:** fastest cash but lowest margin.\n- **Online (Lazada / Shopee):** good for premium herbs.\n\n## Benchmark price ranges\n- Romaine lettuce: PHP 200-350/kg DTC\n- Basil: PHP 400-900/kg restaurant\n- Cherry tomato: PHP 150-320/kg DTC\n\n## Margin tips\n- Bundle slow movers with hero crops.\n- Offer 10% subscription discount to lock revenue.\n- Track CoGS in Bot-choy Sales tab to know your floor.",
-    "image_url": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=800",
+    "image_url": null,
     "image_key": null,
     "read_time_min": 7,
-    "tags": ["pricing", "business", "owner"],
+    "tags": [
+      "pricing",
+      "business",
+      "owner"
+    ],
     "source": "DA-AMAS, Bot-choy market notes"
   },
   {
@@ -48,10 +63,386 @@
     "summary": "Prevent disease entry and cross-contamination between batches.",
     "category": "safety",
     "body_md": "## Entry protocol\n- Footbath with 1% bleach at greenhouse entrance.\n- Hand sanitizer before handling plants.\n\n## Tools\n- Sterilize scissors with 70% alcohol between batches.\n- Color-code tools per zone (nursery / production / harvest).\n\n## Reservoirs\n- Drain and scrub every 14 days.\n- Replace airline tubing quarterly.\n- Cover reservoirs to block algae and insect oviposition.",
-    "image_url": "https://images.unsplash.com/photo-1584473457409-ce95a9c00017?w=800",
+    "image_url": null,
     "image_key": null,
     "read_time_min": 4,
-    "tags": ["safety", "biosecurity"],
+    "tags": [
+      "safety",
+      "biosecurity"
+    ],
     "source": "DA-BPI Phytosanitary"
+  },
+  {
+    "title": "When to Transplant Seedlings to Your Hydroponic System",
+    "summary": "Read the plant, not the calendar — true leaves, roots, and height tell you it is time.",
+    "category": "operations",
+    "body_md": "## The 3 signs of transplant-ready seedlings\n1. **2 to 4 true leaves** (not the rounded cotyledons that pop out first).\n2. **Roots pushing past the seedling plug or foam** — at least 2-3 cm of white root visible.\n3. **Sturdy stem** — stands on its own without flopping.\n\n## Typical timing by crop\n| Crop | Days after sowing (DAS) |\n|---|---|\n| Lettuce, pechay, kangkong | 10-14 |\n| Tomato, pepper | 18-25 |\n| Basil, herbs | 14-21 |\n\n## Mistakes to avoid\n- **Too early:** seedling has no roots to anchor and will shock or wash out.\n- **Too late:** roots circle the plug, plant becomes root-bound and stunts.\n- Transplant in the late afternoon to give the plant a cool night to recover before the next sun-up.\n\n## After-care\n- Mist leaves once after transplant.\n- Run nutrient solution at half-strength EC (around 0.6-0.8) for the first 3-5 days, then ramp to crop target.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": [
+      "seedling",
+      "transplant",
+      "beginner"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Why Are My Seedlings Leggy (Etiolated)?",
+    "summary": "Long, weak stems mean the seedling is reaching for light it cannot get.",
+    "category": "operations",
+    "body_md": "## What leggy means\nThe stem stretches tall and thin, the cotyledons sit high above the medium, and the plant flops. Caused by **light deprivation**, sometimes worsened by heat.\n\n## Root causes\n1. **Not enough light** — seedlings need bright light within hours of germination.\n2. **Light too far away** — a typical 20-40 W LED grow panel should be 15-25 cm above the tray.\n3. **Too long under cover** — covers come off the moment the first sprout breaks the surface.\n4. **Heat without light** — warm + dark = stretch.\n\n## Fixes\n- Move seedlings to direct morning sun or under a grow light immediately after germination.\n- Aim for **12-16 hours of light per day**.\n- If already leggy, you can rescue them by **burying the stem deeper** at transplant (lettuce, tomato, basil tolerate this well).\n- Improve airflow — a gentle fan toughens stems.\n\n## Prevention checklist\n- Sow only when you have a light source ready.\n- Remove humidity domes within 24 hours of germination.\n- Keep ambient temperature 22-26 C during the seedling stage.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": [
+      "seedling",
+      "troubleshooting",
+      "lighting"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Is My Seedling's Size Normal for Its Age?",
+    "summary": "Reference growth milestones for the most common hydroponic crops.",
+    "category": "operations",
+    "body_md": "## Lettuce (Olmetie, Romaine, Lollo Rossa)\n| DAS | Expected stage |\n|---|---|\n| 3-5 | Germination, cotyledons opening |\n| 7-10 | First true leaf, 1-2 cm tall |\n| 14 | 2-3 true leaves, ready to transplant |\n| 21 | Visible head forming, 4-6 leaves |\n| 30-35 | Mid-grow, 8-12 leaves |\n| 45-55 | Harvest |\n\n## Tomato\n| DAS | Expected stage |\n|---|---|\n| 7-10 | Cotyledons + first true leaf |\n| 21 | 3-4 true leaves, transplant size |\n| 45 | First flower truss |\n\n## When slow growth is normal\n- Cool weather (under 22 C) slows lettuce by days.\n- Low light during rainy season — expect 20-30% longer cycles.\n- Half-strength EC during transplant week — they pause, then catch up.\n\n## When to worry\n- More than 5 days behind the table and stem is yellow, purple, or stunted.\n- Roots brown or slimy (root rot — see the root-rot guide).\n- Cotyledons still the largest leaves at 14 DAS — usually a light or EC problem.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": [
+      "seedling",
+      "growth",
+      "reference"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Why Did My Seedling's Cotyledon Wilt or Turn Brown?",
+    "summary": "Cotyledons fading is usually normal — but timing and color tell you if something is wrong.",
+    "category": "operations",
+    "body_md": "## Normal\nCotyledons (seed leaves) are temporary food storage. Once the **first true leaves** are working, the cotyledons yellow, dry, and drop. This is fine **after** true leaves appear.\n\n## Abnormal: cotyledon dies before true leaves appear\nUsually one of these:\n- **Dried out** — medium went dry, especially in foam or peat plugs. Keep medium consistently moist, not soaked.\n- **Damping off** — fungal disease from over-wet, low-airflow conditions. Stem near the base turns brown and thin. Discard affected seedlings, improve airflow, sterilize trays.\n- **Nutrient burn** — full-strength nutrients on a 5-day-old seedling. Start at 0.4-0.6 EC for the first week.\n- **Sunburn** — moved straight from shade to harsh noon sun. Harden off over 3-4 days.\n\n## Quick diagnosis\n| Symptom | Likely cause |\n|---|---|\n| Crispy, dry brown edges | Underwatering or sunburn |\n| Soft, mushy, dark base | Damping off |\n| Tip-burn with healthy stem | Nutrient or salt burn |\n| Yellow with green veins | Nitrogen deficiency or cold stress |",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": [
+      "seedling",
+      "troubleshooting"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Seeds Not Sprouting Yet? Is 3 Days Normal?",
+    "summary": "Germination timelines per crop and what to check if seeds are slow.",
+    "category": "operations",
+    "body_md": "## Typical germination time\n| Crop | Days to germinate |\n|---|---|\n| Lettuce | 2-5 |\n| Kangkong, pechay | 3-5 |\n| Basil | 5-10 |\n| Tomato, pepper | 7-14 |\n| Cucumber | 3-7 |\n\nAt **3 days** for lettuce, no sprout is still normal — wait until day 5 before declaring failure.\n\n## What slows germination\n- **Cold medium** — under 18 C lettuce stalls; under 16 C may not sprout at all.\n- **Dry medium** — peat or foam dried during the day; re-wet gently.\n- **Buried too deep** — lettuce needs surface contact and light to germinate. Press seeds into the medium, do not bury.\n- **Old seed** — viability drops after 1-2 years of warm storage. Test by sprouting 10 seeds on a wet paper towel.\n\n## Speed-up tricks\n- Pre-soak seeds 6-8 hours in room-temp water (skip for very small seeds).\n- Cover the tray with a clear lid for 24-48 hours to hold humidity, then remove the moment sprouts appear.\n- Keep the tray at 20-25 C.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 3,
+    "tags": [
+      "germination",
+      "seedling"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Cocopeat Prep: Buffer First or Sterilize First?",
+    "summary": "Sterilize first, then buffer. Order matters because heat undoes buffering.",
+    "category": "setup",
+    "body_md": "## The short answer\n**Sterilize first, then buffer.** Sterilization (heat or steam) kills pathogens and weed seeds, but it does not change the chemistry. Buffering swaps out the sodium and potassium that cocopeat naturally holds and replaces them with calcium — if you buffer first and then heat-sterilize, you waste the calcium soak.\n\n## Step-by-step\n1. **Rinse** the cocopeat block twice with clean water until the runoff is light-colored. This alone removes a lot of salt.\n2. **Sterilize** by soaking in near-boiling water for 30 minutes, or sun-dry on a clean tarp for 2-3 hot days.\n3. **Buffer** by soaking in a calcium nitrate solution (around 1.5 g/L) for 12-24 hours.\n4. **Rinse** one final time with plain water.\n5. **Drain** until damp, not dripping. Ready to use.\n\n## How long does buffering take?\n- **Quick buffer:** 8-12 hours with one solution change.\n- **Full buffer:** 24 hours with two changes.\n- Skip buffering only if you are using pre-buffered \"hydroponic grade\" cocopeat.\n\n## Why bother?\nUnbuffered cocopeat steals calcium and magnesium from your nutrient solution. You will see tip-burn and weak growth even with a perfect EC reading.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": [
+      "cocopeat",
+      "medium",
+      "setup"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Best Growing Medium for Lettuce in Hydroponics",
+    "summary": "What to use under the foam plug, in the net cup, or in a seedling tray.",
+    "category": "setup",
+    "body_md": "## Quick recommendation\n| Use case | Best medium |\n|---|---|\n| Seedling tray (germination) | Peat pellet, rockwool cube, or foam plug |\n| Net cup support | Clay pebbles (hydroton), perlite, or buffered cocopeat |\n| Kratky / DFT seedling-to-system | Foam plug + cocopeat collar |\n\n## Why not soil-less potting mix\nThe potting mix that comes with some kits is fine for germination, but it **breaks down** in continuously-wet hydroponic conditions, clogs roots, and rots. Use it only for the seedling tray, never inside the net cup of an active system.\n\n## Cocopeat for seedlings — yes, with prep\nPure buffered cocopeat works well in seedling trays. Mix 70% cocopeat with 30% perlite for better drainage and aeration. Always buffer first (see the cocopeat prep guide) or you will see tip-burn.\n\n## Foam plug + clay pebbles combo\nMost lettuce farms in the Philippines use a closed-cell foam plug for the seedling, drop it into a net cup, and fill the gaps with clay pebbles. Reusable, sterilizable, and never compacts.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": [
+      "medium",
+      "lettuce",
+      "cocopeat"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Transplanting from Foam to Kratky or Net Cup",
+    "summary": "Should you bury the foam in cocopeat? Short answer: no, but support it.",
+    "category": "setup",
+    "body_md": "## What goes where\n- The **foam plug** holds the seedling.\n- The **net cup** holds the foam plug.\n- The **cocopeat (or clay pebbles)** fills the gaps inside the net cup, keeps the foam upright, and wicks moisture to the surface roots.\n\n**Do not bury the foam under the cocopeat surface.** The top of the foam should sit roughly level with the top edge of the net cup, with the seedling stem exposed to air and light.\n\n## Step-by-step\n1. Slot the foam plug into the net cup so the seedling is centered.\n2. Pack buffered cocopeat or clay pebbles around the sides of the foam — enough to keep it from flopping, no more.\n3. Set the net cup into the Kratky lid hole. Confirm the **bottom 1-2 cm** of the foam touches the nutrient solution.\n4. After 5-7 days the roots grow down out of the foam. Drop the water level so only the **tips** sit in solution. The rest of the root mass should be in air — this is the Kratky principle.\n\n## Common mistake\nBurying the foam under a mound of cocopeat traps moisture against the stem and causes damping off. Keep the stem dry.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": [
+      "kratky",
+      "transplant",
+      "setup"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "pH and EC Targets for Lettuce and Common Hydroponic Crops",
+    "summary": "Hold pH 5.5-6.5 and EC 1.0-1.8 for lettuce. Crop-specific table inside.",
+    "category": "nutrition",
+    "body_md": "## Lettuce default\n- **pH:** 5.5-6.5 (sweet spot 5.8-6.2)\n- **EC:** 1.0-1.4 mS/cm seedling, 1.2-1.8 production\n- **TDS (500 scale):** 500-900 ppm production\n\n## By crop\n| Crop | pH | EC (mS/cm) |\n|---|---|---|\n| Lettuce | 5.5-6.5 | 1.0-1.8 |\n| Kangkong, pechay | 5.5-6.5 | 1.4-2.0 |\n| Basil, mint | 5.5-6.5 | 1.0-1.6 |\n| Tomato | 5.8-6.3 | 2.0-3.5 |\n| Cucumber | 5.8-6.0 | 1.8-2.8 |\n| Pepper | 5.8-6.3 | 1.8-2.8 |\n| Strawberry | 5.5-6.5 | 1.4-1.8 |\n\n## When tap water has pH 7.9-8.1\nThis is common in PH urban water. You have three options:\n1. **Use pH down (phosphoric acid)** — works, but costly long-term.\n2. **Acidify with a few drops of citric acid** — fine for hobby Kratky setups.\n3. **Mix in rainwater or RO water** — lowers carbonate hardness so much less acid is needed.\n\n## Why nutrients lock at the wrong pH\n- Below 5.5: calcium and magnesium become unavailable, tip-burn appears.\n- Above 6.5: iron and manganese lock out, new leaves yellow with green veins.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 5,
+    "tags": [
+      "ph",
+      "ec",
+      "nutrition"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "5-in-1 Meter or Separate pH and TDS Meters?",
+    "summary": "For a real farm, buy two dedicated meters. Combo meters are okay only for a quick first try.",
+    "category": "setup",
+    "body_md": "## Honest comparison\n| Meter type | Accuracy | Lifespan | Best for |\n|---|---|---|---|\n| Cheap 5-in-1 (PH, TDS, temp, EC, light) | Low — drifts within weeks | 3-6 months | A single home Kratky bucket, gift, curiosity |\n| Dedicated pen pH meter | High when calibrated | 1-2 years (electrode replaceable) | Any serious grower |\n| Dedicated TDS / EC pen | High | 1-3 years | Any serious grower |\n\n## Why combos disappoint\nA 5-in-1 packs five sensors into one body. The pH electrode is the most fragile part and needs storage in KCl solution — most combos do not include that, so the probe dries out and drifts. You may also find no calibration adjustment for pH at all.\n\n## What to buy in PH\n- **pH:** any Apera, BlueLab, or HM Digital PH-80 / PH-200. Budget option: Yieryi pen with calibration powders.\n- **EC/TDS:** HM Digital COM-100, Hanna HI-98302, or BlueLab Truncheon.\n- Keep **pH 4.01 and 7.01 calibration solution** plus **KCl storage solution** on hand from day one.\n\n## Maintenance ritual\n- Rinse probe in distilled water after every use.\n- Calibrate pH meter weekly (production) or monthly (hobby).\n- Replace pH electrode every 12-18 months.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": [
+      "meter",
+      "ph",
+      "ec",
+      "tools"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Do I Need to Top Up Nutrient Solution During the Grow?",
+    "summary": "Kratky: do not top up after roots reach the air gap. Recirculating: yes, top up daily.",
+    "category": "nutrition",
+    "body_md": "## Kratky (passive, non-circulating)\nThe whole point of Kratky is **falling water level**. Once roots reach the air, the gap above the solution is where oxygen feeds the plant.\n- Day 0-7 after transplant: bottom 1-2 cm of foam touches solution.\n- Day 7+: lower the water so only root tips sit in solution.\n- **Do not top up** with fresh nutrient. Plain water top-ups are okay only if the level fell critically low **and** roots are not yet long enough to reach the surface.\n- One full reservoir of correctly-mixed solution should carry lettuce to harvest.\n\n## DFT, NFT, Dutch Bucket (recirculating)\n- Top up daily with **plain water** to replace what the plants drank.\n- Top up with **half-strength nutrient** if EC drops below the target.\n- Refresh the full reservoir every 10-14 days to avoid nutrient imbalance.\n\n## Watch EC, not water level\n- EC rising over time = plants drink water faster than nutrients. Add water.\n- EC falling = plants eat nutrients faster than water. Add nutrients.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": [
+      "kratky",
+      "nutrients",
+      "operations"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Grow Lights for Indoor Hydroponics",
+    "summary": "What wattage, color, and height to use for lettuce, herbs, and fruiting crops indoors.",
+    "category": "setup",
+    "body_md": "## Targets by crop\n| Crop | Daily light integral (DLI) | Hours per day |\n|---|---|---|\n| Lettuce, herbs | 12-17 mol/m^2/day | 14-16 |\n| Tomato, pepper | 22-30 mol/m^2/day | 14-18 |\n\n## What kind of light\n- **Full-spectrum white LED panels (3500-5000 K)** — beginner friendly, no purple glare, work for all stages.\n- **Red+blue LED** — efficient, but lighting under it looks weird and makes diagnosing leaf color hard.\n- **T5 fluorescent** — fine for seedlings, weak for production lettuce.\n- **Avoid:** household bulbs sold as \"grow lights.\" They run hot and put out little usable light per watt.\n\n## How much wattage\n- Lettuce: **20-30 W (real, not equivalent) per square foot** of canopy.\n- Tomato or fruiting: **40-60 W per square foot**.\n\n## Hang height\n- Seedlings: 25-35 cm above the canopy.\n- Production lettuce: 30-45 cm.\n- Raise the lamp as the plant grows so the canopy stays in the bright zone.\n\n## Brand sanity check in PH\nLook for clear specs: actual wattage (not equivalent), PPF (umol/s), and color temperature. Avoid lamps that only advertise lumens.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 5,
+    "tags": [
+      "lighting",
+      "indoor",
+      "setup"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Diagnosing Discolored or Deformed Lettuce Leaves",
+    "summary": "Color and pattern of the discoloration tell you the cause.",
+    "category": "operations",
+    "body_md": "## Quick visual diagnosis\n| Symptom | Most likely cause |\n|---|---|\n| Old leaves yellow first | Nitrogen deficiency, low EC |\n| New leaves yellow with green veins | Iron deficiency, pH too high |\n| Brown crispy leaf tips | Calcium deficiency, heat stress, or low humidity |\n| Purple stems and undersides | Phosphorus deficiency or cold |\n| Cup-shaped, curled leaves | Heat stress, light too close, or boron deficiency |\n| Pale, washed-out whole plant | Light too weak or root rot |\n| Slimy brown roots + wilt | Root rot (Pythium) |\n| Holes in leaves | Caterpillar or slug feeding |\n\n## First three things to check, in order\n1. **pH and EC** — wrong values cause 80% of leaf problems.\n2. **Root health** — pull a plant gently. White roots = good. Brown/slimy = root rot.\n3. **Light and temperature** — over 30 C lettuce starts to deform; below 18 C it stalls and purples.\n\n## When in doubt\nPost a clear photo of the **whole plant + roots + reservoir** in the Bot-choy diagnose chat. Edge crops, not just the worst plant — patterns matter.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 5,
+    "tags": [
+      "troubleshooting",
+      "deficiency",
+      "lettuce"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Lettuce Leaf Edges Wilting: Fungus or Heat Stress?",
+    "summary": "Tip-burn at the edges is usually heat and calcium, not fungus.",
+    "category": "operations",
+    "body_md": "## Heat / calcium tip-burn (most common)\n- Edges of **young inner leaves** dry, then turn brown.\n- No mold or fuzz; the leaf body stays green.\n- Worse in the hottest weeks of the year (April-May in PH).\n\n**Why:** when transpiration is high, calcium does not move fast enough into the youngest leaves, so the edges die.\n\n**Fixes:**\n- Add shade cloth (30-50%) over outdoor systems.\n- Improve airflow with a fan to reduce humidity pockets.\n- Boost calcium: maintain 150-200 ppm Ca in the solution.\n- Harvest earlier in summer (40 DAS instead of 50).\n\n## Fungal disease (less common)\n- White or grey fuzz visible on the leaf or stem.\n- Soft, water-soaked lesions, sometimes with a foul smell.\n- Often follows long periods of leaf wetness.\n\n**Fixes:**\n- Remove and destroy infected leaves; do not compost in place.\n- Improve airflow; avoid wetting leaves at night.\n- Sanitize tools between plants.\n\n## Quick test\nRub the brown edge between your fingers. Crispy and dry = tip-burn. Slimy or smelly = fungal.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": [
+      "troubleshooting",
+      "heat",
+      "lettuce"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Root Rot: What Causes Brown, Slimy Roots and How to Save the Plant",
+    "summary": "Pythium thrives in warm, low-oxygen water. Cool the reservoir and add air.",
+    "category": "operations",
+    "body_md": "## What healthy roots look like\nWhite to cream, slightly fuzzy with fine hairs, faint earthy smell.\n\n## What rotting roots look like\nBeige, brown, then dark grey. Slimy. Often a rotten-egg or sour smell. The plant wilts during the day even though the reservoir is full.\n\n## Causes (almost always together)\n1. **Warm water** — over 24 C in the reservoir.\n2. **Low oxygen** — no air pump, no air gap, or stagnant solution.\n3. **Light hitting the solution** — algae feeds pathogens.\n4. **Old solution** — never refreshed, organic debris builds up.\n\n## Save the plant\n- Pull it out. Trim away all brown roots with sanitized scissors.\n- Soak the remaining roots in plain water for 10 minutes.\n- Move it to a fresh, cool, oxygenated reservoir at half-strength EC.\n\n## Prevent next time\n- Keep reservoir under 22 C — insulate, or freeze 1.5 L plastic bottles and float one in the tank during hot afternoons.\n- Run an air pump 24/7 in DFT and Kratky after the first week.\n- Cover the reservoir to block light.\n- Add 1-2 mL of 3% hydrogen peroxide per liter as a one-time oxygen boost when you smell trouble (do not use as a routine).\n- Refresh full reservoir every 10-14 days in circulating systems.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 5,
+    "tags": [
+      "root-rot",
+      "troubleshooting",
+      "oxygen"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Why Is My Lettuce Growing Slowly?",
+    "summary": "Diagnosis tree for under-performing lettuce at 30-45 DAS.",
+    "category": "operations",
+    "body_md": "## Use this checklist in order\n\n### 1. Light\n- Outdoor: at least 4-6 hours of direct sun per day.\n- Indoor: 14-16 hours of bright grow-light coverage.\n- If lettuce is pale and stretched, this is the cause.\n\n### 2. Temperature\n- Sweet spot: 18-24 C.\n- Above 28 C lettuce slows, bolts, and turns bitter.\n- Below 15 C it almost stops.\n\n### 3. EC and pH\n- EC under 0.8 starves the plant. Check the meter.\n- pH outside 5.5-6.5 locks out nutrients even at the right EC.\n\n### 4. Oxygen\n- Stagnant water = slow plant. Air pump or true Kratky air-gap needed.\n\n### 5. Solution flow (NFT / DFT)\n- Pump output dropped? Clogged emitter? No flow = no growth.\n- Many slow-growth posts trace back to \"hindi po flowing yung solution ko.\"\n\n### 6. Root health\n- Pull a plant. White and fluffy roots are good. Brown is bad.\n\n### 7. Genetics and seed age\n- Cheap seed lots vary. Try a known supplier next batch.\n\n## Realistic timelines for lettuce in PH\n- Cool season (Dec-Feb): 35-45 DAS to harvest.\n- Hot season (Mar-May): 45-55 DAS, smaller heads.\n- Rainy season: variable, watch for fungal pressure.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 5,
+    "tags": [
+      "troubleshooting",
+      "lettuce",
+      "growth"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Best Non-Bitter Lettuce Varieties for the Philippines",
+    "summary": "Olmetie can bolt and turn bitter in PH heat. Try these alternatives.",
+    "category": "other",
+    "body_md": "## Why your lettuce tastes bitter\nLettuce produces bitter latex when it is stressed — high heat, irregular water, or close to bolting. Choosing a heat-tolerant variety is the easiest fix.\n\n## Romaine and cos types (heat tolerant)\n- **Parris Island Cos** — classic Caesar romaine, holds up to 28 C.\n- **Jericho** — bred in Israel for heat, mild flavor, slow to bolt.\n- **Coastal Star** — large green romaine, dependable in warm weather.\n\n## Looseleaf / butterhead alternatives\n- **Buttercrunch** — sweet, tender, slow bolting.\n- **Salad Bowl (green or red)** — easy, leaf-by-leaf harvest.\n- **Black Seeded Simpson** — fast, mild, hot-weather friendly.\n- **Nevada (summercrisp)** — very heat resistant, sweet crunch.\n\n## Local-friendly tips\n- Sow lettuce in the cooler hours (early morning).\n- Add 30-50% shade cloth from March to May.\n- Harvest younger (40 DAS) in hot months — flavor stays sweet.\n- Keep EC under 1.4 in summer to reduce bolting pressure.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 3,
+    "tags": [
+      "variety",
+      "lettuce",
+      "philippines"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Hardest Part of Hydroponics for Beginners (and How to Beat It)",
+    "summary": "Most people quit between week 3 and week 6 of their first grow. Here is why.",
+    "category": "other",
+    "body_md": "## The real difficulty curve\n1. **Week 1 — Excitement.** Setup is fun.\n2. **Week 2 — Calm.** Seedlings sprout, everyone is happy.\n3. **Week 3-6 — The wall.** Something goes wrong: leggy seedlings, brown roots, slow growth, algae, mystery yellow leaves.\n4. **Week 7+ — Confidence.** If you survive the wall, the rest gets easy.\n\n## The hardest single thing\n**Maintaining the nutrient solution.** Specifically: keeping pH and EC stable, refreshing on time, and catching changes early. Light, transplant timing, and disease are all downstream of a healthy reservoir.\n\n## What beginners under-invest in\n- A real pH meter and calibration solution.\n- An air pump in non-Kratky setups.\n- Shade cloth in PH summers.\n- A simple log book (or the Bot-choy app) to spot trends.\n\n## What to do in the first 30 days\n- Run only one or two systems while you learn.\n- Pick the simplest setup (Kratky or DFT) and one easy crop (lettuce or pechay).\n- Check pH, EC, and water level **at the same time every day** — consistency beats accuracy at the start.\n- Take a daily phone photo from the same angle so you can see slow changes.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": [
+      "beginner",
+      "philosophy"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Can You Grow Tomatoes with the Kratky Method?",
+    "summary": "Yes, with a bigger reservoir and trellis. Cherry types are the sweet spot.",
+    "category": "setup",
+    "body_md": "## Short answer\nKratky tomato works for **cherry and saladette varieties**. Indeterminate beefsteak types are possible but stretch the limits of a passive system.\n\n## Reservoir size matters\n- Lettuce Kratky: 2-4 L per plant.\n- Cherry tomato Kratky: **at least 15-20 L per plant**.\n- Beefsteak: 25-40 L per plant — and you may need to refill once with fresh solution.\n\n## Setup tips\n- Use a 20 L paint pail with a foam lid and a 3-inch net cup.\n- Buffer cocopeat or use clay pebbles in the cup.\n- Mix tomato-specific nutrients (EC 2.0-3.5) from transplant.\n- Stake or trellis from day one — tomato vines do not support themselves.\n\n## Light and pollination\n- Tomato wants 6+ hours of direct sun. Indoor Kratky tomato needs a strong full-spectrum LED.\n- Hand-pollinate by gently shaking the flower truss daily or using a small electric toothbrush.\n\n## When to refill\nIf the water level drops below the root mass before the first fruit ripens, mix one fresh batch of nutrient solution and slowly top up the reservoir to the original mark. Do not exceed it — flooded roots will suffocate.\n\n## Realistic expectations\n- First flower: 35-50 days after transplant.\n- First ripe fruit: 60-80 DAT.\n- Total yield per cherry plant in Kratky: 1.5-3 kg in PH conditions.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 5,
+    "tags": [
+      "kratky",
+      "tomato",
+      "fruiting"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Improving a Hydroponic Setup: What Is Probably Missing",
+    "summary": "Common gaps in beginner builds — flow, aeration, light blocking, monitoring.",
+    "category": "setup",
+    "body_md": "## The five things missing from most first builds\n\n### 1. Flow or aeration\nNFT and DFT need **continuous flow** or **active aeration**. If a pump runs dry, the system fails silently. Add a redundant air pump as cheap insurance.\n\n### 2. Light blocking on the reservoir\nAny light hitting the solution grows algae, which feeds root rot. Wrap reservoirs in foil tape, paint dark, or use opaque containers.\n\n### 3. Insulation against heat\nA black tote in the PH sun will hit 35 C inside by noon. Wrap in reflective foil, raise off concrete, or place in shade.\n\n### 4. Monitoring\nA pH and EC meter is non-negotiable. A reservoir thermometer is the cheap upgrade most people skip.\n\n### 5. Vertical structure for fruiting crops\nFor tomato, cucumber, or any vine — strings, stakes, or a trellis frame **before** the plants need it. Adding support to a tangled vine breaks stems.\n\n## Vertical system specific\nA vertical tower needs:\n- Even drip distribution to every level (test with plain water first).\n- A catch tray with slope back to the reservoir.\n- An overflow path — what happens when the pump runs but the tray clogs?\n- Service access — you will need to clean it.\n\n## Cheap upgrades, biggest impact\n1. Reservoir thermometer.\n2. Frozen-bottle cooler for summer.\n3. Backup air pump.\n4. Shade cloth in April-May.\n5. Daily log in the Bot-choy app.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 5,
+    "tags": [
+      "setup",
+      "improvement",
+      "checklist"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "What Weight and Size Should Lettuce Be at Harvest?",
+    "summary": "Target 150-300 g per head at 40-55 DAS. Smaller is fine if the plant is healthy.",
+    "category": "operations",
+    "body_md": "## Realistic harvest weights\n| Variety | Days after sowing | Weight per head |\n|---|---|---|\n| Olmetie (cos) | 45-55 | 150-250 g |\n| Romaine | 50-60 | 200-350 g |\n| Buttercrunch | 45-55 | 150-250 g |\n| Salad Bowl looseleaf | 40-50 | 120-200 g |\n| Lollo Rossa | 45-55 | 120-200 g |\n\n90 g at 45 DAS is **low** but not a disaster — usually traced to:\n- EC too low through grow.\n- Too few hours of light.\n- Heat above 28 C.\n- Crowded spacing (less than 20 cm between heads).\n\n## When to harvest\n- **Looseleaf:** when outer leaves are 15-20 cm long. Cut leaf by leaf and the plant regrows.\n- **Heading types (cos, romaine, butterhead):** when the head feels firm and reaches target size. Cut the whole plant at the base.\n- Harvest **early morning** — leaves are crisp and full of water.\n\n## Pre-harvest tips\n- Pause nutrients 2-3 days before cut to reduce nitrate content.\n- Refresh reservoir to plain water if you want the sweetest flavor.\n- Wash, dry, then refrigerate within 30 minutes of cutting for best shelf life.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": [
+      "harvest",
+      "lettuce",
+      "yield"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "How Long Does Harvested Lettuce Last in the Refrigerator?",
+    "summary": "Properly stored hydroponic lettuce keeps 7-14 days. Roots-on lasts even longer.",
+    "category": "operations",
+    "body_md": "## Storage life by method\n| Method | Shelf life |\n|---|---|\n| Cut + washed + paper-towel + sealed bag, 2-4 C | 7-10 days |\n| Cut + spin-dried + airtight container | 10-14 days |\n| **Whole plant with roots intact, base in a small cup of water, in fridge** | 14-21 days |\n| Loose in produce drawer, unwashed | 3-5 days |\n\n## Steps that triple shelf life\n1. Harvest in the cool of the morning.\n2. Rinse with clean cold water — never warm.\n3. Spin or pat dry. **Water on leaves is the number-one cause of rot.**\n4. Wrap loosely in a clean paper towel, then put inside a perforated or zip bag with the seal slightly open.\n5. Store in the high-humidity crisper drawer at 2-4 C.\n\n## Soaking the leaves in water?\n- **Roots in water, leaves dry.** That is the rule for a living-lettuce setup.\n- Submerging cut leaves in standing water shortens shelf life and pulls nutrients out.\n\n## Reviving wilted lettuce\nSoak leaves for 15-30 minutes in **ice water**, then spin dry. They snap back. Use immediately — do not re-store.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 3,
+    "tags": [
+      "harvest",
+      "storage",
+      "post-harvest"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Where to Buy Hydroponic Seeds, UV Plastic, and Supplies in the Philippines",
+    "summary": "Categories and shop types that consistently carry legit hydroponic supplies.",
+    "category": "other",
+    "body_md": "## Categories to look for\n\n### Seeds\n- **Allied Botanical, East-West Seed, Ramgo** — local seed houses, reliable for kangkong, pechay, lettuce, tomato.\n- **Online shops with trial packs** — start with small 100-seed packs from sellers that show germination test dates.\n- **Imported lettuce varieties** (Jericho, Nevada) — niche shops on Lazada and Shopee, look for sellers with 90+ ratings and recent reviews.\n\n### UV plastic for greenhouses\n- Hardware stores in the Divisoria / Cubao area carry UV-treated polyethylene sheets.\n- Suppliers in Cavite, Bulacan, and Laguna catering to commercial vegetable growers.\n- Look for **150-200 micron thickness** and a **stated UV rating in years** (3 years minimum).\n\n### Nutrients\n- **SNAP, Master Blend, Bot-choy partner mixes** — search local resellers in Quezon City, Cebu, and Davao.\n- **NutriHydro** — common at hobby scale, available in 1 L kits.\n- **Imported brands (General Hydroponics, Masterblend 4-18-38)** — bigger online shops, expect higher cost.\n\n### Net cups, foam plugs, clay pebbles\n- Aquarium and hydroponic specialty stores in major cities.\n- Online: bundles are cheaper than individual sachets.\n\n## How to vet an unknown seller\n1. Check shop age and review count on Lazada or Shopee.\n2. Ask for a recent germination test photo for seeds.\n3. Ask for the **manufacture and expiry date** for nutrient salts.\n4. Avoid sellers who refuse to share a product spec sheet.\n\n## Pro tip\nJoin the **Hydroponics tips for beginners (PH)** Facebook group — most legit suppliers are linked in pinned posts and verified by long-time members.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 4,
+    "tags": [
+      "supplies",
+      "philippines",
+      "shopping"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Best Nutrient Solution Brands for Hydroponics in the Philippines",
+    "summary": "What hobbyists, schools, and small farms use locally — with honest tradeoffs.",
+    "category": "nutrition",
+    "body_md": "## Local options\n\n### SNAP (UPLB Institute of Plant Breeding)\n- Made specifically for the PH climate and water.\n- Two-part liquid concentrate (A and B).\n- Cheap, widely available through UPLB and accredited resellers.\n- **Tradeoff:** the formulation is general-purpose. Heavy fruiting crops benefit from supplementation.\n\n### NutriHydro\n- Hobby-friendly two-part concentrate.\n- Easy mixing instructions on the bottle.\n- Solid for lettuce, herbs, and pechay.\n- **Tradeoff:** small bottles get expensive once you scale past a few systems.\n\n### MasterBlend 4-18-38 + Calcium Nitrate + Epsom\n- Three-salt powder system — mix your own.\n- Lowest cost per liter of finished solution.\n- Excellent for lettuce and tomato.\n- **Tradeoff:** you need a gram scale and willingness to follow a recipe.\n\n### Real Solutions PH and similar local custom blends\n- Crop-specific recipes (lettuce, tomato, strawberry).\n- Good for owners who want a no-think solution.\n- **Tradeoff:** less price-flexible than DIY.\n\n## How to pick\n| Scale | Best fit |\n|---|---|\n| Single bucket, learning | NutriHydro or SNAP 1 L starter |\n| 1-5 systems, hobby | SNAP concentrate |\n| Small farm, cost-sensitive | MasterBlend powder |\n| Small farm, low-effort | Real Solutions PH or equivalent |\n\n## What matters more than brand\n- Correct EC for your crop.\n- Stable pH between 5.5 and 6.5.\n- Fresh solution every 10-14 days in circulating systems.\n- Calibrated meters.\n\nA cheap nutrient managed well outperforms a premium nutrient managed badly.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 5,
+    "tags": [
+      "nutrients",
+      "brands",
+      "philippines"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
+  },
+  {
+    "title": "Starting Hydroponics from Scratch: The 30-Day Plan",
+    "summary": "From zero gear to your first lettuce harvest — week by week.",
+    "category": "setup",
+    "body_md": "## Week 0 — Buy only what you need\nFor a first Kratky lettuce setup:\n- 1 plastic tote or bucket (10-20 L), opaque or wrapped in foil.\n- 1 lid you can drill 3-inch holes into.\n- 4-6 net cups (3 inch).\n- Foam plugs or rockwool cubes.\n- One bottle each of pH up, pH down, pH 4.01 and 7.01 calibration solution.\n- pH pen meter.\n- TDS / EC pen meter.\n- Nutrient kit (SNAP or NutriHydro starter).\n- Lettuce seeds — start with one variety, not five.\n\nSkip air pumps, grow lights, and timers until your second build.\n\n## Week 1 — Sow seeds\n- Wet foam plugs with plain water.\n- Drop 1-2 seeds per plug.\n- Place in indirect sunlight on a windowsill.\n- Within 2-5 days, sprouts appear. Move into bright light immediately.\n\n## Week 2 — Build the reservoir\n- Drill holes in the lid.\n- Mix nutrient solution at **half strength** (EC 0.6-0.8).\n- pH to 5.8-6.2.\n- Fill the tote until the level is 1-2 cm into where the foam plug will sit.\n\n## Week 2 — Transplant\n- When seedlings show 2-3 true leaves, drop foam plugs into net cups and seat them in the lid holes.\n- Bottom of foam should touch the solution.\n\n## Week 3 — Watch the gap form\n- Roots push out of the foam and into the solution.\n- Water level drops — **do not refill.** The growing air gap is by design.\n- Bump nutrients to full strength (EC 1.2-1.4) by mixing a fresh batch and swapping in week 3 if you want maximum growth.\n\n## Week 4-6 — Maintain\n- Check pH and EC every 2-3 days.\n- Look for white roots, full leaves, and growth that doubles weekly.\n- Move outdoors to morning sun (or under a grow light 14 hours/day) for stocky plants.\n\n## Week 6-8 — Harvest\n- Heads should feel firm; outer leaves are full size.\n- Cut in the morning, refrigerate within 30 minutes.\n\n## Then what\nReview what worked and what did not, replace one weak link (better light, an air pump, a second tote), and run two batches at once. That is how every commercial farmer in the PH started.",
+    "image_url": null,
+    "image_key": null,
+    "read_time_min": 7,
+    "tags": [
+      "beginner",
+      "kratky",
+      "first-grow"
+    ],
+    "source": "Bot-choy editorial — community Q&A"
   }
 ]
