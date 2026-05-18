@@ -42,7 +42,7 @@ function catColor(c: GuideCategory, colors: ThemeColors): string {
 		case "operations":
 			return colors.success;
 		case "other":
-			return colors.textMuted;
+			return colors.neutral;
 	}
 }
 
@@ -210,7 +210,7 @@ function GuideRow({ guide }: { guide: LibraryGuide }) {
 							{guide.read_time_min ? (
 								<Badge
 									label={`${guide.read_time_min} min read`}
-									color={colors.textMuted}
+									color={colors.neutral}
 									small
 								/>
 							) : null}

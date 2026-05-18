@@ -17,7 +17,8 @@ export function Badge({
 	small,
 }: BadgeProps) {
 	const tint = useBadgeTextColor();
-	const backgroundColor = bg ?? `${color}26`;
+	const isHex = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(color);
+	const backgroundColor = bg ?? (isHex ? `${color}26` : "rgba(128,128,128,0.18)");
 	const resolvedText = textColor ?? tint(color);
 	return (
 		<View
