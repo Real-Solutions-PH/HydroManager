@@ -27,6 +27,9 @@ class BatchBase(SQLModel):
     slots_used: int | None = Field(default=None, ge=1, le=2000)
     seeds_per_slot: int | None = Field(default=None, ge=1, le=100)
     notes: str | None = Field(default=None, max_length=1000)
+    seed_inventory_item_id: uuid.UUID | None = Field(
+        default=None, foreign_key="inventory_item.id", ondelete="SET NULL"
+    )
 
 
 class BatchCreate(SQLModel):
@@ -37,6 +40,7 @@ class BatchCreate(SQLModel):
     seeds_per_slot: int = Field(ge=1, le=100)
     notes: str | None = Field(default=None, max_length=1000)
     started_at: datetime | None = None
+    seed_inventory_item_id: uuid.UUID
 
 
 class BatchUpdate(SQLModel):
@@ -99,6 +103,7 @@ class BatchPublic(BatchBase):
     started_at: datetime
     archived_at: datetime | None = None
     legacy: bool = False
+    seed_cost: float | None = None
 
 
 class BatchDetail(BatchPublic):
