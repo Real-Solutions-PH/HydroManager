@@ -504,3 +504,28 @@ def record_harvest(
 def list_harvests(*, session: Session, current_user: User, batch_id: uuid.UUID):
     batch = get_batch(session=session, current_user=current_user, batch_id=batch_id)
     return batches_repo.list_harvests(session=session, batch_id=batch.id)
+
+
+def compute_seed_cost(
+    *, session: Session, batch_id: uuid.UUID
+) -> float | None:
+    from app.modules.inventory.models import InventoryMovement
+    from app.modules.inventory.schema import MovementType
+
+    q = select(func.coalesce(func.sum(InventoryMovement.cost_total), 0.0)).where(
+        InventoryMovement.related_batch_id == batch_id,
+        InventoryMovement.movement_type == MovementType.consume,
+    )
+    total = session.exec(q).one()
+    has_consume_q = (
+        select(func.count())
+        .select_from(InventoryMovement)
+        .where(
+            InventoryMovement.related_batch_id == batch_id,
+            InventoryMovement.movement_type == MovementType.consume,
+        )
+    )
+    has_any = session.exec(has_consume_q).one() > 0
+    if not has_any:
+        return None
+    return float(total or 0.0)

@@ -43,7 +43,13 @@ def list_batches(
     )
     data = [
         BatchPublic.model_validate(
-            {**r.model_dump(), "legacy": r.slots_used is None},
+            {
+                **r.model_dump(),
+                "legacy": r.slots_used is None,
+                "seed_cost": batches_service.compute_seed_cost(
+                    session=session, batch_id=r.id
+                ),
+            },
         )
         for r in rows
     ]
@@ -74,7 +80,13 @@ def read_batch(
     )
     return BatchDetail(
         **BatchPublic.model_validate(
-            {**batch.model_dump(), "legacy": batch.slots_used is None},
+            {
+                **batch.model_dump(),
+                "legacy": batch.slots_used is None,
+                "seed_cost": batches_service.compute_seed_cost(
+                    session=session, batch_id=batch.id
+                ),
+            },
         ).model_dump(),
         state_counts=[
             BatchStateCountPublic.model_validate(c, from_attributes=True)
