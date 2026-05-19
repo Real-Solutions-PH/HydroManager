@@ -478,6 +478,26 @@ export default function BatchDetailScreen() {
 									Day {age} · {b.initial_count} initial
 								</Text>
 							</View>
+							<View
+								style={{
+									flexDirection: "row",
+									alignItems: "center",
+									gap: spacing.xs,
+									marginTop: 2,
+								}}
+							>
+								<Ionicons
+									name="cash-outline"
+									size={12}
+									color={colors.textMuted}
+								/>
+								<Text size="xs" tone="muted">
+									Seed cost:{" "}
+									{b.seed_cost != null
+										? `₱${b.seed_cost.toFixed(2)}`
+										: "—"}
+								</Text>
+							</View>
 							{setupMeta && currentSetup ? (
 								<View
 									style={{
