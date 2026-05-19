@@ -22,6 +22,9 @@ from app.modules.batches.schema import (
 )
 from app.modules.hydro_common.quota import enforce_active_batch_limit
 from app.modules.iam.users.models import User
+from app.modules.inventory import repo as inv_repo
+from app.modules.inventory.models import InventoryMovement
+from app.modules.inventory.schema import InventoryCategory, MovementType
 from app.modules.setups import repo as setups_repo
 from app.modules.setups.models import SetupSlot
 from app.modules.setups.schema import SlotStatus
@@ -52,9 +55,7 @@ def list_batches(
     )
 
 
-def get_batch(
-    *, session: Session, current_user: User, batch_id: uuid.UUID
-) -> Batch:
+def get_batch(*, session: Session, current_user: User, batch_id: uuid.UUID) -> Batch:
     batch = batches_repo.get_by_id(session=session, batch_id=batch_id)
     if not batch:
         raise HTTPException(status_code=404, detail="Batch not found")
@@ -86,9 +87,61 @@ def _free_slots_for_batch(*, session: Session, batch_id: uuid.UUID) -> None:
         session.add(slot)
 
 
-def create_batch(
-    *, session: Session, current_user: User, data: BatchCreate
-) -> Batch:
+def _consume_seed_for_batch(
+    *,
+    session: Session,
+    current_user: User,
+    item_id: uuid.UUID,
+    seeds_needed: int,
+    batch_id: uuid.UUID,
+) -> None:
+    item = inv_repo.get_by_id(session=session, item_id=item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Seed inventory item not found")
+    if not current_user.is_superuser and item.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+    if item.category != InventoryCategory.seeds:
+        raise HTTPException(
+            status_code=400, detail="Selected inventory item is not a seed"
+        )
+    if item.current_stock < seeds_needed:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"INSUFFICIENT_SEED_STOCK: need {seeds_needed}, "
+                f"have {int(item.current_stock)}"
+            ),
+        )
+    cost_total = (
+        round(seeds_needed * item.unit_cost, 4) if item.unit_cost is not None else None
+    )
+    item.current_stock = max(item.current_stock - seeds_needed, 0)
+    session.add(item)
+    movement = InventoryMovement(
+        item_id=item.id,
+        movement_type=MovementType.consume,
+        quantity=float(seeds_needed),
+        cost_total=cost_total,
+        related_batch_id=batch_id,
+    )
+    inv_repo.add_movement(session=session, movement=movement)
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.inventory_consumed,
+        target_type=TargetType.inventory_item,
+        target_id=item.id,
+        summary=f"{item.name} consumed ({seeds_needed:g} {item.unit.value}) for batch",
+        meta={
+            "movement_type": MovementType.consume.value,
+            "quantity": seeds_needed,
+            "cost_total": cost_total,
+            "related_batch_id": str(batch_id),
+        },
+    )
+
+
+def create_batch(*, session: Session, current_user: User, data: BatchCreate) -> Batch:
     setup = setups_repo.get_by_id(session=session, setup_id=data.setup_id)
     if setup is None:
         raise HTTPException(status_code=404, detail="Setup not found")
@@ -115,6 +168,7 @@ def create_batch(
     payload = {
         "setup_id": data.setup_id,
         "crop_guide_id": data.crop_guide_id,
+        "seed_inventory_item_id": data.seed_inventory_item_id,
         "variety_name": data.variety_name,
         "initial_count": initial_count,
         "slots_used": data.slots_used,
@@ -126,6 +180,13 @@ def create_batch(
         payload["started_at"] = data.started_at
     db = Batch.model_validate(payload)
     batch = batches_repo.create(session=session, batch=db)
+    _consume_seed_for_batch(
+        session=session,
+        current_user=current_user,
+        item_id=data.seed_inventory_item_id,
+        seeds_needed=initial_count,
+        batch_id=batch.id,
+    )
     for slot in empty_slots:
         slot.batch_id = batch.id
         slot.status = SlotStatus.PLANTED
@@ -155,9 +216,7 @@ def update_batch(
     batch_id: uuid.UUID,
     data: BatchUpdate,
 ) -> Batch:
-    batch = get_batch(
-        session=session, current_user=current_user, batch_id=batch_id
-    )
+    batch = get_batch(session=session, current_user=current_user, batch_id=batch_id)
     update_data = data.model_dump(exclude_unset=True)
     new_setup_id = update_data.get("setup_id")
     if new_setup_id is not None and new_setup_id != batch.setup_id:
@@ -190,9 +249,7 @@ def update_batch(
                 slot.batch_id = batch.id
                 slot.status = SlotStatus.PLANTED
                 session.add(slot)
-    return batches_repo.update(
-        session=session, batch=batch, update_data=update_data
-    )
+    return batches_repo.update(session=session, batch=batch, update_data=update_data)
 
 
 def allocate_slots(
@@ -203,9 +260,7 @@ def allocate_slots(
     slots_used: int,
     seeds_per_slot: int,
 ) -> Batch:
-    batch = get_batch(
-        session=session, current_user=current_user, batch_id=batch_id
-    )
+    batch = get_batch(session=session, current_user=current_user, batch_id=batch_id)
     if batch.archived_at is not None:
         raise HTTPException(
             status_code=400, detail="Cannot allocate slots for archived batch"
@@ -279,9 +334,7 @@ def allocate_slots(
 def archive_batch(
     *, session: Session, current_user: User, batch_id: uuid.UUID
 ) -> Batch:
-    batch = get_batch(
-        session=session, current_user=current_user, batch_id=batch_id
-    )
+    batch = get_batch(session=session, current_user=current_user, batch_id=batch_id)
     _free_slots_for_batch(session=session, batch_id=batch.id)
     activity_service.record(
         session=session,
@@ -298,12 +351,8 @@ def archive_batch(
     )
 
 
-def delete_batch(
-    *, session: Session, current_user: User, batch_id: uuid.UUID
-) -> None:
-    batch = get_batch(
-        session=session, current_user=current_user, batch_id=batch_id
-    )
+def delete_batch(*, session: Session, current_user: User, batch_id: uuid.UUID) -> None:
+    batch = get_batch(session=session, current_user=current_user, batch_id=batch_id)
     _free_slots_for_batch(session=session, batch_id=batch.id)
     activity_service.record(
         session=session,
@@ -324,9 +373,7 @@ def record_transition(
     batch_id: uuid.UUID,
     data: BatchTransitionCreate,
 ) -> BatchTransition:
-    batch = get_batch(
-        session=session, current_user=current_user, batch_id=batch_id
-    )
+    batch = get_batch(session=session, current_user=current_user, batch_id=batch_id)
     if data.from_milestone == data.to_milestone:
         raise HTTPException(
             status_code=400, detail="from_milestone must differ from to_milestone"
@@ -384,21 +431,15 @@ def record_transition(
     return transition
 
 
-def list_state_counts(
-    *, session: Session, current_user: User, batch_id: uuid.UUID
-):
-    batch = get_batch(
-        session=session, current_user=current_user, batch_id=batch_id
-    )
+def list_state_counts(*, session: Session, current_user: User, batch_id: uuid.UUID):
+    batch = get_batch(session=session, current_user=current_user, batch_id=batch_id)
     return batches_repo.list_state_counts(session=session, batch_id=batch.id)
 
 
 def list_transitions(
     *, session: Session, current_user: User, batch_id: uuid.UUID, limit: int = 20
 ):
-    batch = get_batch(
-        session=session, current_user=current_user, batch_id=batch_id
-    )
+    batch = get_batch(session=session, current_user=current_user, batch_id=batch_id)
     return batches_repo.list_transitions(
         session=session, batch_id=batch.id, limit=limit
     )
@@ -411,9 +452,7 @@ def record_harvest(
     batch_id: uuid.UUID,
     data: BatchHarvestCreate,
 ) -> BatchHarvest:
-    batch = get_batch(
-        session=session, current_user=current_user, batch_id=batch_id
-    )
+    batch = get_batch(session=session, current_user=current_user, batch_id=batch_id)
     src = batches_repo.get_state_count(
         session=session, batch_id=batch.id, milestone=Milestone.HarvestReady
     )
@@ -450,8 +489,7 @@ def record_harvest(
         target_type=TargetType.batch,
         target_id=batch.id,
         summary=(
-            f"Harvested {data.count} of {batch.variety_name} "
-            f"({data.weight_grams:g}g)"
+            f"Harvested {data.count} of {batch.variety_name} ({data.weight_grams:g}g)"
         ),
         meta={
             "count": data.count,
@@ -463,10 +501,6 @@ def record_harvest(
     return harvest
 
 
-def list_harvests(
-    *, session: Session, current_user: User, batch_id: uuid.UUID
-):
-    batch = get_batch(
-        session=session, current_user=current_user, batch_id=batch_id
-    )
+def list_harvests(*, session: Session, current_user: User, batch_id: uuid.UUID):
+    batch = get_batch(session=session, current_user=current_user, batch_id=batch_id)
     return batches_repo.list_harvests(session=session, batch_id=batch.id)
