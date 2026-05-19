@@ -104,7 +104,7 @@ export function SeedBankSheet({
                     <Pressable
                         onPress={() => {
                             onClose();
-                            router.push("/inventory-new");
+                            router.push("/seeds/new");
                         }}
                         style={({ pressed }) => ({
                             flexDirection: "row",
