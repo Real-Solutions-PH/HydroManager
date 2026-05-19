@@ -392,7 +392,7 @@ export default function SeedsScreen() {
 				contentContainerStyle={{
 					paddingHorizontal: spacing.md,
 					paddingTop: spacing.xs,
-					paddingBottom: tabBarClearance,
+					paddingBottom: tabBarClearance + 96,
 					gap: spacing.md,
 				}}
 			>
