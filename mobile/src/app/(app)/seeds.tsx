@@ -35,6 +35,9 @@ import {
 	useBadgeTextColor,
 	useThemeColors,
 } from "@/constants/theme";
+import { SeedBankHandle } from "@/components/seeds/seed-bank-handle";
+import { SeedBankSheet } from "@/components/seeds/seed-bank-sheet";
+import { SeedDetailSheet } from "@/components/seeds/seed-detail-sheet";
 import {
 	type Batch,
 	type BatchDetail,
@@ -42,6 +45,8 @@ import {
 	type CropGrowthStage,
 	type CropGuide,
 	cropsApi,
+	inventoryApi,
+	type InventoryItem,
 	MILESTONE_ORDER,
 	type Milestone,
 	type Setup,
@@ -201,6 +206,13 @@ export default function SeedsScreen() {
 		queryFn: () => cropsApi.list(undefined, undefined, { limit: 1000 }),
 		staleTime: STALE.crops,
 	});
+	const seedsQ = useQuery({
+		queryKey: [...QK.inventory.lists(), "seeds", "count"],
+		queryFn: () => inventoryApi.list({ category: "seeds", limit: 500 }),
+		staleTime: STALE.inventory,
+	});
+	const [bankOpen, setBankOpen] = useState(false);
+	const [selectedSeed, setSelectedSeed] = useState<InventoryItem | null>(null);
 
 	const setups = setupsQ.data?.data ?? [];
 	const batches = flattenPages(batchesQ.data);
@@ -442,6 +454,21 @@ export default function SeedsScreen() {
 				target={advanceTarget}
 				onClose={() => setAdvanceTarget(null)}
 			/>
+			<SeedBankHandle
+				count={seedsQ.data?.count ?? 0}
+				bottomOffset={tabBarClearance + 8}
+				onPress={() => setBankOpen(true)}
+			/>
+			<SeedBankSheet
+				open={bankOpen}
+				onClose={() => setBankOpen(false)}
+				onSelect={(item) => {
+					setBankOpen(false);
+					setSelectedSeed(item);
+				}}
+				cropsByName={cropByName}
+			/>
+			<SeedDetailSheet item={selectedSeed} onClose={() => setSelectedSeed(null)} />
 		</GradientBackground>
 	);
 }
