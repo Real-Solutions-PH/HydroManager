@@ -90,6 +90,8 @@ export interface Batch {
 	started_at: string;
 	archived_at: string | null;
 	legacy: boolean;
+	seed_inventory_item_id: string | null;
+	seed_cost: number | null;
 }
 
 export interface BatchStateCount {
@@ -354,6 +356,7 @@ export const batchesApi = {
 		variety_name: string;
 		slots_used: number;
 		seeds_per_slot: number;
+		seed_inventory_item_id: string;
 		crop_guide_id?: string | null;
 		notes?: string;
 		started_at?: string;
@@ -443,6 +446,19 @@ export const inventoryApi = {
 		const r = await api.post(`${V1}/inventory/items`, data);
 		return r.data;
 	},
+	async restock(
+		id: string,
+		data: { quantity: number; cost_total?: number | null; occurred_at?: string; notes?: string },
+	): Promise<unknown> {
+		const r = await api.post(`${V1}/inventory/items/${id}/movements`, {
+			movement_type: "restock",
+			quantity: data.quantity,
+			cost_total: data.cost_total ?? undefined,
+			occurred_at: data.occurred_at,
+			notes: data.notes,
+		});
+		return r.data;
+	},
 	async update(
 		id: string,
 		data: {
@@ -470,8 +486,22 @@ export const inventoryApi = {
 		const r = await api.post(`${V1}/inventory/items/${id}/movements`, data);
 		return r.data;
 	},
-	async movements(id: string): Promise<Paged<InventoryMovement>> {
-		const r = await api.get(`${V1}/inventory/items/${id}/movements`);
+	async movements(
+		id: string,
+		limit = 50,
+	): Promise<Array<{
+		id: string;
+		item_id: string;
+		movement_type: "restock" | "consume" | "adjust";
+		quantity: number;
+		cost_total: number | null;
+		related_batch_id: string | null;
+		occurred_at: string;
+		notes: string | null;
+	}>> {
+		const r = await api.get(`${V1}/inventory/items/${id}/movements`, {
+			params: { limit },
+		});
 		return r.data;
 	},
 	async delete(id: string): Promise<void> {

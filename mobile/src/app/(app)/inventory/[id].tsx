@@ -381,11 +381,11 @@ export default function InventoryDetailScreen() {
 				>
 					Movement history
 				</Text>
-				{(movements.data?.data ?? []).length === 0 ? (
+				{(movements.data ?? []).length === 0 ? (
 					<Text tone="muted">No movements yet.</Text>
 				) : (
 					<View style={{ gap: spacing.xs }}>
-						{(movements.data?.data ?? []).map((m) => (
+						{(movements.data ?? []).map((m) => (
 							<Card key={m.id}>
 								<View
 									style={{

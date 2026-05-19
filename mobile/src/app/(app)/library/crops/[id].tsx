@@ -414,7 +414,7 @@ function CropDetail({
 					<Section title="Crop Guide" icon="git-branch">
 						<View>
 							{crop.growth_stages.map((stage, i) => {
-								const isLast = i === crop.growth_stages?.length - 1;
+								const isLast = i === (crop.growth_stages?.length ?? 0) - 1;
 								return (
 									<View
 										key={`${stage.stage}-${stage.day_min}`}
