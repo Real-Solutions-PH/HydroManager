@@ -13,7 +13,7 @@ import { SlotMeter } from "@/components/ui/slot-meter";
 import { Text } from "@/components/ui/text";
 import { spacing, systemTypes, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
-import { batchesApi, cropsApi, setupsApi } from "@/lib/hydro-api";
+import { batchesApi, cropsApi, inventoryApi, setupsApi } from "@/lib/hydro-api";
 import { QK, STALE } from "@/lib/query-config";
 
 function todayIso(): string {
@@ -26,7 +26,10 @@ function todayIso(): string {
 
 export default function NewBatchScreen() {
 	const colors = useThemeColors();
-	const { setup: setupParam } = useLocalSearchParams<{ setup?: string }>();
+	const { setup: setupParam, seed: seedParam } = useLocalSearchParams<{
+		setup?: string;
+		seed?: string;
+	}>();
 	const qc = useQueryClient();
 	const goBack = useBack();
 	const setups = useQuery({
@@ -39,8 +42,15 @@ export default function NewBatchScreen() {
 		queryFn: () => cropsApi.list(),
 		staleTime: STALE.crops,
 	});
+	const seedsQ = useQuery({
+		queryKey: [...QK.inventory.lists(), "seeds"],
+		queryFn: () => inventoryApi.list({ category: "seeds", limit: 500 }),
+		staleTime: STALE.inventory,
+	});
 
 	const [setupId, setSetupId] = useState(setupParam ?? "");
+	const [seedItemId, setSeedItemId] = useState<string>(seedParam ?? "");
+	const seedLocked = !!seedParam;
 	const [cropId, setCropId] = useState<string | null>(null);
 	const [variety, setVariety] = useState("");
 	const [startDate, setStartDate] = useState<string | null>(todayIso());
@@ -61,6 +71,28 @@ export default function NewBatchScreen() {
 	const seedsPerSlotNum = Number.parseInt(seedsPerSlot, 10) || 0;
 	const totalSeeds = slotsUsedNum * seedsPerSlotNum;
 	const overCapacity = setupId.length > 0 && slotsUsedNum > emptySlots;
+
+	const selectedSeed = useMemo(
+		() => (seedsQ.data?.data ?? []).find((s) => s.id === seedItemId) ?? null,
+		[seedsQ.data, seedItemId],
+	);
+	const insufficient =
+		selectedSeed != null && totalSeeds > selectedSeed.current_stock;
+
+	const seedOptions: ComboboxOption[] = useMemo(
+		() =>
+			(seedsQ.data?.data ?? []).map((s) => {
+				const low = s.current_stock < totalSeeds;
+				return {
+					value: s.id,
+					label: s.name,
+					subtitle: low
+						? `${s.current_stock} in stock (insufficient)`
+						: `${s.current_stock} in stock`,
+				};
+			}),
+		[seedsQ.data, totalSeeds],
+	);
 
 	const cropOptions: ComboboxOption[] = useMemo(
 		() =>
@@ -84,6 +116,7 @@ export default function NewBatchScreen() {
 				variety_name: variety.trim(),
 				slots_used: slotsUsedNum,
 				seeds_per_slot: seedsPerSlotNum,
+				seed_inventory_item_id: seedItemId,
 				crop_guide_id: cropId,
 				notes: notes.trim() || undefined,
 				started_at: startDate ? `${startDate}T00:00:00.000Z` : undefined,
@@ -101,7 +134,9 @@ export default function NewBatchScreen() {
 		variety.trim().length > 0 &&
 		slotsUsedNum > 0 &&
 		seedsPerSlotNum > 0 &&
-		!overCapacity;
+		seedItemId.length > 0 &&
+		!overCapacity &&
+		!insufficient;
 
 	return (
 		<GradientBackground>
@@ -175,6 +210,33 @@ export default function NewBatchScreen() {
 						{(setups.data?.data ?? []).length === 0 ? (
 							<Text size="xs" tone="muted">
 								Create a setup first.
+							</Text>
+						) : null}
+					</Field>
+
+					<Field label="Seed">
+						<Combobox
+							value={seedItemId || null}
+							onValueChange={(v) => setSeedItemId(v ?? "")}
+							options={seedOptions}
+							placeholder="Pick a seed from your bank"
+							emptyMessage={
+								seedsQ.isLoading ? "Loading..." : "No seeds yet. Add one from the Seed Bank."
+							}
+							disabled={seedLocked}
+						/>
+						{selectedSeed ? (
+							<Text
+								size="xs"
+								tone="muted"
+								style={{
+									marginTop: 4,
+									color: insufficient ? colors.error : undefined,
+								}}
+							>
+								{insufficient
+									? `Need ${totalSeeds}, have ${selectedSeed.current_stock}`
+									: `${selectedSeed.current_stock} ${selectedSeed.unit} available`}
 							</Text>
 						) : null}
 					</Field>
