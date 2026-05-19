@@ -207,7 +207,7 @@ export default function SeedsScreen() {
 		staleTime: STALE.crops,
 	});
 	const seedsQ = useQuery({
-		queryKey: [...QK.inventory.lists(), "seeds", "count"],
+		queryKey: [...QK.inventory.lists(), "seeds"],
 		queryFn: () => inventoryApi.list({ category: "seeds", limit: 500 }),
 		staleTime: STALE.inventory,
 	});

@@ -31,7 +31,6 @@ export function SeedBankSheet({
         queryKey: [...QK.inventory.lists(), "seeds"],
         queryFn: () => inventoryApi.list({ category: "seeds", limit: 500 }),
         staleTime: STALE.inventory,
-        enabled: open,
     });
 
     const items = useMemo(() => {
@@ -59,10 +58,7 @@ export function SeedBankSheet({
             animationType="slide"
             onRequestClose={onClose}
         >
-            <Pressable
-                style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.55)" }}
-                onPress={onClose}
-            />
+            <Pressable style={{ flex: 1 }} onPress={onClose} />
             <View
                 style={{
                     position: "absolute",
@@ -169,6 +165,20 @@ export function SeedBankSheet({
                 <ScrollView contentContainerStyle={{ paddingBottom: spacing.lg }}>
                     {seedsQ.isLoading ? (
                         <Text tone="muted">Loading seeds...</Text>
+                    ) : seedsQ.isError ? (
+                        <View style={{ alignItems: "center", padding: spacing.xl }}>
+                            <Ionicons
+                                name="alert-circle-outline"
+                                size={48}
+                                color={colors.error}
+                            />
+                            <Text
+                                tone="muted"
+                                style={{ marginTop: spacing.sm, textAlign: "center" }}
+                            >
+                                Failed to load seeds. {seedsQ.error?.message ?? ""}
+                            </Text>
+                        </View>
                     ) : items.length === 0 ? (
                         <View style={{ alignItems: "center", padding: spacing.xl }}>
                             <Ionicons
