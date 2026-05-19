@@ -66,30 +66,35 @@ export function SeedDetailSheet({
         <Modal
             visible
             transparent
-            animationType="slide"
+            animationType="fade"
             onRequestClose={onClose}
         >
             <Pressable
-                style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.55)" }}
+                style={{
+                    flex: 1,
+                    backgroundColor: "rgba(0,0,0,0.45)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: spacing.md,
+                }}
                 onPress={onClose}
-            />
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : undefined}
-                style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}
             >
-                <View
-                    style={{
-                        backgroundColor: colors.bg,
-                        borderTopLeftRadius: 24,
-                        borderTopRightRadius: 24,
-                        padding: spacing.md,
-                        paddingBottom: spacing.xxl,
-                        borderTopWidth: 1,
-                        borderColor: colors.border,
-                        gap: spacing.sm,
-                        maxHeight: "82%",
-                    }}
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === "ios" ? "padding" : undefined}
+                    style={{ width: "100%", maxWidth: 480 }}
                 >
+                    <Pressable
+                        onPress={(e) => e.stopPropagation()}
+                        style={{
+                            backgroundColor: colors.bg,
+                            borderRadius: 20,
+                            padding: spacing.md,
+                            borderWidth: 1,
+                            borderColor: colors.border,
+                            gap: spacing.sm,
+                            maxHeight: "82%",
+                        }}
+                    >
                     <View
                         style={{
                             flexDirection: "row",
@@ -199,8 +204,9 @@ export function SeedDetailSheet({
                             </View>
                         </>
                     )}
-                </View>
-            </KeyboardAvoidingView>
+                    </Pressable>
+                </KeyboardAvoidingView>
+            </Pressable>
         </Modal>
     );
 }

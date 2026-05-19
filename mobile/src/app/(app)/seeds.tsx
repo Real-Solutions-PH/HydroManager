@@ -462,10 +462,7 @@ export default function SeedsScreen() {
 			<SeedBankSheet
 				open={bankOpen}
 				onClose={() => setBankOpen(false)}
-				onSelect={(item) => {
-					setBankOpen(false);
-					setSelectedSeed(item);
-				}}
+				onSelect={(item) => setSelectedSeed(item)}
 				cropsByName={cropByName}
 			/>
 			<SeedDetailSheet item={selectedSeed} onClose={() => setSelectedSeed(null)} />
