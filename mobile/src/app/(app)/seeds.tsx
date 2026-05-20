@@ -422,7 +422,6 @@ export default function SeedsScreen() {
 									>
 										<BatchCard
 											batch={b}
-											code={codeByBatch.get(b.id) ?? "—"}
 											setup={setupById.get(b.setup_id)}
 											guide={guide}
 											detail={detail}
@@ -472,7 +471,6 @@ export default function SeedsScreen() {
 
 function BatchCard({
 	batch,
-	code,
 	setup,
 	guide,
 	detail,
@@ -481,7 +479,6 @@ function BatchCard({
 	onAutoAdvance,
 }: {
 	batch: Batch;
-	code: string;
 	setup?: Setup;
 	guide?: CropGuide;
 	detail?: BatchDetail;
@@ -561,7 +558,7 @@ function BatchCard({
 					}}
 				>
 					<CropImage url={guide?.image_url ?? null} />
-					<View style={{ flex: 1 }}>
+					<View style={{ flex: 1, minWidth: 0 }}>
 						<View
 							style={{
 								flexDirection: "row",
@@ -570,21 +567,9 @@ function BatchCard({
 								flexWrap: "wrap",
 							}}
 						>
-							<Text size="lg" weight="bold">
+							<Text size="lg" weight="bold" numberOfLines={1} style={{ flexShrink: 1 }}>
 								{batch.variety_name}
 							</Text>
-							<View
-								style={{
-									paddingHorizontal: 8,
-									paddingVertical: 2,
-									borderRadius: 6,
-									backgroundColor: colors.glass,
-								}}
-							>
-								<Text size="xs" tone="muted" weight="semibold">
-									{code}
-								</Text>
-							</View>
 							{showHarvestBadge ? (
 								<View
 									style={{
@@ -641,6 +626,8 @@ function BatchCard({
 										paddingVertical: 3,
 										borderRadius: 999,
 										backgroundColor: setupColor.bg,
+										flexShrink: 1,
+										minWidth: 0,
 									}}
 								>
 									<Text
@@ -653,7 +640,7 @@ function BatchCard({
 									</Text>
 								</View>
 							) : null}
-							<Text size="sm" tone="muted">
+							<Text size="sm" tone="muted" numberOfLines={1} style={{ flexShrink: 0 }}>
 								Day {day}
 							</Text>
 						</View>
@@ -663,6 +650,7 @@ function BatchCard({
 							flexDirection: "row",
 							alignItems: "center",
 							gap: 4,
+							flexShrink: 0,
 						}}
 					>
 						{nextStage && daysToNextPhase !== null
@@ -678,6 +666,7 @@ function BatchCard({
 												backgroundColor: STAGE_COLORS[nextStage].bg,
 												borderWidth: 1,
 												borderColor: `${stageFg}40`,
+												maxWidth: 110,
 											}}
 										>
 											<Text
