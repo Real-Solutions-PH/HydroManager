@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { useMemo } from "react";
-import { Alert, Image, Pressable, ScrollView, View } from "react-native";
+import { Alert, Image, Platform, Pressable, ScrollView, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -110,6 +110,12 @@ export default function SetupDetailScreen() {
 	const dangerColor = (colors as Record<string, string>).danger ?? "#EF4444";
 
 	function confirmArchive() {
+		if (Platform.OS === "web") {
+			if (typeof window !== "undefined" && window.confirm("Archive this setup?")) {
+				archive.mutate();
+			}
+			return;
+		}
 		Alert.alert("Archive", "Archive this setup?", [
 			{ text: "Cancel", style: "cancel" },
 			{ text: "Archive", onPress: () => archive.mutate() },
@@ -117,24 +123,33 @@ export default function SetupDetailScreen() {
 	}
 	function confirmDelete() {
 		if (!archived) {
+			if (Platform.OS === "web") {
+				if (typeof window !== "undefined") {
+					window.alert("You must archive the setup before deleting it.");
+				}
+				return;
+			}
 			Alert.alert(
 				"Archive first",
 				"You must archive the setup before deleting it.",
 			);
 			return;
 		}
-		Alert.alert(
-			"Delete",
-			"Delete this setup and all its batches? Cannot be undone.",
-			[
-				{ text: "Cancel", style: "cancel" },
-				{
-					text: "Delete",
-					style: "destructive",
-					onPress: () => del.mutate(),
-				},
-			],
-		);
+		const msg = "Delete this setup and all its batches? Cannot be undone.";
+		if (Platform.OS === "web") {
+			if (typeof window !== "undefined" && window.confirm(msg)) {
+				del.mutate();
+			}
+			return;
+		}
+		Alert.alert("Delete", msg, [
+			{ text: "Cancel", style: "cancel" },
+			{
+				text: "Delete",
+				style: "destructive",
+				onPress: () => del.mutate(),
+			},
+		]);
 	}
 
 	return (
