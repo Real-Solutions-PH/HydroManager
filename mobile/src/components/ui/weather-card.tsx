@@ -29,12 +29,7 @@ interface WeatherCardProps {
 	onRetry?: () => void;
 }
 
-function fmtNum(v: number | null | undefined, digits = 0): string {
-	if (v == null || Number.isNaN(v)) return "—";
-	return v.toFixed(digits);
-}
-
-type SceneVariant =
+export type SceneVariant =
 	| "sun"
 	| "partly"
 	| "clouds"
@@ -45,7 +40,7 @@ type SceneVariant =
 	| "snow"
 	| "clear";
 
-interface Scene {
+export interface Scene {
 	label: string;
 	icon: React.ComponentProps<typeof Ionicons>["name"];
 	top: string;
@@ -55,7 +50,7 @@ interface Scene {
 	variant: SceneVariant;
 }
 
-function sceneFromCode(code: number | undefined): Scene {
+export function sceneFromCode(code: number | undefined): Scene {
 	if (code == null)
 		return {
 			label: "—",
@@ -182,7 +177,7 @@ interface MetaPill {
 	color: string;
 }
 
-function rainChanceMeta(pct: number | null | undefined): MetaPill {
+export function rainChanceMeta(pct: number | null | undefined): MetaPill {
 	if (pct == null) return { label: "—", color: "rgba(255,255,255,0.55)" };
 	if (pct < 10) return { label: "No rain", color: "#A3E8B0" };
 	if (pct < 30) return { label: "Low", color: "#A3E8B0" };
@@ -191,23 +186,28 @@ function rainChanceMeta(pct: number | null | undefined): MetaPill {
 	return { label: "Very high", color: "#FF8A8A" };
 }
 
-function humidityMeta(pct: number | null | undefined): MetaPill {
+export function humidityMeta(pct: number | null | undefined): MetaPill {
 	if (pct == null) return { label: "—", color: "rgba(255,255,255,0.55)" };
 	if (pct < 40) return { label: "Low", color: "#FFD580" };
 	if (pct < 70) return { label: "Medium", color: "#A3E8B0" };
 	return { label: "High", color: "#9CC6E8" };
 }
 
-const TEXT_PRIMARY = "#FFFFFF";
-const TEXT_SECONDARY = "rgba(255,255,255,0.78)";
-const TEXT_MUTED = "rgba(255,255,255,0.58)";
-const GLASS_BG = "rgba(255,255,255,0.10)";
-const GLASS_BORDER = "rgba(255,255,255,0.18)";
+export const TEXT_PRIMARY = "#FFFFFF";
+export const TEXT_SECONDARY = "rgba(255,255,255,0.78)";
+export const TEXT_MUTED = "rgba(255,255,255,0.58)";
+export const GLASS_BG = "rgba(255,255,255,0.10)";
+export const GLASS_BORDER = "rgba(255,255,255,0.18)";
+
+export function fmtNum(v: number | null | undefined, digits = 0): string {
+	if (v == null || Number.isNaN(v)) return "—";
+	return v.toFixed(digits);
+}
 
 const VB_W = 360;
 const VB_H = 220;
 
-function SceneBackground({ scene }: { scene: Scene }) {
+export function SceneBackground({ scene }: { scene: Scene }) {
 	return (
 		<Svg
 			width="100%"
@@ -603,7 +603,7 @@ export function WeatherCard({
 	);
 }
 
-function MetricTile({
+export function MetricTile({
 	icon,
 	iconColor,
 	label,
