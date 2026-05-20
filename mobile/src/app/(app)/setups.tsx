@@ -6,6 +6,8 @@ import {
 	ActivityIndicator,
 	FlatList,
 	Pressable,
+	ScrollView,
+	Text as RNText,
 	View,
 } from "react-native";
 import { Image } from "expo-image";
@@ -22,6 +24,7 @@ import {
 	useBadgeTextColor,
 	useThemeColors,
 } from "@/constants/theme";
+import { emojiFor, shortName } from "@/components/seeds/seed-packet-cell";
 import { batchesApi, type Setup, setupsApi } from "@/lib/hydro-api";
 import { flattenPages, getNextSkip, PAGE_SIZE } from "@/lib/paginate";
 import { QK, STALE } from "@/lib/query-config";
@@ -60,12 +63,19 @@ export default function SetupsScreen() {
 	const batches = batchesQ.data?.data ?? [];
 
 	const bySetup = useMemo(() => {
-		const m = new Map<string, { used: number; varieties: Set<string> }>();
+		const m = new Map<
+			string,
+			{ used: number; varieties: Map<string, number> }
+		>();
 		for (const b of batches) {
 			if (b.archived_at || b.legacy) continue;
-			const cur = m.get(b.setup_id) ?? { used: 0, varieties: new Set() };
-			cur.used += b.slots_used ?? 0;
-			cur.varieties.add(b.variety_name);
+			const cur = m.get(b.setup_id) ?? { used: 0, varieties: new Map() };
+			const slots = b.slots_used ?? 0;
+			cur.used += slots;
+			cur.varieties.set(
+				b.variety_name,
+				(cur.varieties.get(b.variety_name) ?? 0) + slots,
+			);
 			m.set(b.setup_id, cur);
 		}
 		return m;
@@ -243,7 +253,7 @@ export default function SetupsScreen() {
 						<SetupCard
 							setup={item}
 							used={stats?.used ?? 0}
-							varieties={Array.from(stats?.varieties ?? [])}
+							varieties={Array.from(stats?.varieties.entries() ?? [])}
 						/>
 					);
 				}}
@@ -259,7 +269,7 @@ function SetupCard({
 }: {
 	setup: Setup;
 	used: number;
-	varieties: string[];
+	varieties: [string, number][];
 }) {
 	const colors = useThemeColors();
 	const tint = useBadgeTextColor();
@@ -282,24 +292,24 @@ function SetupCard({
 							<Image
 								source={{ uri: setup.primary_photo_url }}
 								style={{
-									width: 44,
-									height: 44,
-									borderRadius: 12,
+									width: 56,
+									height: 56,
+									borderRadius: 14,
 									backgroundColor: c.bg,
 								}}
 							/>
 						) : (
 							<View
 								style={{
-									width: 44,
-									height: 44,
-									borderRadius: 12,
+									width: 56,
+									height: 56,
+									borderRadius: 14,
 									backgroundColor: c.bg,
 									alignItems: "center",
 									justifyContent: "center",
 								}}
 							>
-								<Ionicons name={c.icon as never} size={22} color={c.color} />
+								<Ionicons name={c.icon as never} size={28} color={c.color} />
 							</View>
 						)}
 						<View style={{ flex: 1 }}>
@@ -385,47 +395,16 @@ function SetupCard({
 					</View>
 
 					{varieties.length > 0 ? (
-						<View
-							style={{
-								flexDirection: "row",
-								flexWrap: "wrap",
-								gap: spacing.xxs,
-								marginTop: spacing.sm,
-							}}
-						>
-							{varieties.slice(0, 4).map((v) => (
-								<View
-									key={v}
-									style={{
-										paddingHorizontal: 10,
-										paddingVertical: 4,
-										borderRadius: 999,
-										backgroundColor: colors.successLight,
-									}}
-								>
-									<Text
-										size="xs"
-										weight="semibold"
-										style={{ color: tint(colors.primary) }}
-									>
-										{v}
-									</Text>
-								</View>
-							))}
-							{varieties.length > 4 ? (
-								<View
-									style={{
-										paddingHorizontal: 10,
-										paddingVertical: 4,
-										borderRadius: 999,
-										backgroundColor: colors.glass,
-									}}
-								>
-									<Text size="xs" weight="semibold" tone="muted">
-										+{varieties.length - 4}
-									</Text>
-								</View>
-							) : null}
+						<View style={{ marginTop: spacing.sm }}>
+							<ScrollView
+								horizontal
+								showsHorizontalScrollIndicator={false}
+								contentContainerStyle={{ gap: spacing.xs }}
+							>
+								{varieties.map(([v, qty]) => (
+									<VarietyBox key={v} name={v} qty={qty} />
+								))}
+							</ScrollView>
 						</View>
 					) : null}
 
@@ -480,6 +459,65 @@ function SetupCard({
 				</Card>
 			</Pressable>
 		</Link>
+	);
+}
+
+function VarietyBox({ name, qty }: { name: string; qty: number }) {
+	const colors = useThemeColors();
+	const size = 48;
+	const emoji = emojiFor(name);
+	const caption = shortName(name, 12);
+	return (
+		<View style={{ width: size, alignItems: "center", gap: 3 }}>
+			<View
+				style={{
+					width: size,
+					height: size,
+					borderRadius: 8,
+					borderWidth: 1,
+					borderColor: colors.border,
+					backgroundColor: colors.glass,
+					alignItems: "center",
+					justifyContent: "center",
+				}}
+			>
+				<RNText style={{ fontSize: 22, lineHeight: 26 }}>{emoji}</RNText>
+				<View
+					style={{
+						position: "absolute",
+						bottom: 1,
+						right: 1,
+						minWidth: 16,
+						paddingHorizontal: 3,
+						paddingVertical: 0,
+						borderRadius: 5,
+						backgroundColor: "rgba(0,0,0,0.7)",
+						alignItems: "center",
+					}}
+				>
+					<Text
+						size="xs"
+						weight="bold"
+						style={{ color: "#FFFFFF", fontSize: 10, lineHeight: 13 }}
+						numberOfLines={1}
+					>
+						{qty}
+					</Text>
+				</View>
+			</View>
+			<Text
+				size="xs"
+				weight="semibold"
+				numberOfLines={2}
+				style={{
+					textAlign: "center",
+					lineHeight: 12,
+					color: colors.text,
+				}}
+			>
+				{caption}
+			</Text>
+		</View>
 	);
 }
 
