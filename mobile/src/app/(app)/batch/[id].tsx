@@ -146,7 +146,7 @@ export default function BatchDetailScreen() {
 
 	const cropsQ = useQuery({
 		queryKey: QK.crops(),
-		queryFn: () => cropsApi.list(),
+		queryFn: () => cropsApi.list(undefined, undefined, { limit: 1000 }),
 		staleTime: STALE.crops,
 	});
 
@@ -160,18 +160,35 @@ export default function BatchDetailScreen() {
 		[cropsQ.data],
 	);
 
-	const cropCategory = useMemo(
-		() =>
-			cropsQ.data?.data.find((c) => c.id === batch.data?.crop_guide_id)
-				?.category ?? null,
-		[cropsQ.data, batch.data?.crop_guide_id],
-	);
-	const cropImage = useMemo(
-		() =>
-			cropsQ.data?.data.find((c) => c.id === batch.data?.crop_guide_id)
-				?.image_url ?? null,
-		[cropsQ.data, batch.data?.crop_guide_id],
-	);
+	const resolvedCropGuide = useMemo(() => {
+		const crops = cropsQ.data?.data ?? [];
+		if (crops.length === 0) return null;
+		const id = batch.data?.crop_guide_id;
+		if (id) {
+			const byId = crops.find((c) => c.id === id);
+			if (byId) return byId;
+		}
+		const v = batch.data?.variety_name?.toLowerCase().trim();
+		if (!v) return null;
+		const direct = crops.find(
+			(c) =>
+				c.name_en?.toLowerCase() === v || c.name_tl?.toLowerCase() === v,
+		);
+		if (direct) return direct;
+		return (
+			crops.find((c) => {
+				const en = c.name_en?.toLowerCase();
+				const tl = c.name_tl?.toLowerCase();
+				return (
+					(en && (v.includes(en) || en.includes(v))) ||
+					(tl && (v.includes(tl) || tl.includes(v)))
+				);
+			}) ?? null
+		);
+	}, [cropsQ.data, batch.data?.crop_guide_id, batch.data?.variety_name]);
+
+	const cropCategory = resolvedCropGuide?.category ?? null;
+	const cropImage = resolvedCropGuide?.image_url ?? null;
 	const milestoneOrder = useMemo(
 		() => milestonesForCategory(cropCategory),
 		[cropCategory],
@@ -281,10 +298,12 @@ export default function BatchDetailScreen() {
 			bd.legacy ||
 			newSlotsNum !== (bd.slots_used ?? 0) ||
 			newSeedsNum !== (bd.seeds_per_slot ?? 0);
+		const effectiveStoredCropId =
+			bd.crop_guide_id ?? resolvedCropGuide?.id ?? null;
 		const detailsChanged =
 			editSetupId !== bd.setup_id ||
 			editVariety.trim() !== bd.variety_name ||
-			editCropId !== bd.crop_guide_id ||
+			editCropId !== effectiveStoredCropId ||
 			editStartDate !== isoDateOnly(bd.started_at) ||
 			(editNotes.trim() || null) !== bd.notes;
 		try {
@@ -533,7 +552,9 @@ export default function BatchDetailScreen() {
 									if (batch.data) {
 										setEditSetupId(batch.data.setup_id);
 										setEditVariety(batch.data.variety_name);
-										setEditCropId(batch.data.crop_guide_id);
+										setEditCropId(
+											batch.data.crop_guide_id ?? resolvedCropGuide?.id ?? null,
+										);
 										setEditStartDate(isoDateOnly(batch.data.started_at));
 										setEditNotes(batch.data.notes ?? "");
 									}
@@ -606,9 +627,10 @@ export default function BatchDetailScreen() {
 								icon="leaf-outline"
 								label="Crop type"
 								value={
-									cropsQ.data?.data.find(
-										(c) => c.id === (editCropId ?? b.crop_guide_id),
-									)?.name_en ?? "Not set"
+									(editCropId
+										? cropsQ.data?.data.find((c) => c.id === editCropId)
+												?.name_en
+										: resolvedCropGuide?.name_en) ?? "Not set"
 								}
 								colors={colors}
 							/>
@@ -866,7 +888,9 @@ export default function BatchDetailScreen() {
 													setHeroEditing(false);
 													setEditSetupId(b.setup_id);
 													setEditVariety(b.variety_name);
-													setEditCropId(b.crop_guide_id);
+													setEditCropId(
+														b.crop_guide_id ?? resolvedCropGuide?.id ?? null,
+													);
 													setEditStartDate(isoDateOnly(b.started_at));
 													setEditNotes(b.notes ?? "");
 													setAllocSlots(String(b.slots_used ?? ""));
