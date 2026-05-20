@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Alert, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { spacing, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
+import { alertDialog } from "@/lib/dialog";
 import { cropsApi, inventoryApi } from "@/lib/hydro-api";
 import { QK, STALE } from "@/lib/query-config";
 
@@ -66,7 +67,7 @@ export default function NewSeedScreen() {
             qc.invalidateQueries({ queryKey: QK.inventory.all });
             goBack();
         },
-        onError: (e: Error) => Alert.alert("Error", e.message),
+        onError: (e: Error) => alertDialog("Error", e.message),
     });
 
     const valid = name.trim().length > 0 && Number.parseFloat(qty) > 0;

@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
-import { Alert, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
@@ -13,6 +13,7 @@ import { SlotMeter } from "@/components/ui/slot-meter";
 import { Text } from "@/components/ui/text";
 import { spacing, systemTypes, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
+import { alertDialog } from "@/lib/dialog";
 import { batchesApi, cropsApi, inventoryApi, setupsApi } from "@/lib/hydro-api";
 import { QK, STALE } from "@/lib/query-config";
 
@@ -126,7 +127,7 @@ export default function NewBatchScreen() {
 			qc.invalidateQueries({ queryKey: QK.setups.detail(setupId) });
 			goBack();
 		},
-		onError: (e: Error) => Alert.alert("Error", e.message),
+		onError: (e: Error) => alertDialog("Error", e.message),
 	});
 
 	const valid =

@@ -3,7 +3,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-    Alert,
     KeyboardAvoidingView,
     Modal,
     Platform,
@@ -15,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { spacing, useThemeColors } from "@/constants/theme";
+import { alertDialog } from "@/lib/dialog";
 import { type InventoryItem, inventoryApi } from "@/lib/hydro-api";
 import { QK } from "@/lib/query-config";
 
@@ -57,7 +57,7 @@ export function SeedDetailSheet({
             setRestockQty("");
             setRestockCost("");
         },
-        onError: (e: Error) => Alert.alert("Error", e.message),
+        onError: (e: Error) => alertDialog("Error", e.message),
     });
 
     if (!item) return null;

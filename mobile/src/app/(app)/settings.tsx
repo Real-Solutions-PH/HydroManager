@@ -71,7 +71,7 @@ export default function SettingsScreen() {
 			const r = await paymongoApi.checkout(tier, "monthly");
 			Linking.openURL(r.checkout_url);
 		} catch (e) {
-			Alert.alert("Error", handleError(e));
+			toast.error(handleError(e));
 		}
 	}
 

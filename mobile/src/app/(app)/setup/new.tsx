@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, Image, Pressable, ScrollView, View } from "react-native";
+import { Image, Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { spacing, systemTypes, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
+import { alertDialog } from "@/lib/dialog";
 import {
 	hydroAiApi,
 	photosApi,
@@ -38,7 +39,7 @@ export default function NewSetupScreen() {
 	async function pickPhoto() {
 		const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
 		if (!perm.granted) {
-			Alert.alert(
+			alertDialog(
 				"Permission needed",
 				"Allow photo access to use vision onboarding.",
 			);
@@ -60,7 +61,7 @@ export default function NewSetupScreen() {
 			setUploadedUrl(up.url);
 		} catch (e) {
 			setAnalyzing(false);
-			Alert.alert("Upload failed", (e as Error).message);
+			alertDialog("Upload failed", (e as Error).message);
 			return;
 		}
 		try {
@@ -74,7 +75,7 @@ export default function NewSetupScreen() {
 			if (v.layout_hint && !notes) setNotes(v.layout_hint);
 			setConfidence(v.confidence);
 		} catch (_e) {
-			Alert.alert(
+			alertDialog(
 				"Vision analysis failed",
 				"You can still fill the form manually.",
 			);
@@ -105,7 +106,7 @@ export default function NewSetupScreen() {
 			qc.invalidateQueries({ queryKey: QK.setups.all });
 			router.replace(`/setup/${setup.id}`);
 		},
-		onError: (e: Error) => Alert.alert("Error", e.message),
+		onError: (e: Error) => alertDialog("Error", e.message),
 	});
 
 	const valid = name.trim().length > 0 && Number.parseInt(slotCount, 10) > 0;

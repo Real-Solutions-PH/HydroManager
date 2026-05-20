@@ -1,15 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { useMemo, useState } from "react";
 import {
-	Alert,
 	Pressable,
 	ScrollView,
 	useWindowDimensions,
 	View,
 } from "react-native";
-import { Image } from "expo-image";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, {
 	Circle,
@@ -31,6 +30,7 @@ import {
 	useThemeColors,
 } from "@/constants/theme";
 import { useCustomToast } from "@/hooks/useCustomToast";
+import { confirmDialog } from "@/lib/dialog";
 import {
 	type InventoryCategory,
 	inventoryApi,
@@ -40,6 +40,7 @@ import {
 	usersApi,
 } from "@/lib/hydro-api";
 import { useT } from "@/lib/i18n";
+import { removeEntity, rollback, snapshotAndCancel } from "@/lib/optimistic";
 import { QK, STALE } from "@/lib/query-config";
 import { formatPHP, handleError } from "@/lib/utils";
 
@@ -124,26 +125,31 @@ export default function SalesScreen() {
 
 	const del = useMutation({
 		mutationFn: (id: string) => salesApi.delete(id),
-		onSuccess: () => {
-			toast.success("Sale deleted");
+		onMutate: async (id) => {
+			const snapshot = await snapshotAndCancel(qc, [QK.sales.list()]);
+			qc.setQueriesData({ queryKey: QK.sales.list() }, (old: unknown) =>
+				removeEntity(old, id),
+			);
+			return { snapshot };
+		},
+		onError: (err, _id, ctx) => {
+			if (ctx) rollback(qc, ctx.snapshot);
+			toast.error(`Couldn't delete sale: ${handleError(err)}`);
+		},
+		onSettled: () => {
 			qc.invalidateQueries({ queryKey: QK.sales.all });
 		},
-		onError: (err) => toast.error(handleError(err)),
 	});
 
 	function confirmDelete(id: string, label: string) {
-		Alert.alert(
-			t("sales.delete_confirm_title"),
-			t("sales.delete_confirm_body", { label }),
-			[
-				{ text: t("actions.cancel"), style: "cancel" },
-				{
-					text: t("actions.delete"),
-					style: "destructive",
-					onPress: () => del.mutate(id),
-				},
-			],
-		);
+		confirmDialog({
+			title: t("sales.delete_confirm_title"),
+			message: t("sales.delete_confirm_body", { label }),
+			confirmLabel: t("actions.delete"),
+			cancelLabel: t("actions.cancel"),
+			destructive: true,
+			onConfirm: () => del.mutate(id),
+		});
 	}
 
 	const d = dashboard.data;
@@ -236,124 +242,124 @@ export default function SalesScreen() {
 						gap: spacing.md,
 					}}
 				>
-				{/* Header: title + actions on brand bg */}
-				<View
-					style={{
-						flexDirection: "row",
-						alignItems: "center",
-						justifyContent: "space-between",
-						paddingHorizontal: spacing.md,
-						paddingTop: spacing.xs,
-						gap: spacing.sm,
-					}}
-				>
-					<View style={{ flex: 1, gap: 2 }}>
-						<Text size="xxl" weight="bold" style={{ color: "#FFFFFF" }}>
-							Sales & COGS
-						</Text>
-						<Text size="sm" style={{ color: "rgba(255,255,255,0.7)" }}>
-							Track revenue, costs and margin
-						</Text>
-					</View>
-					<Pressable
-						onPress={() => toast.info("CSV export coming soon")}
-						hitSlop={8}
-						style={{
-							width: 44,
-							height: 44,
-							borderRadius: radii.full,
-							backgroundColor: "rgba(255, 255, 255, 0.14)",
-							borderWidth: 1,
-							borderColor: "rgba(255, 255, 255, 0.22)",
-							alignItems: "center",
-							justifyContent: "center",
-						}}
-					>
-						<Ionicons name="folder-outline" size={18} color="#FFFFFF" />
-					</Pressable>
-					<Link href="/sale-new" asChild>
-						<Button
-							size="sm"
-							label="Record"
-							leftIcon={<Ionicons name="add" size={18} color="#FFFFFF" />}
-							style={{ borderRadius: 999, flexShrink: 0 }}
-						/>
-					</Link>
-				</View>
-
-				{/* Mascot + KPI summary peeking into bottom panel */}
-				<View
-					style={{
-						position: "relative",
-						paddingHorizontal: spacing.md,
-					}}
-				>
+					{/* Header: title + actions on brand bg */}
 					<View
 						style={{
 							flexDirection: "row",
 							alignItems: "center",
+							justifyContent: "space-between",
+							paddingHorizontal: spacing.md,
+							paddingTop: spacing.xs,
 							gap: spacing.sm,
 						}}
 					>
-						<View style={{ width: 120, height: 130 }} />
-						<View
+						<View style={{ flex: 1, gap: 2 }}>
+							<Text size="xxl" weight="bold" style={{ color: "#FFFFFF" }}>
+								Sales & COGS
+							</Text>
+							<Text size="sm" style={{ color: "rgba(255,255,255,0.7)" }}>
+								Track revenue, costs and margin
+							</Text>
+						</View>
+						<Pressable
+							onPress={() => toast.info("CSV export coming soon")}
+							hitSlop={8}
 							style={{
-								flex: 1,
-								borderRadius: 18,
-								backgroundColor: colors.surface,
+								width: 44,
+								height: 44,
+								borderRadius: radii.full,
+								backgroundColor: "rgba(255, 255, 255, 0.14)",
 								borderWidth: 1,
-								borderColor: colors.border,
-								paddingVertical: spacing.sm,
-								paddingHorizontal: spacing.sm,
-								gap: spacing.xs,
-								marginBottom: 12,
+								borderColor: "rgba(255, 255, 255, 0.22)",
+								alignItems: "center",
+								justifyContent: "center",
 							}}
 						>
-						<HeaderStatRow
-							label="GROSS"
-							value={formatPHP(gross, 0)}
-							icon="trending-up"
-							iconColor={colors.primaryLight}
-						/>
-						<View style={{ height: 1, backgroundColor: colors.border }} />
-						<HeaderStatRow
-							label="COGS"
-							value={formatPHP(cogs, 0)}
-							icon="trending-down"
-							iconColor={colors.error}
-						/>
-						<View style={{ height: 1, backgroundColor: colors.border }} />
-						<HeaderStatRow
-							label="NET MARGIN"
-							value={`${margin.toFixed(0)}%`}
-							valueColor={colors.primaryLight}
-							icon="cash-outline"
-							iconColor={colors.primaryLight}
-						/>
-						<View style={{ height: 1, backgroundColor: colors.border }} />
-						<HeaderStatRow
-							label="EXPENSES"
-							value={formatPHP(totalExpense, 0)}
-							icon="cube-outline"
-							iconColor={colors.warning}
+							<Ionicons name="folder-outline" size={18} color="#FFFFFF" />
+						</Pressable>
+						<Link href="/sale-new" asChild>
+							<Button
+								size="sm"
+								label="Record"
+								leftIcon={<Ionicons name="add" size={18} color="#FFFFFF" />}
+								style={{ borderRadius: 999, flexShrink: 0 }}
+							/>
+						</Link>
+					</View>
+
+					{/* Mascot + KPI summary peeking into bottom panel */}
+					<View
+						style={{
+							position: "relative",
+							paddingHorizontal: spacing.md,
+						}}
+					>
+						<View
+							style={{
+								flexDirection: "row",
+								alignItems: "center",
+								gap: spacing.sm,
+							}}
+						>
+							<View style={{ width: 120, height: 130 }} />
+							<View
+								style={{
+									flex: 1,
+									borderRadius: 18,
+									backgroundColor: colors.surface,
+									borderWidth: 1,
+									borderColor: colors.border,
+									paddingVertical: spacing.sm,
+									paddingHorizontal: spacing.sm,
+									gap: spacing.xs,
+									marginBottom: 12,
+								}}
+							>
+								<HeaderStatRow
+									label="GROSS"
+									value={formatPHP(gross, 0)}
+									icon="trending-up"
+									iconColor={colors.primaryLight}
+								/>
+								<View style={{ height: 1, backgroundColor: colors.border }} />
+								<HeaderStatRow
+									label="COGS"
+									value={formatPHP(cogs, 0)}
+									icon="trending-down"
+									iconColor={colors.error}
+								/>
+								<View style={{ height: 1, backgroundColor: colors.border }} />
+								<HeaderStatRow
+									label="NET MARGIN"
+									value={`${margin.toFixed(0)}%`}
+									valueColor={colors.primaryLight}
+									icon="cash-outline"
+									iconColor={colors.primaryLight}
+								/>
+								<View style={{ height: 1, backgroundColor: colors.border }} />
+								<HeaderStatRow
+									label="EXPENSES"
+									value={formatPHP(totalExpense, 0)}
+									icon="cube-outline"
+									iconColor={colors.warning}
+								/>
+							</View>
+						</View>
+						<Image
+							source={require("../../../assets/character/recording.gif")}
+							style={{
+								position: "absolute",
+								left: spacing.xs,
+								bottom: -spacing.xxxl,
+								width: 160,
+								height: 200,
+							}}
+							contentFit="contain"
+							cachePolicy="memory-disk"
+							autoplay
+							accessibilityIgnoresInvertColors
 						/>
 					</View>
-				</View>
-					<Image
-						source={require("../../../assets/character/recording.gif")}
-						style={{
-							position: "absolute",
-							left: spacing.xs,
-							bottom: -spacing.xxxl,
-							width: 160,
-							height: 200,
-						}}
-						contentFit="contain"
-						cachePolicy="memory-disk"
-						autoplay
-						accessibilityIgnoresInvertColors
-					/>
-				</View>
 				</View>
 
 				{/* Bottom panel */}
@@ -373,111 +379,114 @@ export default function SalesScreen() {
 				>
 					<PeriodChips value={period} onChange={setPeriod} />
 
-				<Card>
-					<Text size="lg" weight="bold">
-						Expense by Category
-					</Text>
-					<Text size="sm" tone="muted" style={{ marginTop: 2 }}>
-						Inventory cost composition
-					</Text>
-					<ExpensePieChart slices={expenseByCategory} total={totalExpense} />
-				</Card>
-
-				<Card>
-					<Text size="lg" weight="bold">
-						Revenue Trend
-					</Text>
-					<Text size="sm" tone="muted" style={{ marginTop: 2 }}>
-						{trendLabel(period)}
-					</Text>
-					<TrendChart points={trendPoints} />
-				</Card>
-
-				<View style={{ gap: spacing.sm }}>
-					<Text size="lg" weight="bold">
-						Top Crops by Revenue
-					</Text>
 					<Card>
-						{topCrops.length === 0 ? (
-							<Text tone="muted">No crop revenue yet.</Text>
-						) : (
-							topCrops
-								.slice(0, 5)
-								.map((c, idx) => (
-									<CropRow
-										key={c.crop}
-										name={c.crop}
-										revenue={c.revenue}
-										max={topCropsMax}
-										color={cropColors(colors)[idx] ?? colors.textMuted}
-										isLast={idx === Math.min(topCrops.length, 5) - 1}
-									/>
-								))
-						)}
+						<Text size="lg" weight="bold">
+							Expense by Category
+						</Text>
+						<Text size="sm" tone="muted" style={{ marginTop: 2 }}>
+							Inventory cost composition
+						</Text>
+						<ExpensePieChart slices={expenseByCategory} total={totalExpense} />
 					</Card>
-				</View>
 
-				{channelTotals.list.length > 0 ? (
+					<Card>
+						<Text size="lg" weight="bold">
+							Revenue Trend
+						</Text>
+						<Text size="sm" tone="muted" style={{ marginTop: 2 }}>
+							{trendLabel(period)}
+						</Text>
+						<TrendChart points={trendPoints} />
+					</Card>
+
 					<View style={{ gap: spacing.sm }}>
 						<Text size="lg" weight="bold">
-							By Sales Channel
+							Top Crops by Revenue
 						</Text>
+						<Card>
+							{topCrops.length === 0 ? (
+								<Text tone="muted">No crop revenue yet.</Text>
+							) : (
+								topCrops
+									.slice(0, 5)
+									.map((c, idx) => (
+										<CropRow
+											key={c.crop}
+											name={c.crop}
+											revenue={c.revenue}
+											max={topCropsMax}
+											color={cropColors(colors)[idx] ?? colors.textMuted}
+											isLast={idx === Math.min(topCrops.length, 5) - 1}
+										/>
+									))
+							)}
+						</Card>
+					</View>
+
+					{channelTotals.list.length > 0 ? (
+						<View style={{ gap: spacing.sm }}>
+							<Text size="lg" weight="bold">
+								By Sales Channel
+							</Text>
+							<View
+								style={{
+									flexDirection: "row",
+									flexWrap: "wrap",
+									gap: spacing.sm,
+								}}
+							>
+								{channelTotals.list.map((c) => (
+									<ChannelCard
+										key={c.channel}
+										channel={c.channel}
+										revenue={c.revenue}
+										total={channelTotals.total}
+									/>
+								))}
+							</View>
+						</View>
+					) : null}
+
+					<View style={{ gap: spacing.sm }}>
 						<View
 							style={{
 								flexDirection: "row",
-								flexWrap: "wrap",
-								gap: spacing.sm,
+								justifyContent: "space-between",
+								alignItems: "center",
 							}}
 						>
-							{channelTotals.list.map((c) => (
-								<ChannelCard
-									key={c.channel}
-									channel={c.channel}
-									revenue={c.revenue}
-									total={channelTotals.total}
-								/>
-							))}
-						</View>
-					</View>
-				) : null}
-
-				<View style={{ gap: spacing.sm }}>
-					<View
-						style={{
-							flexDirection: "row",
-							justifyContent: "space-between",
-							alignItems: "center",
-						}}
-					>
-						<Text size="lg" weight="bold">
-							Recent Sales
-						</Text>
-						<Pressable
-							onPress={() => toast.info("CSV export coming soon")}
-							hitSlop={8}
-						>
-							<Text weight="semibold" style={{ color: colors.primaryLight }}>
-								Export CSV
+							<Text size="lg" weight="bold">
+								Recent Sales
 							</Text>
-						</Pressable>
+							<Pressable
+								onPress={() => toast.info("CSV export coming soon")}
+								hitSlop={8}
+							>
+								<Text weight="semibold" style={{ color: colors.primaryLight }}>
+									Export CSV
+								</Text>
+							</Pressable>
+						</View>
+						{allSales.length === 0 ? (
+							<Text tone="muted">{t("sales.empty")}</Text>
+						) : (
+							allSales
+								.slice(0, 8)
+								.map((sale) => (
+									<RecentSaleCard
+										key={sale.id}
+										sale={sale}
+										onDelete={() =>
+											confirmDelete(
+												sale.id,
+												sale.buyer_label ?? "unnamed buyer",
+											)
+										}
+										disabled={del.isPending}
+									/>
+								))
+						)}
 					</View>
-					{allSales.length === 0 ? (
-						<Text tone="muted">{t("sales.empty")}</Text>
-					) : (
-						allSales
-							.slice(0, 8)
-							.map((sale) => (
-								<RecentSaleCard
-									key={sale.id}
-									sale={sale}
-									onDelete={() =>
-										confirmDelete(sale.id, sale.buyer_label ?? "unnamed buyer")
-									}
-									disabled={del.isPending}
-								/>
-							))
-					)}
-				</View>
 				</View>
 			</ScrollView>
 		</GradientBackground>

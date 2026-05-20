@@ -27,7 +27,11 @@ import {
 	useThemeColors,
 } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
+import { useCustomToast } from "@/hooks/useCustomToast";
 import {
+	type Batch,
+	type BatchDetail,
+	type BatchTransition,
 	batchesApi,
 	cropsApi,
 	MILESTONE_ORDER,
@@ -35,7 +39,14 @@ import {
 	milestonesForCategory,
 	setupsApi,
 } from "@/lib/hydro-api";
+import {
+	patchEntity,
+	removeEntity,
+	rollback,
+	snapshotAndCancel,
+} from "@/lib/optimistic";
 import { QK, STALE } from "@/lib/query-config";
+import { handleError } from "@/lib/utils";
 
 function isoDateOnly(s: string | null | undefined): string | null {
 	if (!s) return null;
@@ -77,6 +88,7 @@ export default function BatchDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const batchId = id ?? "";
 	const qc = useQueryClient();
+	const toast = useCustomToast();
 	const goBack = useBack();
 
 	const batch = useQuery({
@@ -93,19 +105,81 @@ export default function BatchDetailScreen() {
 	const [heroEditing, setHeroEditing] = useState(false);
 
 	const transition = useMutation({
-		mutationFn: () =>
+		mutationFn: (vars: {
+			from: Milestone;
+			to: Milestone;
+			count: number;
+			notes: string | null;
+		}) =>
 			batchesApi.transition(batchId, {
-				from_milestone: from,
-				to_milestone: to,
-				count: Number.parseInt(cnt, 10) || 0,
-				notes: notes.trim() || undefined,
+				from_milestone: vars.from,
+				to_milestone: vars.to,
+				count: vars.count,
+				notes: vars.notes ?? undefined,
 			}),
-		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: QK.batches.all });
+		onMutate: async (vars) => {
+			const snapshot = await snapshotAndCancel(qc, [
+				QK.batches.detail(batchId),
+			]);
+			const nowIso = new Date().toISOString();
+			qc.setQueryData(QK.batches.detail(batchId), (old: unknown) => {
+				if (!old) return old;
+				const detail = old as BatchDetail;
+				const stateCounts = [...(detail.state_counts ?? [])];
+				const fromIdx = stateCounts.findIndex(
+					(c) => c.milestone_code === vars.from,
+				);
+				if (fromIdx >= 0) {
+					stateCounts[fromIdx] = {
+						...stateCounts[fromIdx],
+						count: Math.max(0, stateCounts[fromIdx].count - vars.count),
+						updated_at: nowIso,
+					};
+				}
+				const toIdx = stateCounts.findIndex(
+					(c) => c.milestone_code === vars.to,
+				);
+				if (toIdx >= 0) {
+					stateCounts[toIdx] = {
+						...stateCounts[toIdx],
+						count: stateCounts[toIdx].count + vars.count,
+						updated_at: nowIso,
+					};
+				} else {
+					stateCounts.push({
+						milestone_code: vars.to,
+						count: vars.count,
+						updated_at: nowIso,
+					});
+				}
+				const synthetic: BatchTransition = {
+					id: `optimistic-${nowIso}`,
+					from_milestone: vars.from,
+					to_milestone: vars.to,
+					count: vars.count,
+					occurred_at: nowIso,
+					notes: vars.notes,
+					photo_url: null,
+				};
+				return {
+					...detail,
+					state_counts: stateCounts,
+					recent_transitions: [synthetic, ...(detail.recent_transitions ?? [])],
+				};
+			});
 			setCnt("");
 			setNotes("");
+			return { snapshot };
 		},
-		onError: (e: Error) => Alert.alert("Error", e.message),
+		onError: (err, vars, ctx) => {
+			if (ctx) rollback(qc, ctx.snapshot);
+			toast.errorWithRetry(`Couldn't move phase: ${handleError(err)}`, () =>
+				transition.mutate(vars),
+			);
+		},
+		onSettled: () => {
+			qc.invalidateQueries({ queryKey: QK.batches.all });
+		},
 	});
 
 	const [hw, setHw] = useState("");
@@ -171,8 +245,7 @@ export default function BatchDetailScreen() {
 		const v = batch.data?.variety_name?.toLowerCase().trim();
 		if (!v) return null;
 		const direct = crops.find(
-			(c) =>
-				c.name_en?.toLowerCase() === v || c.name_tl?.toLowerCase() === v,
+			(c) => c.name_en?.toLowerCase() === v || c.name_tl?.toLowerCase() === v,
 		);
 		if (direct) return direct;
 		return (
@@ -249,11 +322,41 @@ export default function BatchDetailScreen() {
 					? `${editStartDate}T00:00:00.000Z`
 					: undefined,
 			}),
-		onSuccess: () => {
+		onMutate: async () => {
+			const snapshot = await snapshotAndCancel(qc, [
+				QK.batches.detail(batchId),
+				QK.batches.lists(),
+			]);
+			const patch: Partial<Batch> = {
+				setup_id:
+					editSetupId && editSetupId !== batch.data?.setup_id
+						? editSetupId
+						: batch.data?.setup_id,
+				variety_name: editVariety.trim(),
+				crop_guide_id: editCropId,
+				notes: editNotes.trim() || null,
+				started_at: editStartDate
+					? `${editStartDate}T00:00:00.000Z`
+					: batch.data?.started_at,
+			};
+			qc.setQueryData(QK.batches.detail(batchId), (old: unknown) =>
+				patchEntity<Batch>(old, batchId, patch),
+			);
+			qc.setQueriesData({ queryKey: QK.batches.lists() }, (old: unknown) =>
+				patchEntity<Batch>(old, batchId, patch),
+			);
+			return { snapshot };
+		},
+		onError: (err, _vars, ctx) => {
+			if (ctx) rollback(qc, ctx.snapshot);
+			toast.errorWithRetry(`Couldn't update batch: ${handleError(err)}`, () =>
+				updateBatch.mutate(),
+			);
+		},
+		onSettled: () => {
 			qc.invalidateQueries({ queryKey: QK.batches.all });
 			qc.invalidateQueries({ queryKey: QK.setups.all });
 		},
-		onError: (e: Error) => Alert.alert("Update failed", e.message),
 	});
 
 	const setupQ = useQuery({
@@ -266,27 +369,62 @@ export default function BatchDetailScreen() {
 			.length ?? 0;
 
 	const allocate = useMutation({
-		mutationFn: () =>
-			batchesApi.allocateSlots(batchId, {
-				slots_used: Number.parseInt(allocSlots, 10) || 0,
-				seeds_per_slot: Number.parseInt(allocSeeds, 10) || 0,
-			}),
+		mutationFn: (vars: { slots_used: number; seeds_per_slot: number }) =>
+			batchesApi.allocateSlots(batchId, vars),
+		onMutate: async (vars) => {
+			const snapshot = await snapshotAndCancel(qc, [
+				QK.batches.detail(batchId),
+				QK.batches.lists(),
+			]);
+			const patch: Partial<Batch> = {
+				slots_used: vars.slots_used,
+				seeds_per_slot: vars.seeds_per_slot,
+			};
+			qc.setQueryData(QK.batches.detail(batchId), (old: unknown) =>
+				patchEntity<Batch>(old, batchId, patch),
+			);
+			qc.setQueriesData({ queryKey: QK.batches.lists() }, (old: unknown) =>
+				patchEntity<Batch>(old, batchId, patch),
+			);
+			return { snapshot };
+		},
 		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: QK.batches.all });
-			qc.invalidateQueries({ queryKey: QK.setups.all });
 			setAllocSlots("");
 		},
-		onError: (e: Error) => Alert.alert("Allocate failed", e.message),
+		onError: (err, vars, ctx) => {
+			if (ctx) rollback(qc, ctx.snapshot);
+			toast.errorWithRetry(
+				`Couldn't update allocation: ${handleError(err)}`,
+				() => allocate.mutate(vars),
+			);
+		},
+		onSettled: () => {
+			qc.invalidateQueries({ queryKey: QK.batches.all });
+			qc.invalidateQueries({ queryKey: QK.setups.all });
+		},
 	});
 
 	const del = useMutation({
 		mutationFn: () => batchesApi.delete(batchId),
-		onSuccess: () => {
+		onMutate: async () => {
+			const snapshot = await snapshotAndCancel(qc, [
+				QK.batches.lists(),
+				QK.batches.detail(batchId),
+			]);
+			qc.setQueriesData({ queryKey: QK.batches.lists() }, (old: unknown) =>
+				removeEntity(old, batchId),
+			);
+			router.replace("/seeds");
+			return { snapshot };
+		},
+		onError: (err, _vars, ctx) => {
+			if (ctx) rollback(qc, ctx.snapshot);
+			toast.error(`Couldn't delete batch: ${handleError(err)}`);
+		},
+		onSettled: () => {
 			qc.invalidateQueries({ queryKey: QK.batches.all });
 			qc.invalidateQueries({ queryKey: QK.setups.all });
-			router.replace("/seeds");
 		},
-		onError: (e: Error) => Alert.alert("Delete failed", e.message),
 	});
 
 	const saveHero = async () => {
@@ -308,7 +446,10 @@ export default function BatchDetailScreen() {
 			(editNotes.trim() || null) !== bd.notes;
 		try {
 			if (slotsChanged && newSlotsNum > 0 && newSeedsNum > 0) {
-				await allocate.mutateAsync();
+				await allocate.mutateAsync({
+					slots_used: newSlotsNum,
+					seeds_per_slot: newSeedsNum,
+				});
 			}
 			if (detailsChanged) {
 				await updateBatch.mutateAsync();
@@ -320,18 +461,46 @@ export default function BatchDetailScreen() {
 	};
 
 	const harvest = useMutation({
-		mutationFn: () =>
-			batchesApi.harvest(batchId, {
-				weight_grams: Number.parseFloat(hw) || 0,
-				count: Number.parseInt(hc, 10) || 0,
-			}),
-		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: QK.batches.all });
+		mutationFn: (vars: { weight_grams: number; count: number }) =>
+			batchesApi.harvest(batchId, vars),
+		onMutate: async (vars) => {
+			const snapshot = await snapshotAndCancel(qc, [
+				QK.batches.detail(batchId),
+			]);
+			const nowIso = new Date().toISOString();
+			qc.setQueryData(QK.batches.detail(batchId), (old: unknown) => {
+				if (!old) return old;
+				const detail = old as BatchDetail;
+				const stateCounts = [...(detail.state_counts ?? [])];
+				const idx = stateCounts.findIndex(
+					(c) => c.milestone_code === "HarvestReady",
+				);
+				if (idx >= 0) {
+					stateCounts[idx] = {
+						...stateCounts[idx],
+						count: Math.max(0, stateCounts[idx].count - vars.count),
+						updated_at: nowIso,
+					};
+				}
+				return { ...detail, state_counts: stateCounts };
+			});
 			setHw("");
 			setHc("");
-			Alert.alert("Saved", "Harvest recorded.");
+			return { snapshot };
 		},
-		onError: (e: Error) => Alert.alert("Error", e.message),
+		onSuccess: () => {
+			toast.success("Harvest recorded.");
+		},
+		onError: (err, vars, ctx) => {
+			if (ctx) rollback(qc, ctx.snapshot);
+			toast.errorWithRetry(`Couldn't record harvest: ${handleError(err)}`, () =>
+				harvest.mutate(vars),
+			);
+		},
+		onSettled: () => {
+			qc.invalidateQueries({ queryKey: QK.batches.all });
+			qc.invalidateQueries({ queryKey: QK.produce.all });
+		},
 	});
 
 	if (batch.isLoading)
@@ -512,9 +681,7 @@ export default function BatchDetailScreen() {
 								/>
 								<Text size="xs" tone="muted">
 									Seed cost:{" "}
-									{b.seed_cost != null
-										? `₱${b.seed_cost.toFixed(2)}`
-										: "—"}
+									{b.seed_cost != null ? `₱${b.seed_cost.toFixed(2)}` : "—"}
 								</Text>
 							</View>
 							{setupMeta && currentSetup ? (
@@ -1306,7 +1473,14 @@ export default function BatchDetailScreen() {
 								variant={to === "Failed" ? "danger" : "solid"}
 								isLoading={transition.isPending}
 								isDisabled={!validTransition}
-								onPress={() => transition.mutate()}
+								onPress={() =>
+									transition.mutate({
+										from,
+										to,
+										count: cntNum,
+										notes: notes.trim() || null,
+									})
+								}
 							/>
 						</>
 					)}
@@ -1434,7 +1608,12 @@ export default function BatchDetailScreen() {
 								isDisabled={
 									Number.parseFloat(hw) <= 0 || Number.parseInt(hc, 10) <= 0
 								}
-								onPress={() => harvest.mutate()}
+								onPress={() =>
+									harvest.mutate({
+										weight_grams: Number.parseFloat(hw) || 0,
+										count: Number.parseInt(hc, 10) || 0,
+									})
+								}
 							/>
 						</>
 					)}

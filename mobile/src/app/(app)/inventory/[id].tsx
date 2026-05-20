@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { InventoryMovementSheet } from "@/components/inventory/movement-sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,12 +19,20 @@ import {
 } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
+import { confirmDialog } from "@/lib/dialog";
 import {
 	type InventoryCategory,
+	type InventoryItem,
 	type InventoryUnit,
 	inventoryApi,
 	type MovementType,
 } from "@/lib/hydro-api";
+import {
+	patchEntity,
+	removeEntity,
+	rollback,
+	snapshotAndCancel,
+} from "@/lib/optimistic";
 import { QK } from "@/lib/query-config";
 import { formatPHP, handleError } from "@/lib/utils";
 
@@ -91,21 +99,63 @@ export default function InventoryDetailScreen() {
 				expiry_date: expiry,
 				notes: notes.trim() || undefined,
 			}),
+		onMutate: async () => {
+			const snapshot = await snapshotAndCancel(qc, [
+				QK.inventory.detail(id),
+				QK.inventory.lists(),
+			]);
+			const patch: Partial<InventoryItem> = {
+				name: name.trim(),
+				category,
+				unit,
+				low_stock_threshold: Number.parseFloat(threshold) || 0,
+				unit_cost:
+					unitCost.trim().length > 0 ? Number.parseFloat(unitCost) : null,
+				expiry_date: expiry,
+				notes: notes.trim() || null,
+			};
+			qc.setQueryData(QK.inventory.detail(id), (old: unknown) =>
+				patchEntity<InventoryItem>(old, id, patch),
+			);
+			qc.setQueriesData({ queryKey: QK.inventory.lists() }, (old: unknown) =>
+				patchEntity<InventoryItem>(old, id, patch),
+			);
+			return { snapshot };
+		},
 		onSuccess: () => {
 			toast.success("Saved");
+		},
+		onError: (err, _vars, ctx) => {
+			if (ctx) rollback(qc, ctx.snapshot);
+			toast.errorWithRetry(`Couldn't save: ${handleError(err)}`, () =>
+				update.mutate(),
+			);
+		},
+		onSettled: () => {
 			qc.invalidateQueries({ queryKey: QK.inventory.all });
 		},
-		onError: (err) => toast.error(handleError(err)),
 	});
 
 	const del = useMutation({
 		mutationFn: () => inventoryApi.delete(id),
-		onSuccess: () => {
-			toast.success("Deleted");
-			qc.invalidateQueries({ queryKey: QK.inventory.all });
+		onMutate: async () => {
+			const snapshot = await snapshotAndCancel(qc, [
+				QK.inventory.lists(),
+				QK.inventory.detail(id),
+			]);
+			qc.setQueriesData({ queryKey: QK.inventory.lists() }, (old: unknown) =>
+				removeEntity(old, id),
+			);
 			router.back();
+			return { snapshot };
 		},
-		onError: (err) => toast.error(handleError(err)),
+		onError: (err, _vars, ctx) => {
+			if (ctx) rollback(qc, ctx.snapshot);
+			toast.error(`Couldn't delete: ${handleError(err)}`);
+		},
+		onSettled: () => {
+			qc.invalidateQueries({ queryKey: QK.inventory.all });
+		},
 	});
 
 	if (!item.data) {
@@ -431,14 +481,13 @@ export default function InventoryDetailScreen() {
 						variant="destructive"
 						label="Delete item"
 						onPress={() =>
-							Alert.alert("Delete?", `Remove ${it.name}?`, [
-								{ text: "Cancel", style: "cancel" },
-								{
-									text: "Delete",
-									style: "destructive",
-									onPress: () => del.mutate(),
-								},
-							])
+							confirmDialog({
+								title: "Delete?",
+								message: `Remove ${it.name}?`,
+								confirmLabel: "Delete",
+								destructive: true,
+								onConfirm: () => del.mutate(),
+							})
 						}
 					/>
 				</View>

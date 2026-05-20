@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Image, Pressable, ScrollView, View } from "react-native";
+import { Image, Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { spacing, systemTypes, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
+import { alertDialog } from "@/lib/dialog";
 import { photosApi, type SetupType, setupsApi } from "@/lib/hydro-api";
 import { QK } from "@/lib/query-config";
 
@@ -44,7 +45,7 @@ export default function EditSetupScreen() {
 	async function pickAndUploadPhoto() {
 		const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
 		if (!perm.granted) {
-			Alert.alert("Permission needed", "Allow photo access to add an image.");
+			alertDialog("Permission needed", "Allow photo access to add an image.");
 			return;
 		}
 		const result = await ImagePicker.launchImageLibraryAsync({
@@ -63,7 +64,7 @@ export default function EditSetupScreen() {
 			setPhotoPreview(up.url);
 		} catch (e) {
 			setPhotoPreview(null);
-			Alert.alert("Upload failed", (e as Error).message);
+			alertDialog("Upload failed", (e as Error).message);
 		} finally {
 			setUploading(false);
 		}
@@ -95,7 +96,7 @@ export default function EditSetupScreen() {
 			qc.invalidateQueries({ queryKey: QK.setups.all });
 			router.back();
 		},
-		onError: (e: Error) => Alert.alert("Update failed", e.message),
+		onError: (e: Error) => alertDialog("Update failed", e.message),
 	});
 
 	const valid = name.trim().length > 0 && Number.parseInt(slotCount, 10) > 0;

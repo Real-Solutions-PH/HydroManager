@@ -4,7 +4,7 @@ import { Image } from "expo-image";
 import * as Location from "expo-location";
 import { type Href, Link, router, useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { AlertSeverity } from "@/components/ui/alert-card";
 import { Card } from "@/components/ui/card";
@@ -20,20 +20,7 @@ import {
 } from "@/components/ui/phase-progression-card";
 import { SpeechBubble } from "@/components/ui/speech-bubble";
 import { Text } from "@/components/ui/text";
-import {
-	fmtNum,
-	GLASS_BG,
-	GLASS_BORDER,
-	humidityMeta,
-	MetricTile,
-	rainChanceMeta,
-	SceneBackground,
-	sceneFromCode,
-	TEXT_MUTED,
-	TEXT_PRIMARY,
-	TEXT_SECONDARY,
-	type TodayForecast,
-} from "@/components/ui/weather-card";
+import { type TodayForecast, WeatherCard } from "@/components/ui/weather-card";
 import {
 	radii,
 	spacing,
@@ -351,28 +338,12 @@ export default function HomeScreen() {
 	});
 	const [cityLabel, setCityLabel] = useState<string | null>(null);
 	const [gifKey, setGifKey] = useState(0);
-	const [gifPlaying, setGifPlaying] = useState(true);
 	const [brandHeaderHeight, setBrandHeaderHeight] = useState(0);
 	useFocusEffect(
 		useCallback(() => {
 			setGifKey((k) => k + 1);
-			setGifPlaying(true);
 		}, []),
 	);
-	useEffect(() => {
-		const PLAY_MS = 3500;
-		const PAUSE_MS = 7000;
-		let t: ReturnType<typeof setTimeout>;
-		if (gifPlaying) {
-			t = setTimeout(() => setGifPlaying(false), PLAY_MS);
-		} else {
-			t = setTimeout(() => {
-				setGifKey((k) => k + 1);
-				setGifPlaying(true);
-			}, PAUSE_MS);
-		}
-		return () => clearTimeout(t);
-	}, [gifPlaying]);
 	useEffect(() => {
 		let cancelled = false;
 		if (!coords) return;
@@ -438,30 +409,6 @@ export default function HomeScreen() {
 		userQ.data?.full_name?.split(" ")[0] ?? t("home.default_name");
 	const _farmName = t("home.farm_label", { name: firstName });
 	const greeting = t(getGreetingKey(new Date().getHours()));
-
-	const scene = sceneFromCode(todayForecastQ.data?.weather_code);
-	const rain = rainChanceMeta(
-		todayForecastQ.data?.precipitation_probability_max ?? null,
-	);
-	const humidity = humidityMeta(climateQ.data?.humidity_pct_avg ?? null);
-	const climateLoading =
-		climateQ.isLoading ||
-		geoStatus === "requesting" ||
-		(geoStatus === "idle" && !coords);
-	const climateError =
-		geoStatus === "denied"
-			? "Location permission denied. Enable to see local climate."
-			: geoStatus === "error"
-				? geoError
-				: climateQ.error
-					? "Couldn't load climate data."
-					: null;
-	const climateRetry =
-		geoStatus === "denied" || geoStatus === "error"
-			? refreshGeo
-			: climateQ.error
-				? () => climateQ.refetch()
-				: undefined;
 
 	const lowStock = (inventoryQ.data?.data ?? []).filter((i) => i.is_low_stock);
 	const harvestReady = (batchesQ.data?.data ?? []).filter(
@@ -699,25 +646,12 @@ export default function HomeScreen() {
 				<View
 					onLayout={(e) => setBrandHeaderHeight(e.nativeEvent.layout.height)}
 					style={{
-						backgroundColor: scene.bottom,
+						backgroundColor: colors.primaryDeep,
 						paddingTop: insets.top + spacing.sm,
 						paddingBottom: spacing.xl,
 						gap: spacing.md,
-						overflow: "hidden",
 					}}
 				>
-					<View
-						pointerEvents="none"
-						style={{
-							position: "absolute",
-							top: 0,
-							left: 0,
-							right: 0,
-							bottom: 0,
-						}}
-					>
-						<SceneBackground scene={scene} />
-					</View>
 				{/* Header: date + greeting on left, circular bell + gear on right */}
 				<View
 					style={{
@@ -818,172 +752,7 @@ export default function HomeScreen() {
 					</View>
 				</View>
 
-				{/* Grow Climate — merged into header with scene as background */}
-				<View
-					style={{
-						paddingHorizontal: spacing.md,
-						gap: spacing.sm,
-					}}
-				>
-					<View>
-						<View
-							style={{
-								flexDirection: "row",
-								alignItems: "center",
-								gap: 6,
-								marginBottom: 2,
-							}}
-						>
-							<Ionicons
-								name={scene.icon}
-								size={14}
-								color={scene.accent}
-							/>
-							<Text
-								size="xs"
-								weight="bold"
-								style={{
-									color: TEXT_SECONDARY,
-									letterSpacing: 1.2,
-									textTransform: "uppercase",
-								}}
-							>
-								{scene.label}
-							</Text>
-						</View>
-						<Text size="lg" weight="bold" style={{ color: TEXT_PRIMARY }}>
-							Grow Climate
-						</Text>
-						<Text size="xs" style={{ color: TEXT_MUTED }}>
-							{cityLabel ?? "Locating…"}
-						</Text>
-					</View>
-
-					{climateLoading ? (
-						<View
-							style={{ paddingVertical: spacing.md, alignItems: "center" }}
-						>
-							<ActivityIndicator color={TEXT_PRIMARY} />
-						</View>
-					) : climateError || !climateQ.data ? (
-						<View style={{ paddingVertical: spacing.xs, gap: spacing.xs }}>
-							<Text size="sm" style={{ color: TEXT_SECONDARY }}>
-								{climateError ??
-									"Enable location to see climate data for your grow site."}
-							</Text>
-							{climateRetry ? (
-								<Pressable
-									onPress={climateRetry}
-									accessibilityRole="button"
-									style={({ pressed }) => ({
-										alignSelf: "flex-start",
-										paddingHorizontal: spacing.sm,
-										paddingVertical: 6,
-										borderRadius: radii.full,
-										backgroundColor: pressed
-											? "rgba(255,255,255,0.20)"
-											: GLASS_BG,
-										borderWidth: 1,
-										borderColor: GLASS_BORDER,
-									})}
-								>
-									<Text
-										size="xs"
-										weight="semibold"
-										style={{ color: TEXT_PRIMARY }}
-									>
-										Retry
-									</Text>
-								</Pressable>
-							) : null}
-						</View>
-					) : (
-						<View style={{ gap: spacing.sm }}>
-							<View
-								style={{
-									flexDirection: "row",
-									alignItems: "flex-end",
-									gap: spacing.sm,
-								}}
-							>
-								<Text
-									size="xxxl"
-									weight="heavy"
-									style={{
-										color: TEXT_PRIMARY,
-										fontVariant: ["tabular-nums"],
-										letterSpacing: -1,
-									}}
-								>
-									{fmtNum(climateQ.data.air_temp_c_avg, 1)}°
-								</Text>
-								<View style={{ paddingBottom: 8 }}>
-									<Text
-										size="xs"
-										weight="semibold"
-										style={{
-											color: TEXT_SECONDARY,
-											letterSpacing: 0.8,
-											textTransform: "uppercase",
-										}}
-									>
-										Avg air temp
-									</Text>
-									<Text
-										size="xs"
-										style={{
-											color: TEXT_MUTED,
-											fontVariant: ["tabular-nums"],
-										}}
-									>
-										{fmtNum(climateQ.data.air_temp_c_min, 0)}° /{" "}
-										{fmtNum(climateQ.data.air_temp_c_max, 0)}°
-									</Text>
-								</View>
-							</View>
-
-							<View style={{ flexDirection: "row", gap: spacing.xs }}>
-								<MetricTile
-									icon="water"
-									iconColor="#9CC6E8"
-									label="Humidity"
-									value={humidity.label}
-									valueColor={humidity.color}
-									subtext={
-										climateQ.data.humidity_pct_avg != null
-											? `${fmtNum(climateQ.data.humidity_pct_avg, 0)}%`
-											: undefined
-									}
-								/>
-								<MetricTile
-									icon={scene.icon}
-									iconColor={scene.accent}
-									label="Today"
-									value={scene.label}
-									subtext={
-										climateQ.data.sunlight_hours_avg != null
-											? `${fmtNum(climateQ.data.sunlight_hours_avg, 1)} h sun`
-											: undefined
-									}
-								/>
-								<MetricTile
-									icon="rainy"
-									iconColor="#7FB8E8"
-									label="Rain"
-									value={rain.label}
-									valueColor={rain.color}
-									subtext={
-										todayForecastQ.data?.precipitation_probability_max != null
-											? `${fmtNum(todayForecastQ.data.precipitation_probability_max, 0)}%`
-											: undefined
-									}
-								/>
-							</View>
-						</View>
-					)}
-				</View>
-
-				{/* Mascot + speech bubble — same row, anchored at header bottom */}
+				{/* Speech bubble row — reserves left space for absolutely positioned mascot */}
 				<View
 					style={{
 						flexDirection: "row",
@@ -1104,6 +873,34 @@ export default function HomeScreen() {
 						</Text>
 					</Card>
 				</View> */}
+
+					{/* Grow climate widget */}
+					<WeatherCard
+						data={climateQ.data}
+						today={todayForecastQ.data}
+						cityLabel={cityLabel ?? undefined}
+						loading={
+							climateQ.isLoading ||
+							geoStatus === "requesting" ||
+							(geoStatus === "idle" && !coords)
+						}
+						error={
+							geoStatus === "denied"
+								? "Location permission denied. Enable to see local climate."
+								: geoStatus === "error"
+									? geoError
+									: climateQ.error
+										? "Couldn't load climate data."
+										: null
+						}
+						onRetry={
+							geoStatus === "denied" || geoStatus === "error"
+								? refreshGeo
+								: climateQ.error
+									? () => climateQ.refetch()
+									: undefined
+						}
+					/>
 
 					{/* Active crop composition */}
 					<CropCompositionCard
@@ -1381,11 +1178,7 @@ export default function HomeScreen() {
 				{brandHeaderHeight > 0 ? (
 					<Image
 						key={gifKey}
-						source={
-							gifPlaying
-								? require("../../../assets/character/welcome.gif")
-								: require("../../../assets/character/welcome.png")
-						}
+						source={require("../../../assets/character/welcome.gif")}
 						style={{
 							position: "absolute",
 							left: spacing.xs,

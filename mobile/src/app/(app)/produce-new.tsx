@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
@@ -65,7 +65,7 @@ export default function NewProduceScreen() {
 			qc.invalidateQueries({ queryKey: QK.sales.dashboard() });
 			router.back();
 		},
-		onError: (err) => Alert.alert("Error", handleError(err)),
+		onError: (err) => toast.error(handleError(err)),
 	});
 
 	const valid =

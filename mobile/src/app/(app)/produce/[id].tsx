@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -17,7 +17,14 @@ import {
 } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
-import { type ProduceStatus, produceApi } from "@/lib/hydro-api";
+import { confirmDialog } from "@/lib/dialog";
+import { type Produce, type ProduceStatus, produceApi } from "@/lib/hydro-api";
+import {
+	patchEntity,
+	removeEntity,
+	rollback,
+	snapshotAndCancel,
+} from "@/lib/optimistic";
 import { QK } from "@/lib/query-config";
 import { formatPHP, handleError } from "@/lib/utils";
 
@@ -79,23 +86,66 @@ export default function ProduceDetailScreen() {
 				notes: notes.trim() || undefined,
 			});
 		},
+		onMutate: async () => {
+			if (expiry && !DATE_RE.test(expiry)) return undefined;
+			const snapshot = await snapshotAndCancel(qc, [
+				QK.produce.detail(id),
+				QK.produce.lists(),
+			]);
+			const patch: Partial<Produce> = {
+				name: name.trim(),
+				quantity: Number.parseFloat(qty) || 0,
+				unit: unit.trim(),
+				status,
+				expiry_date: expiry.trim() || null,
+				selling_price:
+					price.trim().length > 0 ? Number.parseFloat(price) : null,
+				notes: notes.trim() || null,
+			};
+			qc.setQueryData(QK.produce.detail(id), (old: unknown) =>
+				patchEntity<Produce>(old, id, patch),
+			);
+			qc.setQueriesData({ queryKey: QK.produce.lists() }, (old: unknown) =>
+				patchEntity<Produce>(old, id, patch),
+			);
+			return { snapshot };
+		},
 		onSuccess: () => {
 			toast.success("Saved");
+		},
+		onError: (err, _vars, ctx) => {
+			if (ctx) rollback(qc, ctx.snapshot);
+			toast.errorWithRetry(`Couldn't save: ${handleError(err)}`, () =>
+				update.mutate(),
+			);
+		},
+		onSettled: () => {
 			qc.invalidateQueries({ queryKey: QK.produce.all });
 			qc.invalidateQueries({ queryKey: QK.sales.dashboard() });
 		},
-		onError: (err) => toast.error(handleError(err)),
 	});
 
 	const del = useMutation({
 		mutationFn: () => produceApi.delete(id),
-		onSuccess: () => {
-			toast.success("Deleted");
+		onMutate: async () => {
+			const snapshot = await snapshotAndCancel(qc, [
+				QK.produce.lists(),
+				QK.produce.detail(id),
+			]);
+			qc.setQueriesData({ queryKey: QK.produce.lists() }, (old: unknown) =>
+				removeEntity(old, id),
+			);
+			router.back();
+			return { snapshot };
+		},
+		onError: (err, _vars, ctx) => {
+			if (ctx) rollback(qc, ctx.snapshot);
+			toast.error(`Couldn't delete: ${handleError(err)}`);
+		},
+		onSettled: () => {
 			qc.invalidateQueries({ queryKey: QK.produce.all });
 			qc.invalidateQueries({ queryKey: QK.sales.dashboard() });
-			router.back();
 		},
-		onError: (err) => toast.error(handleError(err)),
 	});
 
 	if (!item.data) {
@@ -328,14 +378,13 @@ export default function ProduceDetailScreen() {
 						variant="destructive"
 						label="Delete produce"
 						onPress={() =>
-							Alert.alert("Delete?", `Remove ${it.name}?`, [
-								{ text: "Cancel", style: "cancel" },
-								{
-									text: "Delete",
-									style: "destructive",
-									onPress: () => del.mutate(),
-								},
-							])
+							confirmDialog({
+								title: "Delete?",
+								message: `Remove ${it.name}?`,
+								confirmLabel: "Delete",
+								destructive: true,
+								onConfirm: () => del.mutate(),
+							})
 						}
 					/>
 				</View>

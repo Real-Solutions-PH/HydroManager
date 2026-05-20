@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Alert, Pressable, ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -14,6 +14,7 @@ import {
 	useThemeColors,
 } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
+import { alertDialog } from "@/lib/dialog";
 import {
 	type InventoryCategory,
 	type InventoryUnit,
@@ -81,7 +82,7 @@ export default function NewInventoryItemScreen() {
 			qc.invalidateQueries({ queryKey: QK.inventory.all });
 			goBack();
 		},
-		onError: (e: Error) => Alert.alert("Error", e.message),
+		onError: (e: Error) => alertDialog("Error", e.message),
 	});
 
 	const valid = name.trim().length > 0;

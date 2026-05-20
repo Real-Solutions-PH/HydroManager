@@ -10,7 +10,6 @@ import { router } from "expo-router";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import {
 	ActivityIndicator,
-	Alert,
 	Image,
 	KeyboardAvoidingView,
 	Modal,
@@ -38,6 +37,7 @@ import {
 import { SeedBankHandle } from "@/components/seeds/seed-bank-handle";
 import { SeedBankSheet } from "@/components/seeds/seed-bank-sheet";
 import { SeedDetailSheet } from "@/components/seeds/seed-detail-sheet";
+import { alertDialog } from "@/lib/dialog";
 import {
 	type Batch,
 	type BatchDetail,
@@ -1081,7 +1081,7 @@ function AdvanceStageDialog({
 			setCount("");
 			onClose();
 		},
-		onError: (e: Error) => Alert.alert("Error", e.message),
+		onError: (e: Error) => alertDialog("Error", e.message),
 	});
 
 	const close = () => {
