@@ -8,7 +8,11 @@ import { Text } from "@/components/ui/text";
 import { spacing, useThemeColors } from "@/constants/theme";
 import { type CropGuide, type InventoryItem, inventoryApi } from "@/lib/hydro-api";
 import { QK, STALE } from "@/lib/query-config";
-import { SeedPacketCell } from "./seed-packet-cell";
+import {
+    PACKET_MAX_SIZE,
+    PACKET_MIN_SIZE,
+    SeedPacketCell,
+} from "./seed-packet-cell";
 
 type Sort = "name" | "qty" | "expiry";
 
@@ -26,6 +30,20 @@ export function SeedBankSheet({
     const colors = useThemeColors();
     const [query, setQuery] = useState("");
     const [sort, setSort] = useState<Sort>("name");
+    const [gridWidth, setGridWidth] = useState(0);
+    const GRID_GAP = spacing.sm;
+    const { cellSize, columnCount } = useMemo(() => {
+        if (gridWidth <= 0) {
+            return { cellSize: PACKET_MAX_SIZE, columnCount: 0 };
+        }
+        const cols = Math.max(
+            1,
+            Math.floor((gridWidth + GRID_GAP) / (PACKET_MIN_SIZE + GRID_GAP)),
+        );
+        const raw = (gridWidth - GRID_GAP * (cols - 1)) / cols;
+        const size = Math.min(PACKET_MAX_SIZE, raw);
+        return { cellSize: size, columnCount: cols };
+    }, [gridWidth, GRID_GAP]);
 
     const seedsQ = useQuery({
         queryKey: [...QK.inventory.lists(), "seeds"],
@@ -192,23 +210,29 @@ export function SeedBankSheet({
                         </View>
                     ) : (
                         <View
+                            onLayout={(e) =>
+                                setGridWidth(e.nativeEvent.layout.width)
+                            }
                             style={{
                                 flexDirection: "row",
                                 flexWrap: "wrap",
-                                gap: spacing.sm,
+                                gap: GRID_GAP,
                             }}
                         >
-                            {items.map((item) => (
-                                <SeedPacketCell
-                                    key={item.id}
-                                    item={item}
-                                    imageUrl={
-                                        cropsByName.get(item.name.toLowerCase())
-                                            ?.image_url ?? null
-                                    }
-                                    onPress={() => onSelect(item)}
-                                />
-                            ))}
+                            {columnCount > 0 &&
+                                items.map((item) => (
+                                    <SeedPacketCell
+                                        key={item.id}
+                                        item={item}
+                                        size={cellSize}
+                                        imageUrl={
+                                            cropsByName.get(
+                                                item.name.toLowerCase(),
+                                            )?.image_url ?? null
+                                        }
+                                        onPress={() => onSelect(item)}
+                                    />
+                                ))}
                         </View>
                     )}
                 </ScrollView>

@@ -3,17 +3,24 @@ import { Text } from "@/components/ui/text";
 import { useThemeColors } from "@/constants/theme";
 import type { InventoryItem } from "@/lib/hydro-api";
 
-export const PACKET_SIZE = 84;
-export const PACKET_TOTAL_HEIGHT = PACKET_SIZE + 36; // cell + name caption
+export const PACKET_MIN_SIZE = 72;
+export const PACKET_MAX_SIZE = 96;
+export const PACKET_DEFAULT_SIZE = 84;
+export const PACKET_CAPTION_HEIGHT = 36;
+export const PACKET_TOTAL_HEIGHT = PACKET_DEFAULT_SIZE + PACKET_CAPTION_HEIGHT;
+// Back-compat alias.
+export const PACKET_SIZE = PACKET_DEFAULT_SIZE;
 
 export function SeedPacketCell({
 	item,
 	imageUrl,
 	onPress,
+	size = PACKET_DEFAULT_SIZE,
 }: {
 	item: InventoryItem;
 	imageUrl?: string | null;
 	onPress: () => void;
+	size?: number;
 }) {
 	const colors = useThemeColors();
 	const low = item.is_low_stock;
@@ -23,13 +30,18 @@ export function SeedPacketCell({
 	const border = expiring ? colors.warning : colors.border;
 	const emoji = emojiFor(item.name);
 	const caption = shortName(item.name);
+	const iconSize = Math.round(size * 0.57);
+	const emojiFont = Math.round(size * 0.43);
+	const emojiLine = Math.round(emojiFont * 1.17);
+	const badgeMin = Math.max(20, Math.round(size * 0.29));
+	const badgePadH = size < 80 ? 3 : 4;
 	return (
-		<View style={{ width: PACKET_SIZE, alignItems: "center", gap: 4 }}>
+		<View style={{ width: size, alignItems: "center", gap: 4 }}>
 			<Pressable
 				onPress={onPress}
 				style={({ pressed }) => ({
-					width: PACKET_SIZE,
-					height: PACKET_SIZE,
+					width: size,
+					height: size,
 					borderRadius: 10,
 					borderWidth: 2,
 					borderColor: border,
@@ -42,18 +54,20 @@ export function SeedPacketCell({
 				{imageUrl ? (
 					<Image
 						source={{ uri: imageUrl }}
-						style={{ width: 48, height: 48, borderRadius: 6 }}
+						style={{ width: iconSize, height: iconSize, borderRadius: 6 }}
 					/>
 				) : (
-					<RNText style={{ fontSize: 36, lineHeight: 42 }}>{emoji}</RNText>
+					<RNText style={{ fontSize: emojiFont, lineHeight: emojiLine }}>
+						{emoji}
+					</RNText>
 				)}
 				<View
 					style={{
 						position: "absolute",
 						bottom: 2,
 						right: 2,
-						minWidth: 24,
-						paddingHorizontal: 4,
+						minWidth: badgeMin,
+						paddingHorizontal: badgePadH,
 						paddingVertical: 1,
 						borderRadius: 6,
 						backgroundColor: "rgba(0,0,0,0.7)",
@@ -92,7 +106,7 @@ function formatQty(n: number): string {
 }
 
 // Strip vendor/brand tags in parens and truncate.
-function shortName(name: string, max = 22): string {
+export function shortName(name: string, max = 22): string {
 	const stripped = name.replace(/\s*\([^)]*\)\s*/g, " ").replace(/\s+/g, " ").trim();
 	if (stripped.length <= max) return stripped;
 	return `${stripped.slice(0, max - 1)}…`;
@@ -100,7 +114,7 @@ function shortName(name: string, max = 22): string {
 
 // Match crop keywords in the item name to a representative emoji.
 // Order matters: more specific patterns first.
-function emojiFor(name: string): string {
+export function emojiFor(name: string): string {
 	const n = name.toLowerCase();
 	if (/tomato|cherry/.test(n)) return "🍅";
 	if (/bell\s*pepper|capsicum/.test(n)) return "🫑";
