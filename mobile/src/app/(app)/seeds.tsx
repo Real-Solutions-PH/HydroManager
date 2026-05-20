@@ -588,28 +588,6 @@ function BatchCard({
 									</Text>
 								</View>
 							) : null}
-							{readyToAdvance && nextStage ? (
-								<View
-									style={{
-										flexDirection: "row",
-										alignItems: "center",
-										gap: 4,
-										paddingHorizontal: 8,
-										paddingVertical: 2,
-										borderRadius: 6,
-										backgroundColor: colors.warningLight,
-									}}
-								>
-									<Ionicons name="flash" size={10} color={colors.warning} />
-									<Text
-										size="xs"
-										weight="bold"
-										style={{ color: colors.warning, letterSpacing: 0.5 }}
-									>
-										READY → {STAGE_LABEL[nextStage].toUpperCase()}
-									</Text>
-								</View>
-							) : null}
 						</View>
 						<View
 							style={{
@@ -617,6 +595,7 @@ function BatchCard({
 								alignItems: "center",
 								gap: spacing.xs,
 								marginTop: 6,
+								flexWrap: "wrap",
 							}}
 						>
 							{setup && setupColor ? (
@@ -644,52 +623,94 @@ function BatchCard({
 								Day {day}
 							</Text>
 						</View>
-					</View>
-					<View
-						style={{
-							flexDirection: "row",
-							alignItems: "center",
-							gap: 4,
-							flexShrink: 0,
-						}}
-					>
-						{nextStage && daysToNextPhase !== null
-							? (() => {
-									const stageFg = tint(STAGE_COLORS[nextStage].fg);
-									return (
-										<View
-											style={{
-												alignItems: "center",
-												paddingHorizontal: 10,
-												paddingVertical: 4,
-												borderRadius: 999,
-												backgroundColor: STAGE_COLORS[nextStage].bg,
-												borderWidth: 1,
-												borderColor: `${stageFg}40`,
-												maxWidth: 110,
-											}}
-										>
-											<Text
-												size="xs"
-												weight="bold"
-												numberOfLines={1}
-												style={{ color: stageFg, letterSpacing: 0.3 }}
+						<View
+							style={{
+								flexDirection: "row",
+								alignItems: "center",
+								gap: spacing.xxs,
+								marginTop: 6,
+								flexWrap: "wrap",
+							}}
+						>
+							{nextStage && daysToNextPhase !== null
+								? (() => {
+										const stageFg = tint(STAGE_COLORS[nextStage].fg);
+										return (
+											<View
+												style={{
+													flexDirection: "row",
+													alignItems: "center",
+													gap: 4,
+													paddingHorizontal: 10,
+													paddingVertical: 3,
+													borderRadius: 999,
+													backgroundColor: STAGE_COLORS[nextStage].bg,
+													borderWidth: 1,
+													borderColor: `${stageFg}40`,
+													flexShrink: 1,
+													minWidth: 0,
+												}}
 											>
-												{STAGE_LABEL[nextStage].toUpperCase()}
-											</Text>
-											<Text size="xs" weight="bold" style={{ color: stageFg }}>
-												~{daysToNextPhase}d
-											</Text>
-										</View>
-									);
-								})()
-							: null}
-						<Ionicons
-							name={isExpanded ? "chevron-up" : "chevron-down"}
-							size={14}
-							color={colors.textMuted}
-						/>
+												<Text
+													size="xs"
+													weight="bold"
+													numberOfLines={1}
+													style={{
+														color: stageFg,
+														letterSpacing: 0.3,
+														flexShrink: 1,
+													}}
+												>
+													{STAGE_LABEL[nextStage].toUpperCase()}
+												</Text>
+												<Text
+													size="xs"
+													weight="bold"
+													style={{ color: stageFg, flexShrink: 0 }}
+												>
+													·~{daysToNextPhase}d
+												</Text>
+											</View>
+										);
+									})()
+								: null}
+							{readyToAdvance && nextStage ? (
+								<View
+									style={{
+										flexDirection: "row",
+										alignItems: "center",
+										gap: 4,
+										paddingHorizontal: 8,
+										paddingVertical: 3,
+										borderRadius: 999,
+										backgroundColor: colors.warningLight,
+										flexShrink: 1,
+										minWidth: 0,
+									}}
+								>
+									<Ionicons name="flash" size={10} color={colors.warning} />
+									<Text
+										size="xs"
+										weight="bold"
+										numberOfLines={1}
+										style={{
+											color: colors.warning,
+											letterSpacing: 0.5,
+											flexShrink: 1,
+										}}
+									>
+										READY → {STAGE_LABEL[nextStage].toUpperCase()}
+									</Text>
+								</View>
+							) : null}
+						</View>
 					</View>
+					<Ionicons
+						name={isExpanded ? "chevron-up" : "chevron-down"}
+						size={16}
+						color={colors.textMuted}
+						style={{ marginTop: 4, flexShrink: 0 }}
+					/>
 				</View>
 
 				{stateCounts.length > 0 ? (
