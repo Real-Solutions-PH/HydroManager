@@ -2,16 +2,30 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { useMemo } from "react";
-import { Alert, Image, Platform, Pressable, ScrollView, View } from "react-native";
+import {
+	Alert,
+	Image,
+	Platform,
+	Pressable,
+	ScrollView,
+	View,
+} from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
 import { spacing, systemTypes, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
-import { type Batch, batchesApi, setupsApi } from "@/lib/hydro-api";
+import { useCustomToast } from "@/hooks/useCustomToast";
+import { type Batch, batchesApi, type Setup, setupsApi } from "@/lib/hydro-api";
+import {
+	patchEntity,
+	removeEntity,
+	rollback,
+	snapshotAndCancel,
+} from "@/lib/optimistic";
 import { QK } from "@/lib/query-config";
-import { formatDateOnly } from "@/lib/utils";
+import { formatDateOnly, handleError } from "@/lib/utils";
 
 const BATCH_PALETTE = [
 	"#34D399",
@@ -29,6 +43,7 @@ export default function SetupDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const setupId = id ?? "";
 	const qc = useQueryClient();
+	const toast = useCustomToast();
 	const goBack = useBack();
 
 	const setup = useQuery({
@@ -45,17 +60,76 @@ export default function SetupDetailScreen() {
 
 	const archive = useMutation({
 		mutationFn: () => setupsApi.archive(setupId),
-		onSuccess: () => {
+		onMutate: async () => {
+			const snapshot = await snapshotAndCancel(qc, [
+				QK.setups.detail(setupId),
+				QK.setups.lists(),
+			]);
+			const nowIso = new Date().toISOString();
+			qc.setQueryData(QK.setups.detail(setupId), (old: unknown) =>
+				patchEntity<Setup>(old, setupId, { archived_at: nowIso }),
+			);
+			qc.setQueriesData({ queryKey: QK.setups.lists() }, (old: unknown) =>
+				patchEntity<Setup>(old, setupId, { archived_at: nowIso }),
+			);
+			return { snapshot };
+		},
+		onError: (err, _vars, ctx) => {
+			if (ctx) rollback(qc, ctx.snapshot);
+			toast.errorWithRetry(`Couldn't archive setup: ${handleError(err)}`, () =>
+				archive.mutate(),
+			);
+		},
+		onSettled: () => {
+			qc.invalidateQueries({ queryKey: QK.setups.all });
+		},
+	});
+	const unarchive = useMutation({
+		mutationFn: () => setupsApi.unarchive(setupId),
+		onMutate: async () => {
+			const snapshot = await snapshotAndCancel(qc, [
+				QK.setups.detail(setupId),
+				QK.setups.lists(),
+			]);
+			qc.setQueryData(QK.setups.detail(setupId), (old: unknown) =>
+				patchEntity<Setup>(old, setupId, { archived_at: null }),
+			);
+			qc.setQueriesData({ queryKey: QK.setups.lists() }, (old: unknown) =>
+				patchEntity<Setup>(old, setupId, { archived_at: null }),
+			);
+			return { snapshot };
+		},
+		onError: (err, _vars, ctx) => {
+			if (ctx) rollback(qc, ctx.snapshot);
+			toast.errorWithRetry(
+				`Couldn't unarchive setup: ${handleError(err)}`,
+				() => unarchive.mutate(),
+			);
+		},
+		onSettled: () => {
 			qc.invalidateQueries({ queryKey: QK.setups.all });
 		},
 	});
 	const del = useMutation({
 		mutationFn: () => setupsApi.delete(setupId),
-		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: QK.setups.all });
+		onMutate: async () => {
+			const snapshot = await snapshotAndCancel(qc, [
+				QK.setups.lists(),
+				QK.setups.detail(setupId),
+			]);
+			qc.setQueriesData({ queryKey: QK.setups.lists() }, (old: unknown) =>
+				removeEntity(old, setupId),
+			);
 			router.back();
+			return { snapshot };
 		},
-		onError: (e: Error) => Alert.alert("Delete failed", e.message),
+		onError: (err, _vars, ctx) => {
+			if (ctx) rollback(qc, ctx.snapshot);
+			toast.error(`Couldn't delete setup: ${handleError(err)}`);
+		},
+		onSettled: () => {
+			qc.invalidateQueries({ queryKey: QK.setups.all });
+		},
 	});
 
 	const batchColor = useMemo(() => {
@@ -111,7 +185,10 @@ export default function SetupDetailScreen() {
 
 	function confirmArchive() {
 		if (Platform.OS === "web") {
-			if (typeof window !== "undefined" && window.confirm("Archive this setup?")) {
+			if (
+				typeof window !== "undefined" &&
+				window.confirm("Archive this setup?")
+			) {
 				archive.mutate();
 			}
 			return;
@@ -119,6 +196,21 @@ export default function SetupDetailScreen() {
 		Alert.alert("Archive", "Archive this setup?", [
 			{ text: "Cancel", style: "cancel" },
 			{ text: "Archive", onPress: () => archive.mutate() },
+		]);
+	}
+	function confirmUnarchive() {
+		if (Platform.OS === "web") {
+			if (
+				typeof window !== "undefined" &&
+				window.confirm("Unarchive this setup?")
+			) {
+				unarchive.mutate();
+			}
+			return;
+		}
+		Alert.alert("Unarchive", "Unarchive this setup?", [
+			{ text: "Cancel", style: "cancel" },
+			{ text: "Unarchive", onPress: () => unarchive.mutate() },
 		]);
 	}
 	function confirmDelete() {
@@ -197,8 +289,8 @@ export default function SetupDetailScreen() {
 					</Link>
 					<Pressable
 						hitSlop={8}
-						onPress={confirmArchive}
-						disabled={archived || archive.isPending}
+						onPress={archived ? confirmUnarchive : confirmArchive}
+						disabled={archived ? unarchive.isPending : archive.isPending}
 						style={{
 							width: 36,
 							height: 36,
@@ -207,10 +299,13 @@ export default function SetupDetailScreen() {
 							borderColor: colors.border,
 							alignItems: "center",
 							justifyContent: "center",
-							opacity: archived ? 0.4 : 1,
 						}}
 					>
-						<Ionicons name="archive-outline" size={18} color={colors.text} />
+						<Ionicons
+							name={archived ? "arrow-undo-outline" : "archive-outline"}
+							size={18}
+							color={colors.text}
+						/>
 					</Pressable>
 					<Pressable
 						hitSlop={8}

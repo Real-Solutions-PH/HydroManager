@@ -9,6 +9,7 @@ from sqlmodel import SQLModel
 class ActivityType(str, Enum):
     setup_created = "setup_created"
     setup_archived = "setup_archived"
+    setup_unarchived = "setup_unarchived"
     setup_deleted = "setup_deleted"
     batch_created = "batch_created"
     batch_archived = "batch_archived"

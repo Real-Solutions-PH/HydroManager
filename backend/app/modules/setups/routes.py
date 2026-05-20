@@ -109,6 +109,15 @@ def archive_setup(
     )
 
 
+@router.post("/{id}/unarchive", response_model=SetupPublic)
+def unarchive_setup(
+    session: SessionDep, current_user: CurrentUser, id: uuid.UUID
+) -> Any:
+    return setups_service.unarchive_setup(
+        session=session, current_user=current_user, setup_id=id
+    )
+
+
 @router.delete("/{id}")
 def delete_setup(
     session: SessionDep, current_user: CurrentUser, id: uuid.UUID

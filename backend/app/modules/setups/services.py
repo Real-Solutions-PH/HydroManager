@@ -201,6 +201,31 @@ def archive_setup(
     return updated
 
 
+def unarchive_setup(
+    *, session: Session, current_user: User, setup_id: uuid.UUID
+) -> Setup:
+    setup = get_setup(
+        session=session, current_user=current_user, setup_id=setup_id
+    )
+    if setup.archived_at is None:
+        return setup
+    updated = setups_repo.update(
+        session=session,
+        setup=setup,
+        update_data={"archived_at": None},
+    )
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.setup_unarchived,
+        target_type=TargetType.setup,
+        target_id=updated.id,
+        summary=f"Setup {updated.name} unarchived",
+        commit=True,
+    )
+    return updated
+
+
 def delete_setup(
     *, session: Session, current_user: User, setup_id: uuid.UUID
 ) -> None:

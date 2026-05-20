@@ -328,6 +328,10 @@ export const setupsApi = {
 		const r = await api.post(`${V1}/setups/${id}/archive`);
 		return r.data;
 	},
+	async unarchive(id: string): Promise<Setup> {
+		const r = await api.post(`${V1}/setups/${id}/unarchive`);
+		return r.data;
+	},
 	async delete(id: string): Promise<void> {
 		await api.delete(`${V1}/setups/${id}`);
 	},
@@ -824,6 +828,7 @@ export const checklistApi = {
 export type ActivityActionType =
 	| "setup_created"
 	| "setup_archived"
+	| "setup_unarchived"
 	| "setup_deleted"
 	| "batch_created"
 	| "batch_archived"
