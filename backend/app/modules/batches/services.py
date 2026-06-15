@@ -87,6 +87,37 @@ def _free_slots_for_batch(*, session: Session, batch_id: uuid.UUID) -> None:
         session.add(slot)
 
 
+_TERMINAL_MILESTONES = {Milestone.Failed, Milestone.Harvested}
+
+
+def _maybe_auto_archive(*, session: Session, current_user: User, batch: Batch) -> bool:
+    """Archive batch + free its slots once no living units remain.
+
+    A batch is done when every unit has reached a terminal milestone
+    (Failed or Harvested) — covers fully failed, fully harvested, and mixed.
+    Idempotent (guards on archived_at) and one-way. Returns True if archived.
+    """
+    if batch.archived_at is not None:
+        return False
+    rows = batches_repo.list_state_counts(session=session, batch_id=batch.id)
+    total = sum(r.count for r in rows)
+    living = sum(r.count for r in rows if r.milestone_code not in _TERMINAL_MILESTONES)
+    if total <= 0 or living > 0:
+        return False
+    _free_slots_for_batch(session=session, batch_id=batch.id)
+    batch.archived_at = datetime.now(timezone.utc)
+    session.add(batch)
+    activity_service.record(
+        session=session,
+        user_id=current_user.id,
+        action_type=ActivityType.batch_archived,
+        target_type=TargetType.batch,
+        target_id=batch.id,
+        summary=f"Batch {batch.variety_name} completed — auto-archived",
+    )
+    return True
+
+
 def _consume_seed_for_batch(
     *,
     session: Session,
@@ -426,6 +457,7 @@ def record_transition(
             "count": data.count,
         },
     )
+    _maybe_auto_archive(session=session, current_user=current_user, batch=batch)
     session.commit()
     session.refresh(transition)
     return transition
@@ -496,6 +528,7 @@ def record_harvest(
             "weight_grams": data.weight_grams,
         },
     )
+    _maybe_auto_archive(session=session, current_user=current_user, batch=batch)
     session.commit()
     session.refresh(harvest)
     return harvest
@@ -506,9 +539,7 @@ def list_harvests(*, session: Session, current_user: User, batch_id: uuid.UUID):
     return batches_repo.list_harvests(session=session, batch_id=batch.id)
 
 
-def compute_seed_cost(
-    *, session: Session, batch_id: uuid.UUID
-) -> float | None:
+def compute_seed_cost(*, session: Session, batch_id: uuid.UUID) -> float | None:
     from app.modules.inventory.models import InventoryMovement
     from app.modules.inventory.schema import MovementType
 

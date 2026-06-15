@@ -28,6 +28,7 @@ import {
 } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
+import { confirmDialog } from "@/lib/dialog";
 import {
 	type Batch,
 	type BatchDetail,
@@ -83,6 +84,12 @@ const MILESTONE_META: Record<
 	Failed: { icon: "close-circle" },
 };
 
+function completeMessage(slots: number | null | undefined): string {
+	return slots
+		? `This frees ${slots} slot${slots === 1 ? "" : "s"} and archives the batch.`
+		: "This archives the batch and frees its slots.";
+}
+
 export default function BatchDetailScreen() {
 	const colors = useThemeColors();
 	const { id } = useLocalSearchParams<{ id: string }>();
@@ -110,6 +117,7 @@ export default function BatchDetailScreen() {
 			to: Milestone;
 			count: number;
 			notes: string | null;
+			complete?: boolean;
 		}) =>
 			batchesApi.transition(batchId, {
 				from_milestone: vars.from,
@@ -171,6 +179,12 @@ export default function BatchDetailScreen() {
 			setNotes("");
 			return { snapshot };
 		},
+		onSuccess: (_data, vars) => {
+			if (vars.complete) {
+				toast.success("Batch complete — slots freed");
+				router.replace("/seeds");
+			}
+		},
 		onError: (err, vars, ctx) => {
 			if (ctx) rollback(qc, ctx.snapshot);
 			toast.errorWithRetry(`Couldn't move phase: ${handleError(err)}`, () =>
@@ -179,6 +193,7 @@ export default function BatchDetailScreen() {
 		},
 		onSettled: () => {
 			qc.invalidateQueries({ queryKey: QK.batches.all });
+			qc.invalidateQueries({ queryKey: QK.setups.all });
 		},
 	});
 
@@ -461,8 +476,15 @@ export default function BatchDetailScreen() {
 	};
 
 	const harvest = useMutation({
-		mutationFn: (vars: { weight_grams: number; count: number }) =>
-			batchesApi.harvest(batchId, vars),
+		mutationFn: (vars: {
+			weight_grams: number;
+			count: number;
+			complete?: boolean;
+		}) =>
+			batchesApi.harvest(batchId, {
+				weight_grams: vars.weight_grams,
+				count: vars.count,
+			}),
 		onMutate: async (vars) => {
 			const snapshot = await snapshotAndCancel(qc, [
 				QK.batches.detail(batchId),
@@ -488,8 +510,13 @@ export default function BatchDetailScreen() {
 			setHc("");
 			return { snapshot };
 		},
-		onSuccess: () => {
-			toast.success("Harvest recorded.");
+		onSuccess: (_data, vars) => {
+			if (vars.complete) {
+				toast.success("Batch complete — slots freed");
+				router.replace("/seeds");
+			} else {
+				toast.success("Harvest recorded.");
+			}
 		},
 		onError: (err, vars, ctx) => {
 			if (ctx) rollback(qc, ctx.snapshot);
@@ -500,6 +527,7 @@ export default function BatchDetailScreen() {
 		onSettled: () => {
 			qc.invalidateQueries({ queryKey: QK.batches.all });
 			qc.invalidateQueries({ queryKey: QK.produce.all });
+			qc.invalidateQueries({ queryKey: QK.setups.all });
 		},
 	});
 
@@ -545,6 +573,8 @@ export default function BatchDetailScreen() {
 		0,
 	);
 	const failedCount = byMs.get("Failed") ?? 0;
+	const harvestedCount = byMs.get("Harvested") ?? 0;
+	const livingNow = totalActive - harvestedCount;
 	const cntNum = Number.parseInt(cnt, 10) || 0;
 	const validTransition = cntNum > 0 && cntNum <= available && from !== to;
 	const sourcePhases = milestoneOrder.filter((m) => (byMs.get(m) ?? 0) > 0);
@@ -1473,14 +1503,34 @@ export default function BatchDetailScreen() {
 								variant={to === "Failed" ? "danger" : "solid"}
 								isLoading={transition.isPending}
 								isDisabled={!validTransition}
-								onPress={() =>
-									transition.mutate({
-										from,
-										to,
-										count: cntNum,
-										notes: notes.trim() || null,
-									})
-								}
+								onPress={() => {
+									const isTerminal = (m: Milestone) =>
+										m === "Failed" || m === "Harvested";
+									const predicted =
+										livingNow -
+										(isTerminal(to) ? cntNum : 0) +
+										(isTerminal(from) ? cntNum : 0);
+									const willComplete = livingNow > 0 && predicted <= 0;
+									const run = () =>
+										transition.mutate({
+											from,
+											to,
+											count: cntNum,
+											notes: notes.trim() || null,
+											complete: willComplete,
+										});
+									if (willComplete) {
+										confirmDialog({
+											title: "Complete batch?",
+											message: completeMessage(b.slots_used),
+											confirmLabel: "Complete",
+											destructive: true,
+											onConfirm: run,
+										});
+									} else {
+										run();
+									}
+								}}
 							/>
 						</>
 					)}
@@ -1608,12 +1658,27 @@ export default function BatchDetailScreen() {
 								isDisabled={
 									Number.parseFloat(hw) <= 0 || Number.parseInt(hc, 10) <= 0
 								}
-								onPress={() =>
-									harvest.mutate({
-										weight_grams: Number.parseFloat(hw) || 0,
-										count: Number.parseInt(hc, 10) || 0,
-									})
-								}
+								onPress={() => {
+									const c = Number.parseInt(hc, 10) || 0;
+									const willComplete = livingNow > 0 && livingNow - c <= 0;
+									const run = () =>
+										harvest.mutate({
+											weight_grams: Number.parseFloat(hw) || 0,
+											count: c,
+											complete: willComplete,
+										});
+									if (willComplete) {
+										confirmDialog({
+											title: "Complete batch?",
+											message: completeMessage(b.slots_used),
+											confirmLabel: "Complete",
+											destructive: true,
+											onConfirm: run,
+										});
+									} else {
+										run();
+									}
+								}}
 							/>
 						</>
 					)}
