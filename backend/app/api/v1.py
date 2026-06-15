@@ -16,6 +16,7 @@ from app.modules.produce.main import router as produce_router
 from app.modules.sales.main import router as sales_router
 from app.modules.setups.main import router as setups_router
 from app.modules.system.main import router as system_router
+from app.modules.tasks.main import router as tasks_router
 
 v1_router = APIRouter()
 v1_router.include_router(iam_router)
@@ -34,3 +35,4 @@ v1_router.include_router(hydro_ai_router)
 v1_router.include_router(hydro_common_router)
 v1_router.include_router(paymongo_router)
 v1_router.include_router(activity_router)
+v1_router.include_router(tasks_router)

@@ -25,3 +25,4 @@ from app.modules.library_pests.models import LibraryPest  # noqa: F401
 from app.modules.produce.models import Produce, ProduceMovement  # noqa: F401
 from app.modules.sales.models import OverheadCost, Sale, SaleItem  # noqa: F401
 from app.modules.setups.models import Setup, SetupPhoto, SetupSlot  # noqa: F401
+from app.modules.tasks.models import Task  # noqa: F401
