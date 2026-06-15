@@ -9,6 +9,7 @@ import { spacing, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { tasksApi } from "@/lib/hydro-api";
+import { ensureNotificationPermission } from "@/lib/notifications";
 import { QK } from "@/lib/query-config";
 import { handleError } from "@/lib/utils";
 
@@ -64,7 +65,10 @@ export default function NewTaskScreen() {
 				<TaskForm
 					submitLabel="Create Task"
 					isSaving={create.isPending}
-					onSubmit={(v) => create.mutate(v)}
+					onSubmit={(v) => {
+						if (v.due_at) ensureNotificationPermission();
+						create.mutate(v);
+					}}
 				/>
 			</ScrollView>
 		</GradientBackground>

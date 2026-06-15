@@ -10,6 +10,7 @@ import { useBack } from "@/hooks/use-back";
 import { useCustomToast } from "@/hooks/useCustomToast";
 import { confirmDialog } from "@/lib/dialog";
 import { tasksApi } from "@/lib/hydro-api";
+import { ensureNotificationPermission } from "@/lib/notifications";
 import { QK, STALE } from "@/lib/query-config";
 import { handleError } from "@/lib/utils";
 
@@ -121,7 +122,10 @@ export default function EditTaskScreen() {
 						}}
 						submitLabel="Save Changes"
 						isSaving={update.isPending}
-						onSubmit={(v) => update.mutate(v)}
+						onSubmit={(v) => {
+							if (v.due_at) ensureNotificationPermission();
+							update.mutate(v);
+						}}
 					/>
 				)}
 			</ScrollView>

@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { priorityColor } from "@/components/tasks/task-form";
 import { Card } from "@/components/ui/card";
@@ -17,6 +17,7 @@ import {
 	type TaskPriority,
 	tasksApi,
 } from "@/lib/hydro-api";
+import { syncTaskReminders } from "@/lib/notifications";
 import { rollback, snapshotAndCancel } from "@/lib/optimistic";
 import { QK, STALE } from "@/lib/query-config";
 import { handleError } from "@/lib/utils";
@@ -75,6 +76,11 @@ export default function TasksScreen() {
 		staleTime: STALE.tasks,
 	});
 	const auto = useAutoChecklist();
+
+	// Keep local reminders in sync with the task list (no-op on web).
+	useEffect(() => {
+		if (tasksQ.data) syncTaskReminders(tasksQ.data.data);
+	}, [tasksQ.data]);
 
 	const toggleComplete = useMutation({
 		mutationFn: (t: Task) =>
