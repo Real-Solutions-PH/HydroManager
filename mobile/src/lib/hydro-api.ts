@@ -416,6 +416,70 @@ export const batchesApi = {
 	},
 };
 
+export type TaskPriority = "high" | "medium" | "low" | "none";
+export type RecurFreq = "none" | "daily" | "weekly" | "monthly";
+
+export interface Task {
+	id: string;
+	owner_id: string;
+	title: string;
+	body: string | null;
+	priority: TaskPriority;
+	due_at: string | null;
+	recur_freq: RecurFreq;
+	recur_interval: number;
+	completed_at: string | null;
+	last_completed_at: string | null;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface TaskCreateInput {
+	title: string;
+	body?: string | null;
+	priority?: TaskPriority;
+	due_at?: string | null;
+	recur_freq?: RecurFreq;
+	recur_interval?: number;
+}
+
+export type TaskUpdateInput = Partial<TaskCreateInput>;
+
+export const tasksApi = {
+	async list(params?: {
+		include_completed?: boolean;
+		due_before?: string;
+		skip?: number;
+		limit?: number;
+	}): Promise<Paged<Task>> {
+		const r = await api.get(`${V1}/tasks/`, { params });
+		return r.data;
+	},
+	async get(id: string): Promise<Task> {
+		const r = await api.get(`${V1}/tasks/${id}`);
+		return r.data;
+	},
+	async create(data: TaskCreateInput): Promise<Task> {
+		const r = await api.post(`${V1}/tasks/`, data);
+		return r.data;
+	},
+	async update(id: string, data: TaskUpdateInput): Promise<Task> {
+		const r = await api.patch(`${V1}/tasks/${id}`, data);
+		return r.data;
+	},
+	async complete(id: string): Promise<Task> {
+		const r = await api.post(`${V1}/tasks/${id}/complete`);
+		return r.data;
+	},
+	async uncomplete(id: string): Promise<Task> {
+		const r = await api.post(`${V1}/tasks/${id}/uncomplete`);
+		return r.data;
+	},
+	async delete(id: string): Promise<void> {
+		await api.delete(`${V1}/tasks/${id}`);
+	},
+};
+
 export const inventoryApi = {
 	async list(params?: {
 		category?: InventoryCategory;
@@ -452,7 +516,12 @@ export const inventoryApi = {
 	},
 	async restock(
 		id: string,
-		data: { quantity: number; cost_total?: number | null; occurred_at?: string; notes?: string },
+		data: {
+			quantity: number;
+			cost_total?: number | null;
+			occurred_at?: string;
+			notes?: string;
+		},
 	): Promise<unknown> {
 		const r = await api.post(`${V1}/inventory/items/${id}/movements`, {
 			movement_type: "restock",
@@ -493,16 +562,18 @@ export const inventoryApi = {
 	async movements(
 		id: string,
 		limit = 50,
-	): Promise<Array<{
-		id: string;
-		item_id: string;
-		movement_type: "restock" | "consume" | "adjust";
-		quantity: number;
-		cost_total: number | null;
-		related_batch_id: string | null;
-		occurred_at: string;
-		notes: string | null;
-	}>> {
+	): Promise<
+		Array<{
+			id: string;
+			item_id: string;
+			movement_type: "restock" | "consume" | "adjust";
+			quantity: number;
+			cost_total: number | null;
+			related_batch_id: string | null;
+			occurred_at: string;
+			notes: string | null;
+		}>
+	> {
 		const r = await api.get(`${V1}/inventory/items/${id}/movements`, {
 			params: { limit },
 		});
