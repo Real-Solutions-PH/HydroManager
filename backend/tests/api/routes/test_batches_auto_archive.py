@@ -228,3 +228,93 @@ def test_backfill_skips_living_batch(client: TestClient, db: Session) -> None:
 
     assert _get_batch(client, headers, bid)["archived_at"] is None
     assert _slots_for_batch(client, headers, setup_id, bid)
+
+
+def _set_counts(db: Session, batch_id: str, counts: dict) -> None:
+    """Overwrite a batch's state counts directly (bypassing the API path)."""
+    rows = db.exec(
+        select(BatchStateCount).where(BatchStateCount.batch_id == uuid.UUID(batch_id))
+    ).all()
+    for row in rows:
+        db.delete(row)
+    db.commit()
+    for milestone, count in counts.items():
+        db.add(
+            BatchStateCount(
+                batch_id=uuid.UUID(batch_id), milestone_code=milestone, count=count
+            )
+        )
+    db.commit()
+
+
+def test_partial_fail_frees_proportional_slots(client: TestClient, db: Session) -> None:
+    headers = _fresh_headers(client, db)
+    setup_id = _make_setup(client, headers)
+    item_id = _make_seed_item(client, headers)
+    # 4 slots x 2 seeds = 8 units
+    bid = _make_batch(
+        client, headers, setup_id, item_id, slots_used=4, seeds_per_slot=2
+    )["id"]
+    assert len(_slots_for_batch(client, headers, setup_id, bid)) == 4
+
+    _transition(client, headers, bid, "Sowed", "Failed", 4)  # living 4
+
+    b = _get_batch(client, headers, bid)
+    assert b["archived_at"] is None
+    # ceil(4 living / 2 per slot) = 2 slots kept
+    assert len(_slots_for_batch(client, headers, setup_id, bid)) == 2
+    assert b["slots_used"] == 2
+
+
+def test_partial_harvest_frees_proportional_slots(
+    client: TestClient, db: Session
+) -> None:
+    headers = _fresh_headers(client, db)
+    setup_id = _make_setup(client, headers)
+    item_id = _make_seed_item(client, headers)
+    bid = _make_batch(
+        client, headers, setup_id, item_id, slots_used=4, seeds_per_slot=2
+    )["id"]
+
+    _transition(client, headers, bid, "Sowed", "HarvestReady", 8)
+    _harvest(client, headers, bid, 4)  # 4 harvested, 4 still HarvestReady (living)
+
+    b = _get_batch(client, headers, bid)
+    assert b["archived_at"] is None
+    assert len(_slots_for_batch(client, headers, setup_id, bid)) == 2
+
+
+def test_ceil_rounding_keeps_partial_slot(client: TestClient, db: Session) -> None:
+    headers = _fresh_headers(client, db)
+    setup_id = _make_setup(client, headers)
+    item_id = _make_seed_item(client, headers)
+    # 3 slots x 3 seeds = 9 units
+    bid = _make_batch(
+        client, headers, setup_id, item_id, slots_used=3, seeds_per_slot=3
+    )["id"]
+
+    _transition(client, headers, bid, "Sowed", "Failed", 7)  # living 2
+
+    # ceil(2 / 3) = 1 slot kept
+    assert len(_slots_for_batch(client, headers, setup_id, bid)) == 1
+    assert _get_batch(client, headers, bid)["archived_at"] is None
+
+
+def test_backfill_reconciles_partial_slots(client: TestClient, db: Session) -> None:
+    headers = _fresh_headers(client, db)
+    setup_id = _make_setup(client, headers)
+    item_id = _make_seed_item(client, headers)
+    bid = _make_batch(
+        client, headers, setup_id, item_id, slots_used=4, seeds_per_slot=2
+    )["id"]
+    # simulate a pre-existing partial: 4 failed, 4 living — without the API path
+    _set_counts(db, bid, {Milestone.Sowed: 4, Milestone.Failed: 4})
+    assert len(_slots_for_batch(client, headers, setup_id, bid)) == 4
+
+    changed = batch_services.reconcile_active_batch_slots(session=db)
+    assert changed >= 1
+
+    b = _get_batch(client, headers, bid)
+    assert b["archived_at"] is None
+    assert len(_slots_for_batch(client, headers, setup_id, bid)) == 2
+    assert b["slots_used"] == 2
