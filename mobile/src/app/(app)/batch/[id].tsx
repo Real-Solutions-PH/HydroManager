@@ -278,8 +278,8 @@ export default function BatchDetailScreen() {
 	const cropCategory = resolvedCropGuide?.category ?? null;
 	const cropImage = resolvedCropGuide?.image_url ?? null;
 	const milestoneOrder = useMemo(
-		() => milestonesForCategory(cropCategory),
-		[cropCategory],
+		() => milestonesForCategory(cropCategory, resolvedCropGuide?.phases),
+		[cropCategory, resolvedCropGuide?.phases],
 	);
 	useEffect(() => {
 		if (to === "Failed") return;
