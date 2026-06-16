@@ -7,9 +7,12 @@ Each test uses a fresh user for isolation (free tier: 1 setup, 3 active batches)
 import uuid
 
 from fastapi.testclient import TestClient
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.core.config import settings
+from app.modules.batches import services as batch_services
+from app.modules.batches.models import BatchStateCount
+from app.modules.batches.schema import Milestone
 from tests.utils.user import authentication_token_from_email
 from tests.utils.utils import random_email
 
@@ -178,3 +181,50 @@ def test_partial_terminal_not_archived(client: TestClient, db: Session) -> None:
     assert _get_batch(client, headers, bid)["archived_at"] is None
     assert _slots_for_batch(client, headers, setup_id, bid)  # slots still held
     assert bid in _list_batch_ids(client, headers, setup_id)
+
+
+def _force_all_failed(db: Session, batch_id: str) -> None:
+    """Mark every state-count of a batch as Failed without the API path.
+
+    Simulates a batch that became fully terminal *before* auto-archive existed.
+    """
+    rows = db.exec(
+        select(BatchStateCount).where(BatchStateCount.batch_id == uuid.UUID(batch_id))
+    ).all()
+    for row in rows:
+        row.milestone_code = Milestone.Failed
+        db.add(row)
+    db.commit()
+
+
+def test_backfill_archives_preexisting_terminal_batch(
+    client: TestClient, db: Session
+) -> None:
+    headers = _fresh_headers(client, db)
+    setup_id = _make_setup(client, headers)
+    item_id = _make_seed_item(client, headers)
+    bid = _make_batch(client, headers, setup_id, item_id)["id"]
+
+    _force_all_failed(db, bid)
+    # pre-existing terminal batch is still active + still holding slots
+    assert _get_batch(client, headers, bid)["archived_at"] is None
+    assert _slots_for_batch(client, headers, setup_id, bid)
+
+    archived = batch_services.archive_terminal_batches(session=db)
+    assert archived >= 1
+
+    assert _get_batch(client, headers, bid)["archived_at"] is not None
+    assert _slots_for_batch(client, headers, setup_id, bid) == []
+    assert bid not in _list_batch_ids(client, headers, setup_id)
+
+
+def test_backfill_skips_living_batch(client: TestClient, db: Session) -> None:
+    headers = _fresh_headers(client, db)
+    setup_id = _make_setup(client, headers)
+    item_id = _make_seed_item(client, headers)
+    bid = _make_batch(client, headers, setup_id, item_id)["id"]  # all Sowed (living)
+
+    batch_services.archive_terminal_batches(session=db)
+
+    assert _get_batch(client, headers, bid)["archived_at"] is None
+    assert _slots_for_batch(client, headers, setup_id, bid)
