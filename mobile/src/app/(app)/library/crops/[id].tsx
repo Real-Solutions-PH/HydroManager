@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Image, Pressable, ScrollView, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { Text } from "@/components/ui/text";
 import { radii, spacing, systemTypes, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
@@ -54,6 +55,7 @@ export default function CropDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const _router = useRouter();
 	const goBack = useBack();
+	const clearance = useTabBarClearance();
 	const { data: crop, isLoading } = useCrop(id);
 	const { data: statsResponse } = useCropStats();
 
@@ -61,7 +63,7 @@ export default function CropDetailScreen() {
 		<GradientBackground>
 			<ScrollView
 				contentContainerStyle={{
-					paddingBottom: spacing.jumbo * 2,
+					paddingBottom: clearance,
 				}}
 			>
 				{isLoading || !crop ? (

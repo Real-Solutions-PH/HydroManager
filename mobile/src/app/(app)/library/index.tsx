@@ -4,6 +4,7 @@ import { BookOpen, Bug, type LucideIcon, Sprout } from "lucide-react-native";
 import { Image, Pressable, ScrollView, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { Text } from "@/components/ui/text";
 import { spacing, type ThemeColors, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
@@ -48,12 +49,13 @@ function buildSections(colors: ThemeColors): Section[] {
 export default function LibraryIndex() {
 	const colors = useThemeColors();
 	const goBack = useBack();
+	const clearance = useTabBarClearance();
 	return (
 		<GradientBackground>
 			<ScrollView
 				contentContainerStyle={{
 					padding: spacing.md,
-					paddingBottom: spacing.jumbo * 2,
+					paddingBottom: clearance,
 					gap: spacing.sm,
 				}}
 			>

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Input } from "@/components/ui/input";
+import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { Text } from "@/components/ui/text";
 import { spacing, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
@@ -36,6 +37,7 @@ export default function SettingsScreen() {
 	const { logout } = useAuth();
 	const qc = useQueryClient();
 	const goBack = useBack();
+	const clearance = useTabBarClearance();
 
 	const me = useQuery({
 		queryKey: QK.me(),
@@ -98,7 +100,7 @@ export default function SettingsScreen() {
 			<ScrollView
 				contentContainerStyle={{
 					padding: spacing.md,
-					paddingBottom: 120,
+					paddingBottom: clearance,
 				}}
 			>
 				<View
