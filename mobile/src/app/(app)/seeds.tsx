@@ -20,6 +20,9 @@ import {
 	ScrollView,
 	View,
 } from "react-native";
+import { SeedBankHandle } from "@/components/seeds/seed-bank-handle";
+import { SeedBankSheet } from "@/components/seeds/seed-bank-sheet";
+import { SeedDetailSheet } from "@/components/seeds/seed-detail-sheet";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FilterChip, FilterRow } from "@/components/ui/filter-chip";
@@ -34,9 +37,6 @@ import {
 	useBadgeTextColor,
 	useThemeColors,
 } from "@/constants/theme";
-import { SeedBankHandle } from "@/components/seeds/seed-bank-handle";
-import { SeedBankSheet } from "@/components/seeds/seed-bank-sheet";
-import { SeedDetailSheet } from "@/components/seeds/seed-detail-sheet";
 import { alertDialog } from "@/lib/dialog";
 import {
 	type Batch,
@@ -45,8 +45,8 @@ import {
 	type CropGrowthStage,
 	type CropGuide,
 	cropsApi,
-	inventoryApi,
 	type InventoryItem,
+	inventoryApi,
 	MILESTONE_ORDER,
 	type Milestone,
 	type Setup,
@@ -291,8 +291,12 @@ export default function SeedsScreen() {
 	const visible = useMemo(() => {
 		const q = query.trim().toLowerCase();
 		return batches.filter((b) => {
-			if (filter === "Active" && b.archived_at) return false;
-			if (filter === "Archived" && !b.archived_at) return false;
+			// Archived (fully failed/harvested) batches only appear under "Archived".
+			if (filter === "Archived") {
+				if (!b.archived_at) return false;
+			} else if (b.archived_at) {
+				return false;
+			}
 			if (filter === "Harvest-Ready") {
 				const d = detailById.get(b.id);
 				const ready = (d?.state_counts ?? []).some(
@@ -464,7 +468,10 @@ export default function SeedsScreen() {
 				onSelect={(item) => setSelectedSeed(item)}
 				cropsByName={cropByName}
 			/>
-			<SeedDetailSheet item={selectedSeed} onClose={() => setSelectedSeed(null)} />
+			<SeedDetailSheet
+				item={selectedSeed}
+				onClose={() => setSelectedSeed(null)}
+			/>
 		</GradientBackground>
 	);
 }
@@ -567,7 +574,12 @@ function BatchCard({
 								flexWrap: "wrap",
 							}}
 						>
-							<Text size="lg" weight="bold" numberOfLines={1} style={{ flexShrink: 1 }}>
+							<Text
+								size="lg"
+								weight="bold"
+								numberOfLines={1}
+								style={{ flexShrink: 1 }}
+							>
 								{batch.variety_name}
 							</Text>
 							{showHarvestBadge ? (
@@ -619,7 +631,12 @@ function BatchCard({
 									</Text>
 								</View>
 							) : null}
-							<Text size="sm" tone="muted" numberOfLines={1} style={{ flexShrink: 0 }}>
+							<Text
+								size="sm"
+								tone="muted"
+								numberOfLines={1}
+								style={{ flexShrink: 0 }}
+							>
 								Day {day}
 							</Text>
 						</View>

@@ -4,6 +4,7 @@ import { Image, Pressable, ScrollView, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { Text } from "@/components/ui/text";
 import { spacing, type ThemeColors, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
@@ -37,6 +38,7 @@ export default function PestDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const _router = useRouter();
 	const goBack = useBack();
+	const clearance = useTabBarClearance();
 	const { data: pest, isLoading } = usePest(id);
 
 	return (
@@ -44,7 +46,7 @@ export default function PestDetailScreen() {
 			<ScrollView
 				contentContainerStyle={{
 					padding: spacing.md,
-					paddingBottom: spacing.jumbo * 2,
+					paddingBottom: clearance,
 					gap: spacing.md,
 				}}
 			>

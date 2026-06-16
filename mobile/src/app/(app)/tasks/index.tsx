@@ -6,6 +6,7 @@ import { Pressable, ScrollView, View } from "react-native";
 import { priorityColor } from "@/components/tasks/task-form";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { Text } from "@/components/ui/text";
 import { radii, spacing, useThemeColors } from "@/constants/theme";
 import { type AutoTask, useAutoChecklist } from "@/hooks/use-auto-checklist";
@@ -65,6 +66,7 @@ function formatDue(due: string): string {
 export default function TasksScreen() {
 	const colors = useThemeColors();
 	const goBack = useBack();
+	const clearance = useTabBarClearance();
 	const qc = useQueryClient();
 	const toast = useCustomToast();
 	const [view, setView] = useState<"today" | "all">("today");
@@ -161,7 +163,7 @@ export default function TasksScreen() {
 			<ScrollView
 				contentContainerStyle={{
 					padding: spacing.md,
-					paddingBottom: 120,
+					paddingBottom: clearance,
 					gap: spacing.sm,
 				}}
 			>
@@ -185,7 +187,7 @@ export default function TasksScreen() {
 				style={{
 					position: "absolute",
 					right: spacing.lg,
-					bottom: spacing.xl,
+					bottom: clearance,
 					width: 56,
 					height: 56,
 					borderRadius: 28,

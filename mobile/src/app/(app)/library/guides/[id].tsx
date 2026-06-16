@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image, Pressable, ScrollView, View } from "react-native";
 import { Badge } from "@/components/ui/badge";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { Text } from "@/components/ui/text";
 import { spacing, useThemeColors } from "@/constants/theme";
 import { useBack } from "@/hooks/use-back";
@@ -14,6 +15,7 @@ export default function GuideDetailScreen() {
 	const { id } = useLocalSearchParams<{ id: string }>();
 	const _router = useRouter();
 	const goBack = useBack();
+	const clearance = useTabBarClearance();
 	const { data: guide, isLoading } = useGuide(id);
 
 	return (
@@ -21,7 +23,7 @@ export default function GuideDetailScreen() {
 			<ScrollView
 				contentContainerStyle={{
 					padding: spacing.md,
-					paddingBottom: spacing.jumbo * 2,
+					paddingBottom: clearance,
 					gap: spacing.md,
 				}}
 			>

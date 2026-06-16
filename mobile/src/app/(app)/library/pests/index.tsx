@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
 import { spacing, type ThemeColors, useThemeColors } from "@/constants/theme";
@@ -48,6 +49,7 @@ export default function PestsListScreen() {
 	const colors = useThemeColors();
 	const _router = useRouter();
 	const goBack = useBack();
+	const clearance = useTabBarClearance();
 	const [query, setQuery] = useState("");
 	const [kind, setKind] = useState<PestKind | null>(null);
 	const pestsQ = usePests(query, kind ?? undefined);
@@ -117,7 +119,7 @@ export default function PestsListScreen() {
 				}
 				contentContainerStyle={{
 					padding: spacing.md,
-					paddingBottom: spacing.jumbo * 2,
+					paddingBottom: clearance,
 					gap: spacing.sm,
 				}}
 				ListEmptyComponent={

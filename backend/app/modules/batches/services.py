@@ -1,3 +1,4 @@
+import math
 import uuid
 from datetime import datetime, timezone
 
@@ -90,6 +91,29 @@ def _free_slots_for_batch(*, session: Session, batch_id: uuid.UUID) -> None:
 _TERMINAL_MILESTONES = {Milestone.Failed, Milestone.Harvested}
 
 
+def _living_and_total(*, session: Session, batch_id: uuid.UUID) -> tuple[int, int]:
+    rows = batches_repo.list_state_counts(session=session, batch_id=batch_id)
+    total = sum(r.count for r in rows)
+    living = sum(r.count for r in rows if r.milestone_code not in _TERMINAL_MILESTONES)
+    return living, total
+
+
+def _archive_completed_batch(
+    *, session: Session, batch: Batch, actor_id: uuid.UUID
+) -> None:
+    _free_slots_for_batch(session=session, batch_id=batch.id)
+    batch.archived_at = datetime.now(timezone.utc)
+    session.add(batch)
+    activity_service.record(
+        session=session,
+        user_id=actor_id,
+        action_type=ActivityType.batch_archived,
+        target_type=TargetType.batch,
+        target_id=batch.id,
+        summary=f"Batch {batch.variety_name} completed — auto-archived",
+    )
+
+
 def _maybe_auto_archive(*, session: Session, current_user: User, batch: Batch) -> bool:
     """Archive batch + free its slots once no living units remain.
 
@@ -99,23 +123,99 @@ def _maybe_auto_archive(*, session: Session, current_user: User, batch: Batch) -
     """
     if batch.archived_at is not None:
         return False
-    rows = batches_repo.list_state_counts(session=session, batch_id=batch.id)
-    total = sum(r.count for r in rows)
-    living = sum(r.count for r in rows if r.milestone_code not in _TERMINAL_MILESTONES)
+    living, total = _living_and_total(session=session, batch_id=batch.id)
     if total <= 0 or living > 0:
         return False
-    _free_slots_for_batch(session=session, batch_id=batch.id)
-    batch.archived_at = datetime.now(timezone.utc)
-    session.add(batch)
-    activity_service.record(
-        session=session,
-        user_id=current_user.id,
-        action_type=ActivityType.batch_archived,
-        target_type=TargetType.batch,
-        target_id=batch.id,
-        summary=f"Batch {batch.variety_name} completed — auto-archived",
-    )
+    _archive_completed_batch(session=session, batch=batch, actor_id=current_user.id)
     return True
+
+
+def _reconcile_slots(*, session: Session, batch: Batch) -> bool:
+    """Shrink a live batch's slot footprint to fit its remaining living units.
+
+    Occupied slots = ceil(living / seeds_per_slot) — a slot with several seeds
+    counts once. Frees the excess (highest position first) and updates
+    slots_used.
+
+    Assumption: with only aggregate per-milestone counts (no per-slot seed
+    tracking), survivors are treated as consolidated into the fewest slots.
+    For seeds_per_slot == 1 (one plant per slot) this is exact. For multi-seed
+    slots it assumes the grower consolidates survivors. Shrink-only: reviving a
+    terminal unit back to a living phase does not re-grow the footprint (use
+    allocate_slots for that). Full-terminal batches are handled by archive.
+    Returns True if anything changed.
+    """
+    if batch.archived_at is not None:
+        return False
+    living, _total = _living_and_total(session=session, batch_id=batch.id)
+    if living <= 0:
+        return False
+    seeds_per_slot = batch.seeds_per_slot or 1
+    required = math.ceil(living / seeds_per_slot)
+    current = session.exec(
+        select(func.count())
+        .select_from(SetupSlot)
+        .where(SetupSlot.batch_id == batch.id)
+    ).one()
+    if current <= 0 or required >= current:
+        return False
+    to_free = (
+        select(SetupSlot)
+        .where(SetupSlot.batch_id == batch.id)
+        .order_by(col(SetupSlot.position_index).desc())
+        .limit(current - required)
+    )
+    for slot in session.exec(to_free).all():
+        slot.batch_id = None
+        slot.status = SlotStatus.EMPTY
+        session.add(slot)
+    batch.slots_used = required
+    session.add(batch)
+    return True
+
+
+def reconcile_active_batch_slots(*, session: Session, commit: bool = True) -> int:
+    """Backfill: free dead-unit slots across existing batches.
+
+    Archives batches that have no living units left and shrinks the slot
+    footprint of partially failed/harvested ones. Idempotent. Returns how many
+    batches were changed.
+    """
+    rows = session.exec(select(Batch).where(Batch.archived_at.is_(None))).all()  # type: ignore
+    count = 0
+    for batch in rows:
+        living, total = _living_and_total(session=session, batch_id=batch.id)
+        if total > 0 and living == 0:
+            _archive_completed_batch(
+                session=session, batch=batch, actor_id=batch.owner_id
+            )
+            count += 1
+        elif living > 0 and _reconcile_slots(session=session, batch=batch):
+            count += 1
+    if commit:
+        session.commit()
+    return count
+
+
+def archive_terminal_batches(*, session: Session, commit: bool = True) -> int:
+    """Backfill: archive every non-archived batch with no living units left.
+
+    Brings pre-existing fully failed/harvested batches in line with the
+    auto-archive behavior (hide from list, free their setup slots). Idempotent.
+    Returns how many batches were archived.
+    """
+    rows = session.exec(select(Batch).where(Batch.archived_at.is_(None))).all()  # type: ignore
+    count = 0
+    for batch in rows:
+        living, total = _living_and_total(session=session, batch_id=batch.id)
+        if total > 0 and living == 0:
+            _archive_completed_batch(
+                session=session, batch=batch, actor_id=batch.owner_id
+            )
+            count += 1
+    if commit:
+        session.commit()
+    return count
 
 
 def _consume_seed_for_batch(
@@ -457,7 +557,8 @@ def record_transition(
             "count": data.count,
         },
     )
-    _maybe_auto_archive(session=session, current_user=current_user, batch=batch)
+    if not _maybe_auto_archive(session=session, current_user=current_user, batch=batch):
+        _reconcile_slots(session=session, batch=batch)
     session.commit()
     session.refresh(transition)
     return transition
@@ -528,7 +629,8 @@ def record_harvest(
             "weight_grams": data.weight_grams,
         },
     )
-    _maybe_auto_archive(session=session, current_user=current_user, batch=batch)
+    if not _maybe_auto_archive(session=session, current_user=current_user, batch=batch):
+        _reconcile_slots(session=session, batch=batch)
     session.commit()
     session.refresh(harvest)
     return harvest

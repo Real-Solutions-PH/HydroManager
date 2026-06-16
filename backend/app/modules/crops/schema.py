@@ -56,6 +56,11 @@ class CropGuideBase(SQLModel):
         default=None,
         sa_column=Column("growth_stages", JSONB, nullable=True),
     )
+    # Per-crop milestone override; null falls back to the category-based rule.
+    phases: list[str] | None = Field(
+        default=None,
+        sa_column=Column("phases", JSONB, nullable=True),
+    )
 
 
 class CropGuidePublic(CropGuideBase):

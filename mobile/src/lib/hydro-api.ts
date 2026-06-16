@@ -70,7 +70,12 @@ export type CropCategory = "leafy" | "herb" | "fruiting" | "other";
 
 export function milestonesForCategory(
 	category: CropCategory | null | undefined,
+	phases?: Milestone[] | null,
 ): Milestone[] {
+	// Explicit per-crop override wins; re-order canonically and drop unknowns.
+	if (phases && phases.length > 0) {
+		return MILESTONE_ORDER.filter((m) => phases.includes(m));
+	}
 	if (category === "leafy" || category === "herb") {
 		return MILESTONE_ORDER.filter((m) => m !== "Flowering" && m !== "FruitSet");
 	}
@@ -236,6 +241,8 @@ export interface CropGuide {
 	tips: string[] | null;
 	risks: CropRisk[] | null;
 	growth_stages: CropGrowthStage[] | null;
+	/** Per-crop milestone override; falls back to category rule when null. */
+	phases: Milestone[] | null;
 }
 
 export type GuideCategory =

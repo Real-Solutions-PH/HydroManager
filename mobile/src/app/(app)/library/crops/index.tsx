@@ -11,6 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
+import { useTabBarClearance } from "@/components/ui/interactive-menu";
 import { SearchBar } from "@/components/ui/search-bar";
 import { Select } from "@/components/ui/select";
 import { Text } from "@/components/ui/text";
@@ -178,6 +179,7 @@ export default function CropsListScreen() {
 	const colors = useThemeColors();
 	const _router = useRouter();
 	const goBack = useBack();
+	const clearance = useTabBarClearance();
 	const [query, setQuery] = useState("");
 	const [category, setCategory] = useState<Cat | null>(null);
 	const [envFilterOn, setEnvFilterOn] = useState(false);
@@ -348,7 +350,7 @@ export default function CropsListScreen() {
 				}
 				contentContainerStyle={{
 					padding: spacing.md,
-					paddingBottom: spacing.jumbo * 2,
+					paddingBottom: clearance,
 					gap: spacing.sm,
 				}}
 				ListEmptyComponent={

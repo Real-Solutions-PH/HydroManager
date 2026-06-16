@@ -705,6 +705,17 @@
           "Cut stems above leaf node"
         ]
       }
+    ],
+    "phases": [
+      "Sowed",
+      "Germinated",
+      "SeedLeaves",
+      "TrueLeaves",
+      "Transplanted",
+      "Vegetative",
+      "Flowering",
+      "HarvestReady",
+      "Harvested"
     ]
   },
   {
@@ -1922,6 +1933,17 @@
           "Leave base to regrow"
         ]
       }
+    ],
+    "phases": [
+      "Sowed",
+      "Germinated",
+      "SeedLeaves",
+      "TrueLeaves",
+      "Transplanted",
+      "Vegetative",
+      "Flowering",
+      "HarvestReady",
+      "Harvested"
     ]
   },
   {
@@ -2001,6 +2023,17 @@
           "Prune frequently"
         ]
       }
+    ],
+    "phases": [
+      "Sowed",
+      "Germinated",
+      "SeedLeaves",
+      "TrueLeaves",
+      "Transplanted",
+      "Vegetative",
+      "Flowering",
+      "HarvestReady",
+      "Harvested"
     ]
   },
   {
@@ -2080,6 +2113,17 @@
           "Leave 3cm stubble"
         ]
       }
+    ],
+    "phases": [
+      "Sowed",
+      "Germinated",
+      "SeedLeaves",
+      "TrueLeaves",
+      "Transplanted",
+      "Vegetative",
+      "Flowering",
+      "HarvestReady",
+      "Harvested"
     ]
   },
   {
@@ -2717,6 +2761,17 @@
           "Prune tips regularly"
         ]
       }
+    ],
+    "phases": [
+      "Sowed",
+      "Germinated",
+      "SeedLeaves",
+      "TrueLeaves",
+      "Transplanted",
+      "Vegetative",
+      "Flowering",
+      "HarvestReady",
+      "Harvested"
     ]
   },
   {
@@ -2787,6 +2842,17 @@
           "Cut leaves as needed"
         ]
       }
+    ],
+    "phases": [
+      "Sowed",
+      "Germinated",
+      "SeedLeaves",
+      "TrueLeaves",
+      "Transplanted",
+      "Vegetative",
+      "Flowering",
+      "HarvestReady",
+      "Harvested"
     ]
   },
   {
