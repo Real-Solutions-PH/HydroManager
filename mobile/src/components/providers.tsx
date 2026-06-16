@@ -10,8 +10,10 @@ import { Toaster } from "sonner-native";
 import { PwaInstallPrompt } from "@/components/pwa-install-prompt";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { initializeDatabase } from "@/lib/database";
+import { configureNotificationHandler } from "@/lib/notifications";
 
 initializeDatabase();
+configureNotificationHandler();
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
 

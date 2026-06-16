@@ -10,6 +10,7 @@ export const STALE = {
 	salesDashboard: MIN * 2,
 	produce: MIN * 5,
 	activity: 0,
+	tasks: MIN * 2,
 } as const;
 
 export interface InventoryListFilters {
@@ -29,6 +30,10 @@ export interface BatchesListFilters {
 export interface ProduceListFilters {
 	status?: string;
 	nearExpiry?: boolean;
+}
+
+export interface TasksListFilters {
+	includeCompleted?: boolean;
 }
 
 export const QK = {
@@ -66,6 +71,13 @@ export const QK = {
 			["produce", "list", filters] as const,
 		detail: (id: string) => ["produce", "detail", id] as const,
 		movements: (id: string) => ["produce", "movements", id] as const,
+	},
+	tasks: {
+		all: ["tasks"] as const,
+		lists: () => ["tasks", "list"] as const,
+		list: (filters: TasksListFilters = {}) =>
+			["tasks", "list", filters] as const,
+		detail: (id: string) => ["tasks", "detail", id] as const,
 	},
 	sales: {
 		all: ["sales"] as const,

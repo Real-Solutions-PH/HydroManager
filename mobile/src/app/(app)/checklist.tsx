@@ -1,146 +1,17 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "expo-router";
-import { useMemo, useState } from "react";
 import { FlatList, Pressable, View } from "react-native";
 import { Card } from "@/components/ui/card";
 import { GradientBackground } from "@/components/ui/gradient-background";
 import { Text } from "@/components/ui/text";
 import { spacing, useThemeColors } from "@/constants/theme";
+import { type AutoTask, useAutoChecklist } from "@/hooks/use-auto-checklist";
 import { useBack } from "@/hooks/use-back";
-import {
-	type Batch,
-	batchesApi,
-	type ChecklistTask,
-	checklistApi,
-} from "@/lib/hydro-api";
-import { QK, STALE } from "@/lib/query-config";
-import { mmkv } from "@/lib/storage";
-
-type UrgencyKey = "overdue" | "today" | "soon";
-
-interface UiTask {
-	id: string;
-	title: string;
-	detail: string;
-	urgency: UrgencyKey;
-	batchId?: string;
-}
-
-const COMPLETIONS_KEY = "hydro-checklist-completed";
-
-function todayKey(): string {
-	const d = new Date();
-	return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-}
-
-function loadCompleted(): Set<string> {
-	try {
-		const raw = mmkv.getString(COMPLETIONS_KEY);
-		if (!raw) return new Set();
-		const parsed = JSON.parse(raw) as { date: string; ids: string[] };
-		if (parsed.date !== todayKey()) return new Set();
-		return new Set(parsed.ids);
-	} catch {
-		return new Set();
-	}
-}
-
-function saveCompleted(ids: Set<string>): void {
-	mmkv.set(
-		COMPLETIONS_KEY,
-		JSON.stringify({ date: todayKey(), ids: Array.from(ids) }),
-	);
-}
-
-function deriveLocalTasks(batches: Batch[]): UiTask[] {
-	const out: UiTask[] = [];
-	const now = Date.now();
-	for (const b of batches) {
-		if (b.archived_at) continue;
-		const age = Math.floor((now - new Date(b.started_at).getTime()) / 86400000);
-		if (age >= 2) {
-			out.push({
-				id: `${b.id}-check`,
-				title: `Check germination: ${b.variety_name}`,
-				detail: `Day ${age} since sow. Log germinated count.`,
-				urgency: age > 5 ? "overdue" : "today",
-				batchId: b.id,
-			});
-		}
-		if (age >= 7 && age % 2 === 0) {
-			out.push({
-				id: `${b.id}-ph`,
-				title: `Log pH/EC reading: ${b.variety_name}`,
-				detail: "Every 2 days for active reservoir.",
-				urgency: "today",
-				batchId: b.id,
-			});
-		}
-		if (age >= 25) {
-			out.push({
-				id: `${b.id}-harvest`,
-				title: `Harvest ready? ${b.variety_name}`,
-				detail: `${age} days elapsed. Inspect for harvest signs.`,
-				urgency: "soon",
-				batchId: b.id,
-			});
-		}
-	}
-	return out;
-}
-
-function mapApiTask(t: ChecklistTask): UiTask {
-	return {
-		id: t.id,
-		title: t.title,
-		detail: t.detail,
-		urgency: t.urgency,
-		batchId: t.batch_id,
-	};
-}
-
-function orderByUrgency(tasks: UiTask[]): UiTask[] {
-	const rank: Record<UrgencyKey, number> = { overdue: 0, today: 1, soon: 2 };
-	return [...tasks].sort((a, b) => rank[a.urgency] - rank[b.urgency]);
-}
 
 export default function ChecklistScreen() {
 	const colors = useThemeColors();
 	const goBack = useBack();
-	const serverTasks = useQuery({
-		queryKey: QK.checklist(),
-		queryFn: () => checklistApi.list(),
-		retry: 0,
-		staleTime: STALE.checklist,
-	});
-	const batches = useQuery({
-		queryKey: QK.batches.list(),
-		queryFn: () => batchesApi.list(),
-		enabled: serverTasks.isError || serverTasks.data?.tasks === undefined,
-		staleTime: STALE.batches,
-	});
-
-	const tasks = useMemo(() => {
-		if (serverTasks.data?.tasks) {
-			return orderByUrgency(serverTasks.data.tasks.map(mapApiTask));
-		}
-		return orderByUrgency(deriveLocalTasks(batches.data?.data ?? []));
-	}, [serverTasks.data, batches.data]);
-
-	const [completed, setCompleted] = useState<Set<string>>(() =>
-		loadCompleted(),
-	);
-
-	function toggle(id: string) {
-		setCompleted((prev) => {
-			const next = new Set(prev);
-			if (next.has(id)) next.delete(id);
-			else next.add(id);
-			saveCompleted(next);
-			return next;
-		});
-	}
+	const { tasks, completed, toggle, hasBatches } = useAutoChecklist();
 
 	const total = tasks.length;
 	const done = tasks.filter((t) => completed.has(t.id)).length;
@@ -148,8 +19,6 @@ export default function ChecklistScreen() {
 	const overdue = openTasks.filter((t) => t.urgency === "overdue").length;
 	const today = openTasks.filter((t) => t.urgency === "today").length;
 	const soon = openTasks.filter((t) => t.urgency === "soon").length;
-
-	const hasAnyBatches = (batches.data?.data ?? []).length > 0 || total > 0;
 
 	return (
 		<GradientBackground>
@@ -165,7 +34,7 @@ export default function ChecklistScreen() {
 						<Ionicons name="arrow-back" size={24} color={colors.text} />
 					</Pressable>
 					<Text size="xxl" weight="bold">
-						Tasks
+						Daily Checklist
 					</Text>
 				</View>
 				<Text size="sm" tone="muted">
@@ -218,7 +87,7 @@ export default function ChecklistScreen() {
 				</Card>
 			</View>
 
-			{!hasAnyBatches ? (
+			{!hasBatches ? (
 				<View
 					style={{
 						flex: 1,
@@ -238,21 +107,6 @@ export default function ChecklistScreen() {
 					>
 						Start a batch to see setup-aware tasks.
 					</Text>
-					<Link href="/batch/new" asChild>
-						<Pressable
-							style={{
-								marginTop: spacing.md,
-								backgroundColor: colors.buttonSolidBg,
-								paddingHorizontal: spacing.md,
-								paddingVertical: 10,
-								borderRadius: 12,
-							}}
-						>
-							<Text weight="semibold" style={{ color: "#FFFFFF" }}>
-								+ Start a Batch
-							</Text>
-						</Pressable>
-					</Link>
 				</View>
 			) : (
 				<FlatList
@@ -297,7 +151,7 @@ function TaskRow({
 	done,
 	onToggle,
 }: {
-	task: UiTask;
+	task: AutoTask;
 	done: boolean;
 	onToggle: () => void;
 }) {

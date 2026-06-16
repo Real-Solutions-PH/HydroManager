@@ -3,6 +3,7 @@ import {
 	DollarSign,
 	Grid3x3,
 	Home,
+	Menu,
 	Package,
 	Sprout,
 } from "lucide-react-native";
@@ -27,6 +28,7 @@ const TAB_ITEMS: InteractiveMenuItem[] = [
 	{ key: "seeds", label: "Seeds", icon: Sprout },
 	{ key: "inventory", label: "Inventory", icon: Package },
 	{ key: "sales", label: "Sales", icon: DollarSign },
+	{ key: "more", label: "More", icon: Menu },
 ];
 
 export default function AppLayout() {
@@ -81,6 +83,10 @@ export default function AppLayout() {
 				<Tabs.Screen name="sales" options={{ title: "Sales" }} />
 				<Tabs.Screen name="library" options={HIDDEN_TAB} />
 				<Tabs.Screen name="settings" options={HIDDEN_TAB} />
+				<Tabs.Screen name="more" options={{ title: "More" }} />
+				<Tabs.Screen name="tasks" options={HIDDEN_TAB} />
+				<Tabs.Screen name="tasks/new" options={HIDDEN_TAB} />
+				<Tabs.Screen name="tasks/[id]" options={HIDDEN_TAB} />
 				<Tabs.Screen name="inventory-new" options={HIDDEN_TAB} />
 				<Tabs.Screen name="inventory/[id]" options={HIDDEN_TAB} />
 				<Tabs.Screen name="produce-new" options={HIDDEN_TAB} />
