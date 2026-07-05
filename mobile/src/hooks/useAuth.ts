@@ -1,7 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useCustomToast } from "@/hooks/useCustomToast";
-import { api, clearAccessToken, setAccessToken } from "@/lib/auth";
+import {
+	api,
+	clearTokens,
+	getRefreshToken,
+	setAccessToken,
+	setRefreshToken,
+} from "@/lib/auth";
 import * as usersDb from "@/lib/db/users";
 import { handleError } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
@@ -27,15 +33,16 @@ interface SignupInput {
 
 async function loginRequest(
 	input: LoginInput,
-): Promise<{ access_token: string }> {
+): Promise<{ access_token: string; refresh_token: string }> {
 	const body = new URLSearchParams();
 	body.append("username", input.username);
 	body.append("password", input.password);
-	const { data } = await api.post<{ access_token: string }>(
-		"/api/v1/login/access-token",
-		body.toString(),
-		{ headers: { "Content-Type": "application/x-www-form-urlencoded" } },
-	);
+	const { data } = await api.post<{
+		access_token: string;
+		refresh_token: string;
+	}>("/api/v1/login/access-token", body.toString(), {
+		headers: { "Content-Type": "application/x-www-form-urlencoded" },
+	});
 	return data;
 }
 
@@ -54,6 +61,7 @@ export function useAuth() {
 		mutationFn: loginRequest,
 		onSuccess: async (data) => {
 			await setAccessToken(data.access_token);
+			await setRefreshToken(data.refresh_token);
 
 			try {
 				const { data: user } = await api.get<CurrentUser>("/api/v1/users/me");
@@ -88,12 +96,15 @@ export function useAuth() {
 	});
 
 	async function logout() {
+		const refreshToken = await getRefreshToken();
 		try {
-			await api.post("/api/v1/logout");
+			await api.post("/api/v1/logout", {
+				refresh_token: refreshToken ?? "",
+			});
 		} catch {
 			// Network/401 — proceed with local cleanup anyway
 		}
-		await clearAccessToken();
+		await clearTokens();
 		useAuthStore.getState().clearAuth();
 		usersDb.clearUserCache();
 		queryClient.removeQueries();
