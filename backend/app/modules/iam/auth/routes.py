@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.modules.iam.auth import services as auth_service
-from app.modules.iam.auth.schema import NewPassword, Token
+from app.modules.iam.auth.schema import NewPassword, RefreshRequest, Token
 from app.modules.iam.auth.utils import (
     generate_password_reset_token,
     generate_reset_password_email,
@@ -28,13 +28,23 @@ def login_access_token(
     )
 
 
+@router.post("/login/refresh-token")
+def refresh_token(session: SessionDep, body: RefreshRequest) -> Token:
+    # No access-token auth: this endpoint is how a client obtains a fresh
+    # access token, so it must work with an expired one.
+    return auth_service.refresh(session=session, refresh_token=body.refresh_token)
+
+
 @router.post("/login/test-token", response_model=UserPublic)
 def test_token(current_user: CurrentUser) -> Any:
     return current_user
 
 
 @router.post("/logout")
-def logout(current_user: CurrentUser) -> Message:
+def logout(session: SessionDep, body: RefreshRequest) -> Message:
+    # Revoke by refresh token (no access-token auth) so logout works even after
+    # the access token has expired. Idempotent.
+    auth_service.logout(session=session, refresh_token=body.refresh_token)
     return Message(message="Logged out")
 
 

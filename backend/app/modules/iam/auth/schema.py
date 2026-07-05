@@ -3,7 +3,12 @@ from sqlmodel import Field, SQLModel
 
 class Token(SQLModel):
     access_token: str
+    refresh_token: str
     token_type: str = "bearer"
+
+
+class RefreshRequest(SQLModel):
+    refresh_token: str
 
 
 class TokenPayload(SQLModel):

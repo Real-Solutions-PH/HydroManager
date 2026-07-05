@@ -26,9 +26,14 @@ def get_current_user(session: SessionDep, token: TokenDep) -> User:
         )
         token_data = TokenPayload(**payload)
     except (InvalidTokenError, ValidationError):
+        # 401 (not 403): an expired/invalid token is unauthenticated, not
+        # forbidden. The client's interceptor keys off 401 to refresh or to
+        # redirect to login. PyJWT's ExpiredSignatureError subclasses
+        # InvalidTokenError, so expiry lands here too.
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
         )
     user = session.get(User, token_data.sub)
     if not user:
