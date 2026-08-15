@@ -104,6 +104,10 @@ class Settings(BaseSettings):
     MINIO_REGION: str = "us-east-1"
     MINIO_DEFAULT_BUCKET: str = "app-uploads"
 
+    # OCR module
+    OCR_ENABLED: bool = False
+    OCR_BUCKET: str = "ocr-documents"
+
     # LLM Providers (used by hydro_ai)
     NEBIUS_API_KEY: str | None = None
     NEBIUS_BASE_URL: str = "https://api.studio.nebius.com/v1/"

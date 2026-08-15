@@ -7,13 +7,19 @@ export PATH := $(HOME)/.bun/bin:$(PATH)
 # ---------------------------------------------------------------------------
 # Docker
 # ---------------------------------------------------------------------------
-.PHONY: up up-infra down build logs ps
+.PHONY: up up-infra watch down build logs ps
 
 up: ## Start all services (dev mode with hot-reload)
 	docker compose up -d
 
 up-infra: ## Start only infra services (db, redis, minio)
 	docker compose up -d db redis minio
+
+# Explicit -f list disables compose.override.yml auto-loading, so it is named here.
+COMPOSE_SUPABASE := -f compose.yml -f compose.override.yml -f compose.supabase.yml
+
+watch: ## Start backend+frontend against hosted Supabase (no local db/minio/redis) and watch for changes
+	docker compose $(COMPOSE_SUPABASE) up --build --force-recreate --watch
 
 down: ## Stop all services
 	docker compose down
@@ -58,9 +64,6 @@ backend-revision: ## Create a new Alembic migration (usage: make backend-revisio
 
 backend-prestart: ## Run prestart script (healthcheck + migrations + initial data)
 	cd backend && uv run bash scripts/prestart.sh
-
-backend-dev:
-	cd backend && uv run uvicorn app.main:app --reload
 
 # ---------------------------------------------------------------------------
 # Frontend
