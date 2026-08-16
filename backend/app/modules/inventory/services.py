@@ -75,20 +75,14 @@ def update_item(
     item_id: uuid.UUID,
     data: InventoryItemUpdate,
 ) -> InventoryItem:
-    item = get_item(
-        session=session, current_user=current_user, item_id=item_id
-    )
+    item = get_item(session=session, current_user=current_user, item_id=item_id)
     return inv_repo.update(
         session=session, item=item, update_data=data.model_dump(exclude_unset=True)
     )
 
 
-def delete_item(
-    *, session: Session, current_user: User, item_id: uuid.UUID
-) -> None:
-    item = get_item(
-        session=session, current_user=current_user, item_id=item_id
-    )
+def delete_item(*, session: Session, current_user: User, item_id: uuid.UUID) -> None:
+    item = get_item(session=session, current_user=current_user, item_id=item_id)
     name = item.name
     item_id_val = item.id
     inv_repo.delete(session=session, item=item)
@@ -110,9 +104,7 @@ def record_movement(
     item_id: uuid.UUID,
     data: MovementCreate,
 ) -> InventoryMovement:
-    item = get_item(
-        session=session, current_user=current_user, item_id=item_id
-    )
+    item = get_item(session=session, current_user=current_user, item_id=item_id)
     if data.movement_type == MovementType.restock:
         item.current_stock = max(item.current_stock + data.quantity, 0)
     elif data.movement_type == MovementType.consume:
@@ -165,7 +157,5 @@ def record_movement(
 def list_movements(
     *, session: Session, current_user: User, item_id: uuid.UUID, limit: int = 50
 ) -> list[InventoryMovement]:
-    item = get_item(
-        session=session, current_user=current_user, item_id=item_id
-    )
+    item = get_item(session=session, current_user=current_user, item_id=item_id)
     return inv_repo.list_movements(session=session, item_id=item.id, limit=limit)

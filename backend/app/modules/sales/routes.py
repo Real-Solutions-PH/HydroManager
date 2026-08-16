@@ -25,9 +25,7 @@ router = APIRouter(prefix="/sales", tags=["sales"])
 
 def _to_detail(s: Sale) -> SaleDetail:
     base = SalePublic.model_validate(s, from_attributes=True)
-    items = [
-        SaleItemPublic.model_validate(i, from_attributes=True) for i in s.items
-    ]
+    items = [SaleItemPublic.model_validate(i, from_attributes=True) for i in s.items]
     return SaleDetail(**base.model_dump(), items=items)
 
 
@@ -48,9 +46,7 @@ def list_sales(
 def create_sale(
     *, session: SessionDep, current_user: CurrentUser, data: SaleCreate
 ) -> Any:
-    s = sales_service.create_sale(
-        session=session, current_user=current_user, data=data
-    )
+    s = sales_service.create_sale(session=session, current_user=current_user, data=data)
     return _to_detail(s)
 
 
@@ -58,17 +54,13 @@ def create_sale(
 def delete_sale(
     session: SessionDep, current_user: CurrentUser, id: uuid.UUID
 ) -> Message:
-    sales_service.delete_sale(
-        session=session, current_user=current_user, sale_id=id
-    )
+    sales_service.delete_sale(session=session, current_user=current_user, sale_id=id)
     return Message(message="Sale deleted successfully")
 
 
 @router.get("/overheads", response_model=list[OverheadPublic])
 def list_overheads(session: SessionDep, current_user: CurrentUser) -> Any:
-    rows = sales_service.list_overheads(
-        session=session, current_user=current_user
-    )
+    rows = sales_service.list_overheads(session=session, current_user=current_user)
     return [OverheadPublic.model_validate(r, from_attributes=True) for r in rows]
 
 
@@ -83,13 +75,9 @@ def add_overhead(
 
 @router.get("/dashboard", response_model=Dashboard)
 def dashboard(session: SessionDep, current_user: CurrentUser) -> Any:
-    return sales_service.dashboard(
-        session=session, current_user=current_user
-    )
+    return sales_service.dashboard(session=session, current_user=current_user)
 
 
 @router.get("/export.csv", response_class=PlainTextResponse)
 def export_csv(session: SessionDep, current_user: CurrentUser) -> str:
-    return sales_service.export_csv(
-        session=session, current_user=current_user
-    )
+    return sales_service.export_csv(session=session, current_user=current_user)

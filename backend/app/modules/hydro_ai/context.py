@@ -32,9 +32,7 @@ def build_context(
                 f"- {s.name} ({s.type.value}, {s.slot_count} slots, "
                 f"{s.location_label or 'no location'})"
             )
-            citations.append(
-                {"type": "setup", "id": str(s.id), "label": s.name}
-            )
+            citations.append({"type": "setup", "id": str(s.id), "label": s.name})
 
     batches = list(
         session.exec(
@@ -49,16 +47,17 @@ def build_context(
         for b in batches:
             counts = list(
                 session.exec(
-                    select(BatchStateCount).where(
-                        BatchStateCount.batch_id == b.id
-                    )
+                    select(BatchStateCount).where(BatchStateCount.batch_id == b.id)
                 ).all()
             )
-            dist = ", ".join(
-                f"{c.milestone_code.value}: {c.count}"
-                for c in counts
-                if c.count > 0
-            ) or "no active units"
+            dist = (
+                ", ".join(
+                    f"{c.milestone_code.value}: {c.count}"
+                    for c in counts
+                    if c.count > 0
+                )
+                or "no active units"
+            )
             parts.append(
                 f"- {b.variety_name} (started {b.started_at.date()}, "
                 f"init {b.initial_count}): {dist}"

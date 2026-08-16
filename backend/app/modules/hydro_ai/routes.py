@@ -18,12 +18,8 @@ router = APIRouter(prefix="/hydro-ai", tags=["hydro-ai"])
 
 
 @router.post("/chat", response_model=ChatResponse)
-def chat(
-    *, session: SessionDep, current_user: CurrentUser, data: ChatRequest
-) -> Any:
-    return ai_service.chat(
-        session=session, current_user=current_user, data=data
-    )
+def chat(*, session: SessionDep, current_user: CurrentUser, data: ChatRequest) -> Any:
+    return ai_service.chat(session=session, current_user=current_user, data=data)
 
 
 @router.get("/quota")

@@ -66,9 +66,7 @@ def delete(*, session: Session, produce: Produce) -> None:
     session.commit()
 
 
-def add_movement(
-    *, session: Session, movement: ProduceMovement
-) -> ProduceMovement:
+def add_movement(*, session: Session, movement: ProduceMovement) -> ProduceMovement:
     session.add(movement)
     return movement
 

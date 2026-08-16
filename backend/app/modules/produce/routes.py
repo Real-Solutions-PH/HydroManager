@@ -78,9 +78,7 @@ def near_expiry(
 
 
 @router.get("/{id}", response_model=ProducePublic)
-def read_produce(
-    session: SessionDep, current_user: CurrentUser, id: uuid.UUID
-) -> Any:
+def read_produce(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> Any:
     p = produce_service.get_produce(
         session=session, current_user=current_user, produce_id=id
     )
@@ -134,7 +132,5 @@ def list_movements(
     rows = produce_service.list_movements(
         session=session, current_user=current_user, produce_id=id, limit=limit
     )
-    data = [
-        ProduceMovementPublic.model_validate(r, from_attributes=True) for r in rows
-    ]
+    data = [ProduceMovementPublic.model_validate(r, from_attributes=True) for r in rows]
     return ProduceMovementsPublic(data=data, count=len(data))

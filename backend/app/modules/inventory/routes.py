@@ -84,8 +84,6 @@ def _last_restocked_for(session: Session, item_id: uuid.UUID) -> datetime | None
     return session.exec(q).first()
 
 
-
-
 @router.get("/items", response_model=InventoryItemsPublic)
 def list_items(
     session: SessionDep,
@@ -103,9 +101,7 @@ def list_items(
     )
     restock_map = _last_restocked_map(session, [r.id for r in rows])
     return InventoryItemsPublic(
-        data=[
-            _to_public(r, last_restocked_at=restock_map.get(r.id)) for r in rows
-        ],
+        data=[_to_public(r, last_restocked_at=restock_map.get(r.id)) for r in rows],
         count=count,
     )
 
@@ -117,21 +113,13 @@ def create_item(
     item = inv_service.create_item(
         session=session, current_user=current_user, data=data
     )
-    return _to_public(
-        item, last_restocked_at=_last_restocked_for(session, item.id)
-    )
+    return _to_public(item, last_restocked_at=_last_restocked_for(session, item.id))
 
 
 @router.get("/items/{id}", response_model=InventoryItemPublic)
-def read_item(
-    session: SessionDep, current_user: CurrentUser, id: uuid.UUID
-) -> Any:
-    item = inv_service.get_item(
-        session=session, current_user=current_user, item_id=id
-    )
-    return _to_public(
-        item, last_restocked_at=_last_restocked_for(session, item.id)
-    )
+def read_item(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> Any:
+    item = inv_service.get_item(session=session, current_user=current_user, item_id=id)
+    return _to_public(item, last_restocked_at=_last_restocked_for(session, item.id))
 
 
 @router.put("/items/{id}", response_model=InventoryItemPublic)
@@ -145,18 +133,14 @@ def update_item(
     item = inv_service.update_item(
         session=session, current_user=current_user, item_id=id, data=data
     )
-    return _to_public(
-        item, last_restocked_at=_last_restocked_for(session, item.id)
-    )
+    return _to_public(item, last_restocked_at=_last_restocked_for(session, item.id))
 
 
 @router.delete("/items/{id}")
 def delete_item(
     session: SessionDep, current_user: CurrentUser, id: uuid.UUID
 ) -> Message:
-    inv_service.delete_item(
-        session=session, current_user=current_user, item_id=id
-    )
+    inv_service.delete_item(session=session, current_user=current_user, item_id=id)
     return Message(message="Item deleted successfully")
 
 

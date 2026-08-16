@@ -25,11 +25,15 @@ def get_chat_model(provider: str | None = None, **kwargs: Any) -> ChatOpenAI:
     else:
         raise ValueError(f"Unknown LLM provider: {provider}")
 
-    # ChatOpenAI declares these as openai_api_key/openai_api_base but its
-    # generated __init__ takes the aliases, and the key is a SecretStr.
-    return ChatOpenAI(
-        model=model,
-        api_key=SecretStr(api_key) if api_key else None,
-        base_url=base_url,
+    # ChatOpenAI declares these as openai_api_key/openai_api_base/model_name
+    # with api_key/base_url/model as pydantic aliases, and mypy and ty disagree
+    # over which set the generated __init__ accepts. Both are valid at runtime;
+    # collecting them into a dict[str, Any] keeps either checker from picking a
+    # side. Revisit if the two ever agree.
+    params: dict[str, Any] = {
+        "model": model,
+        "api_key": SecretStr(api_key) if api_key else None,
+        "base_url": base_url,
         **kwargs,
-    )
+    }
+    return ChatOpenAI(**params)

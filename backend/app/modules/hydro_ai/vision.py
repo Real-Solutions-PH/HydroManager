@@ -27,6 +27,7 @@ def analyze(data: VisionOnboardRequest) -> VisionOnboardResponse:
         )
     try:
         from app.modules.hydro_ai.llm import get_chat_model
+
         llm = get_chat_model()
         msg: list[Any] = [
             ("system", VISION_SYSTEM),

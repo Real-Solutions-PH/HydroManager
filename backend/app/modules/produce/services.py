@@ -91,9 +91,7 @@ def update_produce(
     produce_id: uuid.UUID,
     data: ProduceUpdate,
 ) -> Produce:
-    p = get_produce(
-        session=session, current_user=current_user, produce_id=produce_id
-    )
+    p = get_produce(session=session, current_user=current_user, produce_id=produce_id)
     return produce_repo.update(
         session=session, produce=p, update_data=data.model_dump(exclude_unset=True)
     )
@@ -102,9 +100,7 @@ def update_produce(
 def delete_produce(
     *, session: Session, current_user: User, produce_id: uuid.UUID
 ) -> None:
-    p = get_produce(
-        session=session, current_user=current_user, produce_id=produce_id
-    )
+    p = get_produce(session=session, current_user=current_user, produce_id=produce_id)
     produce_repo.delete(session=session, produce=p)
 
 
@@ -115,9 +111,7 @@ def record_movement(
     produce_id: uuid.UUID,
     data: ProduceMovementCreate,
 ) -> ProduceMovement:
-    p = get_produce(
-        session=session, current_user=current_user, produce_id=produce_id
-    )
+    p = get_produce(session=session, current_user=current_user, produce_id=produce_id)
     mt = data.movement_type
     if mt == ProduceMovementType.harvest:
         p.quantity += data.quantity
@@ -165,9 +159,5 @@ def list_movements(
     produce_id: uuid.UUID,
     limit: int = 50,
 ) -> list[ProduceMovement]:
-    p = get_produce(
-        session=session, current_user=current_user, produce_id=produce_id
-    )
-    return produce_repo.list_movements(
-        session=session, produce_id=p.id, limit=limit
-    )
+    p = get_produce(session=session, current_user=current_user, produce_id=produce_id)
+    return produce_repo.list_movements(session=session, produce_id=p.id, limit=limit)

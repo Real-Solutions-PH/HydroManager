@@ -27,7 +27,7 @@ async def webhook(
     ):
         raise HTTPException(status_code=401, detail="Invalid signature")
     try:
-        event = (await request.json())
+        event = await request.json()
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid JSON")
     pm_service.handle_event(session=session, event=event)
