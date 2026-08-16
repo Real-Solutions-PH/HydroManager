@@ -2,6 +2,7 @@
 
 import uuid
 from datetime import datetime, timezone
+from typing import Any
 
 from sqlmodel import Session, col, select
 
@@ -16,9 +17,7 @@ from app.modules.setups.schema import SetupType
 
 def _age_days(started_at: datetime) -> int:
     return max(
-        int(
-            (datetime.now(timezone.utc) - started_at).total_seconds() // 86400
-        ),
+        int((datetime.now(timezone.utc) - started_at).total_seconds() // 86400),
         0,
     )
 
@@ -40,9 +39,7 @@ WATER_CHANGE_DAYS = {
 }
 
 
-def generate_tasks(
-    *, session: Session, current_user: User
-) -> list[dict]:
+def generate_tasks(*, session: Session, current_user: User) -> list[dict[str, Any]]:
     owner = current_user.id
     setups = list(
         session.exec(
@@ -71,7 +68,7 @@ def generate_tasks(
         ).all():
             guides[g.id] = g
 
-    tasks: list[dict] = []
+    tasks: list[dict[str, Any]] = []
     for b in batches:
         setup = setups_by_id.get(b.setup_id)
         if setup is None:
@@ -160,9 +157,7 @@ def generate_tasks(
             )
 
     low = list(
-        session.exec(
-            select(InventoryItem).where(InventoryItem.owner_id == owner)
-        ).all()
+        session.exec(select(InventoryItem).where(InventoryItem.owner_id == owner)).all()
     )
     for it in low:
         if it.current_stock <= it.low_stock_threshold:

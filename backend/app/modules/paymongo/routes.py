@@ -20,14 +20,14 @@ async def webhook(
     request: Request,
     session: SessionDep,
     paymongo_signature: str | None = Header(default=None),
-) -> dict:
+) -> dict[str, Any]:
     raw = await request.body()
     if not pm_service.verify_webhook_signature(
         raw_body=raw, signature=paymongo_signature or ""
     ):
         raise HTTPException(status_code=401, detail="Invalid signature")
     try:
-        event = (await request.json())
+        event = await request.json()
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid JSON")
     pm_service.handle_event(session=session, event=event)

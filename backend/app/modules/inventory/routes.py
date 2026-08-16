@@ -4,11 +4,11 @@ from typing import Any
 
 from fastapi import APIRouter
 from sqlalchemy import func
-from sqlmodel import col, select
+from sqlmodel import Session, col, select
 
 from app.modules.iam.deps import CurrentUser
 from app.modules.inventory import services as inv_service
-from app.modules.inventory.models import InventoryMovement
+from app.modules.inventory.models import InventoryItem, InventoryMovement
 from app.modules.inventory.schema import (
     ExpiryStatus,
     InventoryCategory,
@@ -28,7 +28,7 @@ router = APIRouter(prefix="/inventory", tags=["inventory"])
 EXPIRY_WARNING_DAYS = 7
 
 
-def _compute_expiry(item) -> tuple[ExpiryStatus, int | None]:
+def _compute_expiry(item: InventoryItem) -> tuple[ExpiryStatus, int | None]:
     if item.expiry_date is None:
         return ExpiryStatus.ok, None
     days = (item.expiry_date - date.today()).days
@@ -40,7 +40,7 @@ def _compute_expiry(item) -> tuple[ExpiryStatus, int | None]:
 
 
 def _to_public(
-    item, *, last_restocked_at: datetime | None = None
+    item: InventoryItem, *, last_restocked_at: datetime | None = None
 ) -> InventoryItemPublic:
     pub = InventoryItemPublic.model_validate(item, from_attributes=True)
     pub.is_low_stock = (
@@ -53,7 +53,7 @@ def _to_public(
 
 
 def _last_restocked_map(
-    session, item_ids: list[uuid.UUID]
+    session: Session, item_ids: list[uuid.UUID]
 ) -> dict[uuid.UUID, datetime]:
     if not item_ids:
         return {}
@@ -66,12 +66,12 @@ def _last_restocked_map(
             col(InventoryMovement.item_id).in_(item_ids),
             InventoryMovement.movement_type == MovementType.restock,
         )
-        .group_by(InventoryMovement.item_id)
+        .group_by(col(InventoryMovement.item_id))
     )
     return {row[0]: row[1] for row in session.exec(q).all()}
 
 
-def _last_restocked_for(session, item_id: uuid.UUID) -> datetime | None:
+def _last_restocked_for(session: Session, item_id: uuid.UUID) -> datetime | None:
     q = (
         select(InventoryMovement.occurred_at)
         .where(
@@ -82,8 +82,6 @@ def _last_restocked_for(session, item_id: uuid.UUID) -> datetime | None:
         .limit(1)
     )
     return session.exec(q).first()
-
-
 
 
 @router.get("/items", response_model=InventoryItemsPublic)
@@ -103,9 +101,7 @@ def list_items(
     )
     restock_map = _last_restocked_map(session, [r.id for r in rows])
     return InventoryItemsPublic(
-        data=[
-            _to_public(r, last_restocked_at=restock_map.get(r.id)) for r in rows
-        ],
+        data=[_to_public(r, last_restocked_at=restock_map.get(r.id)) for r in rows],
         count=count,
     )
 
@@ -117,21 +113,13 @@ def create_item(
     item = inv_service.create_item(
         session=session, current_user=current_user, data=data
     )
-    return _to_public(
-        item, last_restocked_at=_last_restocked_for(session, item.id)
-    )
+    return _to_public(item, last_restocked_at=_last_restocked_for(session, item.id))
 
 
 @router.get("/items/{id}", response_model=InventoryItemPublic)
-def read_item(
-    session: SessionDep, current_user: CurrentUser, id: uuid.UUID
-) -> Any:
-    item = inv_service.get_item(
-        session=session, current_user=current_user, item_id=id
-    )
-    return _to_public(
-        item, last_restocked_at=_last_restocked_for(session, item.id)
-    )
+def read_item(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> Any:
+    item = inv_service.get_item(session=session, current_user=current_user, item_id=id)
+    return _to_public(item, last_restocked_at=_last_restocked_for(session, item.id))
 
 
 @router.put("/items/{id}", response_model=InventoryItemPublic)
@@ -145,18 +133,14 @@ def update_item(
     item = inv_service.update_item(
         session=session, current_user=current_user, item_id=id, data=data
     )
-    return _to_public(
-        item, last_restocked_at=_last_restocked_for(session, item.id)
-    )
+    return _to_public(item, last_restocked_at=_last_restocked_for(session, item.id))
 
 
 @router.delete("/items/{id}")
 def delete_item(
     session: SessionDep, current_user: CurrentUser, id: uuid.UUID
 ) -> Message:
-    inv_service.delete_item(
-        session=session, current_user=current_user, item_id=id
-    )
+    inv_service.delete_item(session=session, current_user=current_user, item_id=id)
     return Message(message="Item deleted successfully")
 
 

@@ -5,6 +5,7 @@ from fastapi import APIRouter
 
 from app.modules.iam.deps import CurrentUser
 from app.modules.produce import services as produce_service
+from app.modules.produce.models import Produce
 from app.modules.produce.schema import (
     ProduceCreate,
     ProduceMovementCreate,
@@ -21,7 +22,7 @@ from app.shared.schema import Message
 router = APIRouter(prefix="/produce", tags=["produce"])
 
 
-def _to_public(item) -> ProducePublic:
+def _to_public(item: Produce) -> ProducePublic:
     pub = ProducePublic.model_validate(item, from_attributes=True)
     status, days = produce_service.compute_expiry(item)
     pub.expiry_status = status
@@ -77,9 +78,7 @@ def near_expiry(
 
 
 @router.get("/{id}", response_model=ProducePublic)
-def read_produce(
-    session: SessionDep, current_user: CurrentUser, id: uuid.UUID
-) -> Any:
+def read_produce(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> Any:
     p = produce_service.get_produce(
         session=session, current_user=current_user, produce_id=id
     )
@@ -133,7 +132,5 @@ def list_movements(
     rows = produce_service.list_movements(
         session=session, current_user=current_user, produce_id=id, limit=limit
     )
-    data = [
-        ProduceMovementPublic.model_validate(r, from_attributes=True) for r in rows
-    ]
+    data = [ProduceMovementPublic.model_validate(r, from_attributes=True) for r in rows]
     return ProduceMovementsPublic(data=data, count=len(data))

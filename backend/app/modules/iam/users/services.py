@@ -65,9 +65,7 @@ def register_user(*, session: Session, user_in: UserRegister) -> User:
     return user_repo.create(session=session, user=db_user)
 
 
-def update_user(
-    *, session: Session, user_id: uuid.UUID, user_in: UserUpdate
-) -> User:
+def update_user(*, session: Session, user_id: uuid.UUID, user_in: UserUpdate) -> User:
     db_user = user_repo.get_by_id(session=session, user_id=user_id)
     if not db_user:
         raise HTTPException(
@@ -99,9 +97,7 @@ def update_user_me(
                 status_code=409, detail="User with this email already exists"
             )
     update_data = user_in.model_dump(exclude_unset=True)
-    return user_repo.update(
-        session=session, user=current_user, update_data=update_data
-    )
+    return user_repo.update(session=session, user=current_user, update_data=update_data)
 
 
 def update_password_me(
@@ -130,9 +126,7 @@ def delete_user_me(*, session: Session, current_user: User) -> None:
     user_repo.delete_user(session=session, user=current_user)
 
 
-def delete_user(
-    *, session: Session, current_user: User, user_id: uuid.UUID
-) -> None:
+def delete_user(*, session: Session, current_user: User, user_id: uuid.UUID) -> None:
     user = user_repo.get_by_id(session=session, user_id=user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -148,7 +142,7 @@ def read_user_by_id(
     *, session: Session, user_id: uuid.UUID, current_user: User
 ) -> User:
     user = user_repo.get_by_id(session=session, user_id=user_id)
-    if user == current_user:
+    if user is not None and user == current_user:
         return user
     if not current_user.is_superuser:
         raise HTTPException(

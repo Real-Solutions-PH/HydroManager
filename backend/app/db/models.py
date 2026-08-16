@@ -18,7 +18,7 @@ from app.modules.hydro_common.quota import AIQuotaUsage  # noqa: F401
 from app.modules.iam.permissions.models import Permission  # noqa: F401
 from app.modules.iam.roles.models import Role  # noqa: F401
 from app.modules.iam.tenants.models import Tenant  # noqa: F401
-from app.modules.iam.users.models import User  # noqa: F401
+from app.modules.iam.users.models import User as User  # noqa: F401
 from app.modules.inventory.models import InventoryItem, InventoryMovement  # noqa: F401
 from app.modules.library_guides.models import LibraryGuide  # noqa: F401
 from app.modules.library_pests.models import LibraryPest  # noqa: F401

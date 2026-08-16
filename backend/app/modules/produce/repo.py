@@ -37,8 +37,8 @@ def get_multi(
         list_q = list_q.where(Produce.status == status)
     if near_expiry:
         cutoff = date.today() + timedelta(days=NEAR_EXPIRY_DAYS)
-        count_q = count_q.where(Produce.expiry_date <= cutoff)
-        list_q = list_q.where(Produce.expiry_date <= cutoff)
+        count_q = count_q.where(col(Produce.expiry_date) <= cutoff)
+        list_q = list_q.where(col(Produce.expiry_date) <= cutoff)
     count = session.exec(count_q).one()
     rows = session.exec(list_q).all()
     return list(rows), count
@@ -66,9 +66,7 @@ def delete(*, session: Session, produce: Produce) -> None:
     session.commit()
 
 
-def add_movement(
-    *, session: Session, movement: ProduceMovement
-) -> ProduceMovement:
+def add_movement(*, session: Session, movement: ProduceMovement) -> ProduceMovement:
     session.add(movement)
     return movement
 

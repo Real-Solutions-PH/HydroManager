@@ -11,6 +11,13 @@ import 'dotenv/config'
  */
 export default defineConfig({
   testDir: './tests',
+  /*
+   * The stack under test runs `next dev`, which compiles each route the first
+   * time it is visited -- 5.8s for /login and 6.8s for /landing on CI. Tests
+   * that walk several routes blow the 30s default before doing anything wrong,
+   * so give CI a larger budget.
+   */
+  timeout: process.env.CI ? 90_000 : 30_000,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -86,6 +93,12 @@ export default defineConfig({
   webServer: {
     command: 'bun run dev',
     url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
+    /*
+     * Always reuse. CI brings the frontend up via docker compose, which bakes
+     * NEXT_PUBLIC_API_URL into the bundle at build time; letting Playwright
+     * spawn its own `bun run dev` would both collide on port 3000 and bypass
+     * that. Locally this still starts a server when none is running.
+     */
+    reuseExistingServer: true,
   },
 });

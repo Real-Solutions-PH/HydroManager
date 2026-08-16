@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Any
 
 import httpx
 
@@ -17,8 +18,18 @@ PARAMS = [
 ]
 
 MONTH_KEYS = [
-    "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-    "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
+    "JAN",
+    "FEB",
+    "MAR",
+    "APR",
+    "MAY",
+    "JUN",
+    "JUL",
+    "AUG",
+    "SEP",
+    "OCT",
+    "NOV",
+    "DEC",
 ]
 
 
@@ -33,7 +44,7 @@ class NasaPowerProvider(ClimateProvider):
     async def get_monthly_normals(
         self, *, lat: float, lon: float, month: int
     ) -> ClimateNormals:
-        params = {
+        params: dict[str, Any] = {
             "parameters": ",".join(PARAMS),
             "community": "AG",
             "longitude": lon,
@@ -46,9 +57,7 @@ class NasaPowerProvider(ClimateProvider):
             resp = await client.get(POWER_URL, params=params)
             resp.raise_for_status()
             data = resp.json()
-        params_block = (
-            data.get("properties", {}).get("parameter", {}) if data else {}
-        )
+        params_block = data.get("properties", {}).get("parameter", {}) if data else {}
         key = MONTH_KEYS[month - 1]
 
         def pick(name: str) -> float | None:

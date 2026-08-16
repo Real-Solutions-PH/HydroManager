@@ -42,7 +42,9 @@ repos:
 
       - id: local-mypy
         name: mypy check
-        entry: uv run mypy backend/app
+        # Run from the repo root, so point at the backend's config explicitly;
+        # otherwise strict mode and the boto3 overrides are silently ignored.
+        entry: uv run mypy --config-file backend/pyproject.toml backend/app
         require_serial: true
         language: unsupported
         pass_filenames: false

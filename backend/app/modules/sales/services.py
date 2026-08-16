@@ -32,8 +32,8 @@ def list_sales(
 ) -> tuple[list[Sale], int]:
     if not current_user.is_superuser:
         require_tier(current_user.tier, at_least=UserTier.pro)
-    count_q = select(func.count()).select_from(Sale).where(
-        Sale.owner_id == current_user.id
+    count_q = (
+        select(func.count()).select_from(Sale).where(Sale.owner_id == current_user.id)
     )
     list_q = (
         select(Sale)
@@ -47,15 +47,11 @@ def list_sales(
     return list(rows), count
 
 
-def create_sale(
-    *, session: Session, current_user: User, data: SaleCreate
-) -> Sale:
+def create_sale(*, session: Session, current_user: User, data: SaleCreate) -> Sale:
     if not current_user.is_superuser:
         require_tier(current_user.tier, at_least=UserTier.pro)
     if not data.items:
-        raise HTTPException(
-            status_code=400, detail="Sale must have at least one item."
-        )
+        raise HTTPException(status_code=400, detail="Sale must have at least one item.")
     sale = Sale(
         owner_id=current_user.id,
         buyer_label=data.buyer_label,
@@ -102,9 +98,7 @@ def create_sale(
     return sale
 
 
-def delete_sale(
-    *, session: Session, current_user: User, sale_id: uuid.UUID
-) -> None:
+def delete_sale(*, session: Session, current_user: User, sale_id: uuid.UUID) -> None:
     if not current_user.is_superuser:
         require_tier(current_user.tier, at_least=UserTier.pro)
     sale = session.get(Sale, sale_id)
@@ -123,9 +117,7 @@ def delete_sale(
     session.commit()
 
 
-def list_overheads(
-    *, session: Session, current_user: User
-) -> list[OverheadCost]:
+def list_overheads(*, session: Session, current_user: User) -> list[OverheadCost]:
     if not current_user.is_superuser:
         require_tier(current_user.tier, at_least=UserTier.pro)
     q = select(OverheadCost).where(OverheadCost.owner_id == current_user.id)
@@ -158,28 +150,21 @@ def add_overhead(
     return o
 
 
-def _sum_sales(
-    *, session: Session, user_id: uuid.UUID, start: datetime
-) -> float:
+def _sum_sales(*, session: Session, user_id: uuid.UUID, start: datetime) -> float:
     q = (
         select(func.coalesce(func.sum(SaleItem.quantity * SaleItem.unit_price), 0))
         .select_from(SaleItem)
-        .join(Sale, SaleItem.sale_id == Sale.id)
+        .join(Sale, col(SaleItem.sale_id) == Sale.id)
         .where(Sale.owner_id == user_id, Sale.sold_at >= start)
     )
     result = session.exec(q).one()
     return float(result) if result is not None else 0.0
 
 
-def _sum_cogs(
-    *, session: Session, user_id: uuid.UUID, start: datetime
-) -> float:
-    q = (
-        select(func.coalesce(func.sum(InventoryMovement.cost_total), 0))
-        .where(
-            InventoryMovement.occurred_at >= start,
-            InventoryMovement.movement_type == "restock",
-        )
+def _sum_cogs(*, session: Session, user_id: uuid.UUID, start: datetime) -> float:
+    q = select(func.coalesce(func.sum(InventoryMovement.cost_total), 0)).where(
+        InventoryMovement.occurred_at >= start,
+        InventoryMovement.movement_type == "restock",
     )
     result = session.exec(q).one()
     base = float(result) if result is not None else 0.0
@@ -213,7 +198,7 @@ def dashboard(*, session: Session, current_user: User) -> Dashboard:
     by_channel: dict[str, float] = defaultdict(float)
     items_q = (
         select(SaleItem, Sale)
-        .join(Sale, SaleItem.sale_id == Sale.id)
+        .join(Sale, col(SaleItem.sale_id) == Sale.id)
         .where(Sale.owner_id == current_user.id, Sale.sold_at >= d90)
     )
     for si, s in session.exec(items_q).all():
@@ -247,7 +232,7 @@ def export_csv(*, session: Session, current_user: User) -> str:
         require_tier(current_user.tier, at_least=UserTier.pro)
     q = (
         select(Sale, SaleItem)
-        .join(SaleItem, SaleItem.sale_id == Sale.id)
+        .join(SaleItem, col(SaleItem.sale_id) == Sale.id)
         .where(Sale.owner_id == current_user.id)
         .order_by(col(Sale.sold_at).desc())
     )

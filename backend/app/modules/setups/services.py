@@ -57,9 +57,7 @@ def list_setups(
     )
 
 
-def get_setup(
-    *, session: Session, current_user: User, setup_id: uuid.UUID
-) -> Setup:
+def get_setup(*, session: Session, current_user: User, setup_id: uuid.UUID) -> Setup:
     setup = setups_repo.get_by_id(session=session, setup_id=setup_id)
     if not setup:
         raise HTTPException(status_code=404, detail="Setup not found")
@@ -67,9 +65,7 @@ def get_setup(
     return setup
 
 
-def create_setup(
-    *, session: Session, current_user: User, data: SetupCreate
-) -> Setup:
+def create_setup(*, session: Session, current_user: User, data: SetupCreate) -> Setup:
     if not current_user.is_superuser:
         enforce_setup_limit(
             session=session, user_id=current_user.id, tier=current_user.tier
@@ -149,15 +145,15 @@ def update_setup(
     setup_id: uuid.UUID,
     data: SetupUpdate,
 ) -> Setup:
-    setup = get_setup(
-        session=session, current_user=current_user, setup_id=setup_id
-    )
+    setup = get_setup(session=session, current_user=current_user, setup_id=setup_id)
     payload = data.model_dump(exclude_unset=True)
     new_type = payload.get("type")
     new_slot_count = payload.pop("slot_count", None)
     type_for_codes = (
-        new_type.value if isinstance(new_type, SetupType)
-        else new_type if new_type
+        new_type.value
+        if isinstance(new_type, SetupType)
+        else new_type
+        if new_type
         else setup.type.value
     )
     if new_slot_count is not None:
@@ -181,9 +177,7 @@ def update_setup(
 def archive_setup(
     *, session: Session, current_user: User, setup_id: uuid.UUID
 ) -> Setup:
-    setup = get_setup(
-        session=session, current_user=current_user, setup_id=setup_id
-    )
+    setup = get_setup(session=session, current_user=current_user, setup_id=setup_id)
     updated = setups_repo.update(
         session=session,
         setup=setup,
@@ -204,9 +198,7 @@ def archive_setup(
 def unarchive_setup(
     *, session: Session, current_user: User, setup_id: uuid.UUID
 ) -> Setup:
-    setup = get_setup(
-        session=session, current_user=current_user, setup_id=setup_id
-    )
+    setup = get_setup(session=session, current_user=current_user, setup_id=setup_id)
     if setup.archived_at is None:
         return setup
     updated = setups_repo.update(
@@ -226,16 +218,10 @@ def unarchive_setup(
     return updated
 
 
-def delete_setup(
-    *, session: Session, current_user: User, setup_id: uuid.UUID
-) -> None:
-    setup = get_setup(
-        session=session, current_user=current_user, setup_id=setup_id
-    )
+def delete_setup(*, session: Session, current_user: User, setup_id: uuid.UUID) -> None:
+    setup = get_setup(session=session, current_user=current_user, setup_id=setup_id)
     if setup.archived_at is None:
-        raise HTTPException(
-            status_code=400, detail="Archive setup before deleting"
-        )
+        raise HTTPException(status_code=400, detail="Archive setup before deleting")
     name = setup.name
     setup_id_val = setup.id
     setups_repo.delete(session=session, setup=setup)
@@ -252,19 +238,15 @@ def delete_setup(
 
 def list_slots(
     *, session: Session, current_user: User, setup_id: uuid.UUID
-):
-    setup = get_setup(
-        session=session, current_user=current_user, setup_id=setup_id
-    )
+) -> list[SetupSlot]:
+    setup = get_setup(session=session, current_user=current_user, setup_id=setup_id)
     return setups_repo.list_slots(session=session, setup_id=setup.id)
 
 
 def list_photos(
     *, session: Session, current_user: User, setup_id: uuid.UUID
-):
-    setup = get_setup(
-        session=session, current_user=current_user, setup_id=setup_id
-    )
+) -> list[SetupPhoto]:
+    setup = get_setup(session=session, current_user=current_user, setup_id=setup_id)
     return setups_repo.list_photos(session=session, setup_id=setup.id)
 
 
@@ -275,8 +257,6 @@ def add_photo(
     setup_id: uuid.UUID,
     data: SetupPhotoCreate,
 ) -> SetupPhoto:
-    setup = get_setup(
-        session=session, current_user=current_user, setup_id=setup_id
-    )
+    setup = get_setup(session=session, current_user=current_user, setup_id=setup_id)
     photo = SetupPhoto(setup_id=setup.id, storage_url=data.storage_url)
     return setups_repo.add_photo(session=session, photo=photo)

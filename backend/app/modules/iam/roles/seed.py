@@ -13,4 +13,7 @@ DEFAULT_ROLES: list[dict[str, str]] = [
 def seed_roles(session: Session) -> None:
     for entry in DEFAULT_ROLES:
         if role_repo.get_by_name(session=session, name=entry["name"]) is None:
-            role_repo.create(session=session, role=Role(**entry))
+            role_repo.create(
+                session=session,
+                role=Role(name=entry["name"], description=entry["description"]),
+            )

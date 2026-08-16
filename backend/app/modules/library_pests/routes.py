@@ -51,6 +51,6 @@ def read_pest(
 def seed_pests(
     session: SessionDep,
     current_user: CurrentUser,  # noqa: ARG001
-) -> dict:
+) -> dict[str, Any]:
     inserted = pests_repo.seed_if_empty(session=session)
     return {"inserted": inserted}

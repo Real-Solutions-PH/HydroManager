@@ -18,16 +18,12 @@ router = APIRouter(prefix="/hydro-ai", tags=["hydro-ai"])
 
 
 @router.post("/chat", response_model=ChatResponse)
-def chat(
-    *, session: SessionDep, current_user: CurrentUser, data: ChatRequest
-) -> Any:
-    return ai_service.chat(
-        session=session, current_user=current_user, data=data
-    )
+def chat(*, session: SessionDep, current_user: CurrentUser, data: ChatRequest) -> Any:
+    return ai_service.chat(session=session, current_user=current_user, data=data)
 
 
 @router.get("/quota")
-def quota(session: SessionDep, current_user: CurrentUser) -> dict:
+def quota(session: SessionDep, current_user: CurrentUser) -> dict[str, Any]:
     usage = get_or_create_usage(session=session, user_id=current_user.id)
     limit = AI_MONTHLY_QUOTAS[current_user.tier]
     session.commit()

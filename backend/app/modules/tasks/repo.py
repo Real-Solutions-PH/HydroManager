@@ -29,11 +29,11 @@ def get_multi(
     if due_before is not None:
         count_q = count_q.where(
             Task.due_at.is_not(None),  # type: ignore
-            Task.due_at <= due_before,
+            col(Task.due_at) <= due_before,
         )
         list_q = list_q.where(
             Task.due_at.is_not(None),  # type: ignore
-            Task.due_at <= due_before,
+            col(Task.due_at) <= due_before,
         )
     list_q = (
         list_q.order_by(nullslast(col(Task.due_at).asc()), col(Task.created_at).asc())

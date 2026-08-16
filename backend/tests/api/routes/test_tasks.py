@@ -94,7 +94,7 @@ def test_complete_recurring_advances_due_date(client: TestClient, db: Session) -
     # recurring task stays active (not completed) and advances into the future
     assert out["completed_at"] is None
     assert out["last_completed_at"] is not None
-    new_due = datetime.fromisoformat(out["due_at"])
+    new_due = datetime.fromisoformat(out["due_at"].replace("Z", "+00:00"))
     assert new_due > datetime.now(timezone.utc)
     # still visible in the default list
     assert tid in [t["id"] for t in _list(client, headers)]
@@ -108,7 +108,7 @@ def test_recurring_complete_skips_missed_runs(client: TestClient, db: Session) -
     )
     r = client.post(f"{API}/tasks/{task['id']}/complete", headers=headers)
     assert r.status_code == 200, r.text
-    new_due = datetime.fromisoformat(r.json()["due_at"])
+    new_due = datetime.fromisoformat(r.json()["due_at"].replace("Z", "+00:00"))
     # jumps to the next future run, not 10 separate completions
     now = datetime.now(timezone.utc)
     assert now < new_due <= now + timedelta(days=1)

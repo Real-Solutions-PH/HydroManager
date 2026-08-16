@@ -1,3 +1,5 @@
+from typing import Any
+
 from sqlmodel import Field, SQLModel
 
 
@@ -14,7 +16,7 @@ class Citation(SQLModel):
 class ChatResponse(SQLModel):
     answer: str
     language: str
-    citations: list[dict]
+    citations: list[dict[str, Any]]
     messages_used: int
 
 

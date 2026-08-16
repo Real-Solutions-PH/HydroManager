@@ -2,6 +2,7 @@
 
 import json
 import re
+from typing import Any
 
 from app.core.config import settings
 from app.modules.hydro_ai.schema import VisionOnboardRequest, VisionOnboardResponse
@@ -26,8 +27,9 @@ def analyze(data: VisionOnboardRequest) -> VisionOnboardResponse:
         )
     try:
         from app.modules.hydro_ai.llm import get_chat_model
+
         llm = get_chat_model()
-        msg = [
+        msg: list[Any] = [
             ("system", VISION_SYSTEM),
             (
                 "user",
@@ -58,11 +60,12 @@ def analyze(data: VisionOnboardRequest) -> VisionOnboardResponse:
         )
 
 
-def _extract_json(text: str) -> dict:
+def _extract_json(text: str) -> dict[str, Any]:
     m = re.search(r"\{.*\}", text, re.DOTALL)
     if not m:
         return {}
     try:
-        return json.loads(m.group(0))
+        parsed = json.loads(m.group(0))
     except Exception:
         return {}
+    return parsed if isinstance(parsed, dict) else {}
