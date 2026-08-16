@@ -86,6 +86,12 @@ export default defineConfig({
   webServer: {
     command: 'bun run dev',
     url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
+    /*
+     * Always reuse. CI brings the frontend up via docker compose, which bakes
+     * NEXT_PUBLIC_API_URL into the bundle at build time; letting Playwright
+     * spawn its own `bun run dev` would both collide on port 3000 and bypass
+     * that. Locally this still starts a server when none is running.
+     */
+    reuseExistingServer: true,
   },
 });
