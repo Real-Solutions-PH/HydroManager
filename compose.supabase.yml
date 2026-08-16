@@ -1,0 +1,46 @@
+# Dev overlay: run the stack against hosted Supabase only.
+#
+# No local data services are started -- Postgres and object storage both live
+# in Supabase, and the values in .env already point there. Layered on top of
+# compose.yml + compose.override.yml; see the `watch` target in the Makefile.
+
+services:
+
+  # Parked behind a profile that is never enabled here, so `up` skips them
+  # instead of starting containers the app does not talk to.
+  #   - db          -> Supabase Postgres (POSTGRES_SERVER in .env)
+  #   - minio       -> Supabase Storage S3 API (MINIO_ENDPOINT in .env)
+  #   - redis       -> unused; nothing in backend/app references it
+  #   - mailcatcher -> no SMTP sink; outbound email is switched off below
+  # To bring them back for offline work: docker compose --profile local-infra up
+  db:
+    profiles: ["local-infra"]
+
+  redis:
+    profiles: ["local-infra"]
+
+  minio:
+    profiles: ["local-infra"]
+
+  mailcatcher:
+    profiles: ["local-infra"]
+
+  prestart:
+    # Only depended on the local db container.
+    depends_on: !reset null
+    environment:
+      # compose.yml pins this to `db`, which would override the Supabase host
+      # coming from env_file. Re-assert it so migrations run against Supabase.
+      POSTGRES_SERVER: ${POSTGRES_SERVER?Variable not set}
+
+  backend:
+    # Drop the db dependency but keep the migration gate.
+    depends_on: !override
+      prestart:
+        condition: service_completed_successfully
+    environment:
+      POSTGRES_SERVER: ${POSTGRES_SERVER?Variable not set}
+      # compose.override.yml points this at the mailcatcher container, which no
+      # longer starts. Blank it so settings.emails_enabled is False and callers
+      # skip sending rather than dialling a host that cannot resolve.
+      SMTP_HOST: ""

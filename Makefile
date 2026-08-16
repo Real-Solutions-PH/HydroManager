@@ -7,13 +7,19 @@ export PATH := $(HOME)/.bun/bin:$(PATH)
 # ---------------------------------------------------------------------------
 # Docker
 # ---------------------------------------------------------------------------
-.PHONY: up up-infra down build logs ps
+.PHONY: up up-infra watch down build logs ps
 
 up: ## Start all services (dev mode with hot-reload)
 	docker compose up -d
 
 up-infra: ## Start only infra services (db, redis, minio)
 	docker compose up -d db redis minio
+
+# Explicit -f list disables compose.override.yml auto-loading, so it is named here.
+COMPOSE_SUPABASE := -f compose.yml -f compose.override.yml -f compose.supabase.yml
+
+watch: ## Start backend+frontend against hosted Supabase (no local db/minio/redis) and watch for changes
+	docker compose $(COMPOSE_SUPABASE) up --build --force-recreate --watch
 
 down: ## Stop all services
 	docker compose down
@@ -59,9 +65,6 @@ backend-revision: ## Create a new Alembic migration (usage: make backend-revisio
 backend-prestart: ## Run prestart script (healthcheck + migrations + initial data)
 	cd backend && uv run bash scripts/prestart.sh
 
-backend-dev:
-	cd backend && uv run uvicorn app.main:app --reload
-
 # ---------------------------------------------------------------------------
 # Frontend
 # ---------------------------------------------------------------------------
@@ -91,8 +94,21 @@ frontend-test-ui: ## Run Playwright tests with UI
 # ---------------------------------------------------------------------------
 # Mobile (Expo / EAS)
 # ---------------------------------------------------------------------------
-.PHONY: mobile-build mobile-build-ios mobile-build-android mobile-build-ios-preview mobile-build-android-preview mobile-build-ios-prod mobile-build-android-prod mobile-web-export mobile-web-deploy mobile-web-deploy-prod
+.PHONY: mobile-dev mobile-dev-android mobile-dev-ios mobile-build mobile-build-ios mobile-build-android mobile-build-ios-preview mobile-build-android-preview mobile-build-ios-prod mobile-build-android-prod mobile-web-export mobile-web-deploy mobile-web-deploy-prod
 PROFILE ?= preview
+
+# Expo is not part of the `make watch` compose stack -- Metro needs to own its
+# port and hand devices a LAN URL, which is awkward behind Docker networking.
+# Run it on the host and point it at the backend via mobile/.env
+# (EXPO_PUBLIC_API_URL); localhost will not resolve from a physical device.
+mobile-dev: ## Start Expo dev server (scan the QR code with Expo Go)
+	cd mobile && bun run start
+
+mobile-dev-android: ## Start Expo dev server and open on Android
+	cd mobile && bun run android
+
+mobile-dev-ios: ## Start Expo dev server and open on iOS
+	cd mobile && bun run ios
 
 mobile-build: mobile-build-ios mobile-build-android ## Local EAS build iOS + Android (PROFILE=preview default)
 
@@ -120,15 +136,19 @@ mobile-build-android-prod: ## Local EAS production build Android
 # ---------------------------------------------------------------------------
 # Dependencies
 # ---------------------------------------------------------------------------
-.PHONY: install install-backend install-frontend
+.PHONY: install install-backend install-frontend install-mobile
 
-install: install-backend install-frontend ## Install all dependencies
+install: install-backend install-frontend install-mobile ## Install all dependencies
 
 install-backend: ## Install backend Python dependencies (uv)
 	cd backend && uv sync
 
 install-frontend: ## Install frontend Node dependencies (bun)
 	cd frontend && bun install
+
+# mobile/ is outside the root bun workspace and carries its own bun.lock.
+install-mobile: ## Install mobile Node dependencies (bun)
+	cd mobile && bun install
 
 # ---------------------------------------------------------------------------
 # Code Quality

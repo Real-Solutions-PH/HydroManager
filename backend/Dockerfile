@@ -21,6 +21,13 @@ COPY ./backend/app /app/backend/app
 
 WORKDIR /app/backend
 
+# uv sync above runs with --no-install-workspace, so the `app` package never
+# lands in site-packages. A script invoked by path (scripts/prestart.sh) gets
+# sys.path[0] = the script's own directory rather than this workdir, so
+# `import app` fails without this. alembic (prepend_sys_path) and uvicorn add
+# the cwd themselves, which is why only prestart hit it.
+ENV PYTHONPATH=/app/backend
+
 EXPOSE 8000
 
 CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 2"]

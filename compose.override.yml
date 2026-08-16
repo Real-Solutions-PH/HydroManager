@@ -24,11 +24,17 @@ services:
       context: .
       dockerfile: backend/Dockerfile
     # command: sleep infinity  # Infinite loop to keep container alive doing nothing
+    # `fastapi run` needs fastapi[standard] (fastapi-cli); backend/pyproject.toml
+    # pins plain fastapi + uvicorn[standard], so drive uvicorn directly -- same as
+    # the Dockerfile CMD and the `backend-dev` Make target.
     command:
-      - fastapi
-      - run
+      - uvicorn
+      - app.main:app
       - --reload
-      - "app/main.py"
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8000"
     develop:
       watch:
         - path: ./backend
@@ -63,7 +69,10 @@ services:
       dockerfile: frontend/Dockerfile
       target: dev
       args:
-        - NEXT_PUBLIC_API_URL=http://localhost:8000
+        # Baked into the browser bundle at build time, so it must be an address
+        # the *visitor's* machine can reach. Override in .env when serving
+        # other devices on the network.
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
     environment:
       WATCHPACK_POLLING: "true"
       CHOKIDAR_USEPOLLING: "true"
