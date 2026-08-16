@@ -1,6 +1,6 @@
 "use client"
 
-import { Briefcase, Home, MessageSquare, Users } from "lucide-react"
+import { Home, MessageSquare, Users } from "lucide-react"
 
 import { SidebarAppearance } from "@/components/Common/Appearance"
 import { Logo } from "@/components/Common/Logo"
@@ -18,7 +18,6 @@ const aiEnabled = process.env.NEXT_PUBLIC_AI_ENABLED === "true"
 
 const baseItems: Item[] = [
   { icon: Home, title: "Dashboard", path: "/" },
-  { icon: Briefcase, title: "Items", path: "/items" },
   ...(aiEnabled ? [{ icon: MessageSquare, title: "Chat", path: "/chat" }] : []),
 ]
 
