@@ -6,6 +6,7 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 .env
+.claude/worktrees/
 package-lock.json
 yarn.lock
 pnpm-lock.yaml
