@@ -15,6 +15,7 @@ from app.modules.batches.models import (  # noqa: F401
 )
 from app.modules.crops.models import CropGuide  # noqa: F401
 from app.modules.hydro_common.quota import AIQuotaUsage  # noqa: F401
+from app.modules.iam.auth.models import RefreshToken  # noqa: F401
 from app.modules.iam.permissions.models import Permission  # noqa: F401
 from app.modules.iam.roles.models import Role  # noqa: F401
 from app.modules.iam.tenants.models import Tenant  # noqa: F401

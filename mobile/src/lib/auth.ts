@@ -6,6 +6,7 @@ import { config } from "@/lib/config";
 import { useAuthStore } from "@/stores/auth-store";
 
 const ACCESS_TOKEN_KEY = "access_token";
+const REFRESH_TOKEN_KEY = "refresh_token";
 
 const isWeb = Platform.OS === "web";
 
@@ -27,29 +28,44 @@ const webStorage = {
 
 export const API_URL = config.apiUrl;
 
-export async function getAccessToken(): Promise<string | null> {
+async function storageGet(key: string): Promise<string | null> {
 	try {
-		if (isWeb) return webStorage.getItem(ACCESS_TOKEN_KEY);
-		return await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+		if (isWeb) return webStorage.getItem(key);
+		return await SecureStore.getItemAsync(key);
 	} catch {
 		return null;
 	}
 }
 
-export async function setAccessToken(token: string): Promise<void> {
+async function storageSet(key: string, value: string): Promise<void> {
 	if (isWeb) {
-		webStorage.setItem(ACCESS_TOKEN_KEY, token);
+		webStorage.setItem(key, value);
 		return;
 	}
-	await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, token);
+	await SecureStore.setItemAsync(key, value);
 }
 
-export async function clearAccessToken(): Promise<void> {
+async function storageRemove(key: string): Promise<void> {
 	if (isWeb) {
-		webStorage.removeItem(ACCESS_TOKEN_KEY);
+		webStorage.removeItem(key);
 		return;
 	}
-	await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
+	await SecureStore.deleteItemAsync(key);
+}
+
+export const getAccessToken = () => storageGet(ACCESS_TOKEN_KEY);
+export const setAccessToken = (token: string) =>
+	storageSet(ACCESS_TOKEN_KEY, token);
+export const clearAccessToken = () => storageRemove(ACCESS_TOKEN_KEY);
+
+export const getRefreshToken = () => storageGet(REFRESH_TOKEN_KEY);
+export const setRefreshToken = (token: string) =>
+	storageSet(REFRESH_TOKEN_KEY, token);
+export const clearRefreshToken = () => storageRemove(REFRESH_TOKEN_KEY);
+
+export async function clearTokens(): Promise<void> {
+	await clearAccessToken();
+	await clearRefreshToken();
 }
 
 export async function isLoggedIn(): Promise<boolean> {
@@ -63,7 +79,7 @@ async function handleUnauthorized() {
 	if (redirecting) return;
 	redirecting = true;
 	try {
-		await clearAccessToken();
+		await clearTokens();
 		useAuthStore.getState().clearAuth();
 		router.replace("/login");
 	} finally {
@@ -71,6 +87,39 @@ async function handleUnauthorized() {
 			redirecting = false;
 		}, 1000);
 	}
+}
+
+// Single in-flight refresh so a burst of concurrent 401s triggers exactly one
+// refresh call; all callers await the same promise.
+let refreshPromise: Promise<string | null> | null = null;
+
+async function performRefresh(): Promise<string | null> {
+	const refreshToken = await getRefreshToken();
+	if (!refreshToken) return null;
+	try {
+		// Bare axios (not the api instance) so this call can't recurse through
+		// the response interceptor below.
+		const { data } = await axios.post<{
+			access_token: string;
+			refresh_token: string;
+		}>(`${API_URL}/api/v1/login/refresh-token`, {
+			refresh_token: refreshToken,
+		});
+		await setAccessToken(data.access_token);
+		await setRefreshToken(data.refresh_token);
+		return data.access_token;
+	} catch {
+		return null;
+	}
+}
+
+function refreshAccessToken(): Promise<string | null> {
+	if (!refreshPromise) {
+		refreshPromise = performRefresh().finally(() => {
+			refreshPromise = null;
+		});
+	}
+	return refreshPromise;
 }
 
 export function createApiClient(): AxiosInstance {
@@ -86,12 +135,31 @@ export function createApiClient(): AxiosInstance {
 
 	instance.interceptors.response.use(
 		(response) => response,
-		(error) => {
+		async (error) => {
 			const status = error?.response?.status;
-			const url: string = error?.config?.url ?? "";
-			const isLoginEndpoint =
-				url.includes("/login/access-token") || url.includes("/users/signup");
-			if (status === 401 && !isLoginEndpoint) {
+			const originalRequest = error?.config;
+			const url: string = originalRequest?.url ?? "";
+			// Endpoints that must never trigger a refresh-retry: obtaining or
+			// refreshing tokens. A 401 from these is terminal.
+			const isAuthEndpoint =
+				url.includes("/login/access-token") ||
+				url.includes("/login/refresh-token") ||
+				url.includes("/users/signup");
+
+			if (
+				status === 401 &&
+				!isAuthEndpoint &&
+				originalRequest &&
+				!originalRequest._retry
+			) {
+				originalRequest._retry = true;
+				const newToken = await refreshAccessToken();
+				if (newToken) {
+					originalRequest.headers = originalRequest.headers ?? {};
+					originalRequest.headers.Authorization = `Bearer ${newToken}`;
+					return instance(originalRequest);
+				}
+				// Refresh failed (no/expired refresh token) — clear and bounce.
 				void handleUnauthorized();
 			}
 			return Promise.reject(error);

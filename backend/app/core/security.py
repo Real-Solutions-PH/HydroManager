@@ -1,3 +1,5 @@
+import hashlib
+import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -24,6 +26,18 @@ def create_access_token(subject: str | Any, expires_delta: timedelta) -> str:
     to_encode = {"exp": expire, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def generate_refresh_token() -> str:
+    """Opaque, high-entropy refresh token. Stored hashed; only the client keeps
+    the plaintext."""
+    return secrets.token_urlsafe(32)
+
+
+def hash_token(token: str) -> str:
+    """SHA-256 is sufficient here: the token is 256-bit random, so there is no
+    low-entropy secret to slow-hash against."""
+    return hashlib.sha256(token.encode()).hexdigest()
 
 
 def verify_password(
