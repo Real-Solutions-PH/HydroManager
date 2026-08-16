@@ -30,3 +30,6 @@ openapi.json
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# TypeScript incremental build cache
+*.tsbuildinfo
