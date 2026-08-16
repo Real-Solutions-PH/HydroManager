@@ -35,7 +35,8 @@ def list_tasks(
         skip=skip,
         limit=limit,
     )
-    return TasksPublic(data=rows, count=count)
+    data = [TaskPublic.model_validate(r, from_attributes=True) for r in rows]
+    return TasksPublic(data=data, count=count)
 
 
 @router.post("/", response_model=TaskPublic)
