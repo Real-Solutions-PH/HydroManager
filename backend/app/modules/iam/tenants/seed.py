@@ -11,4 +11,7 @@ DEFAULT_TENANTS: list[dict[str, str]] = [
 def seed_tenants(session: Session) -> None:
     for entry in DEFAULT_TENANTS:
         if tenant_repo.get_by_slug(session=session, slug=entry["slug"]) is None:
-            tenant_repo.create(session=session, tenant=Tenant(**entry))
+            tenant_repo.create(
+                session=session,
+                tenant=Tenant(name=entry["name"], slug=entry["slug"]),
+            )
