@@ -139,8 +139,22 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
       - SENTRY_DSN=${SENTRY_DSN}
 
+    # python:3.12-slim ships no curl, so a curl-based probe can never pass and
+    # the container stays unhealthy forever. Use the interpreter that is
+    # guaranteed to be present instead of adding an apt layer for it.
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/utils/health-check/"]
+      test:
+        - CMD
+        - python
+        - -c
+        - |
+          import urllib.request, sys
+          try:
+              sys.exit(0 if urllib.request.urlopen(
+                  "http://localhost:8000/api/v1/utils/health-check/", timeout=4
+              ).status == 200 else 1)
+          except Exception:
+              sys.exit(1)
       interval: 10s
       timeout: 5s
       retries: 5
