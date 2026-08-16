@@ -1,11 +1,11 @@
 import path from "node:path"
-import { fileURLToPath } from "node:url"
 import dotenv from "dotenv"
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-dotenv.config({ path: path.join(__dirname, "../../.env") })
+// Resolved from the cwd rather than import.meta.url: this package is not
+// "type": "module", so import.meta forced the file to be treated as ESM and
+// the CommonJS dotenv default import then failed with "exports is not
+// defined". Playwright runs from frontend/, so the root .env is one level up.
+dotenv.config({ path: path.resolve(process.cwd(), "../.env") })
 
 function getEnvVar(name: string): string {
   const value = process.env[name]
