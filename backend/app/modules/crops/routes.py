@@ -80,6 +80,6 @@ def read_crop(
 def seed_crops(
     session: SessionDep,
     current_user: CurrentUser,  # noqa: ARG001
-) -> dict:
+) -> dict[str, Any]:
     inserted = crops_repo.seed_if_empty(session=session)
     return {"inserted": inserted}

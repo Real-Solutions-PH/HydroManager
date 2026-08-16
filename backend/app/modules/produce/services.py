@@ -164,7 +164,7 @@ def list_movements(
     current_user: User,
     produce_id: uuid.UUID,
     limit: int = 50,
-):
+) -> list[ProduceMovement]:
     p = get_produce(
         session=session, current_user=current_user, produce_id=produce_id
     )

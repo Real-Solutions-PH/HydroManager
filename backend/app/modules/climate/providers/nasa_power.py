@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Any
 
 import httpx
 
@@ -33,7 +34,7 @@ class NasaPowerProvider(ClimateProvider):
     async def get_monthly_normals(
         self, *, lat: float, lon: float, month: int
     ) -> ClimateNormals:
-        params = {
+        params: dict[str, Any] = {
             "parameters": ",".join(PARAMS),
             "community": "AG",
             "longitude": lon,

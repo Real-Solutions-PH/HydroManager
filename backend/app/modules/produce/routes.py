@@ -5,6 +5,7 @@ from fastapi import APIRouter
 
 from app.modules.iam.deps import CurrentUser
 from app.modules.produce import services as produce_service
+from app.modules.produce.models import Produce
 from app.modules.produce.schema import (
     ProduceCreate,
     ProduceMovementCreate,
@@ -21,7 +22,7 @@ from app.shared.schema import Message
 router = APIRouter(prefix="/produce", tags=["produce"])
 
 
-def _to_public(item) -> ProducePublic:
+def _to_public(item: Produce) -> ProducePublic:
     pub = ProducePublic.model_validate(item, from_attributes=True)
     status, days = produce_service.compute_expiry(item)
     pub.expiry_status = status

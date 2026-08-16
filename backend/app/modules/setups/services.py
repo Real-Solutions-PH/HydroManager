@@ -252,7 +252,7 @@ def delete_setup(
 
 def list_slots(
     *, session: Session, current_user: User, setup_id: uuid.UUID
-):
+) -> list[SetupSlot]:
     setup = get_setup(
         session=session, current_user=current_user, setup_id=setup_id
     )
@@ -261,7 +261,7 @@ def list_slots(
 
 def list_photos(
     *, session: Session, current_user: User, setup_id: uuid.UUID
-):
+) -> list[SetupPhoto]:
     setup = get_setup(
         session=session, current_user=current_user, setup_id=setup_id
     )

@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 from sqlmodel import Field, SQLModel
 
@@ -85,5 +86,5 @@ class Dashboard(SQLModel):
     cogs_last_90_days: float
     cogs_ytd: float
     net_margin_pct: float
-    top_crops: list[dict]
-    channel_revenue: list[dict]
+    top_crops: list[dict[str, Any]]
+    channel_revenue: list[dict[str, Any]]

@@ -1,6 +1,7 @@
 import calendar
 import uuid
 from datetime import datetime, timedelta, timezone
+from typing import Any
 
 from fastapi import HTTPException
 from sqlmodel import Session
@@ -97,7 +98,7 @@ def update_task(
 def complete_task(*, session: Session, current_user: User, task_id: uuid.UUID) -> Task:
     task = get_task(session=session, current_user=current_user, task_id=task_id)
     now = _utcnow()
-    update_data: dict = {"updated_at": now}
+    update_data: dict[str, Any] = {"updated_at": now}
     if task.recur_freq == RecurFreq.none:
         update_data["completed_at"] = now
     else:

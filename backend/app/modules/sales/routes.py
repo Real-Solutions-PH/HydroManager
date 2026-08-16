@@ -6,6 +6,7 @@ from fastapi.responses import PlainTextResponse
 
 from app.modules.iam.deps import CurrentUser
 from app.modules.sales import services as sales_service
+from app.modules.sales.models import Sale
 from app.modules.sales.schema import (
     Dashboard,
     OverheadCreate,
@@ -22,7 +23,7 @@ from app.shared.schema import Message
 router = APIRouter(prefix="/sales", tags=["sales"])
 
 
-def _to_detail(s) -> SaleDetail:
+def _to_detail(s: Sale) -> SaleDetail:
     base = SalePublic.model_validate(s, from_attributes=True)
     items = [
         SaleItemPublic.model_validate(i, from_attributes=True) for i in s.items

@@ -164,7 +164,7 @@ def _sum_sales(
     q = (
         select(func.coalesce(func.sum(SaleItem.quantity * SaleItem.unit_price), 0))
         .select_from(SaleItem)
-        .join(Sale, SaleItem.sale_id == Sale.id)
+        .join(Sale, col(SaleItem.sale_id) == Sale.id)
         .where(Sale.owner_id == user_id, Sale.sold_at >= start)
     )
     result = session.exec(q).one()
@@ -213,7 +213,7 @@ def dashboard(*, session: Session, current_user: User) -> Dashboard:
     by_channel: dict[str, float] = defaultdict(float)
     items_q = (
         select(SaleItem, Sale)
-        .join(Sale, SaleItem.sale_id == Sale.id)
+        .join(Sale, col(SaleItem.sale_id) == Sale.id)
         .where(Sale.owner_id == current_user.id, Sale.sold_at >= d90)
     )
     for si, s in session.exec(items_q).all():
@@ -247,7 +247,7 @@ def export_csv(*, session: Session, current_user: User) -> str:
         require_tier(current_user.tier, at_least=UserTier.pro)
     q = (
         select(Sale, SaleItem)
-        .join(SaleItem, SaleItem.sale_id == Sale.id)
+        .join(SaleItem, col(SaleItem.sale_id) == Sale.id)
         .where(Sale.owner_id == current_user.id)
         .order_by(col(Sale.sold_at).desc())
     )

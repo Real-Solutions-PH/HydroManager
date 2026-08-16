@@ -27,7 +27,7 @@ def chat(
 
 
 @router.get("/quota")
-def quota(session: SessionDep, current_user: CurrentUser) -> dict:
+def quota(session: SessionDep, current_user: CurrentUser) -> dict[str, Any]:
     usage = get_or_create_usage(session=session, user_id=current_user.id)
     limit = AI_MONTHLY_QUOTAS[current_user.tier]
     session.commit()

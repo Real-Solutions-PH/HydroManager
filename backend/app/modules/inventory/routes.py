@@ -4,11 +4,11 @@ from typing import Any
 
 from fastapi import APIRouter
 from sqlalchemy import func
-from sqlmodel import col, select
+from sqlmodel import Session, col, select
 
 from app.modules.iam.deps import CurrentUser
 from app.modules.inventory import services as inv_service
-from app.modules.inventory.models import InventoryMovement
+from app.modules.inventory.models import InventoryItem, InventoryMovement
 from app.modules.inventory.schema import (
     ExpiryStatus,
     InventoryCategory,
@@ -28,7 +28,7 @@ router = APIRouter(prefix="/inventory", tags=["inventory"])
 EXPIRY_WARNING_DAYS = 7
 
 
-def _compute_expiry(item) -> tuple[ExpiryStatus, int | None]:
+def _compute_expiry(item: InventoryItem) -> tuple[ExpiryStatus, int | None]:
     if item.expiry_date is None:
         return ExpiryStatus.ok, None
     days = (item.expiry_date - date.today()).days
@@ -40,7 +40,7 @@ def _compute_expiry(item) -> tuple[ExpiryStatus, int | None]:
 
 
 def _to_public(
-    item, *, last_restocked_at: datetime | None = None
+    item: InventoryItem, *, last_restocked_at: datetime | None = None
 ) -> InventoryItemPublic:
     pub = InventoryItemPublic.model_validate(item, from_attributes=True)
     pub.is_low_stock = (
@@ -53,7 +53,7 @@ def _to_public(
 
 
 def _last_restocked_map(
-    session, item_ids: list[uuid.UUID]
+    session: Session, item_ids: list[uuid.UUID]
 ) -> dict[uuid.UUID, datetime]:
     if not item_ids:
         return {}
@@ -66,12 +66,12 @@ def _last_restocked_map(
             col(InventoryMovement.item_id).in_(item_ids),
             InventoryMovement.movement_type == MovementType.restock,
         )
-        .group_by(InventoryMovement.item_id)
+        .group_by(col(InventoryMovement.item_id))
     )
     return {row[0]: row[1] for row in session.exec(q).all()}
 
 
-def _last_restocked_for(session, item_id: uuid.UUID) -> datetime | None:
+def _last_restocked_for(session: Session, item_id: uuid.UUID) -> datetime | None:
     q = (
         select(InventoryMovement.occurred_at)
         .where(

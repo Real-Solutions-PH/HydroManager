@@ -1,6 +1,7 @@
 import math
 import uuid
 from datetime import datetime, timezone
+from typing import Any
 
 from fastapi import HTTPException
 from sqlmodel import Session, col, func, select
@@ -296,7 +297,7 @@ def create_batch(*, session: Session, current_user: User, data: BatchCreate) -> 
             ),
         )
     initial_count = data.slots_used * data.seeds_per_slot
-    payload = {
+    payload: dict[str, Any] = {
         "setup_id": data.setup_id,
         "crop_guide_id": data.crop_guide_id,
         "seed_inventory_item_id": data.seed_inventory_item_id,
@@ -425,7 +426,7 @@ def allocate_slots(
             slot.batch_id = None
             slot.status = SlotStatus.EMPTY
             session.add(slot)
-    update_data: dict = {
+    update_data: dict[str, Any] = {
         "slots_used": slots_used,
         "seeds_per_slot": seeds_per_slot,
     }
@@ -564,14 +565,16 @@ def record_transition(
     return transition
 
 
-def list_state_counts(*, session: Session, current_user: User, batch_id: uuid.UUID):
+def list_state_counts(
+    *, session: Session, current_user: User, batch_id: uuid.UUID
+) -> list[BatchStateCount]:
     batch = get_batch(session=session, current_user=current_user, batch_id=batch_id)
     return batches_repo.list_state_counts(session=session, batch_id=batch.id)
 
 
 def list_transitions(
     *, session: Session, current_user: User, batch_id: uuid.UUID, limit: int = 20
-):
+) -> list[BatchTransition]:
     batch = get_batch(session=session, current_user=current_user, batch_id=batch_id)
     return batches_repo.list_transitions(
         session=session, batch_id=batch.id, limit=limit
@@ -636,7 +639,9 @@ def record_harvest(
     return harvest
 
 
-def list_harvests(*, session: Session, current_user: User, batch_id: uuid.UUID):
+def list_harvests(
+    *, session: Session, current_user: User, batch_id: uuid.UUID
+) -> list[BatchHarvest]:
     batch = get_batch(session=session, current_user=current_user, batch_id=batch_id)
     return batches_repo.list_harvests(session=session, batch_id=batch.id)
 

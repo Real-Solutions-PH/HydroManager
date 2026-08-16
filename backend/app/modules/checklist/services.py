@@ -2,6 +2,7 @@
 
 import uuid
 from datetime import datetime, timezone
+from typing import Any
 
 from sqlmodel import Session, col, select
 
@@ -42,7 +43,7 @@ WATER_CHANGE_DAYS = {
 
 def generate_tasks(
     *, session: Session, current_user: User
-) -> list[dict]:
+) -> list[dict[str, Any]]:
     owner = current_user.id
     setups = list(
         session.exec(
@@ -71,7 +72,7 @@ def generate_tasks(
         ).all():
             guides[g.id] = g
 
-    tasks: list[dict] = []
+    tasks: list[dict[str, Any]] = []
     for b in batches:
         setup = setups_by_id.get(b.setup_id)
         if setup is None:

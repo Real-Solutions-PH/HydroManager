@@ -164,7 +164,7 @@ def record_movement(
 
 def list_movements(
     *, session: Session, current_user: User, item_id: uuid.UUID, limit: int = 50
-):
+) -> list[InventoryMovement]:
     item = get_item(
         session=session, current_user=current_user, item_id=item_id
     )

@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+from typing import Any
 
 import httpx
 
@@ -46,7 +47,7 @@ class OpenMeteoProvider(ClimateProvider):
         self, *, lat: float, lon: float, month: int
     ) -> ClimateNormals:
         start, end = _month_window(month, self.years_back)
-        params = {
+        params: dict[str, Any] = {
             "latitude": lat,
             "longitude": lon,
             "start_date": start.isoformat(),

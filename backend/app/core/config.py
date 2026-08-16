@@ -59,13 +59,15 @@ class Settings(BaseSettings):
     @computed_field  # type: ignore[prop-decorator]
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
-        return PostgresDsn.build(
-            scheme="postgresql+psycopg",
-            username=self.POSTGRES_USER,
-            password=self.POSTGRES_PASSWORD,
-            host=self.POSTGRES_SERVER,
-            port=self.POSTGRES_PORT,
-            path=self.POSTGRES_DB,
+        return str(
+            PostgresDsn.build(
+                scheme="postgresql+psycopg",
+                username=self.POSTGRES_USER,
+                password=self.POSTGRES_PASSWORD,
+                host=self.POSTGRES_SERVER,
+                port=self.POSTGRES_PORT,
+                path=self.POSTGRES_DB,
+            )
         )
 
     SMTP_TLS: bool = True

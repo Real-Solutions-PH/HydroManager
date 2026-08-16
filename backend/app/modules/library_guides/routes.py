@@ -51,6 +51,6 @@ def read_guide(
 def seed_guides(
     session: SessionDep,
     current_user: CurrentUser,  # noqa: ARG001
-) -> dict:
+) -> dict[str, Any]:
     inserted = guides_repo.seed_if_empty(session=session)
     return {"inserted": inserted}

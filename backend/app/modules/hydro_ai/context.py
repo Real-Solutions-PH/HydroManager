@@ -1,6 +1,7 @@
 """Build grounded context for the HydroManager AI assistant."""
 
 import uuid
+from typing import Any
 
 from sqlmodel import Session, col, select
 
@@ -12,8 +13,8 @@ from app.modules.setups.models import Setup
 
 def build_context(
     *, session: Session, user_id: uuid.UUID, query: str
-) -> tuple[str, list[dict]]:
-    citations: list[dict] = []
+) -> tuple[str, list[dict[str, Any]]]:
+    citations: list[dict[str, Any]] = []
     parts: list[str] = []
 
     setups = list(
