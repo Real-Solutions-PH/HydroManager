@@ -16,11 +16,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+      # .env is gitignored, so CI has to materialise one. Without it every
+      # compose command fails during interpolation on the required variables
+      # (POSTGRES_PASSWORD, MINIO_ROOT_USER, ...).
+      - name: Create .env
+        run: cp .env.example .env
       - run: docker compose build
       - run: docker compose down -v --remove-orphans
-      - run: docker compose up -d --wait backend frontend adminer
+      - run: docker compose up -d --wait backend frontend
       - name: Test backend is up
-        run: curl http://localhost:8000/api/v1/utils/health-check
+        run: curl --fail --retry 10 --retry-all-errors --retry-delay 3 http://localhost:8000/api/v1/utils/health-check/
+      # frontend has no healthcheck, so --wait only proves the container is
+      # running; retry while the Next.js dev server finishes booting.
       - name: Test frontend is up
-        run: curl http://localhost:5173
+        run: curl --fail --retry 10 --retry-all-errors --retry-delay 3 http://localhost:3000
+      - name: Dump logs on failure
+        if: failure()
+        run: docker compose logs --no-color
       - run: docker compose down -v --remove-orphans
+        if: always()

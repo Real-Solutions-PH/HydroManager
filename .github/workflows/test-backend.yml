@@ -21,6 +21,12 @@ jobs:
           python-version: "3.10"
       - name: Install uv
         uses: astral-sh/setup-uv@v7
+      # .env is gitignored, so CI has to materialise one. Without it every
+      # compose command fails during interpolation on the required variables
+      # (POSTGRES_PASSWORD, MINIO_ROOT_USER, ...), and the backend's Settings
+      # rejects the missing values before any test runs.
+      - name: Create .env
+        run: cp .env.example .env
       - run: docker compose down -v --remove-orphans
       - run: docker compose up -d db mailcatcher
       - name: Migrate DB

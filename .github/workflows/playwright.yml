@@ -59,16 +59,33 @@ jobs:
         limit-access-to-actor: true
     - name: Install uv
       uses: astral-sh/setup-uv@v7
+    # .env is gitignored, so CI has to materialise one. generate-client.sh
+    # imports app.main, whose Settings rejects the missing required values.
+    - name: Create .env
+      run: cp .env.example .env
     - run: uv sync
       working-directory: backend
-    - run: bun ci
-      working-directory: frontend
+    - run: bun install --frozen-lockfile
     - run: bash scripts/generate-client.sh
     - run: docker compose build
     - run: docker compose down -v --remove-orphans
+    - run: docker compose up -d --wait backend frontend mailcatcher
+    # There is no `playwright` compose service, so the suite runs on the
+    # runner against the stack published on localhost.
+    - name: Install Playwright browsers
+      run: bunx playwright install --with-deps chromium
+      working-directory: frontend
     - name: Run Playwright tests
-      run: docker compose run --rm playwright bunx playwright test --fail-on-flaky-tests --trace=retain-on-failure --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      run: bunx playwright test --fail-on-flaky-tests --trace=retain-on-failure --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+      working-directory: frontend
+      env:
+        MAILCATCHER_HOST: http://localhost:1080
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    - name: Dump logs on failure
+      if: failure()
+      run: docker compose logs --no-color
     - run: docker compose down -v --remove-orphans
+      if: always()
     - name: Upload blob report to GitHub Actions Artifacts
       if: ${{ !cancelled() }}
       uses: actions/upload-artifact@v7
@@ -89,7 +106,7 @@ jobs:
     - uses: actions/checkout@v6
     - uses: oven-sh/setup-bun@v2
     - name: Install dependencies
-      run: bun ci
+      run: bun install --frozen-lockfile
     - name: Download blob reports from GitHub Actions Artifacts
       uses: actions/download-artifact@v8
       with:
