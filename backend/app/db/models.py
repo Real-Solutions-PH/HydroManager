@@ -6,6 +6,12 @@ Alembic autogenerate imports ``SQLModel`` from here; any new module-level
 
 from sqlmodel import SQLModel  # noqa: F401
 
+# Reserved module imports, landed up front so that no parallel group has to edit
+# this aggregator to register its tables. Each module is owned by one group:
+#   hydro_ai.models     -> group agent-backend (#51, #52)
+#   notifications.models -> group web-push (#63)
+import app.modules.hydro_ai.models  # noqa: F401
+import app.modules.notifications.models  # noqa: F401
 from app.modules.activity.models import Activity  # noqa: F401
 from app.modules.batches.models import (  # noqa: F401
     Batch,
